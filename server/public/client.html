@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜品点餐系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 头部样式 */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            padding: 10px 15px;
+        }
+
+        /* 选项卡样式 */
+        /* 新增滑动相关样式 */
+        .mydict :focus {
+            outline: 0;
+            border-color: #2260ff;
+            box-shadow: 0 0 0 4px #b5c9fc;
+        }
+
+        .mydict div {
+            width: 100%; /* 确保容器填满父容器 */
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            flex-wrap: nowrap;
+            padding: 0.5rem 0; /* 上下内边距避免滚动条遮挡 */
+        }
+
+        .mydict input[type="radio"] {
+            clip: rect(0 0 0 0);
+            clip-path: inset(100%);
+            height: 1px;
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+            width: 1px;
+        }
+
+        .mydict input[type="radio"]:checked + span {
+            box-shadow: 0 0 0 0.0625em #0043ed;
+            background-color: #dee7ff;
+            z-index: 1;
+            color: #0043ed;
+        }
+
+        .mydict label span {
+            display: block;
+            cursor: pointer;
+            background-color: #fff;
+            padding: 0.375em .75em;
+            position: relative;
+            margin-left: .0625em;
+            box-shadow: 0 0 0 0.0625em #b5bfd9;
+            letter-spacing: .05em;
+            color: #3e4963;
+            text-align: center;
+            transition: background-color .5s ease;
+        }
+
+        .mydict div {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            flex-wrap: nowrap;
+            padding-bottom: 4px;
+            margin-top: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mydict label span {
+            display: inline-flex;
+            white-space: nowrap;
+            min-width: max-content;
+            cursor: pointer;
+            background-color: #fff;
+            padding: 0.375em .75em;
+            box-shadow: 0 0 0 0.0625em #b5bfd9;
+            letter-spacing: .05em;
+            color: #3e4963;
+            transition: background-color .5s ease;
+        }
+
+        /* 隐藏滚动条（可选） */
+        .mydict div::-webkit-scrollbar { height: 2px; }
+        .mydict div::-webkit-scrollbar-track { background: #f1f1f1; }
+        .mydict div::-webkit-scrollbar-thumb { background: #888; }
+
+        .mydict label:first-child span {
+            border-radius: .375em 0 0 .375em;
+            margin-left: 1rem;
+        }
+
+        .mydict label:last-child span {
+            border-radius: 0 .375em .375em 0;
+            margin-right: 1rem;
+        }
+
+
+        /* 内容区域 */
+        .content {
+            margin: 120px 0 80px;
+            padding: 10px;
+        }
+
+        /* 菜品列表 */
+        .dish-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .dish-item {
+            display: none;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dish-item.active {
+            display: flex; /* 显示当前分类商品 */
+        }
+
+        .dish-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .dish-info {
+            flex: 1;
+        }
+
+        .dish-name {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .dish-desc {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .allergy-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .allergy-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        /* 操作区域 */
+        .dish-actions {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: #f8f9fa;
+            height: 40px;
+            margin-top: 40px;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #007bff;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #0056b3;
+        }
+
+        .quantity-btn:active {
+            transform: scale(0.95);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .quantity {
+            width: 48px;
+            font-size: 32px;
+            text-align: center;
+        }
+
+        /* 提交按钮 */
+        .submit-btn {
+            position: fixed;
+            bottom: 15px;
+            right: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+        }
+
+        /* 底部占位 */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: #333;
+            color: white;
+            padding: 15px;
+            z-index: 1000;
+        }
+
+        /* 新增弹出层样式 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .dialog {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            width: 300px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .confirm-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .confirm-btn:hover {
+            background: #0056b3;
+        }
+
+        /* 隐藏主内容 */
+        .main-content {
+            display: none;
+        }
+
+        /* 错误提示样式 */
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* 新增信息展示栏 */
+        .info-bar {
+            background: white;
+            padding: 10px 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #f5f5f5;
+        }
+
+        .edit-btn {
+            background: #007bff;
+            color: white;
+            padding: 6px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edit-btn:hover {
+            background: #007bff;
+            transform: translateY(-1px);
+        }
+    </style>
+
+    <style>
+        /* 自定义通知样式 */
+        .order-alertx {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff0f4;
+            border: 1px solid #a13869;
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+            z-index: 9999;
+        }
+
+        .order-alertx.hide {
+            animation: slideOut 0.3s ease-in;
+        }
+
+        .order-alertx-icon {
+            width: 24px;
+            height: 24px;
+            color: #a13869;
+            flex-shrink: 0;
+        }
+
+        .order-alertx-content {
+            color: #852f5a;
+        }
+
+        .order-alertx-close {
+            cursor: pointer;
+            margin-left: 16px;
+            color: #807196;
+            transition: color 0.2s;
+        }
+
+        .order-alertx-close:hover {
+            color: #372d48;
+        }
+
+        /* 自定义通知样式 */
+        .order-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f0fff4;
+            border: 1px solid #38a169;
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+            z-index: 9999;
+        }
+
+        .order-alert.hide {
+            animation: slideOut 0.3s ease-in;
+        }
+
+        .order-alert-icon {
+            width: 24px;
+            height: 24px;
+            color: #38a169;
+            flex-shrink: 0;
+        }
+
+        .order-alert-content {
+            color: #2f855a;
+        }
+
+        .order-alert-close {
+            cursor: pointer;
+            margin-left: 16px;
+            color: #718096;
+            transition: color 0.2s;
+        }
+
+        .order-alert-close:hover {
+            color: #2d3748;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        select {
+            padding: 8px 32px 8px 12px;    /* 内边距 */
+            border: 1px solid #007bff;        /* 边框 */
+            border-radius: 6px;           /* 圆角 */
+            background: #fff;              /* 背景色 */
+            font-size: 14px;              /* 字体大小 */
+            color: #333;                  /* 文字颜色 */
+            cursor: pointer;              /* 光标手势 */
+            /* 隐藏默认箭头 */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            /* 简单自定义箭头（用 Emoji 代替） */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+        }
+
+        /* 悬停 & 聚焦效果 */
+        select:hover { border-color: #999; }
+        select:focus { outline: none; border-color: #007bff; }
+    </style>
+
+    <script src="data.js"></script>
+</head>
+<body>
+
+<!-- 弹出窗口 -->
+<div class="overlay" id="overlay">
+    <div class="dialog">
+        <div class="input-group">
+            <label for="people" id="text_number_of_people">Número de pessoas a jantar</label>
+            <input type="number" id="people" min="1" required>
+            <div class="error-message" id="peopleError">Por favor, insira o número de pessoas que irão janta</div>
+        </div>
+        <div class="input-group">
+            <label for="seat" id="input_lable_seat">Número do assento</label>
+            <input type="text" id="seat" required>
+            <div class="error-message" id="seatError">Por favor, introduza o número do seu assento</div>
+        </div>
+        <button class="confirm-btn" id="confirmBtn">Confirme o seu assento</button>
+    </div>
+</div>
+
+<div class="main-content" id="mainContent">
+<header class="header">
+    <div class="info-bar" id="infoBar">
+
+    </div>
+    <div class="mydict">
+        <div class="tabs">
+            <label>
+                <input type="radio" name="radio" checked="">
+                <span>Women</span>
+            </label>
+            <label>
+                <input type="radio" name="radio">
+                <span>Men</span>
+            </label>
+            <label>
+                <input type="radio" name="radio">
+                <span>Divided</span>
+            </label>
+        </div>
+    </div>
+</header>
+
+<main class="content">
+    <div class="dish-list">
+    </div>
+</main>
+
+<div class="footer">
+    <div id="selectedItems" ></div>
+    <button class="submit-btn"  id="submitOrder" onclick="submitOrder()">Enviar pedido</button>
+</div>
+</div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+</html>

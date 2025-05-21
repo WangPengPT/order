@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSV 文件上传处理系统</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .upload-box {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 3rem 1rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .upload-box:hover {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #2196F3;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #1976D2;
+        }
+
+        #preview {
+            margin-top: 1rem;
+            color: #666;
+        }
+
+        #progressBar {
+            width: 100%;
+            height: 8px;
+            background-color: #eee;
+            border-radius: 4px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        #progressBar .fill {
+            width: 0%;
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        #result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .sample-table {
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+        }
+
+        .sample-table th,
+        .sample-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .custom-input {
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            height: 20px;
+            margin: 1rem auto;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>CSV 文件上传系统</h1>
+
+<div class="upload-box">
+    <form id="uploadForm">
+        <div>
+        <label for="password">密码</label>
+        <input class="custom-input"
+                type="password"
+                id="password"
+                name="password"
+                required
+                minlength="4"
+                maxlength="8"
+                size="10" />
+        </div>
+        <label class="custom-file-upload" for="fileInput">
+            <span id="uploadText">选择 CSV 文件</span>
+            <input type="file" id="fileInput" accept=".csv" />
+        </label>
+        <div id="preview"></div>
+        <button type="submit" class="custom-file-upload" id="submitBtn" disabled>
+            开始上传
+        </button>
+    </form>
+
+    <div id="progressBar">
+        <div class="fill"></div>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadText = document.getElementById('uploadText');
+    const submitBtn = document.getElementById('submitBtn');
+    const preview = document.getElementById('preview');
+    const progressBar = document.getElementById('progressBar');
+    const resultDiv = document.getElementById('result');
+
+    // 选择文件事件
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            uploadText.textContent = file.name;
+            preview.textContent = `文件大小：${(file.size / 1024).toFixed(2)} KB`;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // 提交表单事件
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('csvFile', file);
+
+
+        const password = document.getElementById('password').value;
+        console.log('密码:', password);
+        formData.append('password', password);
+
+        try {
+            // 重置状态
+            progressBar.style.display = 'block';
+            resultDiv.style.display = 'none';
+            submitBtn.disabled = true;
+
+            // 使用 Fetch API 上传
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData,
+                // 注意：使用 FormData 时不要设置 Content-Type，
+                // 浏览器会自动设置正确的 multipart/form-data
+            });
+
+            // 进度监控（Fetch API 原生不支持，可以自行模拟）
+            let progress = 0;
+            const interval = setInterval(() => {
+                if (progress < 90) {
+                    progress += 10;
+                    document.querySelector('#progressBar .fill').style.width =
+                        `${progress}%`;
+                }
+            }, 300);
+
+            // 处理响应
+            const data = await response.json();
+            clearInterval(interval);
+            document.querySelector('#progressBar .fill').style.width = '100%';
+
+            // 显示结果
+            resultDiv.className = 'success';
+            const html = `
+                    <h3>✓ 上传成功！</h3>
+                    <p>保存文件：${data.savedFile}</p>
+                    ${data.dataSample ? `
+                    <p>示例数据：</p>
+                    <table class="sample-table">
+                        <thead>
+                            <tr>
+                                ${Object.keys(data.dataSample[0]).map(
+                key => `<th>${key}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.dataSample.map(row => `
+                                <tr>
+                                    ${Object.values(row).map(
+                val => `<td>${val}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ` : ''}
+                `;
+            resultDiv.innerHTML = html;
+            resultDiv.style.display = 'block';
+
+        } catch (error) {
+            // 错误处理
+            resultDiv.className = 'error';
+            resultDiv.innerHTML = `
+                    <h3>✗ 上传失败！</h3>
+                    <p>错误信息：${error.message || '未知错误'}</p>
+                `;
+            resultDiv.style.display = 'block';
+            document.querySelector('#progressBar .fill').style.width = '0%';
+        } finally {
+            progressBar.style.display = 'none';
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
