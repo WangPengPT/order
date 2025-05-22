@@ -12,23 +12,9 @@
     <!-- 顶部固定 -->
     <div class="fixed top-0 left-0 w-full h-3rem bg-white">
       <div class="scrollable-content">
-        <Tabs value="0">
+        <Tabs :value="typeIndex">
           <TabList>
-            <Tab value="0">Header I</Tab>
-            <Tab value="1">Header II</Tab>
-            <Tab value="2">Header III</Tab>
-            <Tab value="0">Header I</Tab>
-            <Tab value="1">Header II</Tab>
-            <Tab value="2">Header III</Tab>
-            <Tab value="0">Header I</Tab>
-            <Tab value="1">Header II</Tab>
-            <Tab value="2">Header III</Tab>
-            <Tab value="0">Header I</Tab>
-            <Tab value="1">Header II</Tab>
-            <Tab value="2">Header III</Tab>
-            <Tab value="0">Header I</Tab>
-            <Tab value="1">Header II</Tab>
-            <Tab value="2">Header III</Tab>
+            <Tab v-for="(item, index) in types" :value="index" >{{item}}</Tab>
           </TabList>
           <TabPanels>
           </TabPanels>
@@ -69,6 +55,8 @@ const props = defineProps({
   }
 });
 
+const types = ref(["11","11","11","11","11","11","11","11",]);
+const typeIndex = ref(0);
 
 </script>
 

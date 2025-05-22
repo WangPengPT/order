@@ -27,20 +27,15 @@
           <div class="flex flex-column gap-1">
             <div class="flex align-items-center gap-2">
               <span
-                  class="text-xl font-bold whitespace-nowrap overflow-hidden text-overflow-ellipsis"
+                  class="text-xl font-bold line1 whitespace-nowrap overflow-hidden text-overflow-ellipsis"
                   style="max-width: 20rem"
               >
                 {{ item.name }}
               </span>
             </div>
             <p
-                class="text-color-secondary m-0 line-height-3"
-                style="
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-              "
+                class="text-color-secondary line2 whitespace-nowrap overflow-hidden text-overflow-ellipsis"
+                style="max-width: 20rem"
             >
               {{ item.description }}
             </p>
@@ -84,6 +79,12 @@
   </div>
 
   <Dialog v-model:visible="dlgVisible" modal header="dish" :style="{ width: '30rem' }">
+    <template #header>
+      <div class="inline-flex items-center justify-center gap-2">
+        <Avatar image="favicon.avif" shape="circle" />
+        <span class="font-bold whitespace-nowrap">菜品详情</span>
+      </div>
+    </template>
     <div class="flex items-center gap-1 mb-2">
       <span class="text-xl font-bold" style="max-width: 20rem">{{dishItem.name}}</span>
     </div>
@@ -114,6 +115,7 @@
 import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import Avatar from 'primevue/avatar';
 
 const dish1 =  {
   name: '秘制黑松露和牛汉堡套餐',
@@ -148,7 +150,7 @@ const dishes = ref(datas);
 // 修改数量
 const changeQuantity = (index, delta) => {
   const newQuantity = dishes.value[index].quantity + delta;
-  if (newQuantity > 0) {
+  if (newQuantity >= 0) {
     dishes.value[index].quantity = newQuantity;
   }
 };
@@ -196,4 +198,23 @@ const showDish = (dish) => {
     justify-content: space-between;
   }
 }
+
+.line1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 控制显示3行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5; /* 必须明确行高 */
+  max-height: calc(1.5em * 3); /* 行高 × 行数 */
+}
+
+.line2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 控制显示3行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5; /* 必须明确行高 */
+  max-height: calc(1.5em * 3); /* 行高 × 行数 */
+}
+
 </style>
