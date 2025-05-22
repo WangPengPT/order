@@ -1,7 +1,16 @@
 <template>
   <div class="min-h-screen flex flex-column">
+
+    <!-- 中间内容（滚动区域） -->
+    <div
+        class="flex-grow-1 overflow-auto"
+        :style="{ paddingTop: '3rem', paddingBottom: '3rem' }"
+    >
+      <DishList />
+    </div>
+
     <!-- 顶部固定 -->
-    <div class="fixed top-0 left-0 w-full h-4rem bg-white p-3">
+    <div class="fixed top-0 left-0 w-full h-3rem bg-white">
       <div class="scrollable-content">
         <Tabs value="0">
           <TabList>
@@ -27,16 +36,8 @@
       </div>
     </div>
 
-    <!-- 中间内容（滚动区域） -->
-    <div
-        class="flex-grow-1 overflow-auto"
-        :style="{ paddingTop: '4rem', paddingBottom: '4rem' }"
-    >
-      <DishList />
-    </div>
-
     <!-- 底部固定 -->
-    <div class="fixed bottom-0 left-0 w-full h-4rem bg-white p-3">
+    <div class="fixed bottom-0 left-0 w-full h-3rem bg-white p-3">
       <div class="h-full flex align-items-center justify-content-end">
         <Button
             label="check out"
@@ -58,6 +59,8 @@ import TabPanels from 'primevue/tabpanels';
 
 import Button from 'primevue/button';
 import DishList from "@/components/DishList.vue";
+
+import Panel from "primevue/panel";
 
 const props = defineProps({
   switchTo: {
