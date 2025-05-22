@@ -145,7 +145,9 @@ const xkeys = [
     "PEIXA",
     "SOJA",
     "SÉSAMO",
-]
+];
+
+const keyimageids = [7,9,2,12,1,5,16,14,10,6,3,8,13,11];
 
 // 路由：处理文件上传和解析
 app.post('/upload', upload.single('csvFile'), (req, res) => {
@@ -181,7 +183,7 @@ app.post('/upload', upload.single('csvFile'), (req, res) => {
                     if (value == "TRUE") {
                         if (key.startsWith(xkeys[i]))
                         {
-                            x.push(i+1);
+                            x.push(keyimageids[i]);
                         }
                     }
                 }
