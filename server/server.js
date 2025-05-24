@@ -12,7 +12,12 @@ const { v4: uuidv4 } = require("uuid");
 // 初始化服务
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173", // 前端开发服务器端口
+        methods: ["GET", "POST"]
+    }
+});
 
 // 数据存储
 const state = {
