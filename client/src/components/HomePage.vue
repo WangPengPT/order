@@ -6,7 +6,7 @@
             class="flex-grow-1 overflow-auto"
             :style="{ paddingTop: '3rem', paddingBottom: '3rem' }"
         >
-            <DishList ref="dishListRef"/>
+            <DishList ref="dishListRef" :updateCartItemCount="updateCartItemCount"/>
         </div>
 
         <!-- 顶部固定 -->
@@ -24,16 +24,25 @@
 
         <!-- 底部固定 -->
         <div class="fixed bottom-0 left-0 w-full h-3rem bg-white p-3">
+
+
             <div class="h-full flex align-items-center justify-content-end">
+                <!-- 购物车按钮 -->
+                <OverlayBadge :value="cartItemCount" severity="danger" :style="{ marginRight: '30px' }">
+                    <i class="pi pi-shopping-cart" style="font-size: 2rem" />
+                </OverlayBadge>
+
                 <Button
-                    label="check out"
+                    label="Submit"
                     class="mr-3"
+                    :disabled="disabled_checkout"
                     @click="checkout"
-                    :style="{ marginRight: '10px' }"
+                    :style="{ marginRight: '20px' }"
                 />
             </div>
         </div>
     </div>
+    <Toast />
 </template>
 
 <script setup>
@@ -48,6 +57,8 @@ import Button from 'primevue/button';
 import DishList from "@/components/DishList.vue";
 
 import Panel from "primevue/panel";
+import Badge from 'primevue/badge';
+import OverlayBadge from 'primevue/overlaybadge';
 
 const props = defineProps({
     switchTo: {
@@ -56,8 +67,15 @@ const props = defineProps({
     }
 });
 
+const disabled_checkout = ref(false);
 const types = ref(["11", "11", "11", "11", "11", "11", "11", "11",]);
 const typeIndex = ref(0);
+const cartItemCount = ref(0)
+
+function updateCartItemCount(value)
+{
+    cartItemCount.value = cartItemCount.value + value;
+}
 
 const dishDatas = [];
 const typeDatas = [];
@@ -115,11 +133,12 @@ function InitMenu() {
 const clickType = (index) =>
 {
     showDishList(index);
+    typeIndex.value = index;
 };
 
 
-let currentTable = "1223";
-let currentPeople = 3;
+let currentTable = window.client_api.params.table;
+let currentPeople = window.client_api.params.people;
 
 const MAX_SUBMIT =  3;
 const LIMIT_TIME = 30;
@@ -129,7 +148,7 @@ const ORDER_TIME_KEY = "order_time_key";
 
 function showLimitTip(remainTime)
 {
-    alert('limit time' + remainTime );
+    show_warn('limit time' + remainTime );
 }
 
 const checkout = () => {
@@ -145,7 +164,7 @@ const checkout = () => {
     }
 
     if (items.length === 0) {
-        alert('Selecione pelo menos um prato');
+        show_warn('Selecione pelo menos um prato');
         return;
     }
 
@@ -170,6 +189,7 @@ const checkout = () => {
     record.count++;
     localStorage.setItem(ORDER_TIME_KEY, JSON.stringify(record));
 
+    disabled_checkout.value = true;
     window.client_api.submit_order({
         people: currentPeople,
         table: currentTable,
@@ -185,9 +205,64 @@ onMounted(() => {
     });
 
     window.client_api.setOnOrderConfirmed((value) => {
-        alert('order add:' + value );
+
+        for (let i = 0; i < dishDatas.length; i++) {
+            var value = dishDatas[i];
+            value.quantity = 0;
+        }
+
+        show_success('order add:' + value );
+        disabled_checkout.value = false;
+
+        showDishList(typeIndex.value);
+        cartItemCount.value = 0;
     });
 });
+
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+const toast = useToast();
+
+function show_success(msg)
+{
+    toast.add({
+        severity: 'success', // 类型：success | info | warn | error
+        summary: 'success',
+        detail: msg,
+        life: 3000 // 显示时长（毫秒）
+    });
+}
+
+function show_info(msg)
+{
+    toast.add({
+        severity: 'info', // 类型：success | info | warn | error
+        summary: 'info',
+        detail: msg,
+        life: 3000 // 显示时长（毫秒）
+    });
+}
+
+function show_warn(msg)
+{
+    toast.add({
+        severity: 'warn', // 类型：success | info | warn | error
+        summary: 'warn',
+        detail: msg,
+        life: 3000 // 显示时长（毫秒）
+    });
+}
+
+function show_error(msg)
+{
+    toast.add({
+        severity: 'error', // 类型：success | info | warn | error
+        summary: 'error',
+        detail: msg,
+        life: 3000 // 显示时长（毫秒）
+    });
+}
+
 
 </script>
 

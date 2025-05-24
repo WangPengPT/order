@@ -20,18 +20,19 @@
                     :alt="item.name"
                     class="w-4rem h-4rem border-round flex-shrink-0"
                     style="object-fit: cover; min-width: 4rem"
+                    @click="showDish(item)"
                 />
 
                 <!-- 信息区域 -->
-                <div class="flex-grow-1 min-width-0">
+                <div class="flex-grow-1 min-width-0"  @click="showDish(item)">
                     <div class="flex flex-column gap-1">
                         <div class="flex align-items-center gap-2">
-              <span
-                  class="text-xl font-bold line1 whitespace-nowrap overflow-hidden text-overflow-ellipsis"
-                  style="max-width: 20rem"
-              >
-                {{ item.name }}
-              </span>
+                          <span
+                              class="text-xl font-bold line1 whitespace-nowrap overflow-hidden text-overflow-ellipsis"
+                              style="max-width: 20rem"
+                          >
+                            {{ item.name }}
+                          </span>
                         </div>
                         <p
                             class="text-color-secondary line2 whitespace-nowrap overflow-hidden text-overflow-ellipsis"
@@ -47,12 +48,6 @@
                     <div class="flex align-items-end gap-1">
                         <span v-if="item.price > 0" class="text-xl font-bold text-primary">¥{{ item.price }}</span>
                         <span v-if="item.price > 0" class="text-sm text-color-secondary">/ 份</span>
-                        <Button
-                            icon="pi pi-info"
-                            rounded
-                            @click="showDish(item)"
-                            class="w-2rem h-2rem"
-                        />
                     </div>
 
                     <!-- 加减按钮组 -->
@@ -126,9 +121,16 @@ const changeQuantity = (index, delta) => {
     const newQuantity = dishes.value[index].quantity + delta;
     if (newQuantity >= 0) {
         dishes.value[index].quantity = newQuantity;
+        props.updateCartItemCount(delta);
     }
 };
 
+const props = defineProps({
+    updateCartItemCount: {
+        type: Function,
+        required: true
+    }
+});
 
 var dlgVisible = ref(false);
 
