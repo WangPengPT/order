@@ -13,6 +13,7 @@
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.4",
+    "socket.io-client": "^4.8.1",
     "vue": "^3.5.13"
   },
   "devDependencies": {
