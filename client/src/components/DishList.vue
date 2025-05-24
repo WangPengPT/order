@@ -118,33 +118,8 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Avatar from 'primevue/avatar';
 
-const dish1 = {
-    name: '秘制黑松露和牛汉堡套餐',
-    description: '澳洲M5和牛肉饼搭配法国黑松露酱.国黑松露国黑松露国黑松露..1·2121212121212121',
-    price: 0,
-    image: 'https://comesushi.com/cdn/shop/files/2025-05-09181337.jpg',
-    allergies: ['1', '2', '1', '2', '1', '2', '1', '2', '1', '2', '1', '2'],
-    quantity: 0
-};
-
-const dish2 = {
-    name: '短的',
-    description: '澳洲M5和牛肉饼搭配',
-    price: 22,
-    image: 'https://comesushi.com/cdn/shop/files/2025-05-09181337.jpg',
-    allergies: ['1', '2', '1', '2', '1', '2', '1', '2', '1', '2', '1', '2'],
-    quantity: 0
-};
-
-
-let datas = [];
-for (let i = 0; i < 10; i++) {
-    datas.push({...dish1});
-    datas.push({...dish2});
-}
-
 // 菜品数据
-const dishes = ref(datas);
+const dishes = ref([]);
 
 // 修改数量
 const changeQuantity = (index, delta) => {
@@ -169,7 +144,10 @@ const showDish = (dish) => {
 };
 
 const showDisList = (datas) => {
-    dishes.value = datas;
+    dishes.value.length = 0;
+    for (let i = 0; i < datas.length; i++) {
+        dishes.value.push(datas[i]);
+    }
 };
 
 defineExpose({

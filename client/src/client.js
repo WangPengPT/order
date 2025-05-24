@@ -20,9 +20,15 @@ socket.on("menu_data", (menuData) => {
     client.onMenu();
 });
 
+function submitOrder(data)
+{
+    socket.emit('submit_order', data);
+}
+
 
 window.client_api = {
     getMenu: () => { return client.menu; },
     setOnMenu: (action) => { client.onMenu = action },
     setOnOrderConfirmed: (action) => { client.onOrderConfirmed = action },
+    submit_order: (data) => { submitOrder(data); },
 };

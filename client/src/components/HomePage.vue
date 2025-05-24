@@ -28,6 +28,7 @@
                 <Button
                     label="check out"
                     class="mr-3"
+                    @click="checkout"
                     :style="{ marginRight: '10px' }"
                 />
             </div>
@@ -36,7 +37,7 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {ref,onMounted} from 'vue';
 
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
@@ -116,17 +117,77 @@ const clickType = (index) =>
     showDishList(index);
 };
 
-InitMenu();
+
+let currentTable = "1223";
+let currentPeople = 3;
+
+const MAX_SUBMIT =  3;
+const LIMIT_TIME = 30;
+
+const ORDER_TIME_KEY = "order_time_key";
 
 
-window.client_api.setOnMenu(() => {
+function showLimitTip(remainTime)
+{
+    alert('limit time' + remainTime );
+}
+
+const checkout = () => {
+
+    const items = [];
+
+    for (let i = 0; i < dishDatas.length; i++) {
+        var value = dishDatas[i];
+        if (value.quantity > 0)
+        {
+            items.push({dishid: value.id,quantity: value.quantity});
+        }
+    }
+
+    if (items.length === 0) {
+        alert('Selecione pelo menos um prato');
+        return;
+    }
+
+    // 获取存储记录
+    const record = JSON.parse(localStorage.getItem(ORDER_TIME_KEY) || '{}');
+    const now = Date.now();
+
+    // 首次提交或超过限制周期时重置
+    if (!record.startTime || (now - record.startTime) > LIMIT_TIME) {
+        record.startTime = now;
+        record.count = 0;
+    }
+
+    // 检查提交次数
+    if (record.count >= MAX_SUBMIT) {
+        const remainTime = LIMIT_TIME - (now - record.startTime);
+        showLimitTip(remainTime);
+        return;
+    }
+
+    // 允许提交
+    record.count++;
+    localStorage.setItem(ORDER_TIME_KEY, JSON.stringify(record));
+
+    window.client_api.submit_order({
+        people: currentPeople,
+        table: currentTable,
+        items
+    });
+}
+
+onMounted(() => {
     InitMenu();
+
+    window.client_api.setOnMenu(() => {
+        InitMenu();
+    });
+
+    window.client_api.setOnOrderConfirmed((value) => {
+        alert('order add:' + value );
+    });
 });
-
-window.client_api.setOnOrderConfirmed((value) => {
-
-});
-
 
 </script>
 
