@@ -104,6 +104,13 @@ function showDishList(n) {
 function InitMenu() {
     var datas = window.client_api.getMenu();
 
+    if (datas.length == 0) {
+        setTimeout(() => {
+            InitMenu();
+        }, 500);
+        return;
+    }
+
     dishDatas.length = 0;
     typeDatas.length = 0;
 
@@ -216,10 +223,6 @@ const checkout = () => {
 
 onMounted(() => {
     InitMenu();
-
-    window.client_api.setOnMenu(() => {
-        InitMenu();
-    });
 
     window.client_api.setOnOrderConfirmed((value) => {
 

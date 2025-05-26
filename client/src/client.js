@@ -6,7 +6,7 @@ const socket = io('http://localhost');
 
 const client =
 {
-    menu: {},
+    menu: [],
     onMenu: ()=> {},
     onOrderConfirmed: (value)=> {},
     onShowError: (error)=> {},
@@ -17,8 +17,10 @@ socket.on('order_confirmed', (value)=> {
 });
 
 socket.on("menu_data", (menuData) => {
+
     client.menu = menuData;
     client.onMenu();
+
 });
 
 socket.on("error", (error)=> {
