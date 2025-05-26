@@ -9,6 +9,7 @@ const client =
     menu: {},
     onMenu: ()=> {},
     onOrderConfirmed: (value)=> {},
+    onShowError: (error)=> {},
 };
 
 socket.on('order_confirmed', (value)=> {
@@ -20,8 +21,13 @@ socket.on("menu_data", (menuData) => {
     client.onMenu();
 });
 
+socket.on("error", (error)=> {
+    client.onShowError(error);
+})
+
 function submitOrder(data)
 {
+    console.log("submit_order",data);
     socket.emit('submit_order', data);
 }
 
@@ -56,6 +62,7 @@ window.client_api = {
     setOnMenu: (action) => { client.onMenu = action },
     setOnOrderConfirmed: (action) => { client.onOrderConfirmed = action },
     submit_order: (data) => { submitOrder(data); },
+    setOnShowError: (action) => { client.onShowError = action },
     params: getQueryParams(),
 };
 

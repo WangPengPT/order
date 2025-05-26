@@ -28,7 +28,7 @@
 
             <div class="h-full flex align-items-center justify-content-end">
                 <!-- 购物车按钮 -->
-                <OverlayBadge :value="cartItemCount" severity="danger" :style="{ marginRight: '30px' }">
+                <OverlayBadge :value="cartItemCount" severity="danger" :style="{ marginRight: '30px' }" @click="showCart">
                     <i class="pi pi-shopping-cart" style="font-size: 2rem" />
                 </OverlayBadge>
 
@@ -43,6 +43,7 @@
         </div>
     </div>
     <Toast />
+    <Cart ref="cartRef" :updateCartItemCount="updateCartItemCount"/>
 </template>
 
 <script setup>
@@ -55,6 +56,7 @@ import TabPanels from 'primevue/tabpanels';
 
 import Button from 'primevue/button';
 import DishList from "@/components/DishList.vue";
+import Cart from "@/components/Cart.vue";
 
 import Panel from "primevue/panel";
 import Badge from 'primevue/badge';
@@ -81,6 +83,7 @@ const dishDatas = [];
 const typeDatas = [];
 
 const dishListRef = ref(null);
+const cartRef = ref(null);
 
 function showDishList(n) {
     if (dishListRef.value) {
@@ -136,6 +139,18 @@ const clickType = (index) =>
     typeIndex.value = index;
 };
 
+const showCart = () => {
+    var dishs = [];
+
+    for (let i = 0; i < dishDatas.length; i++) {
+        var value = dishDatas[i];
+        if (value.quantity > 0)
+        {
+            dishs.push(value);
+        }
+    }
+    cartRef.value.showDisList(dishs);
+}
 
 let currentTable = window.client_api.params.table;
 let currentPeople = window.client_api.params.people;
@@ -148,7 +163,8 @@ const ORDER_TIME_KEY = "order_time_key";
 
 function showLimitTip(remainTime)
 {
-    show_warn('limit time' + remainTime );
+    var str = 'You submitted too quickly. Please wait ' + remainTime + ' seconds.';
+    show_warn(str );
 }
 
 const checkout = () => {
@@ -173,14 +189,15 @@ const checkout = () => {
     const now = Date.now();
 
     // 首次提交或超过限制周期时重置
-    if (!record.startTime || (now - record.startTime) > LIMIT_TIME) {
+    console.log(now - record.startTime);
+    if (!record.startTime || (now - record.startTime) > LIMIT_TIME * 1000) {
         record.startTime = now;
         record.count = 0;
     }
 
     // 检查提交次数
     if (record.count >= MAX_SUBMIT) {
-        const remainTime = LIMIT_TIME - (now - record.startTime);
+        const remainTime = LIMIT_TIME - parseInt((now - record.startTime)/1000);
         showLimitTip(remainTime);
         return;
     }
@@ -217,6 +234,12 @@ onMounted(() => {
         showDishList(typeIndex.value);
         cartItemCount.value = 0;
     });
+
+    window.client_api.setOnShowError((value) => {
+        disabled_checkout.value = false;
+        show_error(value);
+    });
+
 });
 
 import Toast from 'primevue/toast';
