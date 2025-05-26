@@ -87,7 +87,7 @@ io.on("connection", (socket) => {
     // 处理订单提交
     socket.on("submit_order", (orderData) => {
         // 数据验证
-        if (!orderData.people || !orderData.table || !orderData.items?.length) {
+        if (!orderData.table) {
             return socket.emit("error", "订单数据不完整");
         }
 

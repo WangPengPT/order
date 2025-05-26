@@ -11,7 +11,10 @@
 
         <!-- 顶部固定 -->
         <div class="fixed top-0 left-0 w-full h-3rem bg-white">
-            <div class="scrollable-content">
+            <div>
+                <p class="text-xl font-bold"  :style="{ paddingLeft: '2rem', paddingTop: '1rem' }" >Table: {{ tableRef }}</p>
+            </div>
+            <div class="scrollable-content p-0">
                 <Tabs :value="typeIndex">
                     <TabList>
                         <Tab v-for="(item, index) in types" :value="index" @click="clickType(index)">{{ item }}</Tab>
@@ -162,6 +165,9 @@ const showCart = () => {
 let currentTable = window.client_api.params.table;
 let currentPeople = window.client_api.params.people;
 
+const tableRef = ref(currentTable);
+
+
 const MAX_SUBMIT =  3;
 const LIMIT_TIME = 30;
 
@@ -224,14 +230,15 @@ const checkout = () => {
 onMounted(() => {
     InitMenu();
 
-    window.client_api.setOnOrderConfirmed((value) => {
+    window.client_api.setOnOrderConfirmed((order_id) => {
 
         for (let i = 0; i < dishDatas.length; i++) {
-            var value = dishDatas[i];
+            const value = dishDatas[i];
             value.quantity = 0;
         }
 
-        show_success('order add:' + value );
+        const id = order_id;
+        show_success(`The order has been submitted,\norder number: #${id}.`);
         disabled_checkout.value = false;
 
         showDishList(typeIndex.value);
