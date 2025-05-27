@@ -4,7 +4,7 @@
         <!-- 中间内容（滚动区域） -->
         <div
             class="flex-grow-1 overflow-auto"
-            :style="{ paddingTop: '3rem', paddingBottom: '3rem' }"
+            :style="{ paddingTop: '5rem', paddingBottom: '3rem' }"
         >
             <DishList ref="dishListRef" :updateCartItemCount="updateCartItemCount"/>
         </div>
@@ -14,15 +14,11 @@
             <div>
                 <p class="text-xl font-bold"  :style="{ paddingLeft: '2rem', paddingTop: '1rem' }" >Table: {{ tableRef }}</p>
             </div>
-            <div class="scrollable-content p-0">
-                <Tabs :value="typeIndex">
-                    <TabList>
-                        <Tab v-for="(item, index) in types" :value="index" @click="clickType(index)">{{ item }}</Tab>
-                    </TabList>
-                    <TabPanels>
-                    </TabPanels>
-                </Tabs>
-            </div>
+            <Tabs :value="typeIndex" scrollable>
+                <TabList>
+                    <Tab v-for="(item, index) in types" :value="index" @click="clickType(index)">{{ item }}</Tab>
+                </TabList>
+            </Tabs>
         </div>
 
         <!-- 底部固定 -->
@@ -64,6 +60,7 @@ import Cart from "@/components/Cart.vue";
 import Panel from "primevue/panel";
 import Badge from 'primevue/badge';
 import OverlayBadge from 'primevue/overlaybadge';
+import client_api from './client.js';
 
 const props = defineProps({
     switchTo: {
@@ -73,9 +70,9 @@ const props = defineProps({
 });
 
 const disabled_checkout = ref(false);
-const types = ref(["11", "11", "11", "11", "11", "11", "11", "11",]);
+const types = ref([""]);
 const typeIndex = ref(0);
-const cartItemCount = ref(0)
+const cartItemCount = ref(0);
 
 function updateCartItemCount(value)
 {
@@ -105,7 +102,7 @@ function showDishList(n) {
 }
 
 function InitMenu() {
-    var datas = window.client_api.getMenu();
+    var datas = client_api.getMenu();
 
     if (datas.length == 0) {
         setTimeout(() => {
@@ -162,11 +159,17 @@ const showCart = () => {
     cartRef.value.showDisList(dishs);
 }
 
-let currentTable = window.client_api.params.table;
-let currentPeople = window.client_api.params.people;
+let currentTable = client_api.params.table;
+let currentPeople = client_api.params.people;
+
+let socket_port = client_api.params.port;
+socket_port = socket_port ? socket_port : 80;
+
+let socket_addr = "http://localhost";
+
+client_api.init(socket_addr,socket_port);
 
 const tableRef = ref(currentTable);
-
 
 const MAX_SUBMIT =  3;
 const LIMIT_TIME = 30;
@@ -220,7 +223,7 @@ const checkout = () => {
     localStorage.setItem(ORDER_TIME_KEY, JSON.stringify(record));
 
     disabled_checkout.value = true;
-    window.client_api.submit_order({
+    client_api.submit_order({
         people: currentPeople,
         table: currentTable,
         items
@@ -230,7 +233,7 @@ const checkout = () => {
 onMounted(() => {
     InitMenu();
 
-    window.client_api.setOnOrderConfirmed((order_id) => {
+    client_api.setOnOrderConfirmed((order_id) => {
 
         for (let i = 0; i < dishDatas.length; i++) {
             const value = dishDatas[i];
@@ -245,7 +248,7 @@ onMounted(() => {
         cartItemCount.value = 0;
     });
 
-    window.client_api.setOnShowError((value) => {
+    client_api.setOnShowError((value) => {
         disabled_checkout.value = false;
         show_error(value);
     });
@@ -300,30 +303,4 @@ function show_error(msg)
 </script>
 
 <style scoped>
-/* 横向滚动容器 */
-.scrollable-content {
-    display: flex;
-    overflow-x: auto; /* 允许横向滚动 */
-    gap: 1rem;
-    padding: 1rem 0;
-    white-space: nowrap;
-
-    /* 隐藏滚动条 */
-    scrollbar-width: none; /* Firefox 兼容 */
-    /* 隐藏滚动条 */
-    ms-overflow-style: none; /* IE/Edge 兼容 */
-
-}
-
-/* WebKit 内核浏览器隐藏滚动条 */
-.scrollable-content::-webkit-scrollbar {
-    display: none;
-}
-
-/* WebKit 兼容 */
-
-/* 可选：优化触摸滚动 */
-.scrollable-content {
-    -webkit-overflow-scrolling: touch; /* 移动端顺滑滚动 */
-}
 </style>

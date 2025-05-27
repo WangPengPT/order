@@ -1,7 +1,7 @@
 <template>
     <div class="card p-4">
         <!-- 标题区域 -->
-        <div class="mb-4 p-1">
+        <div class="mb-4 p-0">
             <!-- <h2 class="text-3xl font-bold">今日推荐菜品</h2> -->
             <p class="text-color-secondary">共 {{ dishes.length }} 道特色美食</p>
         </div>

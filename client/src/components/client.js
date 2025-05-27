@@ -1,8 +1,7 @@
 
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost');
-
+let socket = null;
 
 const client =
 {
@@ -12,20 +11,26 @@ const client =
     onShowError: (error)=> {},
 };
 
-socket.on('order_confirmed', (value)=> {
-    client.onOrderConfirmed(value);
-});
 
-socket.on("menu_data", (menuData) => {
+function initAll(addr,port)
+{
+    socket = io(addr + ":" + port);
 
-    client.menu = menuData;
-    client.onMenu();
+    socket.on('order_confirmed', (value)=> {
+        client.onOrderConfirmed(value);
+    });
 
-});
+    socket.on("menu_data", (menuData) => {
 
-socket.on("error", (error)=> {
-    client.onShowError(error);
-})
+        client.menu = menuData;
+        client.onMenu();
+
+    });
+
+    socket.on("error", (error)=> {
+        client.onShowError(error);
+    })
+}
 
 function submitOrder(data)
 {
@@ -59,7 +64,9 @@ function getQueryParams() {
     return result;
 }
 
-window.client_api = {
+const ClientAPI = {
+    init: (addr,port) => { initAll(addr,port); },
+
     getMenu: () => { return client.menu; },
     setOnMenu: (action) => { client.onMenu = action },
     setOnOrderConfirmed: (action) => { client.onOrderConfirmed = action },
@@ -67,6 +74,8 @@ window.client_api = {
     setOnShowError: (action) => { client.onShowError = action },
     params: getQueryParams(),
 };
+
+export default ClientAPI;
 
 
 
