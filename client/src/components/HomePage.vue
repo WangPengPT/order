@@ -171,8 +171,7 @@ client_api.init(socket_addr,socket_port);
 
 const tableRef = ref(currentTable);
 
-const MAX_SUBMIT =  3;
-const LIMIT_TIME = 30;
+const LIMIT_TIME = 10;
 
 const ORDER_TIME_KEY = "order_time_key";
 
@@ -205,21 +204,16 @@ const checkout = () => {
     const now = Date.now();
 
     // 首次提交或超过限制周期时重置
-    console.log(now - record.startTime);
     if (!record.startTime || (now - record.startTime) > LIMIT_TIME * 1000) {
         record.startTime = now;
-        record.count = 0;
     }
-
-    // 检查提交次数
-    if (record.count >= MAX_SUBMIT) {
+    else {
         const remainTime = LIMIT_TIME - parseInt((now - record.startTime)/1000);
         showLimitTip(remainTime);
         return;
     }
 
     // 允许提交
-    record.count++;
     localStorage.setItem(ORDER_TIME_KEY, JSON.stringify(record));
 
     disabled_checkout.value = true;
