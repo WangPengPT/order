@@ -3,7 +3,7 @@
         <!-- 标题区域 -->
         <div class="mb-4 p-0">
             <!-- <h2 class="text-3xl font-bold">今日推荐菜品</h2> -->
-            <p class="text-color-secondary">共 {{ dishes.length }} 道特色美食</p>
+            <p class="text-color-secondary">Um total de {{ dishes.length }} pratos.</p>
         </div>
 
         <!-- 菜品列表 -->
@@ -28,7 +28,7 @@
                     <div class="flex flex-column gap-1">
                         <div class="flex align-items-center gap-2">
                           <span
-                              class="text-xl font-bold line1 whitespace-nowrap overflow-hidden text-overflow-ellipsis"
+                              class="text-color text-xl font-bold line1 whitespace-nowrap overflow-hidden text-overflow-ellipsis"
                               style="max-width: 20rem"
                           >
                             {{ item.name }}

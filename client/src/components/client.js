@@ -9,34 +9,8 @@ const client =
     onMenu: ()=> {},
     onOrderConfirmed: (value)=> {},
     onShowError: (error)=> {},
+    onTableId: (value)=> {},
 };
-
-
-function initAll(addr,port)
-{
-    socket = io(addr + ":" + port);
-
-    socket.on('order_confirmed', (value)=> {
-        client.onOrderConfirmed(value);
-    });
-
-    socket.on("menu_data", (menuData) => {
-
-        client.menu = menuData;
-        client.onMenu();
-
-    });
-
-    socket.on("error", (error)=> {
-        client.onShowError(error);
-    })
-}
-
-function submitOrder(data)
-{
-    console.log("submit_order",data);
-    socket.emit('submit_order', data);
-}
 
 function getQueryParams() {
     const search = window.location.search.substring(1);
@@ -65,13 +39,49 @@ function getQueryParams() {
 }
 
 const ClientAPI = {
-    init: (addr,port) => { initAll(addr,port); },
+    init: (addr,port) => {
+        socket = io(addr + ":" + port);
+
+        socket.on('order_confirmed', (value)=> {
+            client.onOrderConfirmed(value);
+        });
+
+        socket.on("menu_data", (menuData) => {
+
+            client.menu = menuData;
+            client.onMenu();
+
+            socket.emit("get_desk_id", ClientAPI.params.table);
+        });
+
+        socket.on("error", (error)=> {
+            client.onShowError(error);
+        })
+
+        socket.on("table_id", (id)=> {
+            client.onTableId(id);
+        })
+    },
+
+    cleanup: ()=> {
+        if (socket) socket.close();
+    },
+
+    submit_order: (data) => {
+        console.log("submit_order",data);
+        socket.emit('submit_order', data);
+    },
 
     getMenu: () => { return client.menu; },
+
     setOnMenu: (action) => { client.onMenu = action },
     setOnOrderConfirmed: (action) => { client.onOrderConfirmed = action },
-    submit_order: (data) => { submitOrder(data); },
     setOnShowError: (action) => { client.onShowError = action },
+
+    getTableId: (action) => {
+        client.onTableId = action;
+    },
+
     params: getQueryParams(),
 };
 

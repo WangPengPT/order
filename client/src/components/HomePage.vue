@@ -12,7 +12,7 @@
         <!-- 顶部固定 -->
         <div class="fixed top-0 left-0 w-full h-3rem bg-white">
             <div>
-                <p class="text-xl font-bold"  :style="{ paddingLeft: '2rem', paddingTop: '1rem' }" >Table: {{ tableRef }}</p>
+                <p class="text-color text-xl font-bold"  :style="{ paddingLeft: '2rem', paddingTop: '1rem' }" >Número do assento: {{ tableRef }}</p>
             </div>
             <Tabs :value="typeIndex" scrollable>
                 <TabList>
@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import {ref,onMounted} from 'vue';
+import {ref,onMounted,onBeforeUnmount} from 'vue';
 
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
@@ -159,8 +159,11 @@ const showCart = () => {
     cartRef.value.showDisList(dishs);
 }
 
-let currentTable = client_api.params.table;
-let currentPeople = client_api.params.people;
+
+const tableRef = ref("");
+client_api.getTableId( (value) => {
+    tableRef.value = value;
+});
 
 let socket_port = client_api.params.port;
 socket_port = socket_port ? socket_port : 80;
@@ -168,8 +171,6 @@ socket_port = socket_port ? socket_port : 80;
 let socket_addr = "http://localhost";
 
 client_api.init(socket_addr,socket_port);
-
-const tableRef = ref(currentTable);
 
 const LIMIT_TIME = 10;
 
@@ -248,6 +249,10 @@ onMounted(() => {
     });
 
 });
+
+onBeforeUnmount(() => {
+    client_api.cleanup();
+})
 
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';

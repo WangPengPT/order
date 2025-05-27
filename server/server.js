@@ -117,6 +117,10 @@ io.on("connection", (socket) => {
         }
         state.old_orders.push(order)
     });
+
+    socket.on('get_desk_id', (value)=> {
+        socket.emit("desk_id", "#" + value);
+    });
 });
 
 // 配置 multer 处理文件上传
