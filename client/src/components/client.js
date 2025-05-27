@@ -70,6 +70,8 @@ const ClientAPI = {
     },
 
     submit_order: (data) => {
+        data.key = ClientAPI.params.table;
+
         console.log("submit_order",data);
         socket.emit('submit_order', data);
     },

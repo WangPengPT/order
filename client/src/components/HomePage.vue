@@ -160,9 +160,13 @@ const showCart = () => {
 }
 
 
+let currentPeople = 1;
+let currentTable;
+
 const tableRef = ref("");
 client_api.getTableId( (value) => {
     tableRef.value = value;
+    currentTable = value;
 });
 
 let socket_port = client_api.params.port;

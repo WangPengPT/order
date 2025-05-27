@@ -86,9 +86,15 @@ io.on("connection", (socket) => {
 
     // 处理订单提交
     socket.on("submit_order", (orderData) => {
+        console.log("submit_order:", orderData);
+
         // 数据验证
+        if (!orderData.key) {
+            return socket.emit("error", "没有关键数据");
+        }
+
         if (!orderData.table) {
-            return socket.emit("error", "订单数据不完整");
+            return socket.emit("error", "没有座号");
         }
 
         // 生成唯一订单
