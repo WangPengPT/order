@@ -12,6 +12,7 @@ const client =
     onTableId: (value)=> {},
 };
 
+
 function getQueryParams() {
     const search = window.location.search.substring(1);
     const pairs = search.split('&');
@@ -51,7 +52,7 @@ const ClientAPI = {
             client.menu = menuData;
             client.onMenu();
 
-            socket.emit("get_desk_id", ClientAPI.params.table);
+            socket.emit("get_table_id", ClientAPI.params.table);
         });
 
         socket.on("error", (error)=> {
@@ -59,6 +60,7 @@ const ClientAPI = {
         })
 
         socket.on("table_id", (id)=> {
+            console.log("table_id",id);
             client.onTableId(id);
         })
     },
