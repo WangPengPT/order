@@ -77,7 +77,6 @@ io.on("connection", (socket) => {
     // 发送菜单数据给用户端和管理端
     socket.emit("menu_data", state.menu);
 
-
     // 处理订单提交
     socket.on("submit_order", (orderData) => {
         console.log("submit_order:", orderData);
@@ -135,6 +134,8 @@ io.on("connection", (socket) => {
 
         callback(socket.is_admin);
     });
+
+    sendOldOrder(socket);
 });
 
 // 配置 multer 处理文件上传
