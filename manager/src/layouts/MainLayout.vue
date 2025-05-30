@@ -48,7 +48,7 @@
           <q-badge color="red" floating v-if="newOrderCount>0">{{newOrderCount}}</q-badge>
         </q-route-tab>
           <q-route-tab to="/qcode" icon="line_weight" label="QCode" />
-        <q-route-tab to="/about" icon="info_outline" label="About" />
+        <q-route-tab to="/menu" icon="info_outline" label="Menu" />
       </q-tabs>
     </q-header>
 

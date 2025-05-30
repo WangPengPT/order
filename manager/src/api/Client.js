@@ -11,6 +11,11 @@ class Client{
         this.newCount = 0;
     }
 
+    getAddr()
+    {
+        return socketAddr;
+    }
+
     init() {
 
         console.log(this.orders);

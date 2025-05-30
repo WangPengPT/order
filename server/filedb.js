@@ -8,7 +8,7 @@ function loadData(key,defaultValue) {
 	if (datas[key]) return datas[key];
 
 	try {
-		const filePath = path.join(__dirname, 'uploads', key + '.json');
+		const filePath = path.join(__dirname, 'save', key + '.json');
 		console.log(filePath);
 		const data = fs.readFileSync(filePath, 'utf8');
 		const jsonData = JSON.parse(data);
@@ -25,16 +25,15 @@ function saveData(key,value) {
 	if (!value) value = datas[key];
 
 	try {
-		const filePath = path.join(__dirname, 'uploads', key + '.json');
+		const filePath = path.join(__dirname, 'save', key + '.json');
 		fs.writeFileSync(filePath, value, 'utf8');
 	} catch (err) {
 
 	}
 }
 
-// 创建上传目录（如果不存在）
-if (!fs.existsSync('uploads')) {
-	fs.mkdirSync('uploads');
+if (!fs.existsSync('save')) {
+	fs.mkdirSync('save');
 }
 
 module.exports = {

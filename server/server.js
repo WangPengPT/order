@@ -5,15 +5,18 @@ const express = require("express");
 const compression = require('compression');
 const multer = require('multer');
 const csv = require('csv-parser');
+const fs = require('fs');
 
 const http = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-
+const cors = require('cors');
 
 // 初始化服务
 const app = express();
+app.use(cors());
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
@@ -138,6 +141,11 @@ io.on("connection", (socket) => {
     sendOldOrder(socket);
 });
 
+// 创建上传目录（如果不存在）
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
+
 // 配置 multer 处理文件上传
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -148,8 +156,6 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage });
-
-
 
 const xkeys = [
     "AIPO",
@@ -170,20 +176,16 @@ const xkeys = [
 
 const keyimageids = [7,9,2,12,1,5,16,14,10,6,3,8,13,11];
 
+
 // 路由：处理文件上传和解析
-app.post('/upload', upload.single('csvFile'), (req, res) => {
+app.post('/upload', upload.any(), (req, res) => {
+
+    if (req.files && (req.files.length > 0)) {
+        req.file = req.files[0];
+    }
+
     if (!req.file) {
         return res.status(400).send('No file uploaded');
-    }
-
-    if (!req.body.password)  {
-        fs.unlinkSync(req.file.path);
-        return res.status(400).send('No password');
-    }
-
-    if (req.body.password != "1015")  {
-        fs.unlinkSync(req.file.path);
-        return res.status(400).send('Error password');
     }
 
     const results = [];
@@ -212,7 +214,7 @@ app.post('/upload', upload.single('csvFile'), (req, res) => {
 
 
             var id = data['Variant SKU'];
-            if (id.startsWith("'"))
+            if (id && id.startsWith("'"))
             {
                 id = id.substring(1);
             }
@@ -236,8 +238,7 @@ app.post('/upload', upload.single('csvFile'), (req, res) => {
 
             res.send({
                 message: 'File processed successfully',
-                savedFile: outputFilename,
-                dataSample: results.slice(0, 3) // 返回前3条数据示例
+                // dataSample: results.slice(0, 3) // 返回前3条数据示例
             });
 
             loadmenu();

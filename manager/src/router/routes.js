@@ -6,7 +6,7 @@ const routes = [
         { path: '', component: () => import('pages/IndexPage.vue') },
         { path: '/order',component: () => import('pages/OrderPage.vue') },
         { path: '/qcode',component: () => import('pages/QCodePage.vue') },
-        { path: '/about',component: () => import('pages/AboutPage.vue') },
+        { path: '/menu',component: () => import('pages/UpdateMenu.vue') },
     ]
   },
 

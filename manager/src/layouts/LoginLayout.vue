@@ -11,7 +11,7 @@
             </q-card-section>
 
             <div class="q-pa-md" style="max-width: 300px">
-                <q-input outlined v-model="password" label="password" />
+                <q-input outlined v-model="password" type="password" label="password" />
                 <q-btn class="q-mt-sm" label="Login" @click="login(password)" color="primary"/>
             </div>
         </q-card>
@@ -41,7 +41,7 @@ const showLogin = ref(true);
 const password = ref('');
 const alert = ref(false);
 
-//login('123456');
+login('123456');
 
 function login(pwd) {
     console.log(pwd);
