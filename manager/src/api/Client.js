@@ -47,6 +47,10 @@ class Client{
     onMenuData(list) {
         this.menuData = list;
     }
+
+    login(password,callback) {
+        this.socket.emit("admin", password, callback);
+    }
 }
 
 
