@@ -52,13 +52,9 @@ app.use(express.static(path.join(__dirname, "public"), {
 
 loadmenu();
 
-// WebSocket连接
-io.on("connection", (socket) => {
-    console.log("客户端连接:", socket.id);
 
-    // 发送菜单数据给用户端和管理端
-    socket.emit("menu_data", state.menu);
-
+function sendOldOrder(socket)
+{
     // remove expire orders
     const ORDER_EXPIRE_MINUTES = 30;
     const now = Date.now();
@@ -72,6 +68,14 @@ io.on("connection", (socket) => {
 
     // send old order to admin
     socket.emit("old_orders", state.old_orders);
+}
+
+// WebSocket连接
+io.on("connection", (socket) => {
+    console.log("客户端连接:", socket.id);
+
+    // 发送菜单数据给用户端和管理端
+    socket.emit("menu_data", state.menu);
 
 
     // 处理订单提交
@@ -117,6 +121,19 @@ io.on("connection", (socket) => {
     socket.on('get_table_id', (value)=> {
         console.log("get_table_id", value);
         socket.emit("table_id", "#" + value);
+    });
+
+
+    socket.on('admin', (value,callback) => {
+        var user = db.loadData('admin',{password: "123456"});
+        socket.is_admin = false;
+        if (user.password == value)
+        {
+            sendOldOrder(socket)
+            socket.is_admin = true;
+        }
+
+        callback(socket.is_admin);
     });
 });
 
