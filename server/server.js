@@ -231,7 +231,7 @@ app.post('/upload', upload.any(), (req, res) => {
         })
         .on('end', () => {
 
-            db.saveData('menu',JSON.stringify(results, null, 2));
+            db.saveData('menu',results);
 
             // 删除临时上传的 CSV 文件（可选）
             fs.unlinkSync(req.file.path);

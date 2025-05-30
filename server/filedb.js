@@ -23,10 +23,12 @@ function loadData(key,defaultValue) {
 function saveData(key,value) {
 
 	if (!value) value = datas[key];
+	datas[key] = value;
 
 	try {
+		var saveStr = JSON.stringify(value, null, 2);
 		const filePath = path.join(__dirname, 'save', key + '.json');
-		fs.writeFileSync(filePath, value, 'utf8');
+		fs.writeFileSync(filePath, saveStr, 'utf8');
 	} catch (err) {
 
 	}
