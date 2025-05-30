@@ -12,6 +12,7 @@ function loadData(key,defaultValue) {
 		console.log(filePath);
 		const data = fs.readFileSync(filePath, 'utf8');
 		const jsonData = JSON.parse(data);
+		datas[key] = jsonData;
 		return jsonData ? jsonData : defaultValue;
 		//console.log(state.menu);
 	} catch (err) {

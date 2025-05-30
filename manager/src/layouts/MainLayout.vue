@@ -57,65 +57,17 @@
     </q-page-container>
 
   </q-layout>
-    <q-dialog
-        v-model="showLogin"
-        persistent
-        :maximized="true"
-        transition-hide="slide-down"
-    >
-        <q-card>
-            <q-card-section>
-                <div class="text-h6">登录</div>
-            </q-card-section>
-
-            <div class="q-pa-md" style="max-width: 300px">
-                <q-input outlined v-model="inputPassword" label="password" />
-                <q-btn class="q-mt-sm" label="Login" @click="login" color="primary"/>
-            </div>
-        </q-card>
-    </q-dialog>
-    <q-dialog v-model="alert">
-        <q-card>
-            <q-card-section>
-                <div class="text-h6">Alert</div>
-            </q-card-section>
-
-            <q-card-section class="q-pt-none">
-                Your password is invalid.
-            </q-card-section>
-
-            <q-card-actions align="right">
-                <q-btn flat label="OK" color="primary" v-close-popup />
-            </q-card-actions>
-        </q-card>
-    </q-dialog>
+    <Login />
 </template>
 
 <script>
 import { ref } from 'vue'
 import client from "src/api/Client.js";
+import Login from "layouts/LoginLayout.vue";
 
-const showLogin = ref(true);
-const inputPassword = ref('');
-const alert = ref(false);
-
-login('123456');
-
-function login(pwd) {
-    if (!pwd) pwd = inputPassword.value;
-    client.login(pwd, (value)=> {
-        if (value)
-        {
-            showLogin.value = false;
-        }
-        else
-        {
-            alert.value = true;
-        }
-    });
-}
 
 export default {
+    components: {Login},
   setup () {
     const leftDrawerOpen = ref(false)
     const newOrderCount = ref(0);
@@ -125,12 +77,8 @@ export default {
     }
 
     return {
-        alert,
-        inputPassword,
-        login,
         newOrderCount,
         leftDrawerOpen,
-        showLogin,
         toggleLeftDrawer () {
             leftDrawerOpen.value = !leftDrawerOpen.value
         }
