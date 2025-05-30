@@ -1,13 +1,16 @@
+
+const db = require('./filedb.js');
+
 const express = require("express");
 const compression = require('compression');
 const multer = require('multer');
-const fs = require('fs');
 const csv = require('csv-parser');
 
 const http = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
+
 
 // 初始化服务
 const app = express();
@@ -24,14 +27,8 @@ const io = new Server(server, {
 
 // 数据存储
 const state = {
-    menu: [
-        { id: 1, name: "牛排", image: "/images/steak.jpg" },
-        { id: 2, name: "沙拉", image: "/images/salad.jpg" },
-        { id: 3, name: "蛋糕", image: "/images/cake.jpg" },
-    ],
-    old_orders: [
-
-    ],
+    menu: [],
+    old_orders: [],
     orders: new Map(), // key: orderId
 };
 
@@ -39,18 +36,8 @@ let max_order_id = 1;
 
 function loadmenu()
 {
-    try {
-        const filePath = path.join(__dirname, 'uploads', 'data.json');
-        //console.log(filePath);
-        const data = fs.readFileSync(filePath, 'utf8');
-        //console.log(data);
-        const jsonData = JSON.parse(data);
-        state.menu = jsonData;
-
-        //console.log(state.menu);
-    } catch (err) {
-        console.log('文件加载失败');
-    }
+    state.menu = db.loadData('menu',[]);
+    //console.log(state.menu);
 }
 
 // 静态文件服务
@@ -144,10 +131,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// 创建上传目录（如果不存在）
-if (!fs.existsSync('uploads')) {
-    fs.mkdirSync('uploads');
-}
+
 
 const xkeys = [
     "AIPO",
@@ -226,9 +210,8 @@ app.post('/upload', upload.single('csvFile'), (req, res) => {
             results.push(transformed);
         })
         .on('end', () => {
-            // 保存到 JSON 文件（可根据需求改为数据库操作）
-            const outputFilename = `data.json`;
-            fs.writeFileSync(`uploads/${outputFilename}`, JSON.stringify(results, null, 2));
+
+            db.saveData('menu',JSON.stringify(results, null, 2));
 
             // 删除临时上传的 CSV 文件（可选）
             fs.unlinkSync(req.file.path);
