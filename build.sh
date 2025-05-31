@@ -14,13 +14,13 @@ PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 # 客户端目录
 CLIENT_DIR="client"
 
-# 服务端目录
+# 管理端目录
 SERVER_DIR="manager"
 
 # 客户端构建命令
 CLIENT_BUILD_CMD="npm run build"
 
-# 服务端构建命令
+# 管理端构建命令
 SERVER_BUILD_CMD="npm run build"
 
 # 输出目录
@@ -100,8 +100,8 @@ run_command "npm install"
 log "步骤 3/5: 构建客户端"
 run_command "$CLIENT_BUILD_CMD"
 
-# 4. 构建服务端
-log "步骤 4/5: 构建服务端"
+# 4. 构建管理端
+log "步骤 4/5: 构建管理端"
 cd "$PROJECT_ROOT/$SERVER_DIR" || exit
 run_command "npm install"
 run_command "$SERVER_BUILD_CMD"
@@ -116,14 +116,14 @@ mkdir -p "$PROJECT_ROOT/$PUBLIC_DIR"
 log "复制客户端构建文件到 $PUBLIC_DIR/client"
 run_command "cp -r $PROJECT_ROOT/$CLIENT_DIR/dist $PROJECT_ROOT/$PUBLIC_DIR/client"
 
-# 复制服务端构建文件
-log "复制服务端构建文件到 $PUBLIC_DIR/server"
-run_command "cp -r $PROJECT_ROOT/$SERVER_DIR/dist $PROJECT_ROOT/$PUBLIC_DIR/server"
+# 复制管理端构建文件
+log "复制管理端构建文件到 $PUBLIC_DIR/manager"
+run_command "cp -r $PROJECT_ROOT/$SERVER_DIR/dist $PROJECT_ROOT/$PUBLIC_DIR/manager"
 
 # 完成
 log "部署成功完成!"
 log "客户端访问路径: $PUBLIC_DIR/client"
-log "服务端访问路径: $PUBLIC_DIR/server"
+log "管理端访问路径: $PUBLIC_DIR/manager"
 echo "========== 部署结束 ==========" >> "$PROJECT_ROOT/$LOG_FILE"
 
 echo ""
