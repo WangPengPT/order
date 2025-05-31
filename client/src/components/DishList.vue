@@ -46,8 +46,8 @@
                 <!-- 操作区域 -->
                 <div class="flex-shrink-0 flex align-items-center gap-3">
                     <div class="flex align-items-end gap-1">
-                        <span v-if="item.price > 0" class="text-xl font-bold text-primary">¥{{ item.price }}</span>
-                        <span v-if="item.price > 0" class="text-sm text-color-secondary">/ 份</span>
+                        <span v-if="item.price > 0" class="text-xl font-bold text-primary">€{{ item.price }}</span>
+                        <span v-if="item.price > 0" class="text-sm text-color-secondary"> por dose</span>
                     </div>
 
                     <!-- 加减按钮组 -->
