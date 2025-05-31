@@ -50,7 +50,7 @@ export default {
         // 生成二维码
         const generateQRCode = () => {
             if (seatNumber.value) {
-                let data = windows.global_qr_addr + seatNumber.value;
+                let data = window.global_qr_addr + seatNumber.value;
                 QRCode.toCanvas(qrCanvas.value, data, { width: 300 }, (error) => {
                     if (error) {
                         console.error(error);
