@@ -173,6 +173,8 @@ let socket_port = client_api.params.port;
 socket_port = socket_port ? socket_port : 80;
 
 let socket_addr = "http://localhost";
+if (global_server_addr) socket_addr = global_server_addr;
+console.log(global_server_addr);
 
 client_api.init(socket_addr,socket_port);
 

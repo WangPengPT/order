@@ -106,24 +106,11 @@ cd "$PROJECT_ROOT/$SERVER_DIR" || exit
 run_command "npm install"
 run_command "$SERVER_BUILD_CMD"
 
-# 5. 部署文件
-log "步骤 5/5: 部署构建文件"
-
-# 创建公共目录 (如果不存在)
-mkdir -p "$PROJECT_ROOT/$PUBLIC_DIR"
-
-# 复制客户端构建文件
-log "复制客户端构建文件到 $PUBLIC_DIR/client"
-run_command "cp -r $PROJECT_ROOT/$CLIENT_DIR/dist $PROJECT_ROOT/$PUBLIC_DIR/client"
-
-# 复制管理端构建文件
-log "复制管理端构建文件到 $PUBLIC_DIR/manager"
-run_command "cp -r $PROJECT_ROOT/$SERVER_DIR/dist $PROJECT_ROOT/$PUBLIC_DIR/manager"
+cp -f dist/config.js "$PROJECT_ROOT/$CLIENT_DIR/dist/config.js"
+cp -f dist/config.js "$PROJECT_ROOT/$CLIENT_DIR/dist/spa/config.js"
 
 # 完成
 log "部署成功完成!"
-log "客户端访问路径: $PUBLIC_DIR/client"
-log "管理端访问路径: $PUBLIC_DIR/manager"
 echo "========== 部署结束 ==========" >> "$PROJECT_ROOT/$LOG_FILE"
 
 echo ""

@@ -2,7 +2,9 @@
 import { ref } from 'vue'
 import { io } from 'socket.io-client';
 
-const socketAddr = "http://localhost";
+let socketAddr = "http://localhost";
+if (window.global_server_addr) socketAddr = window.global_server_addr;
+console.log(window.global_server_addr);
 
 class Client{
     constructor() {
