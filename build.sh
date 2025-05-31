@@ -107,7 +107,7 @@ run_command "npm install"
 run_command "$SERVER_BUILD_CMD"
 
 cp -f "$PROJECT_ROOT/dist/config.js" "$PROJECT_ROOT/$CLIENT_DIR/dist/config.js"
-cp -f "$PROJECT_ROOT/dist/config.js" "$PROJECT_ROOT/$CLIENT_DIR/dist/spa/config.js"
+cp -f "$PROJECT_ROOT/dist/config.js" "$PROJECT_ROOT/$SERVER_DIR/dist/spa/config.js"
 
 # 完成
 log "部署成功完成!"
