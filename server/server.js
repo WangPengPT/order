@@ -20,10 +20,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: [
-            "http://localhost:5173", // 前端开发服务器端口
-            "http://localhost:9000", // 前端开发服务器端口
-        ],
+        origin: '*',
         methods: ["GET", "POST"]
     }
 });
