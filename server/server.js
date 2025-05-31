@@ -194,56 +194,7 @@ app.post('/upload', upload.any(), (req, res) => {
             // 转换为自定义格式（示例：字段重命名 + 添加时间戳）
             //console.log(data)
 
-            var x = [];
-
-            Object.entries(data).forEach(([key, value]) => {
-                //console.log(key, value);
-
-                for (let i = 0; i < xkeys.length; i++) {
-                    if (value == "TRUE") {
-                        if (key.startsWith(xkeys[i]))
-                        {
-                            x.push(keyimageids[i]);
-                        }
-                    }
-                }
-            });
-
-
-            var id = data['Variant SKU'];
-            if (id && id.startsWith("'"))
-            {
-                id = id.substring(1);
-            }
-
-            var note = data['Body (HTML)'];
-            if (note) {
-                note = note.replaceAll("</div>", "\n");
-                note = note.replaceAll("<div>", "");
-
-                note = note.replaceAll("<p>", "");
-                note = note.replaceAll("</p>", "");
-
-                note = note.replaceAll("<span>", "");
-                note = note.replaceAll("</span>", "");
-
-                note = note.replaceAll("<br>", "\n");
-
-                note = note.replaceAll("<blockquote>", "");
-                note = note.replaceAll("</blockquote>", "");
-
-
-            }
-
-            const transformed = {
-                id: id,
-                name: data['Title'],
-                note: note,
-                category: data['Type'],
-                image: data['Image Src'],
-                x: x,
-                price: data['Variant Price'],
-            };
+            let transformed = makeDishData(data);
             results.push(transformed);
         })
         .on('end', () => {
@@ -264,6 +215,63 @@ app.post('/upload', upload.any(), (req, res) => {
             res.status(500).send(`CSV processing failed: ${err.message}`);
         });
 });
+
+function makeDishData(data)
+{
+    var x = [];
+
+    Object.entries(data).forEach(([key, value]) => {
+        //console.log(key, value);
+
+        for (let i = 0; i < xkeys.length; i++) {
+            if (value == "TRUE") {
+                if (key.startsWith(xkeys[i]))
+                {
+                    x.push(keyimageids[i]);
+                }
+            }
+        }
+    });
+
+
+    var id = data['Variant SKU'];
+    if (id && id.startsWith("'"))
+    {
+        id = id.substring(1);
+    }
+
+    var note = data['Body (HTML)'];
+    if (note) {
+        note = note.replaceAll("</div>", "\n");
+        note = note.replaceAll("<div>", "");
+
+        note = note.replaceAll("<p>", "");
+        note = note.replaceAll("</p>", "");
+
+        note = note.replaceAll("<span>", "");
+        note = note.replaceAll("</span>", "");
+
+        note = note.replaceAll("<br>", "\n");
+
+        note = note.replaceAll("<blockquote>", "");
+        note = note.replaceAll("</blockquote>", "");
+
+        note = note.replaceAll("<img>", "");
+        note = note.replaceAll("</img>", "");
+    }
+
+    const transformed = {
+        id: id,
+        name: data['Title'],
+        note: note,
+        category: data['Type'],
+        image: data['Image Src'],
+        x: x,
+        price: data['Variant Price'],
+    };
+
+    return transformed;
+}
 
 // 通配符路由（必须放在最后）
 app.get("*", (req, res) => {
