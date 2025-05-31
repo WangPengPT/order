@@ -220,8 +220,19 @@ app.post('/upload', upload.any(), (req, res) => {
             if (note) {
                 note = note.replaceAll("</div>", "\n");
                 note = note.replaceAll("<div>", "");
+
                 note = note.replaceAll("<p>", "");
                 note = note.replaceAll("</p>", "");
+
+                note = note.replaceAll("<span>", "");
+                note = note.replaceAll("</span>", "");
+
+                note = note.replaceAll("<br>", "\n");
+
+                note = note.replaceAll("<blockquote>", "");
+                note = note.replaceAll("</blockquote>", "");
+
+
             }
 
             const transformed = {
@@ -231,6 +242,7 @@ app.post('/upload', upload.any(), (req, res) => {
                 category: data['Type'],
                 image: data['Image Src'],
                 x: x,
+                price: data['Variant Price'],
             };
             results.push(transformed);
         })
