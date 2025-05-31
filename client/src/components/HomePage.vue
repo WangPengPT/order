@@ -121,7 +121,7 @@ function InitMenu() {
             id:  base.id,
             name: base.name,
             description: base.note,
-            price: 0,
+            price: base.price,
             image: base.image,
             allergies: base.x,
             quantity: 0,
