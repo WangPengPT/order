@@ -216,10 +216,18 @@ app.post('/upload', upload.any(), (req, res) => {
                 id = id.substring(1);
             }
 
+            var note = data['Body (HTML)'];
+            if (note) {
+                note = note.replaceAll("</div>", "\n");
+                note = note.replaceAll("<div>", "");
+                note = note.replaceAll("<p>", "");
+                note = note.replaceAll("</p>", "");
+            }
+
             const transformed = {
                 id: id,
                 name: data['Title'],
-                note: data['Body (HTML)'],
+                note: note,
                 category: data['Type'],
                 image: data['Image Src'],
                 x: x,
