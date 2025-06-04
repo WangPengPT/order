@@ -1,4 +1,3 @@
-
 const fs = require('fs');
 const path = require("path");
 
@@ -14,7 +13,6 @@ function loadData(key,defaultValue) {
 		const jsonData = JSON.parse(data);
 		datas[key] = jsonData;
 		return jsonData ? jsonData : defaultValue;
-		//console.log(state.menu);
 	} catch (err) {
 		return defaultValue
 	}

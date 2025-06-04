@@ -23,9 +23,9 @@
 
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+            <img src="https://cdn.shopify.com/s/files/1/0795/0594/9019/files/logo_fdca204f-249f-4fbc-93c6-3ecc45f53800.png">
           </q-avatar>
-          Order System
+          XiaoXiong Order
         </q-toolbar-title>
       </q-toolbar>
 
@@ -36,6 +36,7 @@
         </q-route-tab>
           <q-route-tab to="/qcode" icon="line_weight" label="QCode" />
         <q-route-tab to="/menu" icon="info_outline" label="Menu" />
+        <q-route-tab to="/tables" icon="view_module" label="Tables" />
       </q-tabs>
     </q-header>
 

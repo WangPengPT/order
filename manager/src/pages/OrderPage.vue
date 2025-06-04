@@ -4,7 +4,7 @@
             title="Orders"
             :rows="rows"
             :columns="columns"
-            row-key="name"
+            row-key='id'
             :filter="filter"
             @row-click="onRowClick"
         >
@@ -25,7 +25,7 @@
             </q-card-section>
 
             <q-list bordered separator>
-                <q-item v-for="(item, index) in selRow.items" :key="index" >
+                <q-item v-for="(item, index) in selRow.dishes" :key="index" >
                     <q-item-section avatar>
                         {{getDishId(item)}}
                     </q-item-section>

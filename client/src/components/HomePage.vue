@@ -6,7 +6,8 @@
             class="flex-grow-1 overflow-auto"
             :style="{ paddingTop: '5rem', paddingBottom: '3rem' }"
         >
-            <DishList ref="dishListRef" :updateCartItemCount="updateCartItemCount"/>
+            <CustomDish v-if="ShowCustomDish" :updateCartItemCount="updateCartItemCount"/>
+            <DishList v-if="!ShowCustomDish" :updateCartItemCount="updateCartItemCount"/>
         </div>
 
         <!-- 顶部固定 -->
@@ -31,18 +32,18 @@
                     <i class="pi pi-shopping-cart" style="font-size: 2rem" />
                 </OverlayBadge>
 
-                <Button
-                    label="Submit"
-                    class="mr-3"
-                    :disabled="disabled_checkout"
-                    @click="checkout"
-                    :style="{ marginRight: '20px' }"
-                />
+<!--                <Button-->
+<!--                    label="Submit"-->
+<!--                    class="mr-3"-->
+<!--                    :disabled="disabled_checkout"-->
+<!--                    @click="checkout"-->
+<!--                    :style="{ marginRight: '20px' }"-->
+<!--                />-->
             </div>
         </div>
     </div>
     <Toast />
-    <Cart ref="cartRef" :updateCartItemCount="updateCartItemCount"/>
+    <Cart ref="cartRef" :updateCartItemCount="updateCartItemCount" :checkout="checkout" />
 </template>
 
 <script setup>
@@ -57,10 +58,14 @@ import Button from 'primevue/button';
 import DishList from "@/components/DishList.vue";
 import Cart from "@/components/Cart.vue";
 
-import Panel from "primevue/panel";
-import Badge from 'primevue/badge';
 import OverlayBadge from 'primevue/overlaybadge';
+
+import CustomDish from './CustomDish.vue';
+import cartItems from './CartItems.js';
+
 import client_api from './client.js';
+
+import DishListData from './DishListData.js';
 
 const props = defineProps({
     switchTo: {
@@ -69,36 +74,46 @@ const props = defineProps({
     }
 });
 
+const ShowCustomDish = ref(true);
 const disabled_checkout = ref(false);
 const types = ref([""]);
 const typeIndex = ref(0);
-const cartItemCount = ref(0);
+const cartItemCount = cartItems.cartItemCount;
 
 function updateCartItemCount(value)
 {
     cartItemCount.value = cartItemCount.value + value;
 }
 
-const dishDatas = [];
+const dishDatas = DishListData.dishDatas;
 const typeDatas = [];
 
 const dishListRef = ref(null);
 const cartRef = ref(null);
 
 function showDishList(n) {
-    if (dishListRef.value) {
-        var category = typeDatas[n];
-        var dishs = [];
 
-        for (let i = 0; i < dishDatas.length; i++) {
-            var value = dishDatas[i];
-            if (value.category == category)
-            {
-                dishs.push(value);
-            }
-        }
-        dishListRef.value.showDisList(dishs);
+    if (n == 0)
+    {
+        ShowCustomDish.value = true;
+        return;
     }
+    else
+    {
+        ShowCustomDish.value = false;
+    }
+
+    var category = typeDatas[n];
+    var dishs = [];
+
+    for (let i = 0; i < dishDatas.value.length; i++) {
+        var value = dishDatas.value[i];
+        if (value.category == category)
+        {
+            dishs.push(value);
+        }
+    }
+    DishListData.showDisList(dishs);
 }
 
 function InitMenu() {
@@ -111,11 +126,14 @@ function InitMenu() {
         return;
     }
 
-    dishDatas.length = 0;
+    dishDatas.value.length = 0;
     typeDatas.length = 0;
+    typeDatas.push("Caixa Aleatória");
 
     for (let i = 0; i < datas.length; i++) {
         var base = datas[i];
+
+        const index = i;
 
         var value = {
             id:  base.id,
@@ -126,12 +144,34 @@ function InitMenu() {
             allergies: base.x,
             quantity: 0,
             category: base.category,
+            handle: base.handle,
+            index: index,
         };
 
-        dishDatas.push(value);
+        dishDatas.value.push(value);
 
         if (!typeDatas.includes(value.category)) {
-            typeDatas.push(value.category);
+            if (value.category != "") typeDatas.push(value.category);
+        }
+
+        if (value.category == "")
+        {
+            for (let j = 0; j < dishDatas.value.length; j++) {
+                const dish = dishDatas.value[j];
+
+                if (dish.handle && dish.handle == base.handle && dish.category != "")
+                {
+                    if (!dish.subitem) dish.subitem = [dish.index];
+                    dish.subitem.push(dishDatas.value.length-1);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if (!typeDatas.includes(value.category)) {
+                typeDatas.push(value.category);
+            }
         }
     }
 
@@ -149,8 +189,8 @@ const clickType = (index) =>
 const showCart = () => {
     var dishs = [];
 
-    for (let i = 0; i < dishDatas.length; i++) {
-        var value = dishDatas[i];
+    for (let i = 0; i < dishDatas.value.length; i++) {
+        var value = dishDatas.value[i];
         if (value.quantity > 0)
         {
             dishs.push(value);
@@ -193,17 +233,23 @@ const checkout = () => {
 
     const items = [];
 
-    for (let i = 0; i < dishDatas.length; i++) {
-        var value = dishDatas[i];
+    console.log(cartItems.cartDishs);
+    for (let i = 0; i < cartItems.cartDishs.value.length; i++) {
+        var value = cartItems.cartDishs.value[i];
+        items.push({name: "Caixa Aleatória", quantity: 1, notes: value.notes});
+    }
+
+    for (let i = 0; i < dishDatas.value.length; i++) {
+        var value = dishDatas.value[i];
         if (value.quantity > 0)
         {
-            items.push({dishid: value.id,quantity: value.quantity});
+            items.push({dishid: value.id, name: value.name, quantity: value.quantity, price: value.price});
         }
     }
 
     if (items.length === 0) {
         show_warn('Selecione pelo menos um prato');
-        return;
+        return false;
     }
 
     // 获取存储记录
@@ -229,6 +275,8 @@ const checkout = () => {
         table: currentTable,
         items
     });
+
+    return true;
 }
 
 onMounted(() => {
@@ -236,8 +284,8 @@ onMounted(() => {
 
     client_api.setOnOrderConfirmed((order_id) => {
 
-        for (let i = 0; i < dishDatas.length; i++) {
-            const value = dishDatas[i];
+        for (let i = 0; i < dishDatas.value.length; i++) {
+            const value = dishDatas.value[i];
             value.quantity = 0;
         }
 
@@ -247,6 +295,8 @@ onMounted(() => {
 
         showDishList(typeIndex.value);
         cartItemCount.value = 0;
+
+        cartItems.cartDishs.value.length = 0;
     });
 
     client_api.setOnShowError((value) => {

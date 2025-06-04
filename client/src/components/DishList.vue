@@ -18,7 +18,7 @@
                 <img
                     :src="item.image"
                     :alt="item.name"
-                    class="w-4rem h-4rem border-round flex-shrink-0"
+                    class="w-5rem h-5rem border-round flex-shrink-0"
                     style="object-fit: cover; min-width: 4rem"
                     @click="showDish(item)"
                 />
@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- 操作区域 -->
-                <div class="flex-shrink-0 flex align-items-center gap-3">
+                <div class="flex-shrink-0 flex align-items-center gap-3" v-if="item.subitem == undefined">
                     <div class="flex align-items-end gap-1">
                         <span v-if="item.price > 0" class="text-xl font-bold text-primary">€{{ item.price }}</span>
                         <span v-if="item.price > 0" class="text-sm text-color-secondary"> por dose</span>
@@ -65,6 +65,34 @@
                             rounded
                             :disabled="item.quantity >= 3"
                             @click="changeQuantity(index, 1)"
+                            class="w-2rem h-2rem"
+                        />
+                    </div>
+                </div>
+
+                <div class="flex-shrink-0 flex align-items-center gap-3" v-if="item.subitem"
+                     v-for="(subindex, index) in item.subitem"
+                     key="index"
+                >
+                    <div class="flex align-items-end gap-1">
+                        <span class="text-xl font-bold text-primary">{{ GetSubItemName(subindex)  }}</span>
+                    </div>
+
+                    <!-- 加减按钮组 -->
+                    <div class="flex align-items-center gap-2">
+                        <Button
+                            icon="pi pi-minus"
+                            rounded
+                            :disabled="GetSubItemQuantity(subindex) <= 0"
+                            @click="changeSubQuantity(subindex, -1)"
+                            class="w-2rem h-2rem"
+                        />
+                        <span class="w-2rem text-center">{{ GetSubItemQuantity(subindex) }}</span>
+                        <Button
+                            icon="pi pi-plus"
+                            rounded
+                            :disabled="GetSubItemQuantity(subindex) >= 3"
+                            @click="changeSubQuantity(subindex, 1)"
                             class="w-2rem h-2rem"
                         />
                     </div>
@@ -112,9 +140,10 @@ import {ref} from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Avatar from 'primevue/avatar';
+import DishListData from './DishListData.js';
 
 // 菜品数据
-const dishes = ref([]);
+const dishes = DishListData.dishes;
 
 // 修改数量
 const changeQuantity = (index, delta) => {
@@ -124,6 +153,26 @@ const changeQuantity = (index, delta) => {
         props.updateCartItemCount(delta);
     }
 };
+
+const changeSubQuantity = (index, delta) => {
+    const newQuantity = DishListData.dishDatas.value[index].quantity + delta;
+    if (newQuantity >= 0) {
+        DishListData.dishDatas.value[index].quantity = newQuantity;
+        props.updateCartItemCount(delta);
+    }
+};
+
+const GetSubItemQuantity = (index) => {
+    if (DishListData.dishDatas.value[index])
+        return DishListData.dishDatas.value[index].quantity;
+    return 0;
+}
+
+const GetSubItemName = (index) => {
+    if (DishListData.dishDatas.value[index])
+        return DishListData.dishDatas.value[index].subname;
+    return "";
+}
 
 const props = defineProps({
     updateCartItemCount: {
@@ -145,16 +194,6 @@ const showDish = (dish) => {
     console.log("show dish")
 };
 
-const showDisList = (datas) => {
-    dishes.value.length = 0;
-    for (let i = 0; i < datas.length; i++) {
-        dishes.value.push(datas[i]);
-    }
-};
-
-defineExpose({
-    showDisList
-});
 
 </script>
 

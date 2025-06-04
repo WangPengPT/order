@@ -51,6 +51,9 @@ export default {
         const generateQRCode = () => {
             if (seatNumber.value) {
                 let data = window.global_qr_addr + seatNumber.value;
+
+                console.log("The qrcode data: ", data);
+                
                 QRCode.toCanvas(qrCanvas.value, data, { width: 300 }, (error) => {
                     if (error) {
                         console.error(error);

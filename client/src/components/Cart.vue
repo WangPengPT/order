@@ -1,9 +1,35 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="cart" :style="{ width: '30rem' }" :dismissableMask="true">
+    <Dialog v-model:visible="visible" modal header="cart" :style="{ height: '100%',width: '30rem' }" :dismissableMask="true">
         <h2 class="text-3xl font-bold" v-if="isEmpty">Cart is empty.</h2>
         <!-- 菜品列表 -->
         <div class="flex flex-column gap-3">
             <!-- 单个菜品项 -->
+            <Card style="width: 25rem; overflow: hidden"
+                  v-for="(item, index) in items"
+                  :key="index"
+            >
+                <template #title>Caixa Aleatória</template>
+                <template #subtitle>Quantidade: {{item.count}}</template>
+                <template #content>
+                    <div class="flex flex-column gap-1">
+                        <div>
+                            <span class="m-0">
+                                {{ item.notes[0] }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="m-0">
+                                {{ item.notes[1] }}
+                            </span>
+                        </div>
+                    </div>
+                </template>
+                <template #footer>
+                    <div class="flex gap-4 mt-1">
+                        <Button label="Remove" severity="danger" outlined class="w-full" @click="remove(item)"/>
+                    </div>
+                </template>
+            </Card>
             <div
                 v-for="(item, index) in dishes"
                 :key="index"
@@ -59,6 +85,16 @@
                 </div>
             </div>
         </div>
+        <template #footer>
+            <div class="flex gap-4 mt-1">
+                <Button
+                    icon="pi pi-plus"
+                    class="p-button-success p-button-rounded fixed bottom-0 right-0 m-5"
+                    @click="docheckout"
+                    label="Sumit"
+                />
+            </div>
+        </template>
     </Dialog>
 </template>
 
@@ -67,6 +103,11 @@ import {ref} from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Avatar from 'primevue/avatar';
+import Card from 'primevue/card';
+
+import cartItems from './CartItems.js';
+
+const items = cartItems.cartDishs;
 
 // 菜品数据
 const dishes = ref([]);
@@ -86,6 +127,10 @@ const props = defineProps({
     updateCartItemCount: {
         type: Function,
         required: true
+    },
+    checkout: {
+        type: Function,
+        required: true
     }
 });
 
@@ -96,13 +141,30 @@ const showDisList = (datas) => {
         dishes.value.push(datas[i]);
     }
 
-    isEmpty.value = dishes.value.length == 0;
+    isEmpty.value = (dishes.value.length == 0) && (items.length == 0);
 };
 
 defineExpose({
     showDisList
 });
 
+function GetInfo(item)
+{
+    return item.note;
+}
+
+function remove(item)
+{
+    cartItems.removeItem(item);
+}
+
+function docheckout()
+{
+    if (props.checkout())
+    {
+        visible.value = false;
+    }
+}
 </script>
 
 <style scoped>

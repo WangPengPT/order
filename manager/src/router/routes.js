@@ -3,10 +3,11 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-        { path: '', component: () => import('pages/IndexPage.vue') },
-        { path: '/order',component: () => import('pages/OrderPage.vue') },
-        { path: '/qcode',component: () => import('pages/QCodePage.vue') },
-        { path: '/menu',component: () => import('pages/UpdateMenu.vue') },
+      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '/order', component: () => import('pages/OrderPage.vue') },
+      { path: '/qcode', component: () => import('pages/QCodePage.vue') },
+      { path: '/menu', component: () => import('pages/UpdateMenu.vue') },
+      { path: '/tables', component: () => import('pages/TablesPage.vue') },
     ]
   },
 

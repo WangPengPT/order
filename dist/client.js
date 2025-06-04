@@ -5,7 +5,7 @@ const express = require('express');
 
 // 创建express应用
 const app = express();
-const port = config.get('app.port') + 1; // 设置端口号
+const port = process.env.PORT; // 设置端口号
 
 app.use(express.static('../client/dist'));
 
