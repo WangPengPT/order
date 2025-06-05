@@ -1,7 +1,5 @@
-# Logs
-logs
+node_modules/
+uploads/
+save/
+.env
 *.log
-
-node_modules
-.DS_Store
-*.local
