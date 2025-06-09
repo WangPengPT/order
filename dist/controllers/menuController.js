@@ -1,9 +1,14 @@
 const menuService = require('../services/menuService');
 
-exports.loadMenu = () => {
+function loadMenu() {
   menuService.loadMenu();
 };
 
-exports.getMenu = () => {
+function getMenu() {
   return menuService.getMenu();
+};
+
+module.exports = {
+  loadMenu,
+  getMenu,
 };

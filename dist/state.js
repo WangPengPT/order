@@ -6,42 +6,48 @@ const { TableManager } = require('./model/tableManager.js')
 class AppState {
     constructor() {
         this.menu = []
-        this.oldOrders = []
         this.orders = new Map()
         this.tables = []
         this.printers = []
         this.maxOrderId = 0
+
+        this.childPrice = 7.90
+        this.adultPrice = 13.90
 
         this.initTables()
     }
 
     initTables() {
         const tablesCenter = new TableManager([
-            { id: '101', people: 0, maxPeople: 4, status: '空闲' },
-            { id: '102', people: 4, maxPeople: 6, status: '用餐中' },
-            { id: '103', people: 3, maxPeople: 4, status: '已预订' },
-            { id: '201', people: 0, maxPeople: 4, status: '空闲' },
-            { id: '202', people: 0, maxPeople: 6, status: '空闲' },
-            { id: '203', people: 0, maxPeople: 4, status: '空闲' },
-            { id: '301', people: 2, maxPeople: 4, status: '已预订' },
-            { id: '302', people: 4, maxPeople: 6, status: '已预订' },
-            { id: '303', people: 0, maxPeople: 4, status: '空闲' },
+            { id: '101', people: 0, status: '空闲' },
+            { id: '102', people: 0, status: '空闲' },
+            { id: '103', people: 0, status: '已预订' },
+            { id: '201', people: 0, status: '空闲' },
+            { id: '202', people: 0, status: '空闲' },
+            { id: '203', people: 0, status: '空闲' },
+            { id: '301', people: 0, status: '已预订' },
+            { id: '302', people: 0, status: '已预订' },
+            { id: '303', people: 0, status: '空闲' },
         ])
         this.tables = tablesCenter
     }
 
     getTable(tableId) {
-        const id = tableId.replace('#', '')
-        return this.tables.getTableById(id)
+        if (!tableId) return undefined;
+
+        if (typeof variable === 'string') {
+            const id = tableId.replace('#', '')
+            return this.tables.getTableById(id)
+        } else {
+            return this.tables.getTableById(tableId)
+        }
     }
 
 
     addOrderTable(orderData) {
-        console.log("orderData: ", orderData)
         this.maxOrderId++
         const orderId = this.maxOrderId.toString().padStart(4, '0')
         const order = new Order({ ...orderData, id: orderId })
-        console.log("order: ", order)
         const table = this.getTable(order.table)
         if (table == null) {
             throw new Error(`桌号${order.table}未能找到！`)
@@ -60,31 +66,46 @@ class AppState {
 
     }
 
-    addOldOrder(order) {
-        this.oldOrders.push(order)
-    }
-
     completeOrder(orderId) {
         const order = this.orders.get(orderId)
         if (order) {
-            this.orders.delete(orderId)
             order.status = 'completed'
-            this.oldOrders.push(order)
         }
     }
 
     cancelOrder(orderId) {
         const order = this.orders.get(orderId)
         if (order) {
-            this.orders.delete(orderId)
             order.status = 'cancelled'
-            this.oldOrders.push(order)
         }
     }
 
     getOrder(orderId) {
         return this.orders.get(orderId)
     }
+
+    getDishesJSONByTable(tableId) {
+        if (tableId == null) {
+            return null
+        }
+        const id = tableId.replace('#', '')
+        const table = this.tables.getTableById(id)
+        if (table)
+        {
+            const dishes = table.order
+            return dishes.map(dish => dish.toJSON())
+        }
+        else
+        {
+            return "{}";
+        }
+    }
+
+    cleanOrder() {
+        this.orders.clear()
+    }
+
+    /*
 
     cleanExpireOrder() {
         const ORDER_EXPIRE_MINUTES = 30;
@@ -97,10 +118,28 @@ class AppState {
             }
         });
     }
+        */
+
+    getOrdersByTableID(tableId) {
+    if (!tableId) return []
+
+    // 去掉可能的 # 号，保持和你其他地方一致
+    const id = typeof tableId === 'string' ? tableId.replace('#', '') : tableId;
+
+    // 过滤 orders Map，返回属于这个桌号的订单数组
+    const result = [];
+
+    for (const order of this.orders.values()) {
+        if (order.table === id) {
+            result.push(order);
+        }
+    }
+
+        return result;
+    }
 
     updateAppState(newAppState) {
         this.menu = newAppState.menu || []
-        this.oldOrders = Array.isArray(newAppState.oldOrders) ? newAppState.oldOrders : []
 
         // orders 应该是 Map 或需要转换
         if (newAppState.orders instanceof Map) {
@@ -122,17 +161,27 @@ class AppState {
 
         this.printers = newAppState.printers || []
         this.maxOrderId = newAppState.maxOrderId || 0
+
+        this.adultPrice = newAppState.adultPrice
+        this.childPrice = newAppState.childPrice
+    }
+
+    updatePrice(adultPrice, childPrice) {
+        this.adultPrice = adultPrice
+        this.childPrice = childPrice
+        return this
     }
 
 
     toJSON() {
         return {
             menu: this.menu,
-            oldOrders: this.oldOrders,
             orders: Object.fromEntries(this.orders), // Map → object
             tables: this.tables.toJSON(),            // TableManager → array
             printers: this.printers,
-            maxOrderId: this.maxOrderId
+            maxOrderId: this.maxOrderId,
+            childPrice: this.childPrice,
+            adultPrice: this.adultPrice
         };
     }
 
@@ -140,11 +189,12 @@ class AppState {
         const instance = new AppState()
 
         instance.menu = data.menu || []
-        instance.oldOrders = data.oldOrders || []
 
         // 恢复 Map
         if (data.orders) {
-            instance.orders = new Map(Object.entries(data.orders))
+            instance.orders = new Map(
+                Object.entries(data.orders).map(([id, obj]) => [id, Order.fromJSON(obj)])
+            );
         }
 
         // 恢复 tables
@@ -158,6 +208,9 @@ class AppState {
 
         instance.printers = data.printers || []
         instance.maxOrderId = data.maxOrderId || 0
+
+        instance.adultPrice = data.adultPrice || 1
+        instance.childPrice = data.childPrice || 0.5
 
         return instance
     }

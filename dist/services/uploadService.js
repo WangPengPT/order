@@ -57,8 +57,6 @@ exports.processCSV = (file) => {
         results.push(transformed);
       })
       .on('end', () => {
-
-
         db.saveData('menu', results);
 
         fs.unlinkSync(file.path); // 删除临时文件

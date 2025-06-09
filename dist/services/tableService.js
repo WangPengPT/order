@@ -1,9 +1,15 @@
 const { appState } = require('../state.js');
+const { tablesPassword } = require('../model/tableManager.js')
 
 function addNewTable(io, tableData) {
   try {
+    
+    const newId = tableData.id
+
+    if (!newId) { throw new Error("Invalid table id") }
+
     // 简单检查是否有重复 ID（可选）
-    const exists = appState.tables.getTableById(tableData.id)
+    const exists = appState.tables.getTableById(newId)
     if (exists) {
       return { success: false, message: '桌子 ID 已存在' };
     }
@@ -11,8 +17,8 @@ function addNewTable(io, tableData) {
     // 添加桌子
     appState.tables.addTable(tableData)
 
-    // 广播新桌子列表给所有客户端
-    io.emit('send_tables', appState.tables.toJSON());
+    // 广播新桌子列表给管理端
+    sendTablesInfo(io)
 
     return { success: true, tables: appState.tables.toJSON() };
   } catch (err) {
@@ -20,13 +26,73 @@ function addNewTable(io, tableData) {
   }
 }
 
+function sendTablesInfo(io) {
+  io.emit('send_tables', appState.tables.toJSON());
+  io.emit('send_tables_password', tablesPassword.toJSON())
+}
+
+function tableLogin(io) {
+  io.on("client_login", (value, cb) => {
+    try {
+      const id = value.table
+      const table = tablesPassword.tables.get(id)
+      const res = table.checkPassword(value.password)
+      cb(res)
+    } catch (error) {
+      cb({ success: false, message: error.message })
+    }
+  })
+}
+
+function updateTablePassword(io) {
+  io.on("table_password_update",  (value, cb) => {
+    try {
+        const id = value.tableId
+        const password = value.password
+        tablesPassword.changePassword(id, password)
+        cb(tablesPassword.toJSON())
+    }catch (e) {
+      cb({ success: false, message: e.message });
+    }
+      })
+}
+
+function refreshTablePassword(io) {
+  io.on('table_password_refresh', (id, cb) => {
+    try {
+      const res = tablesPassword.makePassword(id)
+      cb(res)
+    } catch (e) {
+      cb({ success: false, message: e.message });
+    }
+  })
+}
+
 function updateTable(io, tableData) {
   try {
+
+    const id = tableData.id
+
+    const oldTable = appState.tables.getTableById(id)
+
+    if (!oldTable) {
+      new Error("Not found old table")
+    }
+
     // 更新服务器状态
     appState.tables.updateTable(tableData)
+    
+    const newTable = appState.tables.getTableById(id)
+
+    // TODO:
+    if (oldTable.status === '空闲' && newTable.status === '用餐中' ) {
+      tablesPassword.makePassword(id)
+      
+    }
 
     // 广播更新后的 tables 给所有客户端
-    io.emit('update_tables', appState.tables.toJSON())
+    //io.emit('update_tables', appState.tables.toJSON())
+    sendTablesInfo(io)
 
     return { success: true, tables: appState.tables.toJSON() }
   } catch (error) {
@@ -62,9 +128,20 @@ function cleanTable(io, id) {
   }
 }
 
+function sendTableDish(io, id) {
+    const dishes = appState.getDishesJSONByTable(id)
+    io.emit("client_orders", dishes)
+}
+
+
 module.exports = {
   addNewTable,
   updateTable,
   removeTable,
   cleanTable,
+  sendTableDish,
+  sendTablesInfo,
+  updateTablePassword,
+  refreshTablePassword,
+  tableLogin
 };

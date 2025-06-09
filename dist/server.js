@@ -38,7 +38,6 @@ app.use(express.static(path.join(__dirname, "public"), {
 // 载入AppState数据
 appStateService.loadAppState()
 
-
 // 载入菜单数据
 menuController.loadMenu();
 

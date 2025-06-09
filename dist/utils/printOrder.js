@@ -1,31 +1,72 @@
+const menuService = require('../services/menuService');
+
+let print_data = "";
+
+function  add_print(value, type)
+{
+    if (type)
+    {
+        print_data += "-" + type + "-" + value + '\n';
+    }
+    else
+    {
+        print_data += "--" + value + '\n';
+    }
+}
+
 function print_order(order, io)
 {
-    let data = "";
+    print_data = "";
 
-    data += "     order id: " + order.id;
-    data += "\n     table: " + order.table;
-    data += "\n     time: " + format_datetime(order.timestamp);
-    data += "\n-----------------------------------";
+    add_print( "    order id: " + order.id );
+    add_print(  "    table: " + order.table );
+    add_print(  "    time: " + format_datetime(order.timestamp) );
+    add_print(  "-----------------------------------" );
+
+    let needLine = false;
+    if (order.name && order.name != "")
+    {
+        needLine = true;
+        add_print( "    name: " + order.name );
+    }
+
+    if (order.note && order.note != "")
+    {
+        needLine = true;
+        add_print( "    note: " + order.note );
+    }
+
+    if (needLine)
+    {
+        add_print( "-----------------------------------" );
+    }
+
 
     for (let i=0; i<order.items.length; i++)
     {
+        let type = "Caixa Aleatória";
         let item = order.items[i];
+        const dish = menuService.findDish(item.dishid);
+        if (dish)
+        {
+            type = dish.category;
+        }
         if (item.dishid)
         {
-            data += "\n" + item.dishid + "   x " + item.quantity;
+            add_print(  item.dishid + "   x " + item.quantity, type);
         }
         else
         {
-            data += "\n" + item.name + "   x " + item.quantity;
-            for (let j = 0; j < item.notes; j++) {
-                data += "\n  " + item.notes[j];
+            add_print(  item.name + "   x " + item.quantity );
+            for (let j = 0; j < item.notes.length; j++) {
+                add_print( "  " + item.notes[j] );
             }
         }
     }
 
-    console.log("print data:" + data);
+    console.log("print data:\n" + print_data);
 
-    io.emit("print", data);
+    io.emit("print", print_data);
 }
 
 function format_datetime(timestamp)
