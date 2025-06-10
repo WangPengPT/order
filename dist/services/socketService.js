@@ -4,9 +4,24 @@ const orderService = require('./orderService.js')
 const tableService = require('./tableService.js');
 const appStateService = require("../services/appStateService.js")
 
-const printers = [];
+const menuService = require("./menuService.js")
+
+const { printers } = require('../utils/printOrder.js');
+
+
+function emit(...datas)
+{
+  appState.socket_io.emit(...datas);
+}
+
+function saveOrderMenuTab(data)
+{
+  menuService.saveOrderMenuTab(data);
+}
 
 function init(io) {
+  appState.socket_io = io;
+
   io.on("connection", (socket) => {
     console.log("客户端连接:", socket.id);
 
@@ -39,12 +54,12 @@ function init(io) {
 
     // 管理端更新价格
     socket.on("update_people_price", (value, cb) => {
-        const res = appStateService.updatePrice(value.adultPrice, value.childPrice)
+        const res = appStateService.updatePrice(value.lunchPrice, value.dinnerPrice)
         cb(res)
     })
 
     // 发送菜单数据给用户端和管理端
-    socket.emit("menu_data", appState.menu);
+    socket.emit("menu_data", appState.menu,appState.orderMenuTab);
 
     // 客户端请求发送订单
     socket.on("client_order_signal", (id
@@ -65,7 +80,7 @@ function init(io) {
 
     // 修改桌子
     socket.on('update_table', (tableData, callback) => {
-      const result = tableService.updateTable(io, tableData);
+      const result = tableService.updateTable(tableData);
       callback(result);
     });
 
@@ -77,7 +92,7 @@ function init(io) {
 
     // 清除桌子
     socket.on('clean_table', (id, callback) => {
-      const result = tableService.cleanTable(io, id);
+      const result = tableService.cleanTable(id);
       callback(result);
     });
 
@@ -86,7 +101,7 @@ function init(io) {
     });
     
     socket.on('admin', (value, callback) => {
-      const user = db.loadData('admin', { password: "123456" });
+      const user = db.loadDataForce('admin', { password: "1015" });
       socket.is_admin = false;
       if (user.password == value) {
         orderService.sendOrder(socket)
@@ -142,9 +157,17 @@ function init(io) {
       }
     });
 
+    socket.on('updateMenuIndex', data => {
+
+      if (!data) return;
+      if (data.length == 0) return;
+
+      saveOrderMenuTab(data);
+    });
   });
 }
 
 module.exports = {
   init,
+  emit,
 };

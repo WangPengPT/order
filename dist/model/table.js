@@ -1,22 +1,22 @@
 const { Dish } = require("./dish.js")
 const { PeopleType } = require("./people.js")
+const { TableStatus } = require("./TableStatus.js")
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = '空闲', order = [] }) {
-    this.id = id
-
-    // ✅ 确保 peopleType 是 PeopleType 实例
-    this.peopleType = peopleType instanceof PeopleType
-      ? peopleType
-      : new PeopleType(peopleType?.adults || 0, peopleType?.childres || 0)
-
-    this.status = status
-    this.order = order.map(item => new Dish(item))
-
-    const validTypes = ['空闲', '已预订', '已支付', '用餐中'];
-    if (!validTypes.includes(status)) {
-      throw new Error(`无效类型: ${status}，应为 ${validTypes.join(', ')}`);
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [] }) {
+    this.id = id;
+    this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType?.adults, peopleType?.children);
+    
+    // 修改这里，自动处理葡语状态
+    this.status = typeof status === 'string' 
+      ? TableStatus.fromString(status) || TableStatus.fromPt(status) || status
+      : status;
+    
+    if (!(this.status instanceof TableStatus)) {
+      throw new Error(`无效状态: ${status}，有效值为: ${TableStatus.values().map(s => s.value).join(', ')}`);
     }
+    
+    this.order = order.map(item => new Dish(item));
   }
 
   get people() {
@@ -28,14 +28,14 @@ class Table {
   }
 
   // 增加点菜
-addOrderItem(dishData) {
-  const existing = this.order.find(i => i.dishid === dishData.dishid)
-  if (existing) {
-    existing.quantity += dishData.quantity
-  } else {
-    this.order.push(new Dish(dishData))
+  addOrderItem(dishData) {
+    const existing = this.order.find(i => i.dishid === dishData.dishid)
+    if (existing) {
+      existing.quantity += dishData.quantity
+    } else {
+      this.order.push(new Dish(dishData))
+    }
   }
-}
 
 
   addOrderItems(items) {
@@ -58,49 +58,56 @@ addOrderItem(dishData) {
 
   // 清理桌子，清空订单、人数和状态
   clear() {
-    this.status = '空闲'
+    this.status = TableStatus.FREE;
     this.peopleType = new PeopleType()
     this.order = []
   }
 
-  toJSON() {
+
+
+  deteleDishesByIds(dishesIdAndQty) {
+    if (!Array.isArray(dishesIdAndQty)) return;
+
+    dishesIdAndQty.forEach(({ dishid, quantity }) => {
+      if (!dishid || !Number.isInteger(quantity) || quantity <= 0) {
+        console.warn('跳过非法输入:', { dishid, quantity });
+        return;
+      }
+
+      const index = this.order.findIndex(d => d.dishid == dishid); // ✅ 使用 == 宽松比较
+
+      if (index === -1) {
+        console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
+        return;
+      }
+
+      const dish = this.order[index];
+      dish.quantity -= quantity;
+      if (dish.quantity <= 0) {
+        this.order.splice(index, 1);
+      }
+    });
+  }
+
+toJSON() {
     return {
       id: this.id,
       people: this.people,
-      status: this.status,
-      order: this.order.map(dish => dish.toJSON())
-    }
+      status: this.status.toPt(), // 转换为葡萄牙语
+      order: this.order.map(dish => dish.toJSON()),
+      peopleType: this.peopleType.toJSON()
+    };
   }
-
-deteleDishesByIds(dishesIdAndQty) {
-  if (!Array.isArray(dishesIdAndQty)) return;
-
-  dishesIdAndQty.forEach(({ dishid, quantity }) => {
-    if (!dishid || !Number.isInteger(quantity) || quantity <= 0) {
-      console.warn('跳过非法输入:', { dishid, quantity });
-      return;
-    }
-
-    const index = this.order.findIndex(d => d.dishid == dishid); // ✅ 使用 == 宽松比较
-
-    if (index === -1) {
-      console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
-      return;
-    }
-
-    const dish = this.order[index];
-    dish.quantity -= quantity;
-    if (dish.quantity <= 0) {
-      this.order.splice(index, 1);
-    } 
-  });
-}
-
-
 
   static fromJSON(data) {
-    return new Table(data)
+    return new Table({
+      id: data.id,
+      peopleType: data.peopleType,
+      status: data.status, // 这里会自动调用 TableStatus.fromString
+      order: data.order
+    });
   }
+
 }
 
 class TableVer {

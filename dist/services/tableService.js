@@ -68,7 +68,7 @@ function refreshTablePassword(io) {
   })
 }
 
-function updateTable(io, tableData) {
+function updateTable(tableData) {
   try {
 
     const id = tableData.id
@@ -84,15 +84,17 @@ function updateTable(io, tableData) {
     
     const newTable = appState.tables.getTableById(id)
 
-    // TODO:
+    // 空闲变用餐中 赋予密码
     if (oldTable.status === '空闲' && newTable.status === '用餐中' ) {
       tablesPassword.makePassword(id)
       
     }
 
-    // 广播更新后的 tables 给所有客户端
-    //io.emit('update_tables', appState.tables.toJSON())
-    sendTablesInfo(io)
+    // 已支付变空闲 自动清空桌子
+    if (oldTable.status === '已支付' && newTable.status === '空闲' ) {
+      const cleanRes = cleanTable(id)
+      if (!cleanRes.success) throw new Error("Clean Error")
+    }
 
     return { success: true, tables: appState.tables.toJSON() }
   } catch (error) {
@@ -114,13 +116,13 @@ function removeTable(io, id) {
   }
 }
 
-function cleanTable(io, id) {
+function cleanTable(id) {
   try {
     // 更新服务器状态
     appState.tables.clearTable(id)
 
     // 广播更新后的 tables 给所有客户端
-    io.emit('clean_table', appState.tables.toJSON())
+    //io.emit('clean_table', appState.tables.toJSON())
 
     return { success: true, tables: appState.tables.toJSON() }
   } catch (error) {

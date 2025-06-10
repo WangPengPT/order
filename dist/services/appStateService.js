@@ -21,12 +21,12 @@ function saveAppState() {
     db.saveAppStateData(appState)
 }
 
-function updatePrice(adultPrice, childPrice) {
+function updatePrice(lunchPrice, dinnerPrice) {
     try {
-        const newAppState = appState.updatePrice(adultPrice, childPrice)
+        const newAppState = appState.updatePrice(lunchPrice, dinnerPrice)
         const data = {
-            adultPrice: newAppState.adultPrice,
-            childPrice: newAppState.childPrice
+            lunchPrice: newAppState.lunchPrice,
+            dinnerPrice: newAppState.dinnerPrice
         }
         return { success: true, data: data }
     } catch (error) {
@@ -38,12 +38,12 @@ function updatePrice(adultPrice, childPrice) {
 function getPrice() {
 
     try {
-        const childPrice = appState.childPrice
-        const adultPrice = appState.adultPrice
+        const lunchPrice = appState.lunchPrice
+        const dinnerPrice = appState.dinnerPrice
         const res = {
             success: true, data: {
-                childPrice: childPrice,
-                adultPrice: adultPrice
+                lunchPrice: lunchPrice,
+                dinnerPrice: dinnerPrice
             }
         }
         return res

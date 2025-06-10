@@ -21,6 +21,20 @@ function loadData(key,defaultValue) {
 	}
 }
 
+function loadDataForce(key,defaultValue) {
+	try {
+		const filePath = path.join(__dirname, dirFolder, key + '.json');
+		console.log(filePath);
+		const data = fs.readFileSync(filePath, 'utf8');
+		const jsonData = JSON.parse(data);
+
+		return jsonData ? jsonData : defaultValue;
+	} catch (err) {
+		return defaultValue
+	}
+}
+
+
 function saveData(key,value) {
 
 	if (!value) value = datas[key];
@@ -73,5 +87,6 @@ module.exports = {
 	loadData: loadData,
 	saveData: saveData,
 	saveAppStateData,
-	loadAppStateData
+	loadAppStateData,
+	loadDataForce
 };

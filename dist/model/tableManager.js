@@ -41,12 +41,22 @@ class TableManager {
     return true
   }
 
-  toJSON() {
+  clearAll() {
+
+    Array.from(this.tables.values()).forEach( (table) => {
+      console.log(table.id);
+      this.clearTable(table.id);
+      console.log(table);
+    });
+
+  }
+
+ toJSON() {
     return Array.from(this.tables.values()).map(table => ({
       id: table.id,
       people: table.people,
       peopleType: table.peopleType,
-      status: table.status,
+      status: table.status.toPt(), // 使用TableStatus的toPt方法转换为葡萄牙语
       order: table.order.map(item => ({
         dishid: item.dishid,
         name: item.name,
@@ -60,8 +70,16 @@ class TableManager {
     if (!Array.isArray(data)) {
       throw new Error('TableManager.fromJSON 需要数组类型数据')
     }
-    // data数组里每个元素应该是桌子序列化的对象，传给构造函数即可
-    return new TableManager(data)
+    
+    // 预处理数据，将葡萄牙语状态转换回中文
+    const processedData = data.map(tableData => {
+      return {
+        ...tableData,
+        status: TableStatus.fromPt(tableData.status).value // 转换为中文状态值
+      }
+    });
+    
+    return new TableManager(processedData)
   }
 }
 

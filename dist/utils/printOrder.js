@@ -1,39 +1,64 @@
 const menuService = require('../services/menuService');
 
-let print_data = "";
 
-function  add_print(value, type)
-{
-    if (type)
-    {
-        print_data += "-" + type + "-" + value + '\n';
-    }
-    else
-    {
-        print_data += "--" + value + '\n';
+
+const printers = [];
+
+
+function print_order(order) {
+
+    for (const key in printers) {
+        const printer = printers[key];
+
+        let hasData = false;
+        for (let i=0; i<order.items.length; i++) {
+            let type = "Caixa Aleatória";
+            let item = order.items[i];
+            const dish = menuService.findDish(item.dishid);
+            if (dish) {
+                type = dish.category;
+            }
+
+            if (printer.data.menu.includes(type))
+            {
+                hasData = true;
+                break;
+            }
+        }
+
+        if (hasData) {
+            print_orde_to_io(printer.socket,order);
+        }
     }
 }
 
-function print_order(order, io)
+
+let print_data = "";
+function  add_print(value)
+{
+    print_data += value + '\n';
+}
+
+function print_orde_to_io(io,order)
 {
     print_data = "";
 
-    add_print( "    order id: " + order.id );
-    add_print(  "    table: " + order.table );
-    add_print(  "    time: " + format_datetime(order.timestamp) );
+    add_print( "\torder id: " + order.id);
+    add_print(  "\ttable: " + order.table );
+    add_print(  "\ttime: " + format_datetime(order.timestamp) );
     add_print(  "-----------------------------------" );
 
     let needLine = false;
     if (order.name && order.name != "")
     {
         needLine = true;
-        add_print( "    name: " + order.name );
+        add_print( "\tname: " + order.name );
     }
 
     if (order.note && order.note != "")
     {
         needLine = true;
-        add_print( "    note: " + order.note );
+        add_print( "\tnote: " + order.note );
     }
 
     if (needLine)
@@ -53,7 +78,9 @@ function print_order(order, io)
         }
         if (item.dishid)
         {
-            add_print(  item.dishid + "   x " + item.quantity, type);
+            let name = item.subname;
+            if (name == "Default Title") name = item.name;
+            add_print(  item.dishid + "   x " + item.quantity);
         }
         else
         {
@@ -66,7 +93,7 @@ function print_order(order, io)
 
     console.log("print data:\n" + print_data);
 
-    io.emit("print", print_data);
+    //io.emit("print", print_data);
 }
 
 function format_datetime(timestamp)
@@ -87,5 +114,6 @@ function format_datetime(timestamp)
 }
 
 module.exports = {
-  print_order
+    print_order,
+    printers
 };

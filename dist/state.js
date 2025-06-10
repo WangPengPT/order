@@ -6,13 +6,14 @@ const { TableManager } = require('./model/tableManager.js')
 class AppState {
     constructor() {
         this.menu = []
+        this.orderMenuTab = []
         this.orders = new Map()
         this.tables = []
         this.printers = []
         this.maxOrderId = 0
 
-        this.childPrice = 7.90
-        this.adultPrice = 13.90
+        this.lunchPrice = 15.90
+        this.dinnerPrice = 19.90
 
         this.initTables()
     }
@@ -101,8 +102,9 @@ class AppState {
         }
     }
 
-    cleanOrder() {
-        this.orders.clear()
+    clearAll() {
+        this.orders.clear();
+        this.tables.clearAll();
     }
 
     /*
@@ -166,9 +168,9 @@ class AppState {
         this.childPrice = newAppState.childPrice
     }
 
-    updatePrice(adultPrice, childPrice) {
-        this.adultPrice = adultPrice
-        this.childPrice = childPrice
+    updatePrice(lunchPrice, dinnerPrice) {
+        this.lunchPrice = lunchPrice
+        this.dinnerPrice = dinnerPrice
         return this
     }
 

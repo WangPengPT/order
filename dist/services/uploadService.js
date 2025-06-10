@@ -2,6 +2,9 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const db = require('../filedb.js');
 const appStateService = require('./appStateService.js')
+const menuService = require('./menuService.js')
+const {appState} = require("../state");
+const socketService = require("./socketService.js")
 
 const xkeys = [
   "AIPO", "AMENDOIM", "CRUSTÁCEOS", "DIÓXIDO DE ENXOFRE E SULFITOS",
@@ -33,17 +36,23 @@ function makeDishData(data) {
       .replaceAll("<br>", "\n");
   }
 
-  return {
-    id,
+  //console.log(data);
+
+  const ret = {
+    id: id,
     handle: data['Handle'],
     name: data['Title'],
     subname: data['Option1 Value'],
-    note,
+    note: note,
     category: data['Type'],
     image: data['Image Src'],
-    x,
+    x: x,
     price: data['Variant Price'],
   };
+
+  console.log(ret);
+
+  return ret;
 }
 
 exports.processCSV = (file) => {
@@ -57,7 +66,9 @@ exports.processCSV = (file) => {
         results.push(transformed);
       })
       .on('end', () => {
-        db.saveData('menu', results);
+        menuService.saveMenu(results);
+        
+        socketService.emit("menu_data", appState.menu,appState.orderMenuTab);
 
         fs.unlinkSync(file.path); // 删除临时文件
         resolve(results);

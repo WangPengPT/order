@@ -10,6 +10,9 @@ const socketService = require('./services/socketService.js');
 const uploadMiddleware = require('./middlewares/uploadMiddleware.js');
 const appStateService = require('./services/appStateService.js')
 
+const {appState} = require("./state");
+
+
 const app = express();
 app.use(cors());
 app.use(compression());
@@ -62,3 +65,25 @@ process.on("SIGTERM", () => {
   appStateService.saveAppState();
   process.exit(0);
 });
+
+let needClean = true;
+
+function runInterval() {
+  setTimeout(() => {
+    const now = new Date();
+    if (now.getHours() == 1)
+    {
+      if ( needClean ) {
+        appState.clearAll();
+      }
+      needClean = false;
+    }
+    else
+    {
+      needClean = true;
+    }
+
+    runInterval();
+  }, 1000 * 60);
+}
+runInterval();

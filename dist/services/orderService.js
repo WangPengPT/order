@@ -71,5 +71,5 @@ module.exports = {
     addOrder,
     sendOrder,
     getOrders,
-    deleteOrderAndTableDishes
+    deleteOrderAndTableDishes,
 };
