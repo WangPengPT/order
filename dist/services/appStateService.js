@@ -35,6 +35,23 @@ function updatePrice(lunchPrice, dinnerPrice) {
 
 }
 
+function setFestivalDay(value) {
+    try {
+        if (typeof value !== "boolean") { throw new Error('Invalid input') }
+        appState.setFestivalDay(value)
+        const res = { success: true, data: appState.isFestiveDay }
+
+        return res
+    } catch (error) {
+        return { success: false, data: error.message }
+    }
+
+}
+
+function getFestivalDay() {
+    return appState.isFestiveDay
+}
+
 function getPrice() {
 
     try {
@@ -52,9 +69,43 @@ function getPrice() {
     }
 }
 
+function getTableTotalAmout(tableId) {
+    try {
+        if (!tableId) throw new Error("Non Input Value")
+           const prices = appState.getTableTotalAmout(tableId)
+        const res = {
+            success: true,
+            data: 
+            prices
+        }
+        return res
+    } catch (error) {
+        return { success: false, data: error.message }
+    }
+    
+}
+
+function getCurrentPrice() {
+    try {
+        const price = appState.getCurrentPrice()
+        const res = {
+            success: true,
+            data: 
+            price
+        }
+        return res
+    } catch (error) {
+        return { success: false, data: error.message }
+    }
+}
+
 module.exports = {
     loadAppState,
     saveAppState,
     updatePrice,
-    getPrice
+    getPrice,
+    setFestivalDay,
+    getFestivalDay,
+    getTableTotalAmout,
+    getCurrentPrice
 };

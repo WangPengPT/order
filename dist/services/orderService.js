@@ -1,7 +1,6 @@
 const { appState } = require("../state.js");
-const { print_order } = require('../utils/printOrder.js');
-const tableService = require('./tableService.js')
 
+/*
 function addOrder(io, socket, orderData) {
 
         if (!orderData.table) {
@@ -20,12 +19,28 @@ function addOrder(io, socket, orderData) {
         // 返回确认给用户端
         socket.emit("order_confirmed", order.id);
 
-        // 返回客户已经点的菜
-        tableService.sendTableDish(socket, order.table)
-
         // 更新管理端的桌子信息
         io.emit("send_tables", appState.tables.toJSON())
 
+    
+}*/
+
+function addOrder(orderData) {
+    try {
+        if (!orderData.table) throw new Error("No table id")
+        const order = appState.addOrderTable(orderData)
+        const orderJson = order.toJSON()
+        return {
+            success: true,
+            data: orderJson
+        }
+    } catch (error) {
+        return {
+            success: false,
+            data: error.message
+        }     
+    }
+    
     
 }
 
@@ -52,7 +67,7 @@ function getOrders(tableId) {
 
 function deleteOrderAndTableDishes(tableId, orders) {
     try {
-        const table = appState.getTable(tableId)
+        const table = appState.getTableById(tableId)
         if (table == null || table == undefined) throw new Error("Not found the table")
         table.deteleDishesByIds(orders)
         const newTables = appState.tables.toJSON()

@@ -3,7 +3,7 @@ const { tablesPassword } = require('../model/tableManager.js')
 
 function addNewTable(io, tableData) {
   try {
-    
+
     const newId = tableData.id
 
     if (!newId) { throw new Error("Invalid table id") }
@@ -26,6 +26,20 @@ function addNewTable(io, tableData) {
   }
 }
 
+function getTableInfo(tableId) {
+  try {
+    if (!tableId) throw new Error("Non input value")
+    const table = appState.tables.getTableById(tableId)
+    if (table == null) throw new Error("Not found the table")
+    return {
+      success: true,
+      data: table.toJSON()
+    }
+  } catch (error) {
+    return { success: false, data: error.message };
+  }
+}
+
 function sendTablesInfo(io) {
   io.emit('send_tables', appState.tables.toJSON());
   io.emit('send_tables_password', tablesPassword.toJSON())
@@ -45,16 +59,16 @@ function tableLogin(io) {
 }
 
 function updateTablePassword(io) {
-  io.on("table_password_update",  (value, cb) => {
+  io.on("table_password_update", (value, cb) => {
     try {
-        const id = value.tableId
-        const password = value.password
-        tablesPassword.changePassword(id, password)
-        cb(tablesPassword.toJSON())
-    }catch (e) {
+      const id = value.tableId
+      const password = value.password
+      tablesPassword.changePassword(id, password)
+      cb(tablesPassword.toJSON())
+    } catch (e) {
       cb({ success: false, message: e.message });
     }
-      })
+  })
 }
 
 function refreshTablePassword(io) {
@@ -78,20 +92,17 @@ function updateTable(tableData) {
     if (!oldTable) {
       new Error("Not found old table")
     }
-
     // 更新服务器状态
     appState.tables.updateTable(tableData)
-    
     const newTable = appState.tables.getTableById(id)
 
     // 空闲变用餐中 赋予密码
-    if (oldTable.status === '空闲' && newTable.status === '用餐中' ) {
+    if (oldTable.status === '空闲' && newTable.status === '用餐中') {
       tablesPassword.makePassword(id)
-      
     }
 
     // 已支付变空闲 自动清空桌子
-    if (oldTable.status === '已支付' && newTable.status === '空闲' ) {
+    if (oldTable.status === '已支付' && newTable.status === '空闲') {
       const cleanRes = cleanTable(id)
       if (!cleanRes.success) throw new Error("Clean Error")
     }
@@ -130,9 +141,14 @@ function cleanTable(id) {
   }
 }
 
-function sendTableDish(io, id) {
-    const dishes = appState.getDishesJSONByTable(id)
-    io.emit("client_orders", dishes)
+
+function getTableById(id) {
+  try {
+    const table = appState.getTableById(id)
+    return { success: true, data: table.toJSON() }
+  } catch (error) {
+    return { success: false, data: error.message }
+  }
 }
 
 
@@ -141,9 +157,10 @@ module.exports = {
   updateTable,
   removeTable,
   cleanTable,
-  sendTableDish,
   sendTablesInfo,
   updateTablePassword,
   refreshTablePassword,
-  tableLogin
+  tableLogin,
+  getTableInfo,
+  getTableById
 };

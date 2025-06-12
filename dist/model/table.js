@@ -5,7 +5,7 @@ const { TableStatus } = require("./TableStatus.js")
 class Table {
   constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [] }) {
     this.id = id;
-    this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType?.adults, peopleType?.children);
+    this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType);
     
     // 修改这里，自动处理葡语状态
     this.status = typeof status === 'string' 
@@ -50,7 +50,7 @@ class Table {
   }
 
   // 以点菜单总价
-  getTotalAmount() {
+  getTableOrdersTotalAmount() {
     return this.order.reduce((sum, item) => {
       return sum + item.price * item.quantity
     }, 0).toFixed(2)  // 保留两位小数

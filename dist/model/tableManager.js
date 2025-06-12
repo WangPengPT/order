@@ -32,6 +32,7 @@ class TableManager {
       throw new Error(`桌号${updatedTableData.id}不存在！`)
     }
     this.tables.set(updatedTableData.id, new Table(updatedTableData))
+    return this.tables.get(updatedTableData.id)
   }
 
   clearTable(id) {

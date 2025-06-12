@@ -2,6 +2,8 @@
 
 const { Order } = require('./model/order.js')
 const { TableManager } = require('./model/tableManager.js')
+const { getCurentPeoplePrice } = require('./utils/timePrice.js')
+const { add } = require('./utils/manualMath.js')
 
 class AppState {
     constructor() {
@@ -14,6 +16,8 @@ class AppState {
 
         this.lunchPrice = 15.90
         this.dinnerPrice = 19.90
+
+        this.isFestiveDay= false
 
         this.initTables()
     }
@@ -33,7 +37,7 @@ class AppState {
         this.tables = tablesCenter
     }
 
-    getTable(tableId) {
+    getTableById(tableId) {
         if (!tableId) return undefined;
 
         if (typeof variable === 'string') {
@@ -49,7 +53,7 @@ class AppState {
         this.maxOrderId++
         const orderId = this.maxOrderId.toString().padStart(4, '0')
         const order = new Order({ ...orderData, id: orderId })
-        const table = this.getTable(order.table)
+        const table = this.getTableById(order.table)
         if (table == null) {
             throw new Error(`桌号${order.table}未能找到！`)
         }
@@ -140,6 +144,10 @@ class AppState {
         return result;
     }
 
+    setFestivalDay(value) {
+        this.isFestiveDay = value
+    }
+
     updateAppState(newAppState) {
         this.menu = newAppState.menu || []
 
@@ -174,6 +182,24 @@ class AppState {
         return this
     }
 
+    getTableTotalAmout(tableId) {
+        const table = this.tables.getTableById(tableId)
+        if (table == null) throw new Error('Noot found the table')
+        const tableOrdersAmout =  parseFloat(table.getTableOrdersTotalAmount())
+        const price = getCurentPeoplePrice(this.lunchPrice, this.dinnerPrice, this.isFestiveDay)
+        const peopleCust = parseFloat((table.peopleType.adults * price.adult) + (table.peopleType.childres * price.children).toFixed(2))
+        const total = add(tableOrdersAmout, peopleCust).toFixed(2)
+        return {
+            total: total,
+            tableAmout:tableOrdersAmout,
+            peopleCust: peopleCust
+        }
+    }
+
+    getCurrentPrice() {
+        return getCurentPeoplePrice(this.lunchPrice, this.dinnerPrice, this.isFestiveDay)
+    }
+
 
     toJSON() {
         return {
@@ -183,7 +209,8 @@ class AppState {
             printers: this.printers,
             maxOrderId: this.maxOrderId,
             childPrice: this.childPrice,
-            adultPrice: this.adultPrice
+            adultPrice: this.adultPrice,
+            isFestiveDay: this.isFestiveDay,
         };
     }
 
@@ -213,6 +240,7 @@ class AppState {
 
         instance.adultPrice = data.adultPrice || 1
         instance.childPrice = data.childPrice || 0.5
+        instance.isFestiveDay = data.isFestiveDay || false
 
         return instance
     }
