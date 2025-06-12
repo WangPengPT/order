@@ -1,3 +1,5 @@
+rem package, update used git
+rem server will auto update.
 
 rm dist -rf
  
