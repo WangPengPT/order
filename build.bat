@@ -7,7 +7,7 @@ set "script_dir=%~dp0"
 echo %script_dir%
 
 set SRC_PATH=%script_dir%..\oneorder
-set DST_PATH=%script_dir%order
+set DST_PATH=%script_dir%
 
 cd %SRC_PATH%
 xcopy .\server %DST_PATH%\dist /E /Y /I
