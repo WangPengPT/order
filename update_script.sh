@@ -1,5 +1,5 @@
 #!/bin/bash
-git pull origin master
+git pull
 
 # npm install
 # pm2 restart app
