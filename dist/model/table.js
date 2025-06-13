@@ -114,6 +114,17 @@ class Table {
     });
   }
 
+  deleteDishByName(ordername) {
+    if (!ordername) return;
+    const index = this.order.findIndex(d => d.name == ordername);
+    if (index === -1) {
+        console.warn('未找到 盲盒');
+        return;
+    }
+    this.order.splice(index, 1);
+    return this.order
+  }
+
   toJSON() {
     return {
       id: this.id,

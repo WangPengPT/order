@@ -3,8 +3,13 @@ const { appState } = require('../state.js');
 
 // 载入菜单数据
 function loadMenu() {
-  appState.menu = db.loadData('menu', []);
-  appState.orderMenuTab = db.loadData('orderMenuTab', []);
+  try {
+    appState.menu = db.loadData('menu', []);
+    appState.orderMenuTab = db.loadData('orderMenuTab', []);
+  } catch (error) {
+    console.warn("Error: ", error)
+  }
+  
 }
 
 // 获取菜单
@@ -14,7 +19,8 @@ function getMenu() {
 
 function saveMenu(data)
 {
-  appState.menu = data;
+  try {
+    appState.menu = data;
   db.saveData('menu', data);
 
   const types = [];
@@ -43,6 +49,10 @@ function saveMenu(data)
   }
 
   saveOrderMenuTab(orderTabs);
+  } catch (error) {
+    console.warn("Error: ", error)
+  }
+  
 }
 
 function getOrderMenuTab() {
@@ -50,8 +60,13 @@ function getOrderMenuTab() {
 }
 
 function saveOrderMenuTab(data) {
-  appState.orderMenuTab = data;
+  try {
+      appState.orderMenuTab = data;
   db.saveData('orderMenuTab', data);
+  } catch (error) {
+    console.warn("Error: ", error)
+  }
+
 }
 
 

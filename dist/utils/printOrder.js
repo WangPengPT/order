@@ -10,6 +10,9 @@ function print_order(order) {
     for (const key in printers) {
         const printer = printers[key];
 
+        if (!printer) continue;
+        if (!printer.data) continue;
+
         let hasData = false;
         for (let i=0; i<order.items.length; i++) {
             let type = "Caixa Aleatória";
@@ -27,7 +30,8 @@ function print_order(order) {
         }
 
         if (hasData) {
-            print_orde_to_io(printer.socket,order);
+            console.log(printer.data.every_one);
+            print_orde_to_io(printer.socket,order,printer.data.every_one == "true");
         }
     }
 }
@@ -36,11 +40,20 @@ function print_order(order) {
 let print_data = "";
 function  add_print(value)
 {
-    print_data += value + '\n';
+    if (value)
+    {
+        print_data += value + '\n';
+    }
+    else
+    {
+        print_data += '\n';
+    }
 }
 
-function print_orde_to_io(io,order)
+function print_orde_to_io(io,order,every_one)
 {
+    console.log("....",every_one);
+
     print_data = "";
 
     add_print( "\torder id: " + order.id);
@@ -66,6 +79,7 @@ function print_orde_to_io(io,order)
         add_print( "-----------------------------------" );
     }
 
+    const head_length = print_data.length;
 
     for (let i=0; i<order.items.length; i++)
     {
@@ -79,8 +93,14 @@ function print_orde_to_io(io,order)
         if (item.dishid)
         {
             let name = item.subname;
-            if (name == "Default Title") name = item.name;
+            if (name == undefined || name == "Default Title" || name == "undefined")
+                name = item.name;
+            else
+                name = item.name + " - " + name;
+
             add_print(  item.dishid + "   x " + item.quantity);
+            add_print(  name );
+            add_print();
         }
         else
         {
@@ -88,12 +108,23 @@ function print_orde_to_io(io,order)
             for (let j = 0; j < item.notes.length; j++) {
                 add_print( "  " + item.notes[j] );
             }
+            add_print();
+        }
+
+        if (every_one) {
+            io.emit("print", print_data);
+            console.log("print data:\n" + print_data);
+
+            print_data = print_data.substring(0,head_length);
         }
     }
 
-    console.log("print data:\n" + print_data);
 
-    //io.emit("print", print_data);
+
+    if (!every_one) {
+        io.emit("print", print_data);
+        console.log("print data:\n" + print_data);
+    }
 }
 
 function format_datetime(timestamp)

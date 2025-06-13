@@ -52,6 +52,14 @@ function init(io) {
     // 发送管理端获取今日红日
     socket.emit("manager_festival", appStateService.getFestivalDay())
 
+    socket.on("manager_delete_order", ({order: ordername, tableId: tableId}, cb) => {
+      const result = orderService.deleteSushiBoxInTable(ordername, tableId)
+      // 更新客户端桌子信息
+      io.emit('client_table', tableService.getTableById(tableId))
+
+      cb(result)
+    })
+
     socket.on("manager_delete_orders", (value, cb) => {
       const result = orderService.deleteOrderAndTableDishes(value.tableId, value.orders)
       // 更新客户端桌子信息
@@ -89,7 +97,7 @@ function init(io) {
 
       const order = orderService.addOrder(orderData)
       if (order.success) {
-        print_order(order, io);
+        print_order(order.data);
         io.emit("new_order", order.data);
         socket.emit("📢 已广播新订单:", order.data);
 
@@ -168,7 +176,7 @@ function init(io) {
 
     socket.on('disconnect', ()=> {
       if (printers[socket.id]) printers[socket.id] = undefined;
-      console.log("remove printer", printers)
+      //console.log("remove printer", printers)
     })
 
     // printer
@@ -178,7 +186,7 @@ function init(io) {
       value.id = id;
       printers[id]= {socket: socket, data: value}
 
-      console.log("add_printer", printers)
+      //console.log("add_printer", printers)
     });
 
     socket.on('get_printers', (callback) => {
@@ -187,7 +195,7 @@ function init(io) {
         const printer = printers[key];
         if (printer) ret.push(printer.data);
       }
-      console.log("getPrinters", ret);
+      //console.log("getPrinters", ret);
       callback(ret)
     });
 
@@ -199,7 +207,8 @@ function init(io) {
           {
             printer.data.curPrinter = value.printer;
             printer.data.menu = value.menu;
-            printer.socket.emit('select_printer',value.printer, value.menu.toString());
+            printer.data.every_one = value.every_one;
+            printer.socket.emit('select_printer',value.printer, value.menu.toString(), value.every_one);
           }
         }
       }

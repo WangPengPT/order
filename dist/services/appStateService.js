@@ -3,7 +3,8 @@ const { tablesPassword } = require('../model/tableManager.js')
 const db = require('../filedb.js')
 
 function loadAppState() {
-    const data = db.loadAppStateData()
+    try {
+        const data = db.loadAppStateData()
     if (data) {
         const loaded = AppState.fromJSON(data)
         // 用数据覆盖全局 appState
@@ -12,7 +13,11 @@ function loadAppState() {
         console.log("已加载 AppState 数据")
     }
 
-    tablesPassword.init(appState.tables)
+    //tablesPassword.init(appState.tables)
+    } catch (error) {
+        console.warn("Error: ", error)
+    }
+    
 
 }
 
@@ -25,6 +30,7 @@ function getAllTables() {
             data: tables.toJSON()
         }
     } catch (error) {
+        console.warn("Error: ", error)
         return {
             success: false,
             data: error.message
@@ -33,7 +39,12 @@ function getAllTables() {
 }
 
 function saveAppState() {
-    db.saveAppStateData(appState)
+    try {
+       db.saveAppStateData(appState) 
+    } catch (error) {
+        console.warn("Error: ", error)
+    }
+    
 }
 
 function updatePrice(lunchPrice, dinnerPrice) {
@@ -45,6 +56,7 @@ function updatePrice(lunchPrice, dinnerPrice) {
         }
         return { success: true, data: data }
     } catch (error) {
+        console.warn("Error: ", error)
         return { success: false, data: error.message }
     }
 
@@ -58,6 +70,7 @@ function setFestivalDay(value) {
 
         return res
     } catch (error) {
+        console.warn("Error: ", error)
         return { success: false, data: error.message }
     }
 
@@ -80,6 +93,7 @@ function getPrice() {
         }
         return res
     } catch (error) {
+        console.warn("Error: ", error)
         return { success: false, data: error.message }
     }
 }
@@ -95,6 +109,7 @@ function getTableTotalAmout(tableId) {
         }
         return res
     } catch (error) {
+        console.warn("Error: ", error)
         return { success: false, data: error.message }
     }
     
@@ -110,6 +125,7 @@ function getCurrentPrice() {
         }
         return res
     } catch (error) {
+        console.warn("Error: ", error)
         return { success: false, data: error.message }
     }
 }

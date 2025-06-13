@@ -22,6 +22,7 @@ function addNewTable(io, tableData) {
 
     return { success: true, tables: appState.tables.toJSON() };
   } catch (err) {
+    console.warn("Error: ", err)
     return { success: false, message: err.message };
   }
 }
@@ -39,6 +40,7 @@ function tableLogin(io) {
       const res = table.checkPassword(value.password)
       cb(res)
     } catch (error) {
+      console.warn("Error: ", error)
       cb({ success: false, message: error.message })
     }
   })
@@ -52,6 +54,7 @@ function updateTablePassword(io) {
       tablesPassword.changePassword(id, password)
       cb(tablesPassword.toJSON())
     } catch (e) {
+      console.warn("Error: ", e)
       cb({ success: false, message: e.message });
     }
   })
@@ -63,6 +66,7 @@ function refreshTablePassword(io) {
       const res = tablesPassword.makePassword(id)
       cb(res)
     } catch (e) {
+      console.warn("Error: ", e)
       cb({ success: false, message: e.message });
     }
   })
@@ -88,6 +92,7 @@ function updateTableWithoutOrder(tableData) {
 
     return { success: true, tables: appState.tables.toJSON() }
   } catch (error) {
+    console.warn("Error: ", error)
     return { success: false, message: error.message }
   }
 }
@@ -102,6 +107,7 @@ function removeTable(io, id) {
 
     return { success: true, tables: appState.tables.toJSON() }
   } catch (error) {
+    console.warn("Error: ", error)
     return { success: false, message: error.message }
   }
 }
@@ -116,6 +122,7 @@ function cleanTable(id) {
 
     return { success: true, tables: appState.tables.toJSON() }
   } catch (error) {
+    console.warn("Error: ", error)
     return { success: false, message: error.message }
   }
 }
@@ -127,6 +134,7 @@ function getTableById(id) {
     const table = appState.getTableById(id)
     return { success: true, data: table.toJSON() }
   } catch (error) {
+    console.warn("Error: ", error)
     return { success: false, data: error.message }
   }
 }
