@@ -9,7 +9,7 @@ module.exports = {
     max_memory_restart: "800M",
     env: {
       NODE_ENV: "production",
-      PORT: 80,
+      PORT: 443,
       QR_ADDR: "http://173.249.22.132/client.html?table=",
     }
   }]
