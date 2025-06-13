@@ -2,6 +2,8 @@ const express = require("express");
 const compression = require('compression');
 const cors = require('cors');
 const http = require("http");
+const https = require('https');
+
 const { Server } = require("socket.io");
 const path = require("path");
 const menuController = require('./controllers/menuController.js');
@@ -12,7 +14,6 @@ const appStateService = require('./services/appStateService.js')
 
 const {appState} = require("./state");
 
-
 const app = express();
 app.use(cors());
 app.use(compression());
@@ -21,7 +22,35 @@ app.use(compression());
 app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
 
 // 创建 HTTP 服务器和 Socket.IO
-const server = http.createServer(app);
+let server;
+if (process.env.PORT == 443)
+{
+  // 配置 HTTPS 选项
+  const httpsOptions = {
+    key: fs.readFileSync(' /etc/letsencrypt/live/order.xiaoxiong.pt/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/order.xiaoxiong.pt/fullchain.pem'),
+  };
+  server = https.createServer(httpsOptions, app);
+
+  app.use((req, res, next) => {
+    if (!req.secure) {
+      // 自动重定向 HTTP 到 HTTPS
+      return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+
+  // 创建 HTTP 服务器（用于重定向）
+  app.listen(80, () => {
+    console.log('HTTP server running on port 80');
+  });
+}
+else
+{
+  server = http.createServer(app);
+}
+
+
 const io = new Server(server, {
   cors: {
     origin: '*',
