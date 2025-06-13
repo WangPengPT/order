@@ -23,7 +23,6 @@ app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
 
 // 创建 HTTP 服务器和 Socket.IO
 let server;
-process.env.PORT = 443
 if (process.env.PORT == 443)
 {
   // 配置 HTTPS 选项
@@ -32,6 +31,19 @@ if (process.env.PORT == 443)
     cert: fs.readFileSync('/etc/letsencrypt/live/order.xiaoxiong.pt/fullchain.pem'),
   };
   server = https.createServer(httpsOptions, app);
+
+  app.use((req, res, next) => {
+    if (!req.secure) {
+      // 自动重定向 HTTP 到 HTTPS
+      return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+
+  // 创建 HTTP 服务器（用于重定向）
+  app.listen(80, () => {
+    console.log('HTTP server running on port 80');
+  });
 }
 else
 {
