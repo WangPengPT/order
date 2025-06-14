@@ -54,7 +54,8 @@ updateTableWithoutOrder(updatedTableData) {
         dishid: item.dishid,
         name: item.name,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
+        orderIds: item.orderIds
       }))
     }));
   }

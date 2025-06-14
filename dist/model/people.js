@@ -3,6 +3,8 @@ class PeopleType {
   constructor({ adults = 0, childres = 0 } = {}) {
     this.adults = PeopleType.parseNumber(adults)
     this.childres = PeopleType.parseNumber(childres)
+
+    if ( this.adults < 0 || this.childres < 0) throw new Error("The people can not be negative")
   }
 
   static parseNumber(value) {

@@ -4,6 +4,7 @@ const { Order } = require('./model/order.js')
 const { TableManager } = require('./model/tableManager.js')
 const { getCurentPeoplePrice } = require('./utils/timePrice.js')
 const { add } = require('./utils/manualMath.js')
+const { TableStatus } = require('./model/TableStatus.js')
 
 class AppState {
     constructor() {
@@ -58,15 +59,14 @@ class AppState {
             throw new Error(`桌号${order.table}未能找到！`)
         }
 
-        if (table.status == '已支付') {
-            throw new Error(`桌号${order.table}已支付`)
+        if (table.status !== TableStatus.SEATED) {
+            throw new Error(`Mesa ${order.table} não tem permissão`)
         }
 
         // add order
         this.orders.set(orderId, order)
         // add order to Table
-        table.addOrderItems(order.items)
-
+        table.addOrderItems(order.items, order.id)
         return order
 
     }
@@ -187,6 +187,7 @@ class AppState {
         if (table == null) throw new Error('Noot found the table')
         const tableOrdersAmout =  parseFloat(table.getTableOrdersTotalAmount())
         const price = getCurentPeoplePrice(this.lunchPrice, this.dinnerPrice, this.isFestiveDay)
+        
         const peopleCust = parseFloat((table.peopleType.adults * price.adult) + (table.peopleType.childres * price.children).toFixed(2))
         const total = add(tableOrdersAmout, peopleCust).toFixed(2)
         return {

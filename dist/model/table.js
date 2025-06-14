@@ -28,19 +28,22 @@ class Table {
   }
 
   // 增加点菜
-  addOrderItem(dishData) {
+  addOrderItem(dishData, orderId) {
     const existing = this.order.find(i => i.dishid === dishData.dishid)
     if (existing) {
       existing.quantity += dishData.quantity
+      existing.orderIds.push(orderId)
     } else {
       this.order.push(new Dish(dishData))
+      const ord = this.order.find(i => i.dishid === dishData.dishid)
+      ord.orderIds.push(orderId)
     }
   }
 
 
-  addOrderItems(items) {
+  addOrderItems(items, orderId) {
     items.forEach(item => {
-      this.addOrderItem(item)
+      this.addOrderItem(item, orderId)
     })
   }
 
