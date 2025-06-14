@@ -90,9 +90,9 @@ function print_orde_to_io(io,order,every_one)
         {
             type = dish.category;
         }
-        if (item.dishid)
+        if (dish)
         {
-            let name = item.subname;
+            let name = dish.subname;
             if (name == undefined || name == "Default Title" || name == "undefined")
                 name = item.name;
             else

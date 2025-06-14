@@ -107,6 +107,7 @@ class AppState {
     }
 
     clearAll() {
+        console.log("clear all");
         this.orders.clear();
         this.tables.clearAll();
     }

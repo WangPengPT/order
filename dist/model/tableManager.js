@@ -39,7 +39,7 @@ updateTableWithoutOrder(updatedTableData) {
   clearAll() {
 
     Array.from(this.tables.values()).forEach( (table) => {
-      this.clearTable(table.id);
+      table.clearTable();
     });
 
   }
