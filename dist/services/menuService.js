@@ -4,7 +4,25 @@ const { appState } = require('../state.js');
 // 载入菜单数据
 function loadMenu() {
   try {
-    appState.menu = db.loadData('menu', []);
+    let menu = db.loadData('menu', []);
+
+    const category = {};
+    for (let i = 0; i < menu.length; i++) {
+      const value = menu[i];
+      if (value.category && (value.category != "") && (!category[value.handle]))
+      {
+        category[value.handle] = value.category;
+      }
+    }
+
+    for (let i = 0; i < menu.length; i++) {
+      const value = menu[i];
+      if (category[value.handle]) value.category = category[value.handle]
+    }
+
+    appState.menu = menu;
+
+
     appState.orderMenuTab = db.loadData('orderMenuTab', []);
   } catch (error) {
     console.warn("Error: ", error)
