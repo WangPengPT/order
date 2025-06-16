@@ -92,7 +92,6 @@ function print_orde_to_io(printer,order,every_one)
         {
             type = dish.category;
         }
-        
         if (!printer.data.menu.includes(type)) continue;
 
         if (dish)
