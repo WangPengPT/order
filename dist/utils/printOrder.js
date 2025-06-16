@@ -31,7 +31,7 @@ function print_order(order) {
 
         if (hasData) {
             console.log(printer.data.every_one);
-            print_orde_to_io(printer.socket,order,printer.data.every_one == "true");
+            print_orde_to_io(printer,order,printer.data.every_one == "true");
         }
     }
 }
@@ -50,8 +50,10 @@ function  add_print(value)
     }
 }
 
-function print_orde_to_io(io,order,every_one)
+function print_orde_to_io(printer,order,every_one)
 {
+    io  = printer.socket
+
     console.log("....",every_one);
 
     print_data = "";
@@ -90,9 +92,11 @@ function print_orde_to_io(io,order,every_one)
         {
             type = dish.category;
         }
-        if (item.dishid)
+        if (!printer.data.menu.includes(type)) continue;
+
+        if (dish)
         {
-            let name = item.subname;
+            let name = dish.subname;
             if (name == undefined || name == "Default Title" || name == "undefined")
                 name = item.name;
             else

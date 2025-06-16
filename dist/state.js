@@ -25,15 +25,31 @@ class AppState {
 
     initTables() {
         const tablesCenter = new TableManager([
-            { id: '101', people: 0, status: '空闲' },
-            { id: '102', people: 0, status: '空闲' },
-            { id: '103', people: 0, status: '已预订' },
-            { id: '201', people: 0, status: '空闲' },
-            { id: '202', people: 0, status: '空闲' },
-            { id: '203', people: 0, status: '空闲' },
-            { id: '301', people: 0, status: '已预订' },
-            { id: '302', people: 0, status: '已预订' },
-            { id: '303', people: 0, status: '空闲' },
+            // { id: '01', people: 0, status: '空闲' },
+            { id: '02', people: 0, status: '空闲' },
+            { id: '03', people: 0, status: '空闲' },
+            { id: '04', people: 0, status: '空闲' },
+            { id: '05', people: 0, status: '空闲' },
+            { id: '06', people: 0, status: '空闲' },
+            { id: '07', people: 0, status: '空闲' },
+            { id: '08', people: 0, status: '空闲' },
+            { id: '09', people: 0, status: '空闲' },
+            { id: '10', people: 0, status: '空闲' },
+            { id: '11', people: 0, status: '空闲' },
+            { id: '12', people: 0, status: '空闲' },
+            { id: '13', people: 0, status: '空闲' },
+            { id: '14', people: 0, status: '空闲' },
+            { id: '15', people: 0, status: '空闲' },
+            { id: '16', people: 0, status: '空闲' },
+            { id: '17', people: 0, status: '空闲' },
+            { id: '18', people: 0, status: '空闲' },
+            { id: '19', people: 0, status: '空闲' },
+            { id: '20', people: 0, status: '空闲' },
+            { id: '21', people: 0, status: '空闲' },
+            { id: '22', people: 0, status: '空闲' },
+            { id: '23', people: 0, status: '空闲' },
+            { id: '24', people: 0, status: '空闲' },
+            { id: '25', people: 0, status: '空闲' },
         ])
         this.tables = tablesCenter
     }
@@ -107,6 +123,7 @@ class AppState {
     }
 
     clearAll() {
+        console.log("clear all");
         this.orders.clear();
         this.tables.clearAll();
     }
