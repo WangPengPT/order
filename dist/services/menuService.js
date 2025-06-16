@@ -4,7 +4,7 @@ const { appState } = require('../state.js');
 // 载入菜单数据
 function loadMenu() {
   try {
-    let menu = db.loadData('menu', []);
+    const menu = db.loadData('menu', []);
 
     const category = {};
     for (let i = 0; i < menu.length; i++) {
@@ -15,11 +15,15 @@ function loadMenu() {
       }
     }
 
+    let dishCategory = {}
     for (let i = 0; i < menu.length; i++) {
       const value = menu[i];
-      if (category[value.handle]) value.category = category[value.handle]
+      if (category[value.handle]) {
+        dishCategory[value.id] = category[value.handle];
+      }
     }
 
+    appState.dishCategory = dishCategory;
     appState.menu = menu;
 
 
@@ -28,6 +32,11 @@ function loadMenu() {
     console.warn("Error: ", error)
   }
   
+}
+
+function getDishCategory(id)
+{
+  return appState.dishCategory[id];
 }
 
 // 获取菜单
@@ -106,5 +115,6 @@ module.exports = {
   saveMenu,
   getOrderMenuTab,
   saveOrderMenuTab,
-  findDish
+  findDish,
+  getDishCategory,
 };

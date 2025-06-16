@@ -90,8 +90,9 @@ function print_orde_to_io(printer,order,every_one)
         const dish = menuService.findDish(item.dishid);
         if (dish)
         {
-            type = dish.category;
+            type = menuService.getDishCategory(item.dishid);
         }
+
         if (!printer.data.menu.includes(type)) continue;
 
         if (dish)
