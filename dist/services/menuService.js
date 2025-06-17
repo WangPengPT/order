@@ -56,6 +56,8 @@ function loadMenu() {
 
 function getDishCategory(id)
 {
+  if ((!id) || (id == 0)) return  "Caixa Aleatória";
+
   //console.log(appState.dishTags[id], id);
   //console.log(appState.dishCategory[id], id);
 
