@@ -14,7 +14,6 @@ function loadMenu() {
         category[value.handle] = value.category;
       }
     }
-
     let dishCategory = {}
     for (let i = 0; i < menu.length; i++) {
       const value = menu[i];
@@ -22,9 +21,30 @@ function loadMenu() {
         dishCategory[value.id] = category[value.handle];
       }
     }
-
     appState.dishCategory = dishCategory;
+
+
+    const tags = {};
+    for (let i = 0; i < menu.length; i++) {
+      const value = menu[i];
+      if (value.tags && (value.tags != "") && (!tags[value.handle]))
+      {
+        tags[value.handle] = value.tags;
+      }
+    }
+    let dishTags = {}
+    for (let i = 0; i < menu.length; i++) {
+      const value = menu[i];
+      if (tags[value.handle]) {
+        dishTags[value.id] = tags[value.handle];
+      }
+    }
+    appState.dishTags = dishTags;
+
     appState.menu = menu;
+
+    //console.log("dis tags: ", dishTags);
+    //console.log("dis category: ",dishCategory);
 
 
     appState.orderMenuTab = db.loadData('orderMenuTab', []);
@@ -36,6 +56,10 @@ function loadMenu() {
 
 function getDishCategory(id)
 {
+  //console.log(appState.dishTags[id], id);
+  //console.log(appState.dishCategory[id], id);
+
+  if (appState.dishTags[id]) return appState.dishTags[id];
   return appState.dishCategory[id];
 }
 

@@ -44,6 +44,7 @@ function makeDishData(data) {
     note: note,
     category: data['Type'],
     image: data['Image Src'],
+    tags: data['Tags'],
     x: x,
     price: data['Variant Price'],
   };
