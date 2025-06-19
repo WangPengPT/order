@@ -79,6 +79,7 @@ function deleteSushiBoxInTable(ordername, tableId) {
 
 function deleteOrderAndTableDishes(tableId, orders) {
     try {
+        console.log("orders: ", orders)
         const table = appState.getTableById(tableId)
         if (table == null || table == undefined) throw new Error("Not found the table")
         table.deteleDishesByIdAndName(orders)

@@ -84,8 +84,7 @@ function setFanDays(value) {
     try {
         if (typeof value !== "boolean") { throw new Error('Invalid input') }
         appState.setFanDays(value)
-        const res = { success: true, data: appState.isFestiveDay }
-
+        const res = { success: true, data: appState.isFanDays }
         return res
     } catch (error) {
         console.warn("Error: ", error)

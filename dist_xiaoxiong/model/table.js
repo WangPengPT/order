@@ -29,13 +29,13 @@ class Table {
 
   // 增加点菜
   addOrderItem(dishData, orderId) {
-    const existing = this.order.find(i => i.dishid === dishData.dishid)
+    const existing = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name && i.price === dishData.price)
     if (existing) {
       existing.quantity += dishData.quantity
       existing.orderIds.push(orderId)
     } else {
       this.order.push(new Dish(dishData))
-      const ord = this.order.find(i => i.dishid === dishData.dishid)
+      const ord = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name && i.price === dishData.price)
       ord.orderIds.push(orderId)
     }
   }
@@ -94,9 +94,9 @@ class Table {
   deteleDishesByIdAndName(deletedDishes) {
     if (!Array.isArray(deletedDishes)) return;
 
-    deletedDishes.forEach(({ dishid, quantity, name }) => {
-      if (name === 'Xiaoxiong® Ramen') {
-        const index = this.order.findIndex(d => d.name == name);
+    deletedDishes.forEach(({ dishid, quantity, name, price }) => {
+      if (name === 'XIAOXIONG® RAMEN') {
+        const index = this.order.findIndex(d => d.name == name && d.price == price);
         if (index === -1) {
           console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
           return;
