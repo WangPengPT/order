@@ -81,7 +81,7 @@ function deleteOrderAndTableDishes(tableId, orders) {
     try {
         const table = appState.getTableById(tableId)
         if (table == null || table == undefined) throw new Error("Not found the table")
-        table.deteleDishesByIds(orders)
+        table.deteleDishesByIdAndName(orders)
         const newTables = appState.tables.toJSON()
         return {
             success: true,

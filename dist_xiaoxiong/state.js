@@ -15,11 +15,7 @@ class AppState {
         this.tables = []
         this.printers = []
         this.maxOrderId = 0
-
-        this.lunchPrice = 15.90
-        this.dinnerPrice = 19.90
-
-        this.isFestiveDay= false
+        this.isFanDays = false
         this.initTables()
     }
 
@@ -46,6 +42,9 @@ class AppState {
         }
     }
 
+    setFanDays(value) {
+        this.isFanDays = value
+    }
 
     addOrderTable(orderData) {
         this.maxOrderId++
@@ -109,20 +108,6 @@ class AppState {
         this.tables.clearAll();
     }
 
-    /*
-
-    cleanExpireOrder() {
-        const ORDER_EXPIRE_MINUTES = 30;
-        const now = Date.now();
-
-        this.oldOrders = this.oldOrders.filter(item => {
-            const elapsed = (now - item.timestamp) / 1000 / 60; // 转换为分钟
-            if (elapsed < ORDER_EXPIRE_MINUTES) {
-                return true;
-            }
-        });
-    }
-        */
 
     getOrdersByTableID(tableId) {
     if (!tableId) return []
@@ -140,10 +125,6 @@ class AppState {
     }
 
         return result;
-    }
-
-    setFestivalDay(value) {
-        this.isFestiveDay = value
     }
 
     updateAppState(newAppState) {
@@ -169,34 +150,15 @@ class AppState {
 
         this.printers = newAppState.printers || []
         this.maxOrderId = newAppState.maxOrderId || 0
-
-        this.adultPrice = newAppState.adultPrice
-        this.childPrice = newAppState.childPrice
-    }
-
-    updatePrice(lunchPrice, dinnerPrice) {
-        this.lunchPrice = lunchPrice
-        this.dinnerPrice = dinnerPrice
-        return this
     }
 
     getTableTotalAmout(tableId) {
         const table = this.tables.getTableById(tableId)
         if (table == null) throw new Error('Noot found the table')
-        const tableOrdersAmout =  parseFloat(table.getTableOrdersTotalAmount())
-        const price = getCurentPeoplePrice(this.lunchPrice, this.dinnerPrice, this.isFestiveDay)
-        
-        const peopleCust = parseFloat((table.peopleType.adults * price.adult) + (table.peopleType.childres * price.children).toFixed(2))
-        const total = add(tableOrdersAmout, peopleCust).toFixed(2)
+        const tableOrdersAmout =  parseFloat(table.getTableOrdersTotalAmount()).toFixed(2)
         return {
-            total: total,
-            tableAmout:tableOrdersAmout,
-            peopleCust: peopleCust
+            total: tableOrdersAmout
         }
-    }
-
-    getCurrentPrice() {
-        return getCurentPeoplePrice(this.lunchPrice, this.dinnerPrice, this.isFestiveDay)
     }
 
 
@@ -207,9 +169,7 @@ class AppState {
             tables: this.tables.toJSON(),            // TableManager → array
             printers: this.printers,
             maxOrderId: this.maxOrderId,
-            childPrice: this.childPrice,
-            adultPrice: this.adultPrice,
-            isFestiveDay: this.isFestiveDay,
+            isFanDays: this.isFanDays
         };
     }
 
@@ -237,9 +197,7 @@ class AppState {
         instance.printers = data.printers || []
         instance.maxOrderId = data.maxOrderId || 0
 
-        instance.adultPrice = data.adultPrice || 1
-        instance.childPrice = data.childPrice || 0.5
-        instance.isFestiveDay = data.isFestiveDay || false
+        instance.isFanDays = data.isFanDays
 
         return instance
     }

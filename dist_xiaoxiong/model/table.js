@@ -87,30 +87,44 @@ class Table {
   // 清理桌子，清空订单、人数和状态
   clearTable() {
     this.status = TableStatus.FREE;
-    this.peopleType = new PeopleType({adults:0, childres:0})
+    this.peopleType = new PeopleType({ adults: 0, childres: 0 })
     this.order = []
   }
 
-  deteleDishesByIds(dishesIdAndQty) {
-    if (!Array.isArray(dishesIdAndQty)) return;
+  deteleDishesByIdAndName(deletedDishes) {
+    if (!Array.isArray(deletedDishes)) return;
 
-    dishesIdAndQty.forEach(({ dishid, quantity }) => {
-      if (!dishid || !Number.isInteger(quantity) || quantity <= 0) {
-        console.warn('跳过非法输入:', { dishid, quantity });
-        return;
+    deletedDishes.forEach(({ dishid, quantity, name }) => {
+      if (name === 'Xiaoxiong® Ramen') {
+        const index = this.order.findIndex(d => d.name == name);
+        if (index === -1) {
+          console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
+          return;
+        }
+        const dish = this.order[index];
+        dish.quantity -= quantity;
+        if (dish.quantity <= 0) {
+          this.order.splice(index, 1);
+        }
       }
+      else {
+        if (!dishid || !Number.isInteger(quantity) || quantity <= 0) {
+          console.warn('跳过非法输入:', { dishid, quantity });
+          return;
+        }
 
-      const index = this.order.findIndex(d => d.dishid == dishid); // ✅ 使用 == 宽松比较
+        const index = this.order.findIndex(d => d.dishid == dishid); // ✅ 使用 == 宽松比较
 
-      if (index === -1) {
-        console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
-        return;
-      }
+        if (index === -1) {
+          console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
+          return;
+        }
 
-      const dish = this.order[index];
-      dish.quantity -= quantity;
-      if (dish.quantity <= 0) {
-        this.order.splice(index, 1);
+        const dish = this.order[index];
+        dish.quantity -= quantity;
+        if (dish.quantity <= 0) {
+          this.order.splice(index, 1);
+        }
       }
     });
   }
@@ -119,8 +133,8 @@ class Table {
     if (!ordername) return;
     const index = this.order.findIndex(d => d.name == ordername);
     if (index === -1) {
-        console.warn('未找到 盲盒');
-        return;
+      console.warn('未找到 盲盒');
+      return;
     }
     this.order.splice(index, 1);
     return this.order

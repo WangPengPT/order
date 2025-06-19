@@ -45,24 +45,21 @@ function init(io) {
       cb(result)
     })
 
-    // 管理端更新今日红日
-    socket.on("manager_set_festivalDay", (value, cb) => {
-      logger.info(`管理端设置红日: ${value}`)
-      const result = appStateService.setFestivalDay(value)
+      // 管理端更新今日红日
+    socket.on("manager_set_fanDays", (value, cb) => {
+      logger.info(`管理端设置粉丝日: ${value}`)
+      const result = appStateService.setFanDays(value)
       if (result.success) {
-        logger.info(`管理端设置红日成功: ${value}`)
+        logger.info(`管理端设置粉丝日成功: ${value}`)
       } else {
-        logger.info(`管理端设置红日失败: ${value}`)
+        logger.info(`管理端设置粉丝日失败: ${value}`)
         logger.info(`失败原因: ${result.data}`)
       }
       cb(result)
     })
 
     // 发送管理端获取今日红日
-    socket.emit("manager_festival", () => {
-      //logger.info(`发送给管理端红日信息`)
-      return appStateService.getFestivalDay()
-    })
+    socket.emit("manager_fandays", appStateService.getFanDays() )
 
     socket.on("manager_delete_order", ({order: ordername, tableId: tableId}, cb) => {
       logger.info(`管理端请求删除盲盒, 桌号-${tableId}`)
@@ -98,12 +95,6 @@ function init(io) {
       })
 
       cb(result)
-    })
-
-    // 发送价格信息
-    socket.emit("get_people_price", () => {
-      //logger.info(`发送给管理端价格信息`)
-      appStateService.getPrice()
     })
 
     // 管理端更改密码
@@ -240,8 +231,6 @@ function init(io) {
       const result = tableService.getTableById(value)
       socket.emit('client_table', result)
       socket.emit("table_id", value);
-      const price = appStateService.getCurrentPrice()
-      socket.emit('client_currentPrice', price)
     });
     
     socket.on('admin', (value, callback) => {

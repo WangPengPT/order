@@ -19,7 +19,6 @@ function loadAppState() {
         console.warn("Error: ", error)
     }
 
-
 }
 
 
@@ -63,41 +62,6 @@ function updatePrice(lunchPrice, dinnerPrice) {
 
 }
 
-function setFestivalDay(value) {
-    try {
-        if (typeof value !== "boolean") { throw new Error('Invalid input') }
-        appState.setFestivalDay(value)
-        const res = { success: true, data: appState.isFestiveDay }
-
-        return res
-    } catch (error) {
-        console.warn("Error: ", error)
-        return { success: false, data: error.message }
-    }
-
-}
-
-function getFestivalDay() {
-    return appState.isFestiveDay
-}
-
-function getPrice() {
-
-    try {
-        const lunchPrice = appState.lunchPrice
-        const dinnerPrice = appState.dinnerPrice
-        const res = {
-            success: true, data: {
-                lunchPrice: lunchPrice,
-                dinnerPrice: dinnerPrice
-            }
-        }
-        return res
-    } catch (error) {
-        console.warn("Error: ", error)
-        return { success: false, data: error.message }
-    }
-}
 
 function getTableTotalAmout(tableId) {
     try {
@@ -116,29 +80,30 @@ function getTableTotalAmout(tableId) {
 
 }
 
-function getCurrentPrice() {
+function setFanDays(value) {
     try {
-        const price = appState.getCurrentPrice()
-        const res = {
-            success: true,
-            data:
-                price
-        }
+        if (typeof value !== "boolean") { throw new Error('Invalid input') }
+        appState.setFanDays(value)
+        const res = { success: true, data: appState.isFestiveDay }
+
         return res
     } catch (error) {
         console.warn("Error: ", error)
         return { success: false, data: error.message }
     }
+
+}
+
+function getFanDays() {
+    return appState.isFanDays
 }
 
 module.exports = {
     loadAppState,
     saveAppState,
     updatePrice,
-    getPrice,
-    setFestivalDay,
-    getFestivalDay,
     getTableTotalAmout,
-    getCurrentPrice,
-    getAllTables
+    getAllTables,
+    setFanDays,
+    getFanDays
 };
