@@ -1,7 +1,7 @@
 // ecosystem.config.js
 module.exports = {
   apps: [{
-    name: "xiaoxiong_saldanha",
+    name: "xiaoxiong_entrecampos",
     script: "./server.js",
     instances: 1,
     autorestart: true,
@@ -10,8 +10,8 @@ module.exports = {
     env: {
       NODE_ENV: "production",
       USE_HTTPS : true,
-      PORT: 500,
-      QR_ADDR: "https://order.xiaoxiong.pt:500/client.html?table=",
+      PORT: 501,
+      QR_ADDR: "https://order.xiaoxiong.pt:501/client.html?table=",
     }
   }]
 }
