@@ -1,7 +1,7 @@
 rem package, update used git
 rem server will auto update.
 
-rm dist_xiaoxiong -rf
+rm dist_xiaoxiong_entrecampos -rf
  
 set "script_dir=%~dp0"
 echo %script_dir%
