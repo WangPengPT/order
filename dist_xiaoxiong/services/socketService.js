@@ -256,6 +256,7 @@ function init(io) {
     // printer
     socket.on('add_printer', (value) => {
       logger.info(`添加打印机`)
+      console.log("printer: ", value)
       const id = socket.id;
       value = JSON.parse(value);
       value.id = id;
