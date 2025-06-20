@@ -1,12 +1,12 @@
 const menuService = require('../services/menuService');
-
+const { logger } = require('./logger.js')
 
 
 const printers = [];
 
 
 function print_order(order) {
-
+    logger.info(`打印订单 订单号 - ${order.id}`)
     for (const key in printers) {
         const printer = printers[key];
 

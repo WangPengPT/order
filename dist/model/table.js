@@ -91,8 +91,6 @@ class Table {
     this.order = []
   }
 
-
-
   deteleDishesByIds(dishesIdAndQty) {
     if (!Array.isArray(dishesIdAndQty)) return;
 

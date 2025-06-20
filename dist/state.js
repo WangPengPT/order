@@ -5,6 +5,7 @@ const { TableManager } = require('./model/tableManager.js')
 const { getCurentPeoplePrice } = require('./utils/timePrice.js')
 const { add } = require('./utils/manualMath.js')
 const { TableStatus } = require('./model/TableStatus.js')
+const { Table } = require('./model/table.js')
 
 class AppState {
     constructor() {
@@ -17,46 +18,27 @@ class AppState {
 
         this.lunchPrice = 15.90
         this.dinnerPrice = 19.90
-
+        this.clientPort = 5173
         this.isFestiveDay= false
 
         this.initTables()
     }
 
     initTables() {
-        const tablesCenter = new TableManager([
-            // { id: '01', people: 0, status: '空闲' },
-            { id: '02', people: 0, status: '空闲' },
-            { id: '03', people: 0, status: '空闲' },
-            { id: '04', people: 0, status: '空闲' },
-            { id: '05', people: 0, status: '空闲' },
-            { id: '06', people: 0, status: '空闲' },
-            { id: '07', people: 0, status: '空闲' },
-            { id: '08', people: 0, status: '空闲' },
-            { id: '09', people: 0, status: '空闲' },
-            { id: '10', people: 0, status: '空闲' },
-            { id: '11', people: 0, status: '空闲' },
-            { id: '12', people: 0, status: '空闲' },
-            { id: '13', people: 0, status: '空闲' },
-            { id: '14', people: 0, status: '空闲' },
-            { id: '15', people: 0, status: '空闲' },
-            { id: '16', people: 0, status: '空闲' },
-            { id: '17', people: 0, status: '空闲' },
-            { id: '18', people: 0, status: '空闲' },
-            { id: '19', people: 0, status: '空闲' },
-            { id: '20', people: 0, status: '空闲' },
-            { id: '21', people: 0, status: '空闲' },
-            { id: '22', people: 0, status: '空闲' },
-            { id: '23', people: 0, status: '空闲' },
-            { id: '24', people: 0, status: '空闲' },
-            { id: '25', people: 0, status: '空闲' },
-        ])
+        const iniTable = [];
+        for(let i = 2 ; i <= 25; i++){
+            let id = '' + i;
+            if( id <= 9 ) id = '0' + id;
+            iniTable.push(Table.fromJSON({id: id, people: 0, status: TableStatus.FREE}))
+        }
+        const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
+        // console.log(this.tables)
+
     }
 
     getTableById(tableId) {
         if (!tableId) return undefined;
-
         if (typeof variable === 'string') {
             const id = tableId.replace('#', '')
             return this.tables.getTableById(id)
@@ -191,6 +173,8 @@ class AppState {
 
         this.adultPrice = newAppState.adultPrice
         this.childPrice = newAppState.childPrice
+
+        this.isFestiveDay = newAppState.isFestiveDay
     }
 
     updatePrice(lunchPrice, dinnerPrice) {
@@ -259,7 +243,6 @@ class AppState {
         instance.adultPrice = data.adultPrice || 1
         instance.childPrice = data.childPrice || 0.5
         instance.isFestiveDay = data.isFestiveDay || false
-
         return instance
     }
 }

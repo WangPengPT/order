@@ -1,5 +1,6 @@
 const { appState } = require('../state.js');
 const { tablesPassword } = require('../model/tableManager.js')
+const logger = require('../utils/logger.js')
 
 function addNewTable(io, tableData) {
   try {
@@ -7,10 +8,11 @@ function addNewTable(io, tableData) {
     const newId = tableData.id
 
     if (!newId) { throw new Error("Invalid table id") }
-
+    console.log(newId)
     // 简单检查是否有重复 ID（可选）
     const exists = appState.tables.getTableById(newId)
-    if (exists !== null) {
+    console.log(exists)
+    if (exists) {
        throw new Error("The table already exist")
     }
 
@@ -87,6 +89,7 @@ function updateTableWithoutOrder(tableData) {
     // 已支付变空闲 自动清空桌子
     if (oldStatus === '已支付' && newStatus === '空闲') {
       const cleanRes = cleanTable(id)
+      logger.info(`自动清除桌子 桌号 - ${tableData.id}`)
       if (!cleanRes.success) throw new Error("Clean Error")
     }
 
@@ -132,6 +135,7 @@ function getTableById(id) {
   try {
     if (!id) throw new Error("Invalid Input")
     const table = appState.getTableById(id)
+  if (!table) throw new Error('Not found the table')
     return { success: true, data: table.toJSON() }
   } catch (error) {
     console.warn("Error: ", error)

@@ -1,23 +1,24 @@
 const { appState, AppState } = require('../state.js');
 const { tablesPassword } = require('../model/tableManager.js')
 const db = require('../filedb.js')
+const { logger } = require('../utils/logger.js')
 
 function loadAppState() {
     try {
         const data = db.loadAppStateData()
-    if (data) {
-        const loaded = AppState.fromJSON(data)
-        // 用数据覆盖全局 appState
-        appState.updateAppState(loaded)
-
-        console.log("已加载 AppState 数据")
-    }
-
-    //tablesPassword.init(appState.tables)
+        if (data) {
+            const loaded = AppState.fromJSON(data)
+            // 用数据覆盖全局 appState
+            appState.updateAppState(loaded)
+            logger.info(`加载现有数据`)
+        } else {
+            logger.info(`创建新数据`)
+        }
+        //tablesPassword.init(appState.tables)
     } catch (error) {
         console.warn("Error: ", error)
     }
-    
+
 
 }
 
@@ -40,11 +41,11 @@ function getAllTables() {
 
 function saveAppState() {
     try {
-       db.saveAppStateData(appState) 
+        db.saveAppStateData(appState)
     } catch (error) {
         console.warn("Error: ", error)
     }
-    
+
 }
 
 function updatePrice(lunchPrice, dinnerPrice) {
@@ -101,18 +102,18 @@ function getPrice() {
 function getTableTotalAmout(tableId) {
     try {
         if (!tableId) throw new Error("Non Input Value")
-           const prices = appState.getTableTotalAmout(tableId)
+        const prices = appState.getTableTotalAmout(tableId)
         const res = {
             success: true,
-            data: 
-            prices
+            data:
+                prices
         }
         return res
     } catch (error) {
         console.warn("Error: ", error)
         return { success: false, data: error.message }
     }
-    
+
 }
 
 function getCurrentPrice() {
@@ -120,8 +121,8 @@ function getCurrentPrice() {
         const price = appState.getCurrentPrice()
         const res = {
             success: true,
-            data: 
-            price
+            data:
+                price
         }
         return res
     } catch (error) {

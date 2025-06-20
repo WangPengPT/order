@@ -13,7 +13,7 @@ class TableManager {
   }
 
   getTableById(id) {
-    return this.tables.get(id) || null
+    return this.tables.get(id)
   }
 
   addTable(tableData) {

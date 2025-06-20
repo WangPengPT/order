@@ -11,7 +11,7 @@ const uploadController = require('./controllers/uploadController.js');
 const socketService = require('./services/socketService.js');
 const uploadMiddleware = require('./middlewares/uploadMiddleware.js');
 const appStateService = require('./services/appStateService.js')
-
+const { logger } = require('./utils/logger.js')
 const {appState} = require("./state");
 
 const app = express();
@@ -42,7 +42,7 @@ if (process.env.PORT == 443)
 
   // 创建 HTTP 服务器（用于重定向）
   app.listen(80, () => {
-    console.log('HTTP server running on port 80');
+    logger.info(`HTTP server running on port 80`)
   });
 }
 else
@@ -79,18 +79,18 @@ socketService.init(io);
 // 启动服务器
 const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {
-  console.log(`服务器已启动，监听端口 ${PORT}`);
+  logger.info(`🟢 服务器已启动，监听端口 ${PORT}`)
 });
 
 // 捕获关闭信号时保存数据
 process.on("SIGINT", () => {
-  console.log("\n🛑 收到退出信号，正在保存数据...");
+  logger.info(`🛑 收到退出信号，正在保存数据...`)
   appStateService.saveAppState();
   process.exit(0);
 });
 
 process.on("SIGTERM", () => {
-  console.log("\n🛑 收到终止信号，正在保存数据...");
+  logger.info("\n🛑 收到终止信号，正在保存数据...");
   appStateService.saveAppState();
   process.exit(0);
 });
@@ -103,7 +103,9 @@ function runInterval() {
     if (now.getHours() == 1)
     {
       if ( needClean ) {
+        logger.info('自动清除订单和关闭红日')
         appState.clearAll();
+        appState.isFestiveDay = false
       }
       needClean = false;
     }
@@ -113,6 +115,6 @@ function runInterval() {
     }
 
     runInterval();
-  }, 1000 * 60);
+  }, 1000 * 600);
 }
 runInterval();
