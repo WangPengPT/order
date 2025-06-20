@@ -1,6 +1,6 @@
 const { appState } = require('../state.js');
 const { tablesPassword } = require('../model/tableManager.js')
-const logger = require('../utils/logger.js')
+const { logger } = require('../utils/logger.js')
 
 function addNewTable(io, tableData) {
   try {
@@ -8,12 +8,10 @@ function addNewTable(io, tableData) {
     const newId = tableData.id
 
     if (!newId) { throw new Error("Invalid table id") }
-    console.log(newId)
     // 简单检查是否有重复 ID（可选）
     const exists = appState.tables.getTableById(newId)
-    console.log(exists)
     if (exists) {
-       throw new Error("The table already exist")
+      throw new Error("The table already exist")
     }
 
     // 添加桌子
@@ -135,7 +133,7 @@ function getTableById(id) {
   try {
     if (!id) throw new Error("Invalid Input")
     const table = appState.getTableById(id)
-  if (!table) throw new Error('Not found the table')
+    if (!table) throw new Error('Not found the table')
     return { success: true, data: table.toJSON() }
   } catch (error) {
     console.warn("Error: ", error)
