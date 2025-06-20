@@ -7,7 +7,7 @@ set "script_dir=%~dp0"
 echo %script_dir%
 
 set SRC_PATH=%script_dir%..\twoorder
-set DST_PATH=%script_dir%\dist_xiaoxiong
+set DST_PATH=%script_dir%\dist_xiaoxiong_saldanha
 
 cd %SRC_PATH%
 xcopy .\server %DST_PATH% /E /Y /I
