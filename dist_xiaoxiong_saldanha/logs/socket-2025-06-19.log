@@ -1,0 +1,236 @@
+2025-06-19T11:46:26.910Z [INFO] 客户端连接: BcyhwSYo_ti3F1USAAAQ
+2025-06-19T11:46:27.673Z [INFO] 客户端连接: crUuJIKh56yPy602AAAR
+2025-06-19T11:46:49.174Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T11:46:52.276Z [INFO] 客户端连接: -YoVKofosVlaDvmaAAAT
+2025-06-19T12:12:02.717Z [INFO] 连接取消: transport close
+2025-06-19T12:12:02.965Z [INFO] 客户端连接: R5O1NcMBHYbcWZb8AAAV
+2025-06-19T12:30:00.376Z [INFO] 连接取消: transport close
+2025-06-19T12:50:48.778Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T12:50:49.690Z [INFO] 客户端连接: lRw_bm1_URtpEepyAAAX
+2025-06-19T12:53:01.056Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T12:53:01.817Z [INFO] 客户端连接: -gfKP7n8jt4I9oYKAAAZ
+2025-06-19T12:59:16.791Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T12:59:17.916Z [INFO] 客户端连接: smL9WY6dJrrKkl35AAAb
+2025-06-19T13:00:09.534Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:00:10.158Z [INFO] 客户端连接: 8qyPKPPY99YnJeb1AAAd
+2025-06-19T13:00:52.484Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:00:53.568Z [INFO] 客户端连接: cBLdBVc7W9h8WZJcAAAf
+2025-06-19T13:05:18.997Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:05:19.978Z [INFO] 客户端连接: VYriHd4IBJfR_3AHAAAh
+2025-06-19T13:06:27.970Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:06:28.605Z [INFO] 客户端连接: _Q2kDCCMckUOiKqJAAAj
+2025-06-19T13:11:42.283Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:11:43.082Z [INFO] 客户端连接: RbSANx9FuO1ehNf0AAAl
+2025-06-19T13:13:26.558Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:13:27.176Z [INFO] 客户端连接: mcU21r5Dn8EXajxPAAAn
+2025-06-19T13:13:56.556Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:13:57.116Z [INFO] 客户端连接: TCoWi6K1CjKCkAEpAAAp
+2025-06-19T13:14:58.939Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:14:59.685Z [INFO] 客户端连接: QssHTJ9dta8q59BzAAAr
+2025-06-19T13:17:13.959Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:17:14.656Z [INFO] 客户端连接: pGFbVMkcCHXvPJCkAAAt
+2025-06-19T13:26:19.316Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:26:20.081Z [INFO] 客户端连接: D9i_1xfjdaG0aIeNAAAv
+2025-06-19T13:26:51.506Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:26:52.179Z [INFO] 客户端连接: 4ibjsrulI7osgJiUAAAx
+2025-06-19T13:28:51.073Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:28:51.910Z [INFO] 客户端连接: Rrr3tEtgBbpOT04PAAAz
+2025-06-19T13:30:03.181Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:30:03.953Z [INFO] 客户端连接: k1i3p4hn4X4SzLy7AAA1
+2025-06-19T13:35:53.981Z [INFO] 订单提交
+2025-06-19T13:35:54.009Z [INFO] 订单提交成功 订单号 - 0001
+2025-06-19T13:35:54.012Z [INFO] [2025-06-19 13:35:54] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- XIAOXIONG® RAMEN x1
+--------------------------------------------------
+2025-06-19T13:35:54.020Z [INFO] 打印订单 订单号 - 0001
+2025-06-19T13:35:55.354Z [INFO] 客户端连接: W1ZzXtQC2229liC9AAA3
+2025-06-19T13:50:20.005Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T13:50:21.014Z [INFO] 客户端连接: sXHIF9dPyDHUHEPhAAA5
+2025-06-19T14:02:51.939Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T14:02:52.717Z [INFO] 客户端连接: c3ouKSCx3Y4DdNWKAAA7
+2025-06-19T14:16:28.740Z [INFO] 订单提交
+2025-06-19T14:16:28.761Z [INFO] 订单提交成功 订单号 - 0002
+2025-06-19T14:16:28.763Z [INFO] [2025-06-19 14:16:28] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- XIAOXIONG® RAMEN x1
+- XIAOXIONG® RAMEN x1
+--------------------------------------------------
+2025-06-19T14:16:28.763Z [INFO] 打印订单 订单号 - 0002
+2025-06-19T15:25:10.774Z [INFO] 创建新数据
+2025-06-19T15:25:10.782Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-19T15:25:15.959Z [INFO] 客户端连接: x1J6LSYiaFim9mUeAAAB
+2025-06-19T15:25:37.167Z [INFO] 客户端连接: uTVYY1ZihDw3YPahAAAD
+2025-06-19T15:25:47.988Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T15:25:48.835Z [INFO] 连接取消: transport close
+2025-06-19T15:27:35.872Z [INFO] 创建新数据
+2025-06-19T15:27:35.881Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-19T15:27:43.003Z [INFO] 客户端连接: p6uc797q8nbYJtnHAAAB
+2025-06-19T15:28:25.575Z [INFO] 客户端连接: Xu6S8Tls9QhMwOH2AAAD
+2025-06-19T15:34:00.743Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T15:34:01.374Z [INFO] 客户端连接: MIyuU1vsaBNY8Cp8AAAF
+2025-06-19T15:57:15.865Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T15:57:51.525Z [INFO] 创建新数据
+2025-06-19T15:57:51.535Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-19T15:57:56.161Z [INFO] 客户端连接: YnEeRhbGAgExq6vcAAAB
+2025-06-19T16:00:02.525Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
+2025-06-19T16:00:02.526Z [INFO] 管理端修改桌子成功
+2025-06-19T16:00:06.233Z [INFO] 客户端连接: rkzco3x0PMpCzkOgAAAD
+2025-06-19T16:00:19.241Z [INFO] 订单提交
+2025-06-19T16:00:19.242Z [INFO] 订单提交成功 订单号 - 0001
+2025-06-19T16:00:19.243Z [INFO] [2025-06-19 16:00:19] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- XIAOXIONG® RAMEN x1
+- XIAOXIONG® RAMEN x1
+- XIAOXIONG® RAMEN x1
+--------------------------------------------------
+2025-06-19T16:00:19.243Z [INFO] 打印订单 订单号 - 0001
+2025-06-19T16:04:04.140Z [INFO] 客户端连接: JHxP_lcvhySobBkTAAAF
+2025-06-19T16:04:12.029Z [INFO] 客户端连接: n43kM-ckvAwjRRzIAAAH
+2025-06-19T16:04:36.758Z [INFO] 客户端连接: DvMnwoFtCjVaYCHFAAAJ
+2025-06-19T16:05:05.047Z [INFO] 客户端连接: lHql4lqB6n7rp4u8AAAL
+2025-06-19T16:05:14.533Z [INFO] 客户端连接: mcTb1vn9yQFN0FooAAAN
+2025-06-19T16:06:24.161Z [INFO] 客户端连接: z_rL-YJs1c9fXe0tAAAP
+2025-06-19T16:06:30.262Z [INFO] 客户端连接: HD1cgWU5NkjEYULzAAAR
+2025-06-19T16:07:32.359Z [INFO] 客户端连接: ISKrfcHy3MwTvWDKAAAT
+2025-06-19T16:07:33.676Z [INFO] 客户端连接: 8VOsMrXRcsdFR09uAAAV
+2025-06-19T16:10:35.202Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:10:35.208Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:10:38.180Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:10:38.189Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:10:38.350Z [INFO] 连接取消: transport close
+2025-06-19T16:10:38.353Z [INFO] 连接取消: transport close
+2025-06-19T16:10:38.353Z [INFO] 连接取消: transport close
+2025-06-19T16:10:38.353Z [INFO] 连接取消: transport close
+2025-06-19T16:10:38.354Z [INFO] 连接取消: transport close
+2025-06-19T16:10:38.355Z [INFO] 连接取消: transport close
+2025-06-19T16:10:38.355Z [INFO] 连接取消: transport close
+2025-06-19T16:10:38.356Z [INFO] 连接取消: transport close
+2025-06-19T16:10:38.711Z [INFO] 客户端连接: Vq9XG6Oa8GRHp8NWAAAX
+2025-06-19T16:10:49.087Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:10:49.088Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:11:08.938Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:11:08.938Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:14:54.712Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:14:54.716Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:16:54.519Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:16:54.521Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:17:03.167Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:17:03.652Z [INFO] 客户端连接: cEBk15OOC-NZwbh6AAAZ
+2025-06-19T16:18:38.147Z [INFO] 客户端连接: TSbVbltefVu0k4JTAAAb
+2025-06-19T16:19:27.005Z [INFO] 客户端连接: md84nOQDb0y4dO1mAAAd
+2025-06-19T16:19:37.626Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:19:37.700Z [INFO] 连接取消: transport close
+2025-06-19T16:19:37.701Z [INFO] 连接取消: transport close
+2025-06-19T16:19:38.239Z [INFO] 客户端连接: klMvr-mEnHXImBdvAAAf
+2025-06-19T16:19:41.114Z [INFO] 连接取消: transport close
+2025-06-19T16:19:41.353Z [INFO] 客户端连接: B1lev3sdHV36Fp6BAAAh
+2025-06-19T16:19:48.677Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:19:48.678Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:21:25.449Z [INFO] 客户端连接: ed3QyHuZbSMV1UiRAAAj
+2025-06-19T16:21:27.306Z [INFO] 客户端连接: E4XNJpxnJa33HiZPAAAl
+2025-06-19T16:21:36.173Z [INFO] 客户端连接: n1Qvy4UjZAyWA398AAAn
+2025-06-19T16:21:47.457Z [INFO] 客户端连接: IvRfhBrddom0Bq1yAAAp
+2025-06-19T16:22:42.878Z [INFO] 连接取消: transport close
+2025-06-19T16:22:42.882Z [INFO] 连接取消: transport close
+2025-06-19T16:22:42.890Z [INFO] 连接取消: transport close
+2025-06-19T16:22:42.890Z [INFO] 连接取消: transport close
+2025-06-19T16:22:42.891Z [INFO] 连接取消: transport close
+2025-06-19T16:22:43.591Z [INFO] 客户端连接: LE9x7OYqYCncm-2yAAAr
+2025-06-19T16:22:49.633Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:22:49.633Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:23:30.366Z [INFO] 创建新数据
+2025-06-19T16:23:30.379Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-19T16:23:30.478Z [INFO] 客户端连接: BpG232G2CDmjD2ZVAAAC
+2025-06-19T16:23:30.490Z [INFO] 客户端连接: vNDdnaz-OieidlBNAAAD
+2025-06-19T16:23:34.786Z [INFO] 连接取消: transport close
+2025-06-19T16:23:35.900Z [INFO] 客户端连接: cebAPKJeKwDlsDvMAAAF
+2025-06-19T16:23:36.531Z [INFO] 客户端连接: 7N8SksraoBEWsmnSAAAH
+2025-06-19T16:23:44.133Z [INFO] 连接取消: transport close
+2025-06-19T16:23:44.189Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:23:45.239Z [INFO] 客户端连接: sVGiK0bqeDl1fC28AAAJ
+2025-06-19T16:23:54.603Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:23:54.604Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:24:00.933Z [INFO] 连接取消: transport close
+2025-06-19T16:24:01.262Z [INFO] 客户端连接: Khx7ama0rsAFSYIYAAAL
+2025-06-19T16:26:29.092Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:26:29.894Z [INFO] 客户端连接: YJMcY0qUrWu-EQkKAAAN
+2025-06-19T16:28:00.389Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:28:00.980Z [INFO] 客户端连接: 2uc-oTz6Ntnlp09-AAAP
+2025-06-19T16:28:49.928Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:28:50.341Z [INFO] 客户端连接: q45poYqiENWCjuGxAAAR
+2025-06-19T16:30:26.170Z [INFO] 管理端设置粉丝日: false
+2025-06-19T16:30:26.170Z [INFO] 管理端设置粉丝日成功: false
+2025-06-19T16:30:30.170Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:30:30.629Z [INFO] 客户端连接: nGUKtbbexwzpmSbVAAAT
+2025-06-19T16:30:44.040Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:30:44.373Z [INFO] 客户端连接: 2zXEYkB2DTUbUxHhAAAV
+2025-06-19T16:31:26.523Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:31:26.524Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:31:28.838Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:31:29.204Z [INFO] 客户端连接: _tQTS1G1FMHrKg0wAAAX
+2025-06-19T16:31:38.493Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:31:38.834Z [INFO] 客户端连接: NL8vKGbVbGS5yLXMAAAZ
+2025-06-19T16:32:09.982Z [INFO] 管理端设置粉丝日: false
+2025-06-19T16:32:09.982Z [INFO] 管理端设置粉丝日成功: false
+2025-06-19T16:32:13.111Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:32:13.474Z [INFO] 客户端连接: sxPA5bs9VFU1dfs7AAAb
+2025-06-19T16:32:21.589Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:32:21.589Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:32:24.705Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:32:25.024Z [INFO] 客户端连接: -q6W7JUb5ovXfyB8AAAd
+2025-06-19T16:32:31.655Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:32:31.980Z [INFO] 客户端连接: F4Jajlifxs0PMLIxAAAf
+2025-06-19T16:32:45.720Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:32:46.116Z [INFO] 客户端连接: 5QaDhZA4T3A8DhNAAAAh
+2025-06-19T16:32:55.687Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:32:55.687Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:32:58.526Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:32:58.852Z [INFO] 客户端连接: EkZj_s7uVn0sjwscAAAj
+2025-06-19T16:35:08.566Z [INFO] 管理端设置粉丝日: false
+2025-06-19T16:35:08.567Z [INFO] 管理端设置粉丝日成功: false
+2025-06-19T16:35:13.143Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:35:13.641Z [INFO] 客户端连接: RslJ2Hf9o9KRDGEUAAAl
+2025-06-19T16:35:21.367Z [INFO] 管理端设置粉丝日: true
+2025-06-19T16:35:21.368Z [INFO] 管理端设置粉丝日成功: true
+2025-06-19T16:35:23.907Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:35:24.250Z [INFO] 客户端连接: -RmM6Gb_Bi_gchNzAAAn
+2025-06-19T16:35:31.707Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:35:32.019Z [INFO] 客户端连接: zQmEcGYTZurbrgz2AAAp
+2025-06-19T16:35:43.969Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T16:35:44.332Z [INFO] 客户端连接: 4RaY-BZVJAgEWdsNAAAr
+2025-06-19T18:31:18.593Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T18:31:19.306Z [INFO] 客户端连接: PnLCRvQvJX04bcLUAAAt
+2025-06-19T20:18:23.935Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T20:18:24.646Z [INFO] 客户端连接: PRR9Av4DuU6UA6aRAAAv
+2025-06-19T20:39:38.320Z [INFO] 客户端连接: ECaThEfkYrGJ11laAAAx
+2025-06-19T20:39:38.723Z [INFO] 连接取消: client namespace disconnect
+2025-06-19T20:39:39.780Z [INFO] 客户端连接: PrK3NVM3lilux2AnAAAz
+2025-06-19T20:41:24.394Z [INFO] 连接取消: transport close
+2025-06-19T20:41:34.371Z [INFO] 连接取消: transport close
+2025-06-19T20:41:34.372Z [INFO] 连接取消: transport close
+2025-06-19T20:49:26.559Z [INFO] 客户端连接: x-y_ppbngoI67fLwAAA1
+2025-06-19T20:49:39.197Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
+2025-06-19T20:49:39.203Z [INFO] 管理端修改桌子成功
+2025-06-19T20:49:44.276Z [INFO] 客户端连接: Rzw8oV30PcvaOqG_AAA3
+2025-06-19T20:50:22.335Z [INFO] 订单提交
+2025-06-19T20:50:22.338Z [INFO] 订单提交成功 订单号 - 0001
+2025-06-19T20:50:22.340Z [INFO] [2025-06-19 20:50:22] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- XIAOXIONG® RAMEN x1 | ID: --- | €2.90
+--------------------------------------------------
+2025-06-19T20:50:22.344Z [INFO] 打印订单 订单号 - 0001
+2025-06-19T20:51:11.178Z [INFO] 客户端连接: T3MB-lcAQ1QGHuneAAA5
+2025-06-19T20:53:19.115Z [INFO] 客户端连接: Y9LmPje18hCQOwY0AAA7
+2025-06-19T20:53:21.006Z [INFO] 客户端连接: Zg5NbUnMOD3_K3nbAAA9
+2025-06-19T20:53:43.935Z [INFO] 客户端连接: Ewikw-UDh8hD_uq5AAA_
+2025-06-19T20:53:58.664Z [INFO] 客户端连接: KZni7HFzcRztzz-BAABB
+2025-06-19T20:54:09.275Z [INFO] 客户端连接: eWUALGIwOsm-qKbYAABD
