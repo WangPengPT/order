@@ -18,6 +18,11 @@ function saveOrderMenuTab(data)
   menuService.saveOrderMenuTab(data);
 }
 
+function emitFandaysStatus(){
+  appState.socket_io.emit("manager_fandays", appStateService.getFanDays() )
+  appState.socket_io.emit("client_fandays", appStateService.getFanDays() )
+}
+
 function init(io) {
   appState.socket_io = io;
 
@@ -51,7 +56,6 @@ function init(io) {
       const result = appStateService.setFanDays(value)
       if (result.success) {
         logger.info(`管理端设置粉丝日成功: ${value}`)
-        // 发送管理端获取今日红日
         socket.emit("client_fandays", appStateService.getFanDays() )
       } else {
         logger.info(`管理端设置粉丝日失败: ${value}`)
@@ -60,9 +64,7 @@ function init(io) {
       cb(result)
     })
     // 发送管理端获取今日红日
-    socket.emit("manager_fandays", appStateService.getFanDays() )
-
-    socket.emit("client_fandays", appStateService.getFanDays() )
+    emitFandaysStatus()
 
     socket.on("manager_delete_order", ({order: ordername, tableId: tableId}, cb) => {
       logger.info(`管理端请求删除盲盒, 桌号-${tableId}`)
@@ -314,4 +316,5 @@ function init(io) {
 module.exports = {
   init,
   emit,
+  emitFandaysStatus,
 };

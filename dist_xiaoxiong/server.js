@@ -98,7 +98,7 @@ process.on("SIGTERM", () => {
 
 let needClean = true;
 
-function runInterval() {
+function runCleanInterval() {
   setTimeout(() => {
     const now = new Date();
     if (now.getHours() == 1)
@@ -113,7 +113,31 @@ function runInterval() {
       needClean = true;
     }
 
-    runInterval();
-  }, 1000 * 60);
+    runCleanInterval();
+  }, 1000 * 600);
 }
-runInterval();
+
+function runFandaysInterval(){
+  setTimeout(() => {
+    const now = new Date();
+    if (now.getDate() == 11 || now.getDate() == 12 || now.getDate() == 25 || now.getDate() == 26)
+    {
+      if (!appState.isFanDays){
+        appState.isFanDays = true;
+        socketService.emitFandaysStatus()
+      }
+    }
+    else
+    {
+      if(appState.isFanDays){
+        appState.isFanDays = false;
+        socketService.emitFandaysStatus()
+      }
+    }
+
+    runFandaysInterval();
+  }, 1000 * 3600);
+}
+
+runCleanInterval();
+runFandaysInterval();
