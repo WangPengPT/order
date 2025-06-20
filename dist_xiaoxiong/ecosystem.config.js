@@ -11,7 +11,7 @@ module.exports = {
       NODE_ENV: "production",
       USE_HTTPS : true,
       PORT: 500,
-      QR_ADDR: "https://order.xiaoxiong.pt:444/client.html?table=",
+      QR_ADDR: "https://order.xiaoxiong.pt:500/client.html?table=",
     }
   }]
 }
