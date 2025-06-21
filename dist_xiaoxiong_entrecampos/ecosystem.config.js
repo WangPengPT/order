@@ -1,7 +1,7 @@
 // ecosystem.config.js
 module.exports = {
   apps: [{
-    name: "xiaoxiong_entrecampos",
+    name: "xiaoxiong_entrcampos",
     script: "./server.js",
     instances: 1,
     autorestart: true,

@@ -1,351 +1,183 @@
-2025-06-18T16:44:49.314Z [INFO] 加载现有数据
-2025-06-18T16:44:49.321Z [INFO] 🟢 服务器已启动，监听端口 444
-2025-06-18T17:01:17.088Z [INFO] 加载现有数据
-2025-06-18T17:01:17.123Z [INFO] 🟢 服务器已启动，监听端口 444
-2025-06-18T17:07:27.808Z [INFO] 加载现有数据
-2025-06-18T17:07:27.815Z [INFO] 🟢 服务器已启动，监听端口 444
-2025-06-18T17:29:54.187Z [INFO] 加载现有数据
-2025-06-18T17:29:54.197Z [INFO] 🟢 服务器已启动，监听端口 90
-2025-06-18T17:29:59.254Z [INFO] 客户端连接: QtZaEZBWuaXiECZdAAAB
-2025-06-18T18:46:39.491Z [INFO] 创建新数据
-2025-06-18T18:46:39.499Z [INFO] 🟢 服务器已启动，监听端口 81
-2025-06-18T18:47:36.032Z [INFO] 客户端连接: zk-pOcdMHaCg1-dVAAAB
-2025-06-18T18:49:16.326Z [INFO] 客户端连接: mwTQZXcu24c_K7PQAAAD
-2025-06-18T18:49:57.328Z [INFO] 客户端连接: C7YbT9ydu0Dvv5kOAAAF
-2025-06-18T18:50:17.564Z [INFO] 客户端连接: MjBGi0LhlAzfpfViAAAH
-2025-06-18T18:51:09.503Z [INFO] 客户端连接: xkI-5dXXZXp0x8oYAAAJ
-2025-06-18T18:51:12.616Z [INFO] 客户端连接: _YGnq0iO8k0VxmNGAAAL
-2025-06-18T18:51:34.379Z [INFO] 客户端连接: YM-nurkTxi1FlhmEAAAN
-2025-06-18T18:52:04.608Z [INFO] 客户端连接: dlj20rAL1cquO2F5AAAP
-2025-06-18T18:52:07.606Z [INFO] 客户端连接: gWrvQPQ-T86UEtgEAAAR
-2025-06-18T18:52:26.398Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
-2025-06-18T18:52:26.404Z [INFO] 管理端修改桌子成功
-2025-06-18T18:53:12.284Z [INFO] 客户端连接: 8yF8MNHeTuXY8dkeAAAT
-2025-06-18T18:53:30.966Z [INFO] 客户端连接: ZktWIA2WL5DFih3xAAAV
-2025-06-18T18:59:56.220Z [INFO] 客户端连接: 1wjk_URIK7BgZjq3AAAX
-2025-06-18T19:00:17.964Z [INFO] 客户端连接: OMUNmvA5JWpNFzmTAAAZ
-2025-06-18T19:00:19.976Z [INFO] 客户端连接: e2D93WqeZKvG80EaAAAb
-2025-06-18T19:00:21.961Z [INFO] 客户端连接: OQ9COSk7j2Q4OzjcAAAd
-2025-06-18T19:00:22.976Z [INFO] 客户端连接: L9yJz7yn6ixifOgDAAAf
-2025-06-18T19:00:23.977Z [INFO] 客户端连接: lLxXpnjfEIMhRnj0AAAh
-2025-06-18T19:00:25.960Z [INFO] 客户端连接: Xblzb69NSDkNkG0AAAAj
-2025-06-18T19:00:27.977Z [INFO] 客户端连接: 5nAX8s_1VE0HrMMXAAAl
-2025-06-18T19:00:29.974Z [INFO] 客户端连接: -kwK3AHvjzQ_4NmVAAAn
-2025-06-18T19:00:31.961Z [INFO] 客户端连接: __WEqgA_vOIg5RYUAAAp
-2025-06-18T19:00:32.959Z [INFO] 客户端连接: gOfsc4aAHtmyN1nfAAAr
-2025-06-18T19:00:34.975Z [INFO] 客户端连接: Py7PNgSdwLkQaEOtAAAt
-2025-06-18T19:00:36.975Z [INFO] 客户端连接: RBefARlVCbAd2mPQAAAv
-2025-06-18T19:00:37.977Z [INFO] 客户端连接: rCUmTqhzF3FKuCU_AAAx
-2025-06-18T19:00:39.960Z [INFO] 客户端连接: CcTuog6pLYOoQfA3AAAz
-2025-06-18T19:00:40.960Z [INFO] 客户端连接: XG7c6tsiqg1NVEkqAAA1
-2025-06-18T19:00:41.959Z [INFO] 客户端连接: iB74LzVwSfS8rIfwAAA3
-2025-06-18T19:00:43.962Z [INFO] 客户端连接: y7pTwGzDZhjXFTFwAAA5
-2025-06-18T19:00:45.975Z [INFO] 客户端连接: ofYL9oOmlzGvsynXAAA7
-2025-06-18T19:00:47.960Z [INFO] 客户端连接: R7omQiljFhGdDq8aAAA9
-2025-06-18T19:00:48.975Z [INFO] 客户端连接: aEwKAeHTsRh6zHSUAAA_
-2025-06-18T19:00:50.960Z [INFO] 客户端连接: 21sotOX97CE2MGYrAABB
-2025-06-18T19:00:52.960Z [INFO] 客户端连接: -drO_lOs5JwYyRmtAABD
-2025-06-18T19:00:54.964Z [INFO] 客户端连接: b1HI007oo_hUtQK4AABF
-2025-06-18T19:00:56.959Z [INFO] 客户端连接: 1zT1QrEuaKJJQh9FAABH
-2025-06-18T19:00:58.974Z [INFO] 客户端连接: Q9ElpbgF9qenZm81AABJ
-2025-06-18T19:01:00.975Z [INFO] 客户端连接: RBxFGYvqYKBVrk9bAABL
-2025-06-18T19:01:01.975Z [INFO] 客户端连接: gdnW4okPeFXq0e22AABN
-2025-06-18T19:01:02.960Z [INFO] 客户端连接: haZgcUPHT-MU1QksAABP
-2025-06-18T19:01:04.959Z [INFO] 客户端连接: bK3SU69BRuQR2SvxAABR
-2025-06-18T19:01:06.496Z [INFO] 客户端连接: csXmaKXpuoJr5jcYAABT
-2025-06-18T19:01:07.975Z [INFO] 客户端连接: iyDGJtO0AT32xOnuAABV
-2025-06-18T19:01:09.962Z [INFO] 客户端连接: vbrM0p6Ol6lcPwnUAABX
-2025-06-18T19:01:10.976Z [INFO] 客户端连接: DN9G5Cp9Hqj4vLxeAABZ
-2025-06-18T19:01:12.970Z [INFO] 客户端连接: TdrVnDJMWfwS4iNXAABb
-2025-06-18T19:01:13.295Z [INFO] 客户端连接: v3Hwf0p0g2tNzvWbAABd
-2025-06-18T19:01:13.967Z [INFO] 客户端连接: omRHke6nqPCy027_AABf
-2025-06-18T19:01:15.977Z [INFO] 客户端连接: Iy0Prxx-DR_aAK7oAABh
-2025-06-18T19:01:17.961Z [INFO] 客户端连接: k2_u0dLjX_VCCTnhAABj
-2025-06-18T19:01:19.977Z [INFO] 客户端连接: 4fODFtzKa8sYdUW6AABl
-2025-06-18T19:01:21.960Z [INFO] 客户端连接: _xltmR9xY2xw_BmqAABn
-2025-06-18T19:01:22.960Z [INFO] 客户端连接: SIHMrY1l71PLNYfOAABp
-2025-06-18T19:01:24.976Z [INFO] 客户端连接: 5FBEsl1W2zxhGPYQAABr
-2025-06-18T19:01:25.214Z [INFO] 客户端连接: 6H2OmLG8qZS4RztUAABt
-2025-06-18T19:01:26.976Z [INFO] 客户端连接: Ck0t6ncgJl5hkyzYAABv
-2025-06-18T19:01:28.977Z [INFO] 客户端连接: 5jvBVJX2rKIn6tbuAABx
-2025-06-18T19:01:30.960Z [INFO] 客户端连接: 1BuPGpDtxAZ1S5zXAABz
-2025-06-18T19:01:31.961Z [INFO] 客户端连接: an2X0khYI-q-TLaRAAB1
-2025-06-18T19:01:32.960Z [INFO] 客户端连接: nFKfqVMgTiUdNw2CAAB3
-2025-06-18T19:01:33.959Z [INFO] 客户端连接: Df8rHnBeNZn1WznfAAB5
-2025-06-18T19:01:35.959Z [INFO] 客户端连接: vwrADAjbK_SqQgxZAAB7
-2025-06-18T19:01:37.959Z [INFO] 客户端连接: 69gjHn4VOm-nQi_fAAB9
-2025-06-18T19:01:39.975Z [INFO] 客户端连接: _Gogd-fIU1dC5x2NAAB_
-2025-06-18T19:01:40.960Z [INFO] 客户端连接: 2P-VrOnRUTRQzdKaAACB
-2025-06-18T19:01:41.959Z [INFO] 客户端连接: 296subvxguoPhfJOAACD
-2025-06-18T19:01:42.972Z [INFO] 客户端连接: Q6ZmIETM4c-kDmWYAACF
-2025-06-18T19:01:44.960Z [INFO] 客户端连接: gAEvsryoY1YVSNMAAACH
-2025-06-18T19:01:45.975Z [INFO] 客户端连接: 2p69WL8O_2FYYV-1AACJ
-2025-06-18T19:01:47.959Z [INFO] 客户端连接: PdovHUoEcvVmoMNQAACL
-2025-06-18T19:01:48.960Z [INFO] 客户端连接: g-xTORZuLOsu20C-AACN
-2025-06-18T19:01:50.976Z [INFO] 客户端连接: lIxe4Wo2POHoSHyTAACP
-2025-06-18T19:01:52.959Z [INFO] 客户端连接: vfBg6AsOSsq9Tt45AACR
-2025-06-18T19:01:54.961Z [INFO] 客户端连接: hb0O79UOXG1PjinJAACT
-2025-06-18T19:01:56.976Z [INFO] 客户端连接: 59j8wXgxkNlTAldmAACV
-2025-06-18T19:01:58.961Z [INFO] 客户端连接: vlK36OGwe5LqeHPiAACX
-2025-06-18T19:02:00.975Z [INFO] 客户端连接: CikcRO4AgnxCwOu4AACZ
-2025-06-18T19:02:01.975Z [INFO] 客户端连接: TJWqiPNoLWKoZz5MAACb
-2025-06-18T19:02:03.975Z [INFO] 客户端连接: sSy8iMi7ft9UIZ5yAACd
-2025-06-18T19:02:04.973Z [INFO] 客户端连接: IWXkJ6FEI3BivSSXAACf
-2025-06-18T19:02:06.971Z [INFO] 客户端连接: 7whAjvyv1pYC2f_cAACh
-2025-06-18T19:02:07.975Z [INFO] 客户端连接: 0y7qiD0s8MrSvhgyAACj
-2025-06-18T19:02:08.974Z [INFO] 客户端连接: qHkzZanFAUS6mLiAAACl
-2025-06-18T19:02:10.975Z [INFO] 客户端连接: Uc2e5j2xyR8qSX1lAACn
-2025-06-18T19:02:12.974Z [INFO] 客户端连接: EED8EPc4OS78Tvt-AACp
-2025-06-18T19:02:14.962Z [INFO] 客户端连接: crNTlB97boIE79IqAACr
-2025-06-18T19:02:16.960Z [INFO] 客户端连接: w509Xgb4IGFJ5LZDAACt
-2025-06-18T19:02:18.975Z [INFO] 客户端连接: dgQYcX-f_BPYxBZPAACv
-2025-06-18T19:02:19.959Z [INFO] 客户端连接: xhCPuaHI4QIyd6olAACx
-2025-06-18T19:02:21.975Z [INFO] 客户端连接: AfMtKToESZPpB8sgAACz
-2025-06-18T19:02:23.959Z [INFO] 客户端连接: YSPhL6UHyoBwhYM9AAC1
-2025-06-18T19:02:25.975Z [INFO] 客户端连接: zGhfnktBcqjPioBnAAC3
-2025-06-18T19:02:27.959Z [INFO] 客户端连接: yi7L7qnTQRUeftZlAAC5
-2025-06-18T19:02:28.959Z [INFO] 客户端连接: YCDZQA4sgkgCMwBvAAC7
-2025-06-18T19:02:29.960Z [INFO] 客户端连接: dVhp4kLeoYmKnZ-tAAC9
-2025-06-18T19:02:31.977Z [INFO] 客户端连接: ZTgsUlKunNR1d900AAC_
-2025-06-18T19:02:32.960Z [INFO] 客户端连接: vZhL2wzWsM3ZWBKwAADB
-2025-06-18T19:02:34.975Z [INFO] 客户端连接: cjDFje9n2DHvEcjJAADD
-2025-06-18T19:02:36.975Z [INFO] 客户端连接: s2UKpc3RYo18QFLvAADF
-2025-06-18T19:02:38.960Z [INFO] 客户端连接: VEsJdiVXoiE3w7OCAADH
-2025-06-18T19:02:40.975Z [INFO] 客户端连接: -We83ouNPL5N8tQ7AADJ
-2025-06-18T19:02:42.959Z [INFO] 客户端连接: 3DZokDa-YTb92QYVAADL
-2025-06-18T19:02:44.959Z [INFO] 客户端连接: 54UPdRsm-UqXsSXmAADN
-2025-06-18T19:02:45.959Z [INFO] 客户端连接: GXgqytMiEv7REzYiAADP
-2025-06-18T19:02:46.977Z [INFO] 客户端连接: I08VKz9G-YjcbP2WAADR
-2025-06-18T19:02:47.975Z [INFO] 客户端连接: YqyZYQzGtIaKAniIAADT
-2025-06-18T19:02:49.963Z [INFO] 客户端连接: Jmzfy2_jW4if6obEAADV
-2025-06-18T19:02:50.960Z [INFO] 客户端连接: nSp0Scm0RXyiHQX9AADX
-2025-06-18T19:02:51.962Z [INFO] 客户端连接: K9Z_2XIGNIEb6GuuAADZ
-2025-06-18T19:02:53.971Z [INFO] 客户端连接: GnvC1FudcowaPH2tAADb
-2025-06-18T19:02:55.960Z [INFO] 客户端连接: ubEEoOmk6XGaYPLMAADd
-2025-06-18T19:02:56.975Z [INFO] 客户端连接: 4fgoMFU67jzrbqGhAADf
-2025-06-18T19:02:58.975Z [INFO] 客户端连接: tpcd3ZAljJf7ZRybAADh
-2025-06-18T19:03:00.959Z [INFO] 客户端连接: ttPtxixDpOa4ebYTAADj
-2025-06-18T19:03:01.959Z [INFO] 客户端连接: k4QhXmmmtz-TTgnNAADl
-2025-06-18T19:03:03.961Z [INFO] 客户端连接: -9LgSA_bNqUotbZFAADn
-2025-06-18T19:03:04.770Z [INFO] 客户端连接: jsakKwYPzjyWnHlVAADp
-2025-06-18T19:03:04.975Z [INFO] 客户端连接: 2h9L_Uvj5NpwyomwAADr
-2025-06-18T19:03:05.960Z [INFO] 客户端连接: PGeu66IdTrEd7FdSAADt
-2025-06-18T19:03:06.960Z [INFO] 客户端连接: tjY8mqEn2wJIYnoOAADv
-2025-06-18T19:03:08.975Z [INFO] 客户端连接: 1J5qdf8FzB4zNiQ3AADx
-2025-06-18T19:03:10.975Z [INFO] 客户端连接: fAwybz26n6nmW94QAADz
-2025-06-18T19:03:12.975Z [INFO] 客户端连接: pdIUWzlUymPMj62AAAD1
-2025-06-18T19:03:14.959Z [INFO] 客户端连接: hze4HyaJEJKT_qX6AAD3
-2025-06-18T19:03:15.980Z [INFO] 客户端连接: T5dK6lV9l1cySSwCAAD5
-2025-06-18T19:03:17.974Z [INFO] 客户端连接: -Z_qO_IBv16GvTqlAAD7
-2025-06-18T19:03:18.973Z [INFO] 客户端连接: fgUtWaExxbxc3fbIAAD9
-2025-06-18T19:03:19.974Z [INFO] 客户端连接: 2CSNp0NNpZxXfSXFAAD_
-2025-06-18T19:03:20.960Z [INFO] 客户端连接: xI2mXbmQsdPwfTtFAAEB
-2025-06-18T19:03:21.975Z [INFO] 客户端连接: A9dOE_R9Mazzl6_MAAED
-2025-06-18T19:03:22.976Z [INFO] 客户端连接: FjozU_Id7iXE9kGfAAEF
-2025-06-18T19:03:23.959Z [INFO] 客户端连接: zMLdob5TzCtuWq6cAAEH
-2025-06-18T19:03:24.960Z [INFO] 客户端连接: tUtBIfk4_mOro9W8AAEJ
-2025-06-18T19:03:26.960Z [INFO] 客户端连接: GGgIF9otBaRTmhHsAAEL
-2025-06-18T19:03:28.974Z [INFO] 客户端连接: DBROCzQzAkvLH-fxAAEN
-2025-06-18T19:03:29.961Z [INFO] 客户端连接: 6-o-ab1TkBSbBpIPAAEP
-2025-06-18T19:03:31.975Z [INFO] 客户端连接: X30mGD0ULZ_9bqEbAAER
-2025-06-18T19:03:32.959Z [INFO] 客户端连接: FLcGC-AVCJoqDqpLAAET
-2025-06-18T19:03:33.959Z [INFO] 客户端连接: gNc4lx1oTsUnzuHGAAEV
-2025-06-18T19:03:34.960Z [INFO] 客户端连接: dPrQqhicEGB7qJ2cAAEX
-2025-06-18T19:03:36.959Z [INFO] 客户端连接: bhd2XHuZY-1wlPpmAAEZ
-2025-06-18T19:03:37.959Z [INFO] 客户端连接: tPRnCY_E3jb3ZpQjAAEb
-2025-06-18T19:03:38.959Z [INFO] 客户端连接: ba-cnu8yFK1HuFkpAAEd
-2025-06-18T19:03:40.975Z [INFO] 客户端连接: TxicH-fcyWowwL6yAAEf
-2025-06-18T19:03:42.960Z [INFO] 客户端连接: yrbvnb6UF3Qx8zlXAAEh
-2025-06-18T19:03:43.963Z [INFO] 客户端连接: g-7DzhLOPlFvoqkbAAEj
-2025-06-18T19:03:45.960Z [INFO] 客户端连接: ze4IrhxQCtTizlJgAAEl
-2025-06-18T19:03:47.959Z [INFO] 客户端连接: V3l4yFbWmSFYuvZMAAEn
-2025-06-18T19:03:49.959Z [INFO] 客户端连接: SQP_kdGoYrPmzRkCAAEp
-2025-06-18T19:03:51.960Z [INFO] 客户端连接: j0UjKQ0dcb8FWFn2AAEr
-2025-06-18T19:03:52.974Z [INFO] 客户端连接: fMXMf2OmxraAS2vxAAEt
-2025-06-18T19:03:54.975Z [INFO] 客户端连接: OgpZEeHq5JxCYD9yAAEv
-2025-06-18T19:03:55.958Z [INFO] 客户端连接: IwQySsOpzmrGEJHpAAEx
-2025-06-18T19:03:57.975Z [INFO] 客户端连接: O0iaCf7HS2filQ72AAEz
-2025-06-18T19:03:59.959Z [INFO] 客户端连接: 2gA2ceo9rrHbyZCCAAE1
-2025-06-18T19:04:00.975Z [INFO] 客户端连接: TNx2ovEF6PW_7VwkAAE3
-2025-06-18T19:04:02.959Z [INFO] 客户端连接: KFGxs8k4JYYBd8W0AAE5
-2025-06-18T19:04:03.959Z [INFO] 客户端连接: vaCZ2j97jFKsc1uzAAE7
-2025-06-18T19:04:04.960Z [INFO] 客户端连接: TfhKIXOXyKnKkgXUAAE9
-2025-06-18T19:04:05.960Z [INFO] 客户端连接: IfMfDL4LloMofZyQAAE_
-2025-06-18T19:04:07.975Z [INFO] 客户端连接: ZxDwQOSyY0JLV9XnAAFB
-2025-06-18T19:04:09.959Z [INFO] 客户端连接: MFLJZjYJRCNJ0YICAAFD
-2025-06-18T19:04:11.974Z [INFO] 客户端连接: f0iRPrkgORhNVWqUAAFF
-2025-06-18T19:04:13.960Z [INFO] 客户端连接: UO8YeXqLivYouopuAAFH
-2025-06-18T19:04:14.961Z [INFO] 客户端连接: y7DARI0zdZfYzGKRAAFJ
-2025-06-18T19:04:15.959Z [INFO] 客户端连接: 4OeSpBW-bvV5fxsJAAFL
-2025-06-18T19:04:16.959Z [INFO] 客户端连接: 3N6Cl0Bc4a7UMx8kAAFN
-2025-06-18T19:04:18.959Z [INFO] 客户端连接: GlE7GIKjZBQ4DzkyAAFP
-2025-06-18T19:04:19.961Z [INFO] 客户端连接: TS4hhSDDQszPwXKBAAFR
-2025-06-18T19:04:20.975Z [INFO] 客户端连接: mOksojyyoPOo5uXWAAFT
-2025-06-18T19:04:21.959Z [INFO] 客户端连接: asyhqKNnQHQDQaokAAFV
-2025-06-18T19:04:23.973Z [INFO] 客户端连接: iBHxIZpxPcVfbYitAAFX
-2025-06-18T19:04:25.963Z [INFO] 客户端连接: 2XiSEyiaTMLDk5JQAAFZ
-2025-06-18T19:04:27.960Z [INFO] 客户端连接: T7lTtsCC80hZaSTpAAFb
-2025-06-18T19:04:29.962Z [INFO] 客户端连接: fXbVOwrOBSzZcVMOAAFd
-2025-06-18T19:04:30.976Z [INFO] 客户端连接: gDwW1ndsFMYBrPUYAAFf
-2025-06-18T19:04:32.975Z [INFO] 客户端连接: FvU3lMOPtFbjuJmlAAFh
-2025-06-18T19:04:33.959Z [INFO] 客户端连接: Ly5LeXJf5FFqGSA1AAFj
-2025-06-18T19:04:34.974Z [INFO] 客户端连接: PC53ksbd0LC8NpVcAAFl
-2025-06-18T19:04:36.976Z [INFO] 客户端连接: KIf7SFFlB8lkDaBdAAFn
-2025-06-18T19:04:37.959Z [INFO] 客户端连接: fq4mtwQ_mUAJk0_lAAFp
-2025-06-18T19:04:39.959Z [INFO] 客户端连接: zq1ajJ9D61JjsHDJAAFr
-2025-06-18T19:04:41.960Z [INFO] 客户端连接: In1tSVMpEW1A0yIHAAFt
-2025-06-18T19:04:42.961Z [INFO] 客户端连接: RjjqLQULaTkj86cSAAFv
-2025-06-18T19:04:43.959Z [INFO] 客户端连接: 734IDNLNeqv266CVAAFx
-2025-06-18T19:04:44.959Z [INFO] 客户端连接: OM94D-DliaxVwtUsAAFz
-2025-06-18T19:04:46.960Z [INFO] 客户端连接: 064G_OtIvDIBKA84AAF1
-2025-06-18T19:04:47.960Z [INFO] 客户端连接: vVyhuazXmoyucOkeAAF3
-2025-06-18T19:04:48.974Z [INFO] 客户端连接: xSj-XAmpk6uuSUupAAF5
-2025-06-18T19:04:49.975Z [INFO] 客户端连接: AlZHdWE-wnub84Y6AAF7
-2025-06-18T19:04:50.960Z [INFO] 客户端连接: o2ifKaC2I2WUV-QaAAF9
-2025-06-18T19:04:51.976Z [INFO] 客户端连接: gvlbdPTjvWg76T2ZAAF_
-2025-06-18T19:04:53.975Z [INFO] 客户端连接: KuICBJVsa69nUVWkAAGB
-2025-06-18T19:04:54.975Z [INFO] 客户端连接: eYId4v_XUb66JbutAAGD
-2025-06-18T19:04:55.975Z [INFO] 客户端连接: bJ0PJowMac6vaRC3AAGF
-2025-06-18T19:04:57.971Z [INFO] 客户端连接: JbPI-khyV4TDGvRkAAGH
-2025-06-18T19:04:58.975Z [INFO] 客户端连接: uxHBQQ0BQsTJyHYQAAGJ
-2025-06-18T19:04:59.976Z [INFO] 客户端连接: buW2uZrr_PUw-jvFAAGL
-2025-06-18T19:05:00.959Z [INFO] 客户端连接: sOLDlGO2N7NqJfJfAAGN
-2025-06-18T19:05:01.960Z [INFO] 客户端连接: DZAa0B4u4omxbPWQAAGP
-2025-06-18T19:05:02.961Z [INFO] 客户端连接: ZS5nbNV1JLo2FRxzAAGR
-2025-06-18T19:05:04.975Z [INFO] 客户端连接: ByPmXIR3eDraC6rpAAGT
-2025-06-18T19:05:06.960Z [INFO] 客户端连接: Z9zB39qb_oxcLLqzAAGV
-2025-06-18T19:05:08.959Z [INFO] 客户端连接: IWxx2pkWpoOmtmRtAAGX
-2025-06-18T19:05:10.959Z [INFO] 客户端连接: aoH4_4DeuIaksI31AAGZ
-2025-06-18T19:05:11.960Z [INFO] 客户端连接: YCO5hLQBodguPGqHAAGb
-2025-06-18T19:05:12.959Z [INFO] 客户端连接: qgLgve1RUHH7CGhKAAGd
-2025-06-18T19:05:14.959Z [INFO] 客户端连接: WKU2GSbpvq0D0MQfAAGf
-2025-06-18T19:05:16.959Z [INFO] 客户端连接: lKRkpM2O5hri5JfmAAGh
-2025-06-18T19:05:17.974Z [INFO] 客户端连接: 4CcbVtwtZKppcX8XAAGj
-2025-06-18T19:05:19.974Z [INFO] 客户端连接: frj7g2_88DkYilwHAAGl
-2025-06-18T19:05:21.974Z [INFO] 客户端连接: EoGjjAB0FK_EoaSbAAGn
-2025-06-18T19:05:22.960Z [INFO] 客户端连接: z_HXQSUiFzNaaT-YAAGp
-2025-06-18T19:05:23.960Z [INFO] 客户端连接: priyy7JR8M7e2fb3AAGr
-2025-06-18T19:05:25.960Z [INFO] 客户端连接: TRqexRxYJG5KLM9GAAGt
-2025-06-18T19:05:26.960Z [INFO] 客户端连接: RlE5m3cTQ9w0OjJEAAGv
-2025-06-18T19:05:27.960Z [INFO] 客户端连接: 1r9Yc0sQAl9I345xAAGx
-2025-06-18T19:05:29.976Z [INFO] 客户端连接: MBoC6GrLZa4yNZEIAAGz
-2025-06-18T19:05:31.959Z [INFO] 客户端连接: tn3WhL_kaBLip7KUAAG1
-2025-06-18T19:05:33.959Z [INFO] 客户端连接: bDqo4Bjr1vNV8xrLAAG3
-2025-06-18T19:05:35.961Z [INFO] 客户端连接: EK5rIqX0C8SqSaEyAAG5
-2025-06-18T19:05:37.959Z [INFO] 客户端连接: O8MkXiw-f-SAJuhEAAG7
-2025-06-18T19:05:38.959Z [INFO] 客户端连接: QUvLzura9f9Bn2cCAAG9
-2025-06-18T19:05:39.959Z [INFO] 客户端连接: oaJBHFDwfSb040PZAAG_
-2025-06-18T19:05:40.959Z [INFO] 客户端连接: N6EJ5jQocIGXhvbmAAHB
-2025-06-18T19:05:42.959Z [INFO] 客户端连接: ck2fOwS_lJ0LZ4_hAAHD
-2025-06-18T19:05:43.959Z [INFO] 客户端连接: mPxblg2XE9aGNXTlAAHF
-2025-06-18T19:05:45.959Z [INFO] 客户端连接: LRdyt5qfO7cjpPPaAAHH
-2025-06-18T19:05:47.975Z [INFO] 客户端连接: JHT_FCQdlIVUHRXOAAHJ
-2025-06-18T19:05:48.976Z [INFO] 客户端连接: NdukMNyC01I8oRFVAAHL
-2025-06-18T19:05:50.959Z [INFO] 客户端连接: LRjJkOmUVLx2iXHAAAHN
-2025-06-18T19:05:51.959Z [INFO] 客户端连接: 19ECWuSMVmNSdFJKAAHP
-2025-06-18T19:05:53.960Z [INFO] 客户端连接: SRhGbXObcml6tVFfAAHR
-2025-06-18T19:05:54.974Z [INFO] 客户端连接: jvBsho3c94683u8UAAHT
-2025-06-18T19:05:55.959Z [INFO] 客户端连接: ryTFXd-YrNj6WuizAAHV
-2025-06-18T19:05:56.975Z [INFO] 客户端连接: ass2BSNWm-RGKQH6AAHX
-2025-06-18T19:05:57.959Z [INFO] 客户端连接: CPpAunyR2g_tYOOzAAHZ
-2025-06-18T19:05:59.959Z [INFO] 客户端连接: lmVj7aCJhT9IDpD0AAHb
-2025-06-18T19:06:01.976Z [INFO] 客户端连接: rh2IHKYhZxoqmb4HAAHd
-2025-06-18T19:06:03.959Z [INFO] 客户端连接: 0_XSPS4tWPAnOBkMAAHf
-2025-06-18T19:06:05.961Z [INFO] 客户端连接: VeKRRZgI-diEmD-_AAHh
-2025-06-18T19:06:06.959Z [INFO] 客户端连接: CNxo6d5pm9zZjgkAAAHj
-2025-06-18T19:06:07.959Z [INFO] 客户端连接: l9JjD6_7MVyKuMjJAAHl
-2025-06-18T19:06:08.959Z [INFO] 客户端连接: Sh_DVzkAzscGMHm9AAHn
-2025-06-18T19:06:09.975Z [INFO] 客户端连接: dK3dk92OgLqvC-hKAAHp
-2025-06-18T19:06:10.958Z [INFO] 客户端连接: c4jLW2zWIfqLvt2aAAHr
-2025-06-18T19:06:11.959Z [INFO] 客户端连接: 5eyc-rdORB_cBJp5AAHt
-2025-06-18T19:06:13.973Z [INFO] 客户端连接: UppNEsQWXEYUIZ0aAAHv
-2025-06-18T19:06:15.959Z [INFO] 客户端连接: 5cZh9DWocYv09pNyAAHx
-2025-06-18T19:06:17.959Z [INFO] 客户端连接: bWKG0tnnz9Z80dEyAAHz
-2025-06-18T19:06:18.971Z [INFO] 客户端连接: Mgq0oKZOfJzFxl_4AAH1
-2025-06-18T19:06:19.959Z [INFO] 客户端连接: TqGqmG-npXbMSgwtAAH3
-2025-06-18T19:06:21.959Z [INFO] 客户端连接: qNHaBOOjV3qupKMSAAH5
-2025-06-18T19:06:22.976Z [INFO] 客户端连接: -Q084G-X5dqDxCFdAAH7
-2025-06-18T19:06:23.975Z [INFO] 客户端连接: ffgDfhLPjymtznqSAAH9
-2025-06-18T19:06:24.959Z [INFO] 客户端连接: dVkcTNp8PGZZ6ZS8AAH_
-2025-06-18T19:06:25.974Z [INFO] 客户端连接: Oln9eWDySuFu79vdAAIB
-2025-06-18T19:06:26.959Z [INFO] 客户端连接: mI8YIEgli9nXgu_2AAID
-2025-06-18T19:06:28.960Z [INFO] 客户端连接: WvG511vD9PBzeHr4AAIF
-2025-06-18T19:06:29.975Z [INFO] 客户端连接: RbQh_NnY1s7zMVqcAAIH
-2025-06-18T19:06:31.959Z [INFO] 客户端连接: bsF7UcNGrbPh67RQAAIJ
-2025-06-18T19:06:32.970Z [INFO] 客户端连接: 9UXwmz6_k7_0u24WAAIL
-2025-06-18T19:06:33.960Z [INFO] 客户端连接: DR4VNvFsyNeYymSWAAIN
-2025-06-18T19:06:34.975Z [INFO] 客户端连接: 8fkzZRzSQ1A9jevtAAIP
-2025-06-18T19:06:36.959Z [INFO] 客户端连接: jsQZMXIWCexA-ijqAAIR
-2025-06-18T19:06:37.974Z [INFO] 客户端连接: 9cviMjjzngvMJgX-AAIT
-2025-06-18T19:06:38.977Z [INFO] 客户端连接: u-BJcHBuBP6TH38uAAIV
-2025-06-18T19:06:39.959Z [INFO] 客户端连接: txG2T8Ud9MPQAczVAAIX
-2025-06-18T19:06:40.959Z [INFO] 客户端连接: hvqAdU5yBevEuEJuAAIZ
-2025-06-18T19:06:42.972Z [INFO] 客户端连接: xUa8VQJoaTepIKrHAAIb
-2025-06-18T19:06:43.976Z [INFO] 客户端连接: uOzf-EjaE1baH0QdAAId
-2025-06-18T19:06:44.961Z [INFO] 客户端连接: v-gKcbTIOoA7ioLYAAIf
-2025-06-18T19:06:46.960Z [INFO] 客户端连接: 2Ii9tmI5HAZNM88qAAIh
-2025-06-18T19:06:47.974Z [INFO] 客户端连接: _IrJKongj66AEc5nAAIj
-2025-06-18T19:06:49.975Z [INFO] 客户端连接: OMK7duBYWZTFeqD6AAIl
-2025-06-18T19:06:50.959Z [INFO] 客户端连接: gJUrFh5A-ltoJne_AAIn
-2025-06-18T19:06:52.974Z [INFO] 客户端连接: 667TnHBInEXdv-MxAAIp
-2025-06-18T19:06:54.974Z [INFO] 客户端连接: IuBOF_p6BMF5cnOJAAIr
-2025-06-18T19:06:56.959Z [INFO] 客户端连接: r-d2tgpqFwONbB9vAAIt
-2025-06-18T19:06:58.976Z [INFO] 客户端连接: Y46ZXmuiow7o4VCeAAIv
-2025-06-18T19:07:00.973Z [INFO] 客户端连接: NWYhmaYJYYhvHCjQAAIx
-2025-06-18T19:07:02.960Z [INFO] 客户端连接: dk2Ss2UGJiUchrNtAAIz
-2025-06-18T19:07:04.974Z [INFO] 客户端连接: WPFHne-JTRCld_U8AAI1
-2025-06-18T19:07:06.974Z [INFO] 客户端连接: C9qVcjrEEcOMowOnAAI3
-2025-06-18T19:07:08.974Z [INFO] 客户端连接: bZ-19iCY_1jd1Nz7AAI5
-2025-06-18T19:07:09.975Z [INFO] 客户端连接: cFwVtxOTDPvxfNgmAAI7
-2025-06-18T19:07:11.959Z [INFO] 客户端连接: 2fUdsH-xpiyl7NWkAAI9
-2025-06-18T19:07:12.973Z [INFO] 客户端连接: K55YWt9l33D2PHH6AAI_
-2025-06-18T19:07:14.973Z [INFO] 客户端连接: GmhB8RrhL4GgVrrvAAJB
-2025-06-18T19:07:16.959Z [INFO] 客户端连接: 6eKsk8RmUSOS6HiiAAJD
-2025-06-18T19:07:18.971Z [INFO] 客户端连接: xKaOlcZegD59cihIAAJF
-2025-06-18T19:07:20.960Z [INFO] 客户端连接: keRu81QjuG9yvcGgAAJH
-2025-06-18T19:07:22.960Z [INFO] 客户端连接: 62udyk1YwslruX08AAJJ
-2025-06-18T19:07:24.973Z [INFO] 客户端连接: VlvtFwfueNN-5iGfAAJL
-2025-06-18T19:07:26.974Z [INFO] 客户端连接: Cn57XRAMrmuxSDu1AAJN
-2025-06-18T19:07:28.976Z [INFO] 客户端连接: 6Y62tzzKdz_umkPeAAJP
-2025-06-18T19:07:30.976Z [INFO] 客户端连接: _PK8QXT9G9KTY5gmAAJR
-2025-06-18T19:07:31.781Z [INFO] 客户端连接: pO3XkSESBnoIMMqsAAJT
-2025-06-18T19:07:33.264Z [INFO] 客户端连接: LkH-8Yo2ptBgMDl7AAJV
-2025-06-18T19:07:34.744Z [INFO] 客户端连接: d_iwALoTFjNbu3uzAAJX
-2025-06-18T19:07:36.227Z [INFO] 客户端连接: 4Mp-ty38hH9ArSxsAAJZ
-2025-06-18T19:16:04.857Z [INFO] 创建新数据
-2025-06-18T19:16:04.865Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-18T19:16:09.669Z [INFO] 客户端连接: LxL9RoG-EA68RlQTAAAB
-2025-06-18T19:19:28.336Z [INFO] 客户端连接: NSUnAPY_7dwrIX7kAAAD
-2025-06-18T19:35:20.627Z [INFO] 创建新数据
-2025-06-18T19:35:20.635Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-18T19:35:26.133Z [INFO] 客户端连接: 4P5bRy3fWQtHAXYaAAAB
-2025-06-18T19:35:58.807Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
-2025-06-18T19:35:58.809Z [INFO] 管理端修改桌子成功
-2025-06-18T19:36:01.065Z [INFO] 客户端连接: uofqmv7lYyYVuGYrAAAD
-2025-06-18T19:36:06.920Z [INFO] 订单提交
-2025-06-18T19:36:06.921Z [INFO] 订单提交成功 订单号 - 0001
-2025-06-18T19:36:06.921Z [INFO] [2025-06-18 19:36:06] Novo Pedido - Mesa: 02
+2025-06-18T16:17:53.664Z [INFO] 创建新数据
+2025-06-18T16:17:53.672Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-18T16:17:53.752Z [INFO] 客户端连接: vnEepANbBDVaKRLSAAAC
+2025-06-18T16:17:53.757Z [INFO] 客户端连接: ypdb2MCUaW3Gd8WFAAAD
+2025-06-18T16:18:03.358Z [INFO] 客户端连接: 8kEN-rR0KCjyD2zWAAAF
+2025-06-18T16:18:21.866Z [INFO] 客户端连接: ppr517LDvf1XXLYcAAAH
+2025-06-18T16:18:23.554Z [INFO] 客户端连接: runCaZx6JWc4S-YWAAAJ
+2025-06-18T16:18:38.340Z [INFO] 客户端连接: zNUuhSLr6qhPzjWbAAAL
+2025-06-18T16:19:00.612Z [INFO] 客户端连接: n9HjPP0E-CY1ZJ3eAAAN
+2025-06-18T16:23:27.279Z [INFO] 客户端连接: pldt8szBSp0QAiuIAAAP
+2025-06-18T16:25:43.055Z [INFO] 客户端连接: VthWon1u-rs9TdfAAAAR
+2025-06-18T16:31:15.838Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T16:31:17.430Z [INFO] 加载现有数据
+2025-06-18T16:31:17.438Z [INFO] 🟢 服务器已启动，监听端口 90
+2025-06-18T16:39:52.651Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T16:39:54.234Z [INFO] 加载现有数据
+2025-06-18T16:39:54.241Z [INFO] 🟢 服务器已启动，监听端口 90
+2025-06-18T16:44:17.978Z [INFO] 客户端连接: zLuHPCSx_i8c2pUIAAAB
+2025-06-18T16:44:25.864Z [INFO] 客户端连接: doGIYpssDHHWgYZXAAAD
+2025-06-18T16:44:51.742Z [INFO] 客户端连接: oJsgwHHOd-cwuAe7AAAF
+2025-06-18T16:45:42.601Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T16:45:49.114Z [INFO] 加载现有数据
+2025-06-18T16:45:49.122Z [INFO] 🟢 服务器已启动，监听端口 90
+2025-06-18T16:45:49.235Z [INFO] 客户端连接: Inqk5P-O-ab146f2AAAB
+2025-06-18T16:45:53.861Z [INFO] 客户端连接: Q_tjDo0-sT9mGo9_AAAD
+2025-06-18T16:46:58.499Z [INFO] 客户端连接: JBx8aKpwBWkSzAhNAAAF
+2025-06-18T16:47:04.845Z [INFO] 客户端连接: GbAkCuxdEsGnavltAAAH
+2025-06-18T16:48:40.624Z [INFO] 客户端连接: bDGPZLPuGsxlv1cwAAAJ
+2025-06-18T16:49:27.977Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T16:53:31.681Z [INFO] 加载现有数据
+2025-06-18T16:53:31.689Z [INFO] 🟢 服务器已启动，监听端口 90
+2025-06-18T16:53:33.723Z [INFO] 客户端连接: HKZw_MrhH2z2gLBAAAAB
+2025-06-18T17:03:56.101Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T17:19:30.637Z [INFO] 加载现有数据
+2025-06-18T17:19:30.644Z [INFO] 🟢 服务器已启动，监听端口 81
+2025-06-18T17:22:21.822Z [INFO] 客户端连接: rtIkmswnNCkLeTRBAAAB
+2025-06-18T17:26:53.195Z [INFO] 客户端连接: NQOUIvcbRGGvNf3SAAAD
+2025-06-18T17:27:21.973Z [INFO] 客户端连接: lSRcX_lWThQv1qDDAAAF
+2025-06-18T17:27:29.019Z [INFO] 客户端连接: QxoRQNkvOH15WXGWAAAH
+2025-06-18T17:28:09.855Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T17:34:43.368Z [INFO] 加载现有数据
+2025-06-18T17:34:43.375Z [INFO] 🟢 服务器已启动，监听端口 81
+2025-06-18T17:34:46.510Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T17:35:56.096Z [INFO] 加载现有数据
+2025-06-18T17:35:56.103Z [INFO] 🟢 服务器已启动，监听端口 81
+2025-06-18T17:35:59.062Z [INFO] 客户端连接: ztkfULrtzwdDEaAyAAAB
+2025-06-18T17:36:00.806Z [INFO] 客户端连接: 3ZkGV5ZIS8JjKzuvAAAD
+2025-06-18T17:38:15.454Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T17:38:20.053Z [INFO] 加载现有数据
+2025-06-18T17:38:20.060Z [INFO] 🟢 服务器已启动，监听端口 81
+2025-06-18T17:38:20.720Z [INFO] 客户端连接: Qmww60SApcFIEuhkAAAB
+2025-06-18T17:38:36.499Z [INFO] 客户端连接: YF9TNPj8iECicgMCAAAD
+2025-06-18T17:44:43.422Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T17:45:02.296Z [INFO] 加载现有数据
+2025-06-18T17:45:02.305Z [INFO] 🟢 服务器已启动，监听端口 81
+2025-06-18T17:45:04.711Z [INFO] 客户端连接: 8wzBPejlpGTLaXilAAAB
+2025-06-18T17:45:27.082Z [INFO] 连接取消: undefined
+2025-06-18T17:45:27.297Z [INFO] 客户端连接: An8-fcohlhS_VXvnAAAD
+2025-06-18T17:46:35.575Z [INFO] 客户端连接: U0LRwokamDocH2XzAAAF
+2025-06-18T17:47:05.771Z [INFO] 连接取消: undefined
+2025-06-18T17:47:06.198Z [INFO] 连接取消: undefined
+2025-06-18T17:49:15.067Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T17:49:16.651Z [INFO] 加载现有数据
+2025-06-18T17:49:16.663Z [INFO] 🟢 服务器已启动，监听端口 81
+2025-06-18T17:49:35.012Z [INFO] 客户端连接: 41CZ0SB7i5h6dh3aAAAB
+2025-06-18T17:50:34.789Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
+2025-06-18T17:50:34.790Z [INFO] 管理端修改桌子成功
+2025-06-18T18:39:21.438Z [INFO] 连接取消: transport close
+2025-06-18T18:39:21.696Z [INFO] 客户端连接: 1YfL3mivbIeC44QaAAAD
+2025-06-18T18:40:52.399Z [INFO] 客户端连接: kTj-N7Ehm4_lGW-BAAAF
+2025-06-18T18:46:05.255Z [INFO] 连接取消: transport close
+2025-06-18T18:46:05.420Z [INFO] 客户端连接: tYTKVaILC6dWoUu6AAAH
+2025-06-18T18:51:06.047Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T18:51:07.113Z [INFO] 加载现有数据
+2025-06-18T18:51:07.122Z [INFO] 🟢 服务器已启动，监听端口 81
+2025-06-18T18:51:07.715Z [INFO] 客户端连接: Q3jSeyJdtWRDv6I3AAAB
+2025-06-18T18:51:07.731Z [INFO] 客户端连接: CAmDaqqdyPtvqDpDAAAD
+2025-06-18T18:51:12.398Z [INFO] 连接取消: transport close
+2025-06-18T18:51:24.016Z [INFO] 连接取消: transport close
+2025-06-18T18:51:24.180Z [INFO] 客户端连接: 3-HrwbKox96ALPYCAAAF
+2025-06-18T18:53:16.949Z [INFO] 客户端连接: Z7YI_-1JqxuvYIXKAAAH
+2025-06-18T18:53:44.105Z [INFO] 管理端修改桌子状态 桌号 - 03; 成人 - 1; 儿童 - 1; 桌子状态 - Ocupado
+2025-06-18T18:53:44.107Z [INFO] 管理端修改桌子成功
+2025-06-18T19:00:00.763Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T19:00:03.564Z [INFO] 加载现有数据
+2025-06-18T19:00:03.573Z [INFO] 🟢 服务器已启动，监听端口 81
+2025-06-18T19:00:03.746Z [INFO] 客户端连接: es0Mgtm8Fv9YVCYGAAAC
+2025-06-18T19:00:03.756Z [INFO] 客户端连接: EsYkXRF1eIAIWbOkAAAD
+2025-06-18T19:00:10.362Z [INFO] 客户端连接: GNNmYCjJI5xlopnQAAAF
+2025-06-18T19:00:26.482Z [INFO] 连接取消: client namespace disconnect
+2025-06-18T19:00:28.224Z [INFO] 连接取消: transport close
+2025-06-18T19:00:43.918Z [INFO] 连接取消: transport close
+2025-06-18T19:05:49.997Z [INFO] 客户端连接: W_2fowSWhlfBeCooAAAH
+2025-06-18T19:06:05.183Z [INFO] 客户端连接: VYCrjS-FtoT4zSK5AAAJ
+2025-06-18T19:06:06.298Z [INFO] 连接取消: transport close
+2025-06-18T19:09:48.374Z [INFO] 客户端连接: uGlQchxWg0-0IO28AAAL
+2025-06-18T19:52:13.910Z [INFO] 连接取消: client namespace disconnect
+2025-06-18T19:52:19.518Z [INFO] 客户端连接: CwgAClRkc8uDuFOcAAAN
+2025-06-18T19:52:24.386Z [INFO] 连接取消: transport close
+2025-06-18T19:52:24.856Z [INFO] 客户端连接: kpo01hYbxj4HoX8CAAAP
+2025-06-18T19:55:58.180Z [INFO] 连接取消: transport close
+2025-06-18T19:56:10.302Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T19:56:11.758Z [INFO] 加载现有数据
+2025-06-18T19:56:11.767Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-18T19:56:12.723Z [INFO] 客户端连接: OszRh3d1xO_GkE7dAAAB
+2025-06-18T19:56:39.436Z [INFO] 客户端连接: pqRK3kOskU8UN4YHAAAD
+2025-06-18T19:58:12.404Z [INFO] 连接取消: transport close
+2025-06-18T19:58:12.555Z [INFO] 客户端连接: f3kszkRyQtL5zRbGAAAF
+2025-06-18T19:59:00.136Z [INFO] 连接取消: client namespace disconnect
+2025-06-18T19:59:03.258Z [INFO] 客户端连接: tdQI4CUm_52uPWVPAAAH
+2025-06-18T20:06:35.867Z [INFO] 连接取消: client namespace disconnect
+2025-06-18T20:06:39.701Z [INFO] 客户端连接: 8vvpdotGfmuIV-JSAAAJ
+2025-06-18T20:09:33.006Z [INFO] 订单提交
+2025-06-18T20:09:33.011Z [INFO] 订单提交失败
+2025-06-18T20:09:33.012Z [INFO] 失败原因: Mesa 04 não tem permissão
+2025-06-18T20:09:39.996Z [INFO] 管理端修改桌子状态 桌号 - 04; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
+2025-06-18T20:09:39.997Z [INFO] 管理端修改桌子成功
+2025-06-18T20:09:45.156Z [INFO] 订单提交
+2025-06-18T20:09:45.157Z [INFO] 订单提交成功 订单号 - 0002
+2025-06-18T20:09:45.158Z [INFO] [2025-06-18 20:09:45] Novo Pedido - Mesa: 04
 Nome: (sem nome)
 Nota: (nenhuma)
 Itens:
-- teste1 x1 | ID: 1000 | €0.00
+- Carne refogada x1 | ID: --- | €3.50
 --------------------------------------------------
-2025-06-18T19:36:06.922Z [INFO] 打印订单 订单号 - 0001
-2025-06-18T19:55:19.155Z [INFO] 创建新数据
-2025-06-18T19:55:19.163Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-18T19:55:25.712Z [INFO] 客户端连接: Ob6f8yKt2tjemwwbAAAB
-2025-06-18T19:55:53.947Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
-2025-06-18T19:55:53.948Z [INFO] 管理端修改桌子成功
-2025-06-18T19:55:59.452Z [INFO] 客户端连接: coSkVVgAlZUrcR2AAAAD
-2025-06-18T20:06:39.669Z [INFO] 连接取消: client namespace disconnect
-2025-06-18T20:06:40.415Z [INFO] 客户端连接: YCV6c6gDbk8wLiXkAAAF
-2025-06-18T20:07:40.201Z [INFO] 连接取消: client namespace disconnect
-2025-06-18T20:07:40.764Z [INFO] 客户端连接: 58FXzkdgHnIFPBPjAAAH
-2025-06-18T20:14:53.905Z [INFO] 连接取消: client namespace disconnect
-2025-06-18T20:14:54.814Z [INFO] 客户端连接: I-rQ2pH4Td5-N2dkAAAJ
-2025-06-18T20:17:32.184Z [INFO] 连接取消: client namespace disconnect
-2025-06-18T20:17:33.125Z [INFO] 客户端连接: qWYwld-wWnmNgJVjAAAL
-2025-06-18T20:26:25.850Z [INFO] 连接取消: client namespace disconnect
-2025-06-18T20:26:26.816Z [INFO] 客户端连接: rSireDbD9PifLYbPAAAN
-2025-06-18T21:02:26.423Z [INFO] 连接取消: transport close
-2025-06-18T21:02:26.447Z [INFO] 连接取消: transport close
+2025-06-18T20:09:45.159Z [INFO] 打印订单 订单号 - 0002
+2025-06-18T20:15:58.906Z [INFO] 客户端连接: cCL45ccXR5nliUDkAAAL
+2025-06-18T20:20:25.159Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T20:20:26.317Z [INFO] 加载现有数据
+2025-06-18T20:20:26.327Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-18T20:20:26.715Z [INFO] 客户端连接: bAKhs0nHW-jSFwSEAAAD
+2025-06-18T20:20:26.727Z [INFO] 客户端连接: yWx4IhCcRZNsYw12AAAE
+2025-06-18T20:20:26.731Z [INFO] 客户端连接: AGyA7K65qv9p_fCGAAAF
+2025-06-18T20:20:40.143Z [INFO] 连接取消: client namespace disconnect
+2025-06-18T20:20:41.274Z [INFO] 客户端连接: 8iIMbFK3IU2_0TaIAAAH
+2025-06-18T20:20:55.994Z [INFO] 连接取消: transport close
+2025-06-18T20:20:55.996Z [INFO] 连接取消: transport close
+2025-06-18T20:20:56.241Z [INFO] 客户端连接: A_ByiTk_W0UZmwsGAAAJ
+2025-06-18T20:35:42.452Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T20:35:43.545Z [INFO] 加载现有数据
+2025-06-18T20:35:43.553Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-18T20:35:43.712Z [INFO] 客户端连接: 68edwdo1nWDn7-JgAAAC
+2025-06-18T20:35:43.724Z [INFO] 客户端连接: L5YM1dD2LQzBD_A6AAAD
+2025-06-18T20:35:48.665Z [INFO] 连接取消: transport close
+2025-06-18T20:35:48.878Z [INFO] 客户端连接: vY7dMbQsHSoqasiEAAAF
+2025-06-18T20:39:24.838Z [INFO] 连接取消: transport close
+2025-06-18T20:39:25.082Z [INFO] 客户端连接: yWsrBnxlqcYhBE56AAAH
+2025-06-18T20:39:54.365Z [INFO] 客户端连接: n5AnT1msCVe65EKNAAAJ
+2025-06-18T20:39:59.944Z [INFO] 连接取消: transport close
+2025-06-18T20:39:59.946Z [INFO] 连接取消: transport close
+2025-06-18T20:40:00.157Z [INFO] 客户端连接: uOME5OkefAICcqR5AAAL
+2025-06-18T20:40:18.999Z [INFO] 客户端连接: CxExO91he4uTHZKpAAAN
+2025-06-18T20:40:20.464Z [INFO] 连接取消: transport close
+2025-06-18T20:40:20.467Z [INFO] 连接取消: transport close
+2025-06-18T20:40:20.670Z [INFO] 客户端连接: EIFDoR0vAAM51RvqAAAP
+2025-06-18T20:41:11.178Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-18T20:41:12.199Z [INFO] 加载现有数据
+2025-06-18T20:41:12.207Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-18T20:41:12.721Z [INFO] 客户端连接: fPyDIuJopzgp7cCrAAAC
+2025-06-18T20:41:12.733Z [INFO] 客户端连接: fLqxeYGWOLvIqKMYAAAD
+2025-06-18T20:49:40.163Z [INFO] 加载现有数据
+2025-06-18T20:49:40.171Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-18T20:49:40.257Z [INFO] 客户端连接: Gi8aXxHPp8E0Bd3_AAAB
+2025-06-18T20:49:44.073Z [INFO] 客户端连接: m5BjYIr6dvR5zaMgAAAD
+2025-06-18T20:49:44.713Z [INFO] 客户端连接: M0u3eNkIF1CL_7vxAAAF
+2025-06-18T20:49:45.203Z [INFO] 连接取消: transport close
+2025-06-18T20:49:46.643Z [INFO] 连接取消: transport close
+2025-06-18T20:50:18.799Z [INFO] 客户端连接: jkxjOmffZUPc2eUWAAAH
+2025-06-18T20:53:39.456Z [INFO] 客户端连接: xD8VKvNlnCzNUzqLAAAJ
+2025-06-18T20:53:48.629Z [INFO] 客户端连接: RLxVGgr_yhtm3K2CAAAL
+2025-06-18T20:53:55.962Z [INFO] 连接取消: transport close
+2025-06-18T20:54:10.939Z [INFO] 管理端设置粉丝日: true
+2025-06-18T20:54:10.940Z [INFO] 管理端设置粉丝日成功: true
+2025-06-18T20:54:38.367Z [INFO] 客户端连接: h-fqhZ4cma99Ok0eAAAN
+2025-06-18T20:54:49.534Z [INFO] 管理端设置粉丝日: false
+2025-06-18T20:54:49.535Z [INFO] 管理端设置粉丝日成功: false
+2025-06-18T20:54:52.963Z [INFO] 管理端设置粉丝日: true
+2025-06-18T20:54:52.963Z [INFO] 管理端设置粉丝日成功: true
+2025-06-18T20:54:56.403Z [INFO] 管理端设置粉丝日: false
+2025-06-18T20:54:56.403Z [INFO] 管理端设置粉丝日成功: false
+2025-06-18T20:54:59.059Z [INFO] 管理端设置粉丝日: true
+2025-06-18T20:54:59.059Z [INFO] 管理端设置粉丝日成功: true
+2025-06-18T20:55:09.726Z [INFO] 🛑 收到退出信号，正在保存数据...
