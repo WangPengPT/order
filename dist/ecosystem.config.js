@@ -10,7 +10,7 @@ module.exports = {
     env: {
       NODE_ENV: "production",
       PORT: 443,
-      QR_ADDR: "https://order.xiaoxiong.pt:443/client.html?table=",
+      QR_ADDR: "https://order.xiaoxiong.pt/client.html?table=",
     }
   }]
 }
