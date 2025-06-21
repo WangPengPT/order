@@ -23,7 +23,8 @@ app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
 
 // 创建 HTTP 服务器和 Socket.IO
 let server;
-if (process.env.PORT == 443)
+const usedHttps = process.env.USE_HTTPS || false;
+if (usedHttps)
 {
   // 配置 HTTPS 选项
   const httpsOptions = {
@@ -41,9 +42,9 @@ if (process.env.PORT == 443)
   });
 
   // 创建 HTTP 服务器（用于重定向）
-  app.listen(80, () => {
-    logger.info(`HTTP server running on port 80`)
-  });
+  // app.listen(80, () => {
+  //   logger.info(`HTTP server running on port 80`)
+  // });
 }
 else
 {
