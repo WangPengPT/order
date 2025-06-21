@@ -21,7 +21,7 @@ class AppState {
 
     initTables() {
         const iniTable = [];
-        for(let i = 2 ; i <= 25; i++){
+        for(let i = 2 ; i <= 48; i++){
             let id = '' + i;
             if( id <= 9 ) id = '0' + id;
             iniTable.push(Table.fromJSON({id: id, people: 0, status: TableStatus.FREE}))
