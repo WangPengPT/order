@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜品点餐系统</title>
+
+    <style>
+        .comic-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #ff5252;
+            border: 2px solid #000;
+            border-radius: 10px;
+            box-shadow: 5px 5px 0px #000;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .comic-button:hover {
+            background-color: #fff;
+            color: #ff5252;
+            border: 2px solid #ff5252;
+            box-shadow: 5px 5px 0px #ff5252;
+        }
+
+        .comic-button:active {
+            background-color: #fcf414;
+            box-shadow: none;
+            transform: translateY(4px);
+        }
+
+        .left-side {
+            display: flex;
+            flex-direction: column; /* 子元素垂直排列 */
+            width: 200px;         /* 左侧固定宽度 */
+            padding: 10px;
+            gap: 20px;            /* 上下模块之间的间距 */
+        }
+    </style>
+</head>
+
+<body>
+<div class="left-side">
+    <button class="comic-button" onclick="window.location.href = '/client.html?table=MzMxMDE0NA=='">
+        订餐页面
+    </button >
+    <button class="comic-button" onclick="window.location.href =  '/manager.html'">
+        后台
+    </button>
+</div>
+
+</body>
+
+</html>
