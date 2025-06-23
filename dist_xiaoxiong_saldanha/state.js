@@ -28,7 +28,6 @@ class AppState {
         }
         const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
-        // console.log(this.tables)
 
     }
 

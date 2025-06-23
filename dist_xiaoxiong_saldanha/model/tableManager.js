@@ -55,7 +55,8 @@ updateTableWithoutOrder(updatedTableData) {
         name: item.name,
         quantity: item.quantity,
         price: item.price,
-        orderIds: item.orderIds
+        orderIds: item.orderIds,
+        notes: item.notes
       }))
     }));
   }

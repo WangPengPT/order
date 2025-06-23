@@ -147,7 +147,7 @@
     "id": "2501-1",
     "handle": "dumpling",
     "name": "Dumpling",
-    "subname": "VEGETARIANO",
+    "subname": "VEGETARIANO 5 UNI",
     "note": "Guotie, também conhecido como ravioli frito, é um petisco tradicional chinês.  No período Tang, o Youyang Zazu mencionava os \"bolinhos de cinco cores\"  que necessitavam de ser \"fritos na chapa\", indicando que a técnica de fritura  já estava desenvolvida. No período Song, o Dongjing Meng Hua Lu fazia  referência aos \"raviolis fritos\" (ou seja, guotie), confirmando a sua existência.",
     "category": "Entrada",
     "image": "https://cdn.shopify.com/s/files/1/0795/0594/9019/files/20230515152012_19.jpg?v=1739286983",
@@ -159,7 +159,7 @@
     "id": "2501-2",
     "handle": "dumpling",
     "name": "",
-    "subname": "VEGETARIANO",
+    "subname": "VEGETARIANO 10 UNI",
     "note": "",
     "category": "",
     "image": "",
@@ -171,7 +171,7 @@
     "id": "2501-3",
     "handle": "dumpling",
     "name": "",
-    "subname": "FRANGO",
+    "subname": "FRANGO 5 UNI",
     "note": "",
     "category": "",
     "image": "",
@@ -183,7 +183,7 @@
     "id": "2501-4",
     "handle": "dumpling",
     "name": "",
-    "subname": "FRANGO",
+    "subname": "FRANGO 10 UNI",
     "note": "",
     "category": "",
     "image": "",
@@ -195,7 +195,7 @@
     "id": "2501-5",
     "handle": "dumpling",
     "name": "",
-    "subname": "PORCO+GAMBAS",
+    "subname": "PORCO+GAMBAS 5 UNI",
     "note": "",
     "category": "",
     "image": "",
@@ -207,7 +207,7 @@
     "id": "2501-6",
     "handle": "dumpling",
     "name": "",
-    "subname": "PORCO+GAMBAS",
+    "subname": "PORCO+GAMBAS 10 UNI",
     "note": "",
     "category": "",
     "image": "",
@@ -225,7 +225,7 @@
     "image": "https://cdn.shopify.com/s/files/1/0795/0594/9019/files/f3721c17d13449ce82adde969799ad8d.jpg?v=1740255576",
     "tags": "",
     "x": [],
-    "price": "7.90"
+    "price": "8.90"
   },
   {
     "id": "1451",
@@ -237,7 +237,7 @@
     "image": "https://cdn.shopify.com/s/files/1/0795/0594/9019/files/1548089eaca814ca81b188c35d0a2d52.jpg?v=1740255505",
     "tags": "",
     "x": [],
-    "price": "7.90"
+    "price": "8.90"
   },
   {
     "id": "1454-1",
@@ -249,7 +249,7 @@
     "image": "https://cdn.shopify.com/s/files/1/0795/0594/9019/files/sweet-and-sour-pork-3.jpg?v=1740582317",
     "tags": "",
     "x": [],
-    "price": "7.90"
+    "price": "8.90"
   },
   {
     "id": "2056",
@@ -273,7 +273,7 @@
     "image": "https://cdn.shopify.com/s/files/1/0795/0594/9019/files/2f5f0e2d8f577a65.jpg?v=1740255332",
     "tags": "",
     "x": [],
-    "price": "7.90"
+    "price": "8.90"
   },
   {
     "id": "1453-1",
@@ -285,7 +285,7 @@
     "image": "https://cdn.shopify.com/s/files/1/0795/0594/9019/files/1_18ffd5da-cc41-4dbf-ba61-dede25f946ec.png?v=1740258405",
     "tags": "",
     "x": [],
-    "price": "7.90"
+    "price": "8.90"
   },
   {
     "id": "1000",
@@ -1113,19 +1113,7 @@
     "image": "https://cdn.shopify.com/s/files/1/0795/0594/9019/files/WhatsAppImage2024-06-11at17.33.22_2.jpg?v=1750365486",
     "tags": "",
     "x": [],
-    "price": "0.00"
-  },
-  {
-    "id": "",
-    "handle": "cacarola-de-arroz-frango-teriyaki-1",
-    "name": "",
-    "subname": "",
-    "note": "",
-    "category": "",
-    "image": "https://cdn.shopify.com/s/files/1/0795/0594/9019/files/3367ec479d044c0c02d41f177a475a08.jpg?v=1750365486",
-    "tags": "",
-    "x": [],
-    "price": ""
+    "price": "10.90"
   },
   {
     "id": "1411",
