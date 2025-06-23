@@ -41,9 +41,9 @@ if (process.env.PORT == 800)
   });
 
   // 创建 HTTP 服务器（用于重定向）
-  app.listen(80, () => {
-    logger.info(`HTTP server running on port 80`)
-  });
+  //app.listen(80, () => {
+    //logger.info(`HTTP server running on port 80`)
+  //});
 }
 else
 {
