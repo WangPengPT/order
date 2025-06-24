@@ -6,29 +6,9 @@
     "auditLog": "logs\\.417e34b3ae8a9dd3eaf55d7a6e4094f2bb7156e9-audit.json",
     "files": [
         {
-            "date": 1750263473617,
-            "name": "logs\\socket-2025-06-18.log",
-            "hash": "6d9a73874666253cd377d355486e4a7c235e021a06b0314a07970aed2e02de82"
-        },
-        {
-            "date": 1750333726828,
-            "name": "logs\\socket-2025-06-19.log",
-            "hash": "4db7bbd80bd1419b6b64d014776e056174f7b640319e9492512d467b542630d0"
-        },
-        {
-            "date": 1750425292757,
-            "name": "logs\\socket-2025-06-20.log",
-            "hash": "618745103fbed79d424432c5a3ce1ff13a9c1a374cfc71ebcd99d5d70ea3631b"
-        },
-        {
-            "date": 1750506357916,
-            "name": "logs\\socket-2025-06-21.log",
-            "hash": "38a724033fb89991f1123a0697307c61e0354dba969fae440d02b44af8fb88b3"
-        },
-        {
-            "date": 1750678792473,
-            "name": "logs\\socket-2025-06-23.log",
-            "hash": "f7c28f8b72b3e36a4db7cb836255b20fc875f5ecea7cd6dc0cf1682e38ceb032"
+            "date": 1750804745904,
+            "name": "logs\\socket-2025-06-24.log",
+            "hash": "fb5fe0b94286048ec1e2a48e5b5ccda6d3e9d64b5f85470881862d5d9b6226f4"
         }
     ],
     "hashType": "sha256"
