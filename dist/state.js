@@ -18,6 +18,7 @@ class AppState {
 
         this.lunchPrice = 15.90
         this.dinnerPrice = 19.90
+        this.holidayPrice = 19.90
         this.clientPort = 5173
         this.isFestiveDay= false
 
@@ -33,7 +34,6 @@ class AppState {
         }
         const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
-        // console.log(this.tables)
 
     }
 
@@ -106,6 +106,7 @@ class AppState {
 
     clearAll() {
         console.log("clear all");
+        this.maxOrderId = 0
         this.orders.clear();
         this.tables.clearAll();
     }
@@ -173,7 +174,7 @@ class AppState {
 
         this.adultPrice = newAppState.adultPrice
         this.childPrice = newAppState.childPrice
-
+        this.holidayPrice = newAppState.holidayPrice
         this.isFestiveDay = newAppState.isFestiveDay
     }
 
@@ -212,6 +213,7 @@ class AppState {
             maxOrderId: this.maxOrderId,
             childPrice: this.childPrice,
             adultPrice: this.adultPrice,
+            holidayPrice: this.holidayPrice,
             isFestiveDay: this.isFestiveDay,
         };
     }

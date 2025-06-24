@@ -9,6 +9,7 @@ module.exports = {
     max_memory_restart: "800M",
     env: {
       NODE_ENV: "production",
+      USE_HTTPS : true,
       PORT: 443,
       QR_ADDR: "https://order.xiaoxiong.pt/client.html?table=",
     }

@@ -25,7 +25,6 @@ function print_order(order) {
         }
 
         if (hasData) {
-            console.log(printer.data.every_one);
             print_orde_to_io(printer,order,printer.data.every_one == "true");
         }
     }

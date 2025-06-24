@@ -13,6 +13,7 @@ const uploadMiddleware = require('./middlewares/uploadMiddleware.js');
 const appStateService = require('./services/appStateService.js')
 const { logger } = require('./utils/logger.js')
 const {appState} = require("./state");
+const holiday = require('./utils/holiday.js')
 
 const app = express();
 app.use(cors());
@@ -23,7 +24,8 @@ app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
 
 // 创建 HTTP 服务器和 Socket.IO
 let server;
-if (process.env.PORT == 443)
+const usedHttps = process.env.USE_HTTPS || false;
+if (usedHttps)
 {
   // 配置 HTTPS 选项
   const httpsOptions = {
@@ -41,9 +43,9 @@ if (process.env.PORT == 443)
   });
 
   // 创建 HTTP 服务器（用于重定向）
-  app.listen(80, () => {
-    logger.info(`HTTP server running on port 80`)
-  });
+  // app.listen(80, () => {
+  //   logger.info(`HTTP server running on port 80`)
+  // });
 }
 else
 {
@@ -103,9 +105,11 @@ function runInterval() {
     if (now.getHours() == 1)
     {
       if ( needClean ) {
-        logger.info('自动清除订单和关闭红日')
+        logger.info('自动清除订单和更新红日')
         appState.clearAll();
-        appState.isFestiveDay = false
+
+        // update today for appState.isFestiveDay
+        holiday.updateToday(appState);
       }
       needClean = false;
     }
@@ -115,6 +119,9 @@ function runInterval() {
     }
 
     runInterval();
-  }, 1000 * 600);
+  }, 1000 * 60);
 }
+
+// update today for appState.isFestiveDay
+holiday.updateToday(appState);
 runInterval();
