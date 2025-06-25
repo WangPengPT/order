@@ -21,13 +21,19 @@ class AppState {
 
     initTables() {
         const iniTable = [];
-        const tablesNumber = process.env.TABLES_NUMBER || [[1,50]]
+        const tablesNumber = []
+        console.log("PROCESS:",process.env.TABLES_NUMBER)
+        if(process.env.TABLES_NUMBER){
+            tablesNumber.push.apply(tablesNumber, JSON.parse(process.env.TABLES_NUMBER))
+        }else{
+            tablesNumber.push([1,50])
+        }
         for (let i = 0; i < tablesNumber.length; i++) {
             iniTable.push.apply(iniTable, this.createTable(tablesNumber[i][0],tablesNumber[i][1]))
         }
         const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
-        // console.log(this.tables)
+        console.log("TABLES:",tablesNumber)
 
     }
 
