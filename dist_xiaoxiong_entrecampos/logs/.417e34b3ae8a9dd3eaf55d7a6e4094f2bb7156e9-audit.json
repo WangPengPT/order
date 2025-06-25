@@ -6,9 +6,24 @@
     "auditLog": "logs\\.417e34b3ae8a9dd3eaf55d7a6e4094f2bb7156e9-audit.json",
     "files": [
         {
-            "date": 1750804745904,
-            "name": "logs\\socket-2025-06-24.log",
-            "hash": "fb5fe0b94286048ec1e2a48e5b5ccda6d3e9d64b5f85470881862d5d9b6226f4"
+            "date": 1750265089250,
+            "name": "logs\\socket-2025-06-18.log",
+            "hash": "d5c3f447e3a0fff13afbc9d0d0b24f6b63234bbc07b1f7fd1dad1b225f9f01d4"
+        },
+        {
+            "date": 1750333586988,
+            "name": "logs\\socket-2025-06-19.log",
+            "hash": "4a6548f9af47ba9b0733b5e3fc17a09ff5c7de5895e7af6da7b1f522fa9af0a5"
+        },
+        {
+            "date": 1750376383992,
+            "name": "logs\\socket-2025-06-20.log",
+            "hash": "21cba906cb96305c61423a98d839b291165498e9c972f561595c6f64ca4fb038"
+        },
+        {
+            "date": 1750854446175,
+            "name": "logs\\socket-2025-06-25.log",
+            "hash": "23e11ac1520a5fc96d676f22bcb09a5ab3f8d26ecc0f2de0450c83c892444c19"
         }
     ],
     "hashType": "sha256"

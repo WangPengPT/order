@@ -1,156 +1,194 @@
-2025-06-20T13:14:52.822Z [INFO] 加载现有数据
-2025-06-20T13:14:52.831Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T13:14:52.856Z [INFO] 客户端连接: 46EwhT-ANlNTmK1uAAAB
-2025-06-20T13:14:59.290Z [INFO] 管理端更改价格, 中午价格-15.9; 晚上价格-19.9
-2025-06-20T13:56:46.791Z [INFO] 加载现有数据
-2025-06-20T13:56:46.798Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T13:56:51.292Z [INFO] 客户端连接: Jcpf_d3qvnV52xgtAAAB
-2025-06-20T14:32:19.380Z [INFO] 加载现有数据
-2025-06-20T14:32:19.389Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T14:32:21.286Z [INFO] 客户端连接: XE-DkHSTLipkqntNAAAB
-2025-06-20T14:32:22.838Z [INFO] 客户端连接: 9YL_xucuDazQCVLYAAAD
-2025-06-20T14:32:22.843Z [INFO] 添加打印机
-2025-06-20T14:32:36.895Z [INFO] 客户端连接: rdp6eqcT7YDhPFm4AAAF
-2025-06-20T14:33:36.738Z [INFO] 连接取消: transport close
-2025-06-20T14:33:36.874Z [INFO] 客户端连接: gJMdSH4WVWF2SiF-AAAH
-2025-06-20T14:35:43.750Z [INFO] 连接取消: transport close
-2025-06-20T14:35:44.040Z [INFO] 客户端连接: 2FGhmmxLKTmNnZOHAAAJ
-2025-06-20T14:39:50.690Z [INFO] 🛑 收到退出信号，正在保存数据...
-2025-06-20T14:39:51.974Z [INFO] 加载现有数据
-2025-06-20T14:39:51.983Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T14:39:52.289Z [INFO] 客户端连接: 1JmjgHZCnBcF1aMCAAAC
-2025-06-20T14:39:52.297Z [INFO] 客户端连接: wD-v7NZO3xDRKxaJAAAD
-2025-06-20T14:39:53.448Z [INFO] 客户端连接: rmjJ7k6KSydm01VpAAAF
-2025-06-20T14:39:53.454Z [INFO] 添加打印机
-2025-06-20T14:42:59.789Z [INFO] 连接取消: transport close
-2025-06-20T14:43:00.055Z [INFO] 客户端连接: 7s4fVQ5pN6pP6sHkAAAH
-2025-06-20T14:48:43.063Z [INFO] 客户端连接: 229SB-jadU346t8sAAAJ
-2025-06-20T14:48:43.103Z [INFO] 添加打印机
-2025-06-20T14:48:46.675Z [INFO] 连接取消: transport close
-2025-06-20T14:57:13.024Z [INFO] 连接取消: transport close
-2025-06-20T14:57:13.334Z [INFO] 客户端连接: B1pz7AHoUxCNVpWcAAAL
-2025-06-20T14:58:12.302Z [INFO] 🛑 收到退出信号，正在保存数据...
-2025-06-20T14:58:13.551Z [INFO] 加载现有数据
-2025-06-20T14:58:13.566Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T14:58:14.302Z [INFO] 客户端连接: Ldn0jpnOfVUSze8gAAAC
-2025-06-20T14:58:14.307Z [INFO] 客户端连接: UxL-nUz3DHvvyRrIAAAD
-2025-06-20T14:58:16.200Z [INFO] 客户端连接: eMNgV_AkriKruX5yAAAF
-2025-06-20T14:58:16.204Z [INFO] 添加打印机
-2025-06-20T14:58:22.190Z [INFO] 连接取消: transport close
-2025-06-20T14:58:22.427Z [INFO] 客户端连接: _-E8jgtcoPhwBxY4AAAH
-2025-06-20T14:59:32.441Z [INFO] 加载现有数据
-2025-06-20T14:59:32.448Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T14:59:34.196Z [INFO] 客户端连接: OsVvcctDHrQ_idR1AAAB
-2025-06-20T14:59:34.282Z [INFO] 客户端连接: eIxOqDAt3gG71EQtAAAD
-2025-06-20T14:59:35.610Z [INFO] 客户端连接: 4GVDI3f7osKo9_SJAAAF
-2025-06-20T14:59:35.614Z [INFO] 添加打印机
-2025-06-20T14:59:35.801Z [INFO] 连接取消: transport close
-2025-06-20T14:59:36.070Z [INFO] 客户端连接: cAjrTANsjeIWocH9AAAH
-2025-06-20T15:03:27.687Z [INFO] 连接取消: transport close
-2025-06-20T15:03:28.011Z [INFO] 客户端连接: y76iPQUpBkXSU226AAAJ
-2025-06-20T15:03:38.864Z [INFO] 连接取消: transport close
-2025-06-20T15:03:39.122Z [INFO] 客户端连接: y65sSLzkYHXZfqbbAAAL
-2025-06-20T15:06:24.947Z [INFO] 连接取消: transport close
-2025-06-20T15:06:25.198Z [INFO] 客户端连接: SOBhJhsxO_QJSzE-AAAN
-2025-06-20T15:32:46.386Z [INFO] 连接取消: transport close
-2025-06-20T17:01:11.930Z [INFO] 加载现有数据
-2025-06-20T17:01:11.938Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T17:01:12.954Z [INFO] 客户端连接: z_QN7F2kUXEIBekXAAAB
-2025-06-20T17:01:12.960Z [INFO] 添加打印机
-2025-06-20T17:01:15.168Z [INFO] 🛑 收到退出信号，正在保存数据...
-2025-06-20T17:08:29.991Z [INFO] 加载现有数据
-2025-06-20T17:08:29.999Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T17:08:34.064Z [INFO] 客户端连接: exP9PLybFfS35gSqAAAB
-2025-06-20T17:08:34.071Z [INFO] 添加打印机
-2025-06-20T17:08:35.277Z [INFO] 客户端连接: xcXL8ND0Zy2mLq1SAAAD
-2025-06-20T17:08:58.286Z [INFO] 客户端连接: QHls1wKpRUIK4cBUAAAF
-2025-06-20T17:09:10.705Z [INFO] 连接取消: transport close
-2025-06-20T17:09:10.871Z [INFO] 客户端连接: SvKlvHC27uz62xkIAAAH
-2025-06-20T18:30:43.868Z [INFO] 加载现有数据
-2025-06-20T18:30:43.877Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T18:30:44.068Z [INFO] 客户端连接: V134OmBu0jDPXdK4AAAB
-2025-06-20T18:30:45.398Z [INFO] 客户端连接: _CmaqE96ICDjX52eAAAD
-2025-06-20T18:30:45.419Z [INFO] 添加打印机
-2025-06-20T18:31:45.511Z [INFO] 加载现有数据
-2025-06-20T18:31:45.521Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T18:31:47.293Z [INFO] 客户端连接: BTVytoFWf5il7IDEAAAB
-2025-06-20T18:31:48.001Z [INFO] 客户端连接: o9DcJNsiP7AplxN_AAAD
-2025-06-20T18:31:48.006Z [INFO] 添加打印机
-2025-06-20T18:31:52.003Z [INFO] 连接取消: transport close
-2025-06-20T18:31:52.117Z [INFO] 客户端连接: aLeo_9udmA-ASSy2AAAF
-2025-06-20T18:32:41.740Z [INFO] 连接取消: transport close
-2025-06-20T18:32:44.621Z [INFO] 客户端连接: At0GE2wIT-cgIYsZAAAH
-2025-06-20T18:32:57.364Z [INFO] 连接取消: transport close
-2025-06-20T18:33:08.927Z [INFO] 客户端连接: LSK6tAOxo4qg1bDHAAAJ
-2025-06-20T18:33:08.957Z [INFO] 添加打印机
-2025-06-20T18:33:12.775Z [INFO] 连接取消: transport close
-2025-06-20T18:33:12.899Z [INFO] 客户端连接: QqWZL5oRVlFOqWwmAAAL
-2025-06-20T18:39:14.477Z [INFO] 连接取消: transport close
-2025-06-20T18:39:26.024Z [INFO] 连接取消: transport close
-2025-06-20T18:39:48.410Z [INFO] 客户端连接: W7A7r-SpXnVZ9xXyAAAN
-2025-06-20T18:39:55.236Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
-2025-06-20T18:39:55.237Z [INFO] 管理端修改桌子成功
-2025-06-20T18:40:01.489Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Pago
-2025-06-20T18:40:01.490Z [INFO] 管理端修改桌子成功
-2025-06-20T18:40:10.321Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 4; 儿童 - 3; 桌子状态 - Pago
-2025-06-20T18:40:10.322Z [INFO] 管理端修改桌子成功
-2025-06-20T18:40:13.713Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 4; 儿童 - 3; 桌子状态 - Livre
-2025-06-20T18:40:13.719Z [INFO] 管理端修改桌子失败
-2025-06-20T18:40:13.719Z [INFO] 失败原因: undefined
-2025-06-20T18:40:58.017Z [INFO] 🛑 收到退出信号，正在保存数据...
-2025-06-20T18:40:59.363Z [INFO] 加载现有数据
-2025-06-20T18:40:59.372Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T18:41:00.300Z [INFO] 客户端连接: 5jyjYXjqKwGVrAqsAAAB
-2025-06-20T18:41:05.473Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 1; 儿童 - 2; 桌子状态 - Ocupado
-2025-06-20T18:41:05.474Z [INFO] 管理端修改桌子成功
-2025-06-20T18:41:09.705Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 1; 儿童 - 2; 桌子状态 - Pago
-2025-06-20T18:41:09.705Z [INFO] 管理端修改桌子成功
-2025-06-20T18:41:14.904Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 1; 儿童 - 2; 桌子状态 - Livre
-2025-06-20T18:41:14.905Z [INFO] 自动清除桌子 桌号 - 02
-2025-06-20T18:41:14.906Z [INFO] 管理端修改桌子成功
-2025-06-20T18:41:23.185Z [INFO] 管理端添加桌子 桌号 - 1000
-2025-06-20T18:41:23.187Z [INFO] 管理端添加桌子成功
-2025-06-20T18:41:29.504Z [INFO] 管理端删除桌子 桌号 - 1000
-2025-06-20T18:41:29.505Z [INFO] 管理端删除桌子成功
-2025-06-20T18:41:34.729Z [INFO] 管理端添加桌子 桌号 - 109
-2025-06-20T18:41:34.730Z [INFO] 管理端添加桌子成功
-2025-06-20T18:41:40.615Z [INFO] 管理端删除桌子 桌号 - 109
-2025-06-20T18:41:40.616Z [INFO] 管理端删除桌子成功
-2025-06-20T18:42:12.183Z [INFO] 🛑 收到退出信号，正在保存数据...
-2025-06-20T18:42:13.713Z [INFO] 加载现有数据
-2025-06-20T18:42:13.722Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T18:42:14.286Z [INFO] 客户端连接: 4ecWDwN_PRnFd_4mAAAB
-2025-06-20T18:42:27.432Z [INFO] 管理端添加桌子 桌号 - 104
-2025-06-20T18:42:27.434Z [INFO] 管理端添加桌子成功
-2025-06-20T18:42:30.248Z [INFO] 管理端添加桌子 桌号 - 40
-2025-06-20T18:42:30.249Z [INFO] 管理端添加桌子成功
-2025-06-20T18:42:38.911Z [INFO] 🛑 收到退出信号，正在保存数据...
-2025-06-20T19:03:52.731Z [INFO] 加载现有数据
-2025-06-20T19:03:52.739Z [INFO] 🟢 服务器已启动，监听端口 80
-2025-06-20T19:03:52.793Z [INFO] 客户端连接: cETd1xQv9o4CHh44AAAB
-2025-06-20T19:03:55.279Z [INFO] 客户端连接: dWjksL_OqZgcFxw4AAAD
-2025-06-20T19:03:55.343Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:03:55.845Z [INFO] 客户端连接: obB0YAkbDCh1Z-6KAAAF
-2025-06-20T19:04:03.895Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:04:04.420Z [INFO] 客户端连接: QR2UeLx_f5rFZ4iGAAAH
-2025-06-20T19:08:14.349Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:08:14.850Z [INFO] 客户端连接: pVyG6de_xeoHpQYoAAAJ
-2025-06-20T19:08:39.933Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:08:40.483Z [INFO] 客户端连接: Wq2f1EUG-lC_DgE4AAAL
-2025-06-20T19:15:40.944Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:15:41.481Z [INFO] 客户端连接: K3eKZBOk1CLHET6aAAAN
-2025-06-20T19:15:52.615Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:15:53.114Z [INFO] 客户端连接: eAQ7uXMEnCpqbh-1AAAP
-2025-06-20T19:17:25.561Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:17:26.079Z [INFO] 客户端连接: Z7v_W8Ckw8gNh0dwAAAR
-2025-06-20T19:19:46.720Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:19:47.265Z [INFO] 客户端连接: eajJEufnhkjxkNscAAAT
-2025-06-20T19:21:04.163Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:21:04.689Z [INFO] 客户端连接: hDmZWqLN8HRc9BsTAAAV
-2025-06-20T19:33:37.069Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:33:37.632Z [INFO] 客户端连接: EUOQbRLA0_KeamoEAAAX
-2025-06-20T19:45:06.695Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:45:07.318Z [INFO] 客户端连接: NUgdqDkRFbJzqxGjAAAZ
-2025-06-20T19:46:09.391Z [INFO] 连接取消: client namespace disconnect
-2025-06-20T19:46:09.906Z [INFO] 客户端连接: 7vrrgYZO3wAR3nJxAAAb
-2025-06-20T19:57:42.997Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-19T23:39:43.963Z [INFO] 连接取消: transport close
+2025-06-20T12:57:25.684Z [INFO] 客户端连接: rgNWADEFQDAywmOHAABF
+2025-06-20T13:09:12.257Z [INFO] 连接取消: transport close
+2025-06-20T13:29:00.003Z [INFO] 创建新数据
+2025-06-20T13:29:00.012Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T13:29:05.087Z [INFO] 客户端连接: 5ZDaRR8I6ntXMeP4AAAB
+2025-06-20T13:34:26.880Z [INFO] 创建新数据
+2025-06-20T13:34:26.889Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T13:34:28.778Z [INFO] 客户端连接: BXWMH8KmzXaaAzZ3AAAB
+2025-06-20T13:35:08.803Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-20T13:35:10.993Z [INFO] 加载现有数据
+2025-06-20T13:35:11.001Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T13:35:11.024Z [INFO] 客户端连接: DGLn3cTJySXf17PtAAAB
+2025-06-20T13:35:11.026Z [INFO] emitFandaysStatus
+2025-06-20T13:38:29.788Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-20T13:38:31.482Z [INFO] 加载现有数据
+2025-06-20T13:38:31.489Z [INFO] runFandaysInterval
+2025-06-20T13:38:31.491Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T13:38:31.765Z [INFO] 客户端连接: 7nrZVC4GDzuBDBSxAAAB
+2025-06-20T13:38:31.767Z [INFO] emitFandaysStatus
+2025-06-20T13:39:01.492Z [INFO] runFandaysInterval
+2025-06-20T13:39:31.499Z [INFO] runFandaysInterval
+2025-06-20T13:40:01.506Z [INFO] runFandaysInterval
+2025-06-20T13:40:02.192Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-20T13:40:03.368Z [INFO] 加载现有数据
+2025-06-20T13:40:03.375Z [INFO] runFandaysInterval
+2025-06-20T13:40:03.377Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T13:40:03.735Z [INFO] 客户端连接: 5idEwjVqvU0jLF1bAAAB
+2025-06-20T13:40:03.737Z [INFO] emitFandaysStatus
+2025-06-20T13:40:33.387Z [INFO] emitFandaysStatus
+2025-06-20T13:42:41.359Z [INFO] 加载现有数据
+2025-06-20T13:42:41.367Z [INFO] runFandaysInterval
+2025-06-20T13:42:41.369Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T13:42:46.749Z [INFO] 客户端连接: vbcJFzrRCPG46b_jAAAB
+2025-06-20T13:43:06.452Z [INFO] 加载现有数据
+2025-06-20T13:43:06.458Z [INFO] runFandaysInterval
+2025-06-20T13:43:06.459Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T13:43:06.499Z [INFO] 客户端连接: w4AzKgT0dwrk2z1TAAAB
+2025-06-20T13:43:06.503Z [INFO] emitFandaysStatus
+2025-06-20T13:43:25.740Z [INFO] 连接取消: transport close
+2025-06-20T13:43:25.997Z [INFO] 客户端连接: fbmmzCEzKJ74666eAAAD
+2025-06-20T13:43:25.998Z [INFO] emitFandaysStatus
+2025-06-20T13:43:36.462Z [INFO] Fandays:
+2025-06-20T13:43:36.462Z [INFO] runFandaysInterval
+2025-06-20T13:44:06.468Z [INFO] emitFandaysStatus
+2025-06-20T13:44:06.469Z [INFO] Fandays:
+2025-06-20T13:44:06.473Z [INFO] runFandaysInterval
+2025-06-20T13:44:14.116Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-20T13:44:30.388Z [INFO] 加载现有数据
+2025-06-20T13:44:30.393Z [INFO] runFandaysInterval
+2025-06-20T13:44:30.395Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T13:44:35.739Z [INFO] 客户端连接: 8Xr07NvvdB-5QIqVAAAB
+2025-06-20T13:44:35.741Z [INFO] emitFandaysStatus
+2025-06-20T13:45:00.395Z [INFO] Fandays:false
+2025-06-20T13:45:00.395Z [INFO] runFandaysInterval
+2025-06-20T13:45:30.400Z [INFO] Fandays:false
+2025-06-20T13:45:30.401Z [INFO] runFandaysInterval
+2025-06-20T13:45:43.331Z [INFO] 连接取消: transport close
+2025-06-20T13:45:43.532Z [INFO] 客户端连接: lQOfLf0fipCY1-51AAAD
+2025-06-20T13:45:43.533Z [INFO] emitFandaysStatus
+2025-06-20T13:45:53.690Z [INFO] 客户端连接: 13id4Z7DmL5RgTReAAAF
+2025-06-20T13:45:53.693Z [INFO] emitFandaysStatus
+2025-06-20T13:46:00.405Z [INFO] emitFandaysStatus
+2025-06-20T13:46:00.406Z [INFO] Fandays:true
+2025-06-20T13:46:00.407Z [INFO] runFandaysInterval
+2025-06-20T13:46:03.126Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T13:46:03.262Z [INFO] 客户端连接: rYjxVhMJUW2NwEiRAAAH
+2025-06-20T13:46:03.264Z [INFO] emitFandaysStatus
+2025-06-20T13:46:30.412Z [INFO] Fandays:true
+2025-06-20T13:46:30.412Z [INFO] runFandaysInterval
+2025-06-20T13:47:00.420Z [INFO] emitFandaysStatus
+2025-06-20T13:47:00.423Z [INFO] Fandays:false
+2025-06-20T13:47:00.424Z [INFO] runFandaysInterval
+2025-06-20T13:47:17.206Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T13:47:17.340Z [INFO] 客户端连接: vZyb24MRdLJSkFB4AAAJ
+2025-06-20T13:47:17.341Z [INFO] emitFandaysStatus
+2025-06-20T13:47:26.325Z [INFO] 🛑 收到退出信号，正在保存数据...
+2025-06-20T14:35:15.493Z [INFO] 创建新数据
+2025-06-20T14:35:15.503Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T14:35:21.891Z [INFO] 客户端连接: g2Yq6TjTAZcVU_wpAAAB
+2025-06-20T14:35:54.715Z [INFO] 客户端连接: n9jBibQ14H7VWhBrAAAD
+2025-06-20T14:35:54.730Z [INFO] 添加打印机
+2025-06-20T14:37:23.786Z [INFO] 连接取消: transport close
+2025-06-20T14:37:23.917Z [INFO] 客户端连接: yuHKwjJ__RE3EBqhAAAF
+2025-06-20T14:43:32.246Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T14:49:38.851Z [INFO] 连接取消: transport close
+2025-06-20T14:49:39.057Z [INFO] 客户端连接: j-zWCxVpFPCP5O1jAAAH
+2025-06-20T14:58:04.966Z [INFO] 连接取消: transport close
+2025-06-20T14:58:05.026Z [INFO] 客户端连接: 57RIlKU9tmq7vHRKAAAJ
+2025-06-20T14:58:32.903Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
+2025-06-20T14:58:32.910Z [INFO] 管理端修改桌子成功
+2025-06-20T14:58:37.837Z [INFO] 客户端连接: LOGnXfYtCw5YwE8YAAAL
+2025-06-20T14:58:51.696Z [INFO] 订单提交
+2025-06-20T14:58:51.700Z [INFO] 订单提交成功 订单号 - 0001
+2025-06-20T14:58:51.701Z [INFO] [2025-06-20 14:58:51] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- Refrigerantes x1 | ID: 1910 | €1.95
+- Refrigerantes x1 | ID: 1911 | €2.00
+--------------------------------------------------
+2025-06-20T14:58:51.701Z [INFO] 打印订单 订单号 - 0001
+2025-06-20T15:07:02.623Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T15:07:03.344Z [INFO] 客户端连接: DGZyEXzPM82V9m31AAAN
+2025-06-20T15:07:09.173Z [INFO] 连接取消: transport close
+2025-06-20T15:07:09.435Z [INFO] 客户端连接: OX4DShGTdePz5u8_AAAP
+2025-06-20T15:07:23.931Z [INFO] 订单提交
+2025-06-20T15:07:23.932Z [INFO] 订单提交成功 订单号 - 0002
+2025-06-20T15:07:23.935Z [INFO] [2025-06-20 15:07:23] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- Refrigerantes x1 | ID: 1910 | €1.95
+- Refrigerantes x1 | ID: 1911 | €2.00
+--------------------------------------------------
+2025-06-20T15:07:23.937Z [INFO] 打印订单 订单号 - 0002
+2025-06-20T15:14:58.744Z [INFO] 客户端连接: vTZUsMdSyBGVUhN8AAAR
+2025-06-20T15:14:58.797Z [INFO] 添加打印机
+2025-06-20T15:15:14.992Z [INFO] 连接取消: transport close
+2025-06-20T15:15:15.259Z [INFO] 客户端连接: ei7Uvt7R37vMl425AAAT
+2025-06-20T15:17:56.927Z [INFO] 连接取消: transport close
+2025-06-20T15:27:05.494Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T16:01:38.398Z [INFO] 创建新数据
+2025-06-20T16:01:38.410Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T16:01:42.999Z [INFO] 客户端连接: Fjj_EGSLIOnbXW0nAAAB
+2025-06-20T16:01:54.846Z [INFO] 管理端修改桌子状态 桌号 - 02; 成人 - 0; 儿童 - 0; 桌子状态 - Ocupado
+2025-06-20T16:01:54.848Z [INFO] 管理端修改桌子成功
+2025-06-20T16:02:00.112Z [INFO] 客户端连接: g52GF_piK25P-8CxAAAD
+2025-06-20T16:02:11.310Z [INFO] 订单提交
+2025-06-20T16:02:11.311Z [INFO] 订单提交成功 订单号 - 0001
+2025-06-20T16:02:11.312Z [INFO] [2025-06-20 16:02:11] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- XIAOXIONG® RAMEN x1 | ID: --- | €6.90
+--------------------------------------------------
+2025-06-20T16:02:11.312Z [INFO] 打印订单 订单号 - 0001
+2025-06-20T16:02:24.634Z [INFO] 订单提交
+2025-06-20T16:02:24.635Z [INFO] 订单提交成功 订单号 - 0002
+2025-06-20T16:02:24.635Z [INFO] [2025-06-20 16:02:24] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- Arroz salteado com gambas x1 | ID: 1423-1 | €4.72
+--------------------------------------------------
+2025-06-20T16:02:24.635Z [INFO] 打印订单 订单号 - 0002
+2025-06-20T16:02:37.437Z [INFO] 订单提交
+2025-06-20T16:02:37.437Z [INFO] 订单提交成功 订单号 - 0003
+2025-06-20T16:02:37.437Z [INFO] [2025-06-20 16:02:37] Novo Pedido - Mesa: 02
+Nome: (sem nome)
+Nota: (nenhuma)
+Itens:
+- Frango Teriyaki x1 | ID: 2062 | €3.90
+--------------------------------------------------
+2025-06-20T16:02:37.438Z [INFO] 打印订单 订单号 - 0003
+2025-06-20T16:06:07.518Z [INFO] 连接取消: transport close
+2025-06-20T16:06:07.860Z [INFO] 客户端连接: MIsWeAUiiosNf4rMAAAF
+2025-06-20T16:15:33.638Z [INFO] 连接取消: transport close
+2025-06-20T16:15:43.378Z [INFO] 连接取消: transport close
+2025-06-20T16:15:43.818Z [INFO] 客户端连接: phEQ7EdU4LV6iPVkAAAH
+2025-06-20T16:16:48.979Z [INFO] 连接取消: transport close
+2025-06-20T16:16:49.653Z [INFO] 客户端连接: QR86JN2ZAAKx1-XAAAAJ
+2025-06-20T16:21:01.486Z [INFO] 客户端连接: D4WmOIvUmV9J-VVfAAAL
+2025-06-20T16:21:05.326Z [INFO] 连接取消: transport close
+2025-06-20T16:21:06.147Z [INFO] 连接取消: transport close
+2025-06-20T16:45:27.306Z [INFO] 创建新数据
+2025-06-20T16:45:27.323Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T16:45:33.302Z [INFO] 客户端连接: e0Krev7fjfbdxKOEAAAB
+2025-06-20T19:08:19.035Z [INFO] 创建新数据
+2025-06-20T19:08:19.045Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T19:08:23.720Z [INFO] 客户端连接: CSgos341c-55k64LAAAB
+2025-06-20T19:08:32.264Z [INFO] 连接取消: transport close
+2025-06-20T19:56:50.964Z [INFO] 创建新数据
+2025-06-20T19:56:50.976Z [INFO] 🟢 服务器已启动，监听端口 80
+2025-06-20T19:56:54.728Z [INFO] 客户端连接: s0NvIX2FOLYzJqLbAAAB
+2025-06-20T19:56:58.550Z [INFO] 客户端连接: XpvyGHhWImGEP3KUAAAD
+2025-06-20T19:56:58.679Z [INFO] 连接取消: transport close
+2025-06-20T19:57:34.061Z [INFO] 客户端连接: Nhw7vZ16Hn6Dn1CEAAAF
+2025-06-20T20:10:25.272Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T20:10:26.088Z [INFO] 客户端连接: Kt_AwHbeTL31bDDAAAAH
+2025-06-20T20:10:34.223Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T20:10:34.620Z [INFO] 客户端连接: of7QmDipCEZOFwByAAAJ
+2025-06-20T20:14:01.652Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T20:14:01.986Z [INFO] 客户端连接: C-rINEc1g2Z6hfuiAAAL
+2025-06-20T20:19:07.072Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T20:19:07.564Z [INFO] 客户端连接: ilwzsYCsywfcJhpvAAAN
+2025-06-20T20:19:56.947Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T20:19:57.393Z [INFO] 客户端连接: bS9lrV3biOwp4D0xAAAP
+2025-06-20T20:20:04.805Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T20:20:05.157Z [INFO] 客户端连接: HT2XCX6PN_yZa4bwAAAR
+2025-06-20T20:20:21.593Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T20:20:22.065Z [INFO] 客户端连接: Hw9zTRIwjIxRc8v2AAAT
+2025-06-20T20:20:51.646Z [INFO] 连接取消: client namespace disconnect
+2025-06-20T20:20:52.141Z [INFO] 客户端连接: gxBAd2Z46M3CdQCLAAAV

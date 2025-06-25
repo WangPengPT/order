@@ -3,3 +3,4 @@ uploads/
 save/
 .env
 logs/*
+ecosystem.config.js
