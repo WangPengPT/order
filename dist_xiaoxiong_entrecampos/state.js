@@ -21,7 +21,7 @@ class AppState {
 
     initTables() {
         const iniTable = [];
-        const tablesNumber = process.env.TABLE_NUMBER || [[1,50]]
+        const tablesNumber = process.env.TABLES_NUMBER || [[1,50]]
         for (let i = 0; i < tablesNumber.length; i++) {
             iniTable.push.apply(iniTable, this.createTable(tablesNumber[i][0],tablesNumber[i][1]))
         }
