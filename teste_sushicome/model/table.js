@@ -126,6 +126,12 @@ class Table {
     return this.order
   }
 
+  update(newTable) {
+    this.peopleType = newTable.peopleType
+    this.status = newTable.status
+    this.order = newTable.order
+  }
+
   toJSON() {
     return {
       id: this.id,

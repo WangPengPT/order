@@ -8,10 +8,8 @@ function addNewTable(io, tableData) {
     const newId = tableData.id
 
     if (!newId) { throw new Error("Invalid table id") }
-    console.log(newId)
     // 简单检查是否有重复 ID（可选）
     const exists = appState.tables.getTableById(newId)
-    console.log(exists)
     if (exists) {
        throw new Error("The table already exist")
     }
