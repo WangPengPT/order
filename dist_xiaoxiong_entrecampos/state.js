@@ -21,23 +21,24 @@ class AppState {
 
     initTables() {
         const iniTable = [];
-        const talbesNumber = process.env.TALBES_NUMBER || [[1,50]]
-        for( let i = 0; i < iniTable.length; i++ ) {
-            iniTable.push.apply(this.createTable(talbesNumber[i][0],talbesNumber[i][1]))
+        const tablesNumber = process.env.TABLE_NUMBER || [[1,50]]
+        for (let i = 0; i < tablesNumber.length; i++) {
+            iniTable.push.apply(iniTable, this.createTable(tablesNumber[i][0],tablesNumber[i][1]))
         }
         const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
+        // console.log(this.tables)
 
     }
 
-    createTable(startId, endId) {
-        const table = []
-        for(let i = startId; i <= endId; i++){
-            let id = '' + i
-            if(id <= 9) id = '0' + id
-            table.push(Table.fromJSON({id: id, people: 0, status: TableStatus.FREE}))
+    createTable(startIdx, endIdx) {
+        const tables = [];
+        for(let i = startIdx; i <= endIdx; i++) {
+            let id = '' + i;
+            if( id <= 9 ) id = '0' + id;
+            tables.push(Table.fromJSON({id: id, people: 0, status: TableStatus.FREE}))
         }
-        return table
+        return tables
     }
 
     getTableById(tableId) {
