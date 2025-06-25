@@ -12,7 +12,7 @@ module.exports = {
       USE_HTTPS : true,
       PORT: 500,
       QR_ADDR: "https://order.xiaoxiong.pt:500/client.html?table=",
-      TABLES_NUMBER: [[2,25]],
+      TABLES_NUMBER: [[2,48]],
     }
   }]
 }

@@ -24,7 +24,7 @@ app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
 // 创建 HTTP 服务器和 Socket.IO
 let server;
 const usedHttps = process.env.USE_HTTPS || false;
-if (usedHttps)
+if (usedHttps == "true")
 {
   // 配置 HTTPS 选项
   const httpsOptions = {
