@@ -50,6 +50,9 @@ function init(io) {
       logger.info(`管理端设置红日: ${value}`)
       const result = appStateService.setFestivalDay(value)
       if (result.success) {
+
+        socket.emit('manager_get_currentPrice', appStateService.getCurrentPrice())
+
         logger.info(`管理端设置红日成功: ${value}`)
       } else {
         logger.info(`管理端设置红日失败: ${value}`)
@@ -105,6 +108,19 @@ function init(io) {
     socket.emit("get_people_price", () => {
       //logger.info(`发送给管理端价格信息`)
       appStateService.getPrice()
+    })
+
+    socket.emit('manager_get_currentPrice', appStateService.getCurrentPrice())
+
+    // 管理端亲求获取价格
+    socket.on('manager_get_price', (_, cb) => {
+      const price = appStateService.getPrice()
+      cb(price)
+    })
+
+    socket.on('manager_get_currentPrice', ({}, cb) => {
+      const currentPrice = appStateService.getCurrentPrice()
+      cb(currentPrice)
     })
 
     // 管理端更改密码
@@ -236,6 +252,18 @@ function init(io) {
       callback(res)
     })
 
+    socket.on('change_table', ({oldId: oldId, newId: newId}, callback) => {
+      logger.info(`更换桌子`)
+      const result = appStateService.changeTable(oldId, newId)
+      if (result.success) {
+        logger.info(`更换成功`)
+        callback(result)
+      } else {
+        logger.info(`更换失败`)
+        logger.info(`失败原因: ${result.data}`)
+      }
+    })
+
     // 返回table id ，发送桌子信息，目前价格
     socket.on('get_table_id', (value) => {
       const result = tableService.getTableById(value)
@@ -257,7 +285,6 @@ function init(io) {
 
     socket.on('disconnect', ()=> {
       if (printers[socket.id]) printers[socket.id] = undefined;
-      //console.log("remove printer", printers)
     })
 
     // printer
@@ -268,7 +295,6 @@ function init(io) {
       value.id = id;
       printers[id]= {socket: socket, data: value}
 
-      //console.log("add_printer", printers)
     });
 
     socket.on('get_printers', (callback) => {
@@ -277,7 +303,6 @@ function init(io) {
         const printer = printers[key];
         if (printer) ret.push(printer.data);
       }
-      //console.log("getPrinters", ret);
       callback(ret)
     });
 

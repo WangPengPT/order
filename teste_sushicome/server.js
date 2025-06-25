@@ -13,6 +13,7 @@ const uploadMiddleware = require('./middlewares/uploadMiddleware.js');
 const appStateService = require('./services/appStateService.js')
 const { logger } = require('./utils/logger.js')
 const {appState} = require("./state");
+const holiday = require('./utils/holiday.js')
 
 const app = express();
 app.use(cors());
@@ -104,9 +105,11 @@ function runInterval() {
     if (now.getHours() == 1)
     {
       if ( needClean ) {
-        logger.info('自动清除订单和关闭红日')
+        logger.info('自动清除订单和更新红日')
         appState.clearAll();
-        appState.isFestiveDay = false
+
+        // update today for appState.isFestiveDay
+        holiday.updateToday(appState);
       }
       needClean = false;
     }
@@ -116,6 +119,9 @@ function runInterval() {
     }
 
     runInterval();
-  }, 1000 * 600);
+  }, 1000 * 60);
 }
+
+// update today for appState.isFestiveDay
+holiday.updateToday(appState);
 runInterval();

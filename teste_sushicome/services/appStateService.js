@@ -1,7 +1,8 @@
 const { appState, AppState } = require('../state.js');
 const { tablesPassword } = require('../model/tableManager.js')
 const db = require('../filedb.js')
-const { logger } = require('../utils/logger.js')
+const { logger } = require('../utils/logger.js');
+const { TableStatus } = require('../model/TableStatus.js');
 
 function loadAppState() {
     try {
@@ -86,10 +87,12 @@ function getPrice() {
     try {
         const lunchPrice = appState.lunchPrice
         const dinnerPrice = appState.dinnerPrice
+        const holidayPrice = appState.holidayPrice
         const res = {
             success: true, data: {
                 lunchPrice: lunchPrice,
-                dinnerPrice: dinnerPrice
+                dinnerPrice: dinnerPrice,
+                holidayPrice: holidayPrice
             }
         }
         return res
@@ -131,6 +134,36 @@ function getCurrentPrice() {
     }
 }
 
+function changeTable(oldId, newId) {
+    try {
+        const table = appState.tables.get(oldId)
+        if (!table) {
+            throw new Error("Not found the table")
+        }
+        const newTable = appState.tables.get(newId)
+        if (!newTable) {
+            throw new Error("Not found the new table")
+        }
+
+        if (newTable.staus === TableStatus.FREE) {
+            newTable.update(table)
+        } else {
+            throw new Errro(`The new table status is invalid`)
+        }
+
+
+        return {
+            success: true,
+            data: appState.tables.toJSON()
+        }
+    } catch (error) {
+        return {
+            success: false,
+            data: error.message
+        }
+    }
+}
+
 module.exports = {
     loadAppState,
     saveAppState,
@@ -140,5 +173,6 @@ module.exports = {
     getFestivalDay,
     getTableTotalAmout,
     getCurrentPrice,
-    getAllTables
+    getAllTables,
+    changeTable
 };
