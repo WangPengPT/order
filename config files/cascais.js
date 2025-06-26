@@ -1,7 +1,7 @@
 // ecosystem.config.js
 module.exports = {
   apps: [{
-    name: "SC_SALDANHA",
+    name: "SC_CASCAIS",
     script: "../server/server.js",
     instances: 1,
     autorestart: true,
@@ -10,10 +10,10 @@ module.exports = {
     env: {
       NODE_ENV: "production",
       USE_HTTPS : true,
-      PORT: 600,
-      QR_ADDR: "https://sushi.xiaoxiong.pt:600/client.html?table=",
-      TABLE_NUMBER: [[2,25]],
-      SAVE_ADDR: "save/sc_saldanha",
+      PORT: 606,
+      QR_ADDR: "https://sushi.xiaoxiong.pt:606/client.html?table=",
+      TABLE_NUMBER: [[[1,10],[13,13],[17,23],[25,28],[31,35],[41,43],[52,53]],
+      SAVE_ADDR: "save/sc_cascais",
     }
   }]
 }
