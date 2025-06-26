@@ -10,7 +10,7 @@ module.exports = {
     max_memory_restart: "800M",
     env: {
       NODE_ENV: "production",
-      USE_HTTPS : true,
+      USE_HTTPS : false,
       PORT: 6007,
       QR_ADDR: "https://sushi.xiaoxiong.pt:6007/client.html?table=",
       TABLE_NUMBER: [[2,25]],
