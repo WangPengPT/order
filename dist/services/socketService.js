@@ -7,6 +7,7 @@ const menuService = require("./menuService.js")
 const { print_order } = require('../utils/printOrder.js');
 const { printers } = require('../utils/printOrder.js');
 const { logger, formatOrderLog } = require('../utils/logger.js')
+const userService = require("./userService.js");
 
 function emit(...datas)
 {
@@ -144,7 +145,6 @@ function init(io) {
 
     // 管理端更新桌子
     socket.on("manager_refresh_table", (value, cb) => {
-      //logger.info(`管理端获取桌子信息`)
       const tables = appStateService.getAllTables()
       cb(tables)
     })
@@ -161,8 +161,6 @@ function init(io) {
         logger.info(formatOrderLog(orderData))
 
         print_order(order.data);
-
-        //logger.info(`发送给客户端服务端订单桌子信息`)
 
         io.emit("new_order", order.data);
         socket.emit("📢 已广播新订单:", order.data);
@@ -272,16 +270,34 @@ function init(io) {
       const price = appStateService.getCurrentPrice()
       socket.emit('client_currentPrice', price)
     });
-    
-    socket.on('admin', (value, callback) => {
-      const user = db.loadDataForce('admin', { password: "1015" });
-      socket.is_admin = false;
-      if (user.password == value) {
-        orderService.sendOrder(socket)
-        socket.is_admin = true;
+
+    socket.on('manager_login', async (value, callback) => {
+      logger.info("用户登录")
+      const result = await userService.login(value.phoneNumber, value.password)
+      if (result.success && result.data) {
+        logger.info("用户登录成功")
+      } else {
+        logger.info("用户登录失败")
+        if (!result.data){
+          logger.info(`失败原因: 密码错误`)
+        } else {
+          logger.info(`失败原因: ${result.data}`)
+        }
       }
-      callback(socket.is_admin);
-    });
+      callback(result)
+    })
+
+    socket.on("manager_createNewUser", async (value, callback) => {
+      logger.info("创建新的用户")
+      const result = await userService.register(value.phoneNumber, value.password)
+      if (result.success) {
+        logger.info(`用户创建成功 ${result.data}`)
+      } else {
+        logger.info("用户创建失败")
+        logger.info(`失败原因: ${result.data}`)
+      }
+      callback(result)
+    })
 
     socket.on('disconnect', ()=> {
       if (printers[socket.id]) printers[socket.id] = undefined;
@@ -338,10 +354,21 @@ function init(io) {
     });
 
     
-  socket.on("disconnect", (reason) => {
+    socket.on("disconnect", (reason) => {
         logger.info(`连接取消: ${reason}`)
     });
+
+    socket.on("client_cmd", (id,cmd) => {
+      tableService.clientCmd(id,cmd);
+      io.emit("client_cmd", id, cmd);
+    });
+
+    socket.on("click_msg", (id,cmd) => {
+      tableService.clickMsg(id,cmd);
+    });
+
   });
+
 
 
 }

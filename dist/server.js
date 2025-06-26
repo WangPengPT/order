@@ -14,6 +14,7 @@ const appStateService = require('./services/appStateService.js')
 const { logger } = require('./utils/logger.js')
 const {appState} = require("./state");
 const holiday = require('./utils/holiday.js')
+const { initUserData, saveUserData } = require('./services/userService.js')
 
 const app = express();
 app.use(cors());
@@ -69,6 +70,11 @@ app.use(express.static(path.join(__dirname, "public"), {
   }
 }));
 
+(async () => {
+  await initUserData();
+  // 后续正常启动 HTTP/Socket 服务
+})();
+
 // 载入AppState数据
 appStateService.loadAppState()
 
@@ -88,12 +94,14 @@ server.listen(PORT, () => {
 process.on("SIGINT", () => {
   logger.info(`🛑 收到退出信号，正在保存数据...`)
   appStateService.saveAppState();
+  saveUserData()
   process.exit(0);
 });
 
 process.on("SIGTERM", () => {
   logger.info("\n🛑 收到终止信号，正在保存数据...");
   appStateService.saveAppState();
+  saveUserData()
   process.exit(0);
 });
 

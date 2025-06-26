@@ -17,6 +17,9 @@ class Table {
     }
 
     this.order = order.map(item => new Dish(item));
+
+    this.msg_pay = false;
+    this.msg_call = false;
   }
 
   get people() {
@@ -66,6 +69,9 @@ class Table {
       }
 
       this.status = status;
+
+      this.msg_call = false;
+      this.msg_pay = false;
     }
 
     return this
@@ -90,6 +96,35 @@ class Table {
     this.peopleType = new PeopleType({adults:0, childres:0})
     this.order = []
   }
+
+  clientCmd(cmd) {
+    console.log("client cmd:", cmd);
+    if ( cmd == 'call' )
+    {
+      this.msg_call = true;
+    }
+
+    if ( cmd == 'pay' )
+    {
+      this.msg_pay = true;
+    }
+
+  }
+
+  clickMsg(cmd) {
+    console.log("client cmd:", cmd);
+    if ( cmd == 'call' )
+    {
+      this.msg_call = false;
+    }
+
+    if ( cmd == 'pay' )
+    {
+      this.msg_pay = false;
+    }
+
+  }
+
 
   deteleDishesByIds(dishesIdAndQty) {
     if (!Array.isArray(dishesIdAndQty)) return;
@@ -197,7 +232,9 @@ class TableVer {
     return {
       id: this.id,
       password: this.password,
-      time: this.time ? this.time.toISOString() : null
+      time: this.time ? this.time.toISOString() : null,
+      msg_call: this.msg_call,
+      msg_pay: this.msg_pay,
     };
   }
 

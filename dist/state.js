@@ -15,7 +15,6 @@ class AppState {
         this.tables = []
         this.printers = []
         this.maxOrderId = 0
-
         this.lunchPrice = 15.90
         this.dinnerPrice = 19.90
         this.holidayPrice = 19.90
@@ -27,14 +26,23 @@ class AppState {
 
     initTables() {
         const iniTable = [];
-        for(let i = 2 ; i <= 25; i++){
-            let id = '' + i;
-            if( id <= 9 ) id = '0' + id;
-            iniTable.push(Table.fromJSON({id: id, people: 0, status: TableStatus.FREE}))
+        const tablesNumber = process.env.TABLE_NUMBER || [[1,50]]
+        for (let i = 0; i < tablesNumber.length; i++) {
+            iniTable.push.apply(iniTable, this.createTable(tablesNumber[i][0],tablesNumber[i][1]))
         }
         const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
 
+    }
+
+    createTable(startIdx, endIdx) {
+        const tables = [];
+        for(let i = startIdx; i <= endIdx; i++) {
+            let id = '' + i;
+            if( id <= 9 ) id = '0' + id;
+            tables.push(Table.fromJSON({id: id, people: 0, status: TableStatus.FREE}))
+        }
+        return tables
     }
 
     getTableById(tableId) {
