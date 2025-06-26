@@ -2,7 +2,8 @@
 module.exports = {
   apps: [{
     name: "SC_OEIRAS",
-    script: "../dist/server.js",
+    script: "./server.js",
+	cwd: "/root/order/dist",
     instances: 1,
     autorestart: true,
     watch: false,
