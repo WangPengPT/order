@@ -11,8 +11,8 @@ module.exports = {
     env: {
       NODE_ENV: "production",
       USE_HTTPS : true,
-      PORT: 604,
-      QR_ADDR: "https://sushi.xiaoxiong.pt:604/client.html?table=",
+      PORT: 6004,
+      QR_ADDR: "https://sushi.xiaoxiong.pt:6004/client.html?table=",
       TABLE_NUMBER: [[1,9],[11,19],[21,29],[31,39],[51,59]],
       SAVE_ADDR: "save/sc_odivelas",
     }

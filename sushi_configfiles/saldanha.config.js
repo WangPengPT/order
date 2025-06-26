@@ -11,8 +11,8 @@ module.exports = {
     env: {
       NODE_ENV: "production",
       USE_HTTPS : true,
-      PORT: 600,
-      QR_ADDR: "https://sushi.xiaoxiong.pt:600/client.html?table=",
+      PORT: 6000,
+      QR_ADDR: "https://sushi.xiaoxiong.pt:6000/client.html?table=",
       TABLE_NUMBER: [[2,25]],
       SAVE_ADDR: "save/sc_saldanha",
     }
