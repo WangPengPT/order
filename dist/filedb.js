@@ -83,7 +83,7 @@ function fileExists(filename) {
 
 
 if (!fs.existsSync(dirFolder)) {
-	fs.mkdirSync(dirFolder);
+	fs.mkdirSync(dirFolder,{ recursive: true });
 }
 
 module.exports = {

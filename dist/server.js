@@ -15,7 +15,6 @@ const { logger } = require('./utils/logger.js')
 const {appState} = require("./state");
 const holiday = require('./utils/holiday.js')
 const { initUserData, saveUserData } = require('./services/userService.js')
-
 const app = express();
 app.use(cors());
 app.use(compression());
@@ -25,8 +24,8 @@ app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
 
 // 创建 HTTP 服务器和 Socket.IO
 let server;
-const usedHttps = process.env.USE_HTTPS || false;
-if (usedHttps)
+const usedHttps = process.env.USE_HTTPS || "false";
+if (usedHttps == "true")
 {
   // 配置 HTTPS 选项
   const httpsOptions = {

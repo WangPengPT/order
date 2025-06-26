@@ -26,7 +26,11 @@ class AppState {
 
     initTables() {
         const iniTable = [];
-        const tablesNumber = process.env.TABLE_NUMBER || [[1,50]]
+        let tablesNumber = [[1,50]]
+        if(process.env.TABLE_NUMBER) {
+            tablesNumber = JSON.parse(process.env.TABLE_NUMBER)
+        }
+
         for (let i = 0; i < tablesNumber.length; i++) {
             iniTable.push.apply(iniTable, this.createTable(tablesNumber[i][0],tablesNumber[i][1]))
         }
