@@ -27,10 +27,14 @@ let server;
 const usedHttps = process.env.USE_HTTPS || "false";
 if (usedHttps == "true")
 {
+  let key_name = "order";
+  if (process.env.HTTPS_HEAD) {
+    key_name = process.env.HTTPS_HEAD;
+  }
   // 配置 HTTPS 选项
   const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/sushi.xiaoxiong.pt/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/sushi.xiaoxiong.pt/fullchain.pem'),
+    key: fs.readFileSync('/etc/letsencrypt/live/' + key_name + '.xiaoxiong.pt/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/' + key_name + '.xiaoxiong.pt/fullchain.pem'),
   };
   server = https.createServer(httpsOptions, app);
 
