@@ -1,10 +1,6 @@
 const fs = require('fs');
 const csv = require('csv-parser');
-const db = require('../filedb.js');
-const appStateService = require('./appStateService.js')
 const menuService = require('./menuService.js')
-const {appState} = require("../state");
-const socketService = require("./socketService.js")
 
 const xkeys = [
   "AIPO", "AMENDOIM", "CRUSTÁCEOS", "DIÓXIDO DE ENXOFRE E SULFITOS",
@@ -63,9 +59,6 @@ exports.processCSV = (file) => {
       })
       .on('end', () => {
         menuService.saveMenu(results);
-        
-        socketService.emit("menu_data", appState.menu,appState.orderMenuTab);
-
         fs.unlinkSync(file.path); // 删除临时文件
         resolve(results);
       })

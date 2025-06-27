@@ -116,7 +116,7 @@ function runInterval() {
         appState.clearAll();
 
         // update today for appState.isFestiveDay
-        //holiday.updateToday(appState);
+        holiday.updateToday(appState);
       }
       needClean = false;
     }
@@ -130,5 +130,5 @@ function runInterval() {
 }
 
 // update today for appState.isFestiveDay
-//holiday.updateToday(appState);
+holiday.updateToday(appState);
 runInterval();

@@ -1,4 +1,3 @@
-const db = require('../filedb.js');
 const { appState } = require('../state.js');
 const orderService = require('./orderService.js')
 const tableService = require('./tableService.js');
@@ -86,6 +85,12 @@ function init(io) {
 
       cb(result)
     })
+
+    
+    socket.on("manager_updateMenu_refresh", (value) => {
+      io.emit("menu_data", appState.menu,appState.orderMenuTab);
+    })
+
 
     socket.on("manager_delete_orders", (value, cb) => {
       logger.info(`管理端请求删除订单, 桌号-${value.tableId}`)
