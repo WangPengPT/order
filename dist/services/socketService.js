@@ -372,6 +372,17 @@ function init(io) {
       tableService.clickMsg(id,cmd);
     });
 
+    socket.on("update_menu_item", (item) => {
+      for (let i = 0; i < appState.menu.length; i++) {
+          if (appState.menu[i].id == item.id)
+          {
+            appState.menu[i] = {...appState.menu[i], ...item};
+            logger.debug(appState.menu[i]);
+            io.emit("menu_item_changed", item);
+          }
+      }
+    });
+
   });
 
 
