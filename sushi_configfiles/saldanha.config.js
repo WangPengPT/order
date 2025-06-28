@@ -3,7 +3,7 @@ module.exports = {
   apps: [{
     name: "SC_SALDANHA",
     script: "./server.js",
-	cwd: "/root/order/dist",
+	cwd: "../dist",
     instances: 1,
     autorestart: true,
     watch: false,

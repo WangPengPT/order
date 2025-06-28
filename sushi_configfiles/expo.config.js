@@ -3,7 +3,7 @@ module.exports = {
   apps: [{
     name: "SC_EXPO",
     script: "./server.js",
-	cwd: "/root/order/dist",
+	cwd: "../dist",
     instances: 1,
     autorestart: true,
     watch: false,
