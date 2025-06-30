@@ -289,13 +289,21 @@ function init(io) {
     });
 
     socket.on("update_menu_item", (item) => {
+      let found = false;
       for (let i = 0; i < appState.menu.length; i++) {
-          if (appState.menu[i].id == item.id)
+          if (appState.menu[i].id == item.org_id)
           {
             appState.menu[i] = {...appState.menu[i], ...item};
             logger.debug(appState.menu[i]);
             io.emit("menu_item_changed", item);
+            found = true;
+            break;
           }
+      }
+
+      if (!found)
+      {
+        appState.menu.push(item);
       }
     });
 
