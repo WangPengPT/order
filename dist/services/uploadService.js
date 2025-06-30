@@ -47,7 +47,7 @@ function makeDishData(data) {
   return ret;
 }
 
-exports.processCSV = (file) => {
+exports.processCSV = (file,all) => {
   return new Promise((resolve, reject) => {
     const results = [];
 
@@ -58,7 +58,7 @@ exports.processCSV = (file) => {
         results.push(transformed);
       })
       .on('end', () => {
-        menuService.saveMenu(results);
+        menuService.updateMenu(results,all);
         fs.unlinkSync(file.path); // 删除临时文件
         resolve(results);
       })

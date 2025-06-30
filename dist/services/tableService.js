@@ -1,8 +1,9 @@
 const { appState } = require('../state.js');
 const { tablesPassword } = require('../model/tableManager.js')
 const logger = require('../utils/logger.js')
+const { TableStatus } = require('../model/TableStatus.js')
 
-function addNewTable(io, tableData) {
+function addNewTable(tableData) {
   try {
 
     const newId = tableData.id
@@ -11,26 +12,25 @@ function addNewTable(io, tableData) {
     // 简单检查是否有重复 ID（可选）
     const exists = appState.tables.getTableById(newId)
     if (exists) {
-       throw new Error("The table already exist")
+      throw new Error("The table already exist")
     }
 
     // 添加桌子
-    appState.tables.addTable(tableData)
+    const add = appState.tables.addTable(tableData)
 
+    if (!add) throw new Error("Faild create new table")
+
+    const res = appState.tables.getTableById(tableData.id)
     // 广播新桌子列表给管理端
-    sendTablesInfo(io)
+    //sendTablesInfo(io)
 
-    return { success: true, tables: appState.tables.toJSON() };
+    return { success: true, data: res.toJSON() };
   } catch (err) {
     console.warn("Error: ", err)
     return { success: false, message: err.message };
   }
 }
 
-function sendTablesInfo(io) {
-  io.emit('send_tables', appState.tables.toJSON());
-  io.emit('send_tables_password', tablesPassword.toJSON())
-}
 
 function tableLogin(io) {
   io.on("client_login", (value, cb) => {
@@ -91,37 +91,42 @@ function updateTableWithoutOrder(tableData) {
       if (!cleanRes.success) throw new Error("Clean Error")
     }
 
-    return { success: true, tables: appState.tables.toJSON() }
+    const table = appState.tables.getTableById(id)
+
+    return { success: true, data: table.toJSON() }
   } catch (error) {
     console.warn("Error: ", error)
     return { success: false, message: error.message }
   }
 }
 
-function removeTable(io, id) {
+function removeTable(id) {
   try {
     // 更新服务器状态
-    appState.tables.removeTable(id)
+    const res = appState.tables.removeTable(id)
 
+    if (!res) throw new Error('Faild delete table')
     // 广播更新后的 tables 给所有客户端
-    io.emit('remove_table', appState.tables.toJSON())
+    //io.emit('remove_table', appState.tables.toJSON())
 
-    return { success: true, tables: appState.tables.toJSON() }
+    return { success: true, data: true }
   } catch (error) {
     console.warn("Error: ", error)
     return { success: false, message: error.message }
   }
 }
+
 
 function cleanTable(id) {
   try {
     // 更新服务器状态
     const table = appState.tables.getTableById(id)
-
     if (table == null) throw new Error("Not found the table")
     table.clearTable()
+    const cleanedTable = appState.tables.getTableById(id)
+    if (cleanedTable.status !== TableStatus.FREE) throw new Error('Faild clean table')
 
-    return { success: true, tables: appState.tables.toJSON() }
+    return { success: true, data: cleanedTable.toJSON() }
   } catch (error) {
     console.warn("Error: ", error)
     return { success: false, message: error.message }
@@ -131,9 +136,9 @@ function cleanTable(id) {
 
 function getTableById(id) {
   try {
-    if (!id) throw new Error("Invalid Input")
+    if (!id || id === null) throw new Error("Invalid Input")
     const table = appState.getTableById(id)
-  if (!table) throw new Error('Not found the table')
+    if (!table) throw new Error('Not found the table')
     return { success: true, data: table.toJSON() }
   } catch (error) {
     console.warn("Error: ", error)
@@ -172,7 +177,6 @@ module.exports = {
   updateTableWithoutOrder,
   removeTable,
   cleanTable,
-  sendTablesInfo,
   updateTablePassword,
   refreshTablePassword,
   tableLogin,

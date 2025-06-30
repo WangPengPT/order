@@ -99,6 +99,21 @@ class AppState {
         return this.orders.get(orderId)
     }
 
+    getOrders() {
+        try {
+            const data = Array.from(this.orders.values());
+            return {
+                success: true,
+                data: data
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
     getDishesJSONByTable(tableId) {
         if (tableId == null) {
             return null

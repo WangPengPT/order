@@ -12,12 +12,12 @@ function getCurrentPeriod() {
     }
 
     // 判断是否是中午 12:00 - 15:00
-    if (hour >= 12 && hour < 19) {
+    if (hour >= 12 && hour < 17) {
         return 'lunch'
     }
 
     // 判断是否是晚上 19:00 - 23:00
-    if (hour >= 19 && hour < 24) {
+    if (hour >= 17 && hour < 24) {
         return 'dinner'
     }
 

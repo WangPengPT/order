@@ -1,13 +1,13 @@
 rem package, update used git
 rem server will auto update.
 
-rm dist_xiaoxiong_saldanha -rf
+rm dist_xiaoxiong -rf
  
 set "script_dir=%~dp0"
 echo %script_dir%
 
 set SRC_PATH=%script_dir%..\twoorder
-set DST_PATH=%script_dir%\dist_xiaoxiong_saldanha
+set DST_PATH=%script_dir%\dist_xiaoxiong
 
 cd %SRC_PATH%
 xcopy .\server %DST_PATH% /E /Y /I

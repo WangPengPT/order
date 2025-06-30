@@ -95,6 +95,8 @@ class Table {
     this.status = TableStatus.FREE;
     this.peopleType = new PeopleType({adults:0, childres:0})
     this.order = []
+    this.msg_pay = false;
+    this.msg_call = false;
   }
 
   clientCmd(cmd) {

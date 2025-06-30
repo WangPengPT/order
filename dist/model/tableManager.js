@@ -20,7 +20,7 @@ class TableManager {
     if (this.tables.has(tableData.id)) {
       throw new Error(`桌号${tableData.id}已存在！`)
     }
-    this.tables.set(tableData.id, new Table(tableData))
+    return this.tables.set(tableData.id, new Table(tableData))
   }
 
   removeTable(id) {

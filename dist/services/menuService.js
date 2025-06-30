@@ -61,42 +61,69 @@ function getMenu() {
   return appState.menu;
 }
 
-function saveMenu(data)
+function updateMenu(data, update_all)
 {
-  try {
-    appState.menu = data;
-  db.saveData('menu', data);
+    console.log("updateMenu update_all:",update_all);
 
-  const types = [];
+    try {
+      //console.log(appState.menu);
 
-  for (let i = 0; i < data.length; i++) {
-    const value = data[i];
-    if (!types.includes(value.category)) {
-      if (value.category != "") types.push(value.category);
+      if (update_all) {
+        appState.menu = data;
+      }
+      else {
+        for (let i = 0; i < data.length; i++) {
+          const orgData = data[i];
+          let oldData = undefined;
+          for (let j = 0; j < appState.menu.length; j++) {
+            oldData = appState.menu[j];
+            if (oldData.id == orgData.id && oldData.handle == orgData.handle) {
+              //appState.menu[j] = {...oldData, ...orgData};
+              //console.log("update..." , appState.menu[j].id);
+              break;
+            } else {
+              oldData = undefined;
+            }
+          }
+
+          if (!oldData) {
+            appState.menu.push(orgData);
+            //console.log("add..." , orgData.id);
+          }
+        }
+      }
+
+      db.saveData('menu', appState.menu);
+
+      const types = [];
+
+      for (let i = 0; i < data.length; i++) {
+        const value = data[i];
+        if (!types.includes(value.category)) {
+          if (value.category != "") types.push(value.category);
+        }
+      }
+
+      const orderTabs = [];
+
+      for (let i = 0; i < appState.orderMenuTab.length; i++) {
+        const tab = appState.orderMenuTab[i];
+        if (types.includes(tab)) {
+          orderTabs.push(tab);
+        }
+      }
+
+      for (let i = 0; i < types.length; i++) {
+        const tab = types[i];
+        if (!orderTabs.includes(tab)) {
+          orderTabs.push(tab);
+        }
+      }
+
+      saveOrderMenuTab(orderTabs);
+    } catch (error) {
+      console.warn("Error: ", error)
     }
-  }
-
-  const orderTabs = [];
-
-  for (let i = 0; i < appState.orderMenuTab.length; i++) {
-    const tab = appState.orderMenuTab[i];
-    if (types.includes(tab)) {
-      orderTabs.push(tab);
-    }
-  }
-
-  for (let i = 0; i < types.length; i++) {
-    const tab = types[i];
-    if (!orderTabs.includes(tab)) {
-      orderTabs.push(tab);
-    }
-  }
-
-  saveOrderMenuTab(orderTabs);
-  } catch (error) {
-    console.warn("Error: ", error)
-  }
-  
 }
 
 function getOrderMenuTab() {
@@ -129,7 +156,7 @@ function findDish(id)
 module.exports = {
   loadMenu,
   getMenu,
-  saveMenu,
+  updateMenu,
   getOrderMenuTab,
   saveOrderMenuTab,
   findDish,
