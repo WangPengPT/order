@@ -29,8 +29,8 @@ if (usedHttps == "true")
 {
   // 配置 HTTPS 选项
   const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/sushi.xiaoxiong.pt/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/sushi.xiaoxiong.pt/fullchain.pem'),
+    key: fs.readFileSync('/etc/letsencrypt/live/order.xiaoxiong.pt/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/order.xiaoxiong.pt/fullchain.pem'),
   };
   server = https.createServer(httpsOptions, app);
 
