@@ -27,10 +27,21 @@ let server;
 const usedHttps = process.env.USE_HTTPS || false;
 if (usedHttps == "true")
 {
+  let key_name = "order";
+  if (process.env.HTTPS_HEAD) {
+    key_name = process.env.HTTPS_HEAD;
+  }
+
+  let file_key = '/etc/letsencrypt/live/' + key_name + '.xiaoxiong.pt/privkey.pem';
+  let file_cert = '/etc/letsencrypt/live/' + key_name + '.xiaoxiong.pt/fullchain.pem';
+
+  logger.info(file_key);
+  logger.info(file_cert);
+
   // 配置 HTTPS 选项
   const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/order.xiaoxiong.pt/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/order.xiaoxiong.pt/fullchain.pem'),
+    key: fs.readFileSync(file_key),
+    cert: fs.readFileSync(file_cert),
   };
   server = https.createServer(httpsOptions, app);
 

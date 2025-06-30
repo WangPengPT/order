@@ -36,7 +36,7 @@ function init(io) {
 
     io.emit("env", {
       QR_ADDR: process.env.QR_ADDR,
-      showRoastDuckPage: process.env.showRoastDuckPage,
+      ENABLE_ROAST_DUCK: process.env.ENABLE_ROAST_DUCK,
     });
 
     const tableSocket = new TableSocket(io)
