@@ -6,7 +6,7 @@ rm dist_xiaoxiong -rf
 set "script_dir=%~dp0"
 echo %script_dir%
 
-set SRC_PATH=%script_dir%..\twoorder
+set SRC_PATH=%script_dir%..\xiaoxiong
 set DST_PATH=%script_dir%\dist_xiaoxiong
 
 cd %SRC_PATH%
