@@ -69,8 +69,8 @@ class TableSocket {
         // 返回table id ，发送桌子信息，目前价格
     clientGetTableById(socket,value, callback){
           const result = tableService.getTableById(value)
-          const price = appStateService.getCurrentPrice()
-          socket.emit('client_currentPrice', price)
+          //const price = appStateService.getCurrentPrice()
+          //socket.emit('client_currentPrice', price)
           callback(result)
         }
 
