@@ -16,6 +16,7 @@ class AppState {
         this.printers = []
         this.maxOrderId = 0
         this.isFanDays = false
+        this.hasDuck = true
         this.initTables()
     }
 
@@ -33,6 +34,10 @@ class AppState {
         const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
 
+    }
+
+    updateDuck(value) {
+        this.hasDuck = value
     }
 
     createTable(startIdx, endIdx) {

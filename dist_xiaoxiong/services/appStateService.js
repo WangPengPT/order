@@ -21,6 +21,17 @@ function loadAppState() {
 
 }
 
+function updadeHasDuck(value) {
+    try {
+        appState.updateDuck(value)
+        if (appState.hasDuck === value) return {success: true, data: value}
+        else throw new Error("Faild upadte has duck")
+    } catch (error) {
+        return {success: false, data: error.message}
+    }
+    
+}
+
 
 function getAllTables() {
     try {
@@ -105,5 +116,6 @@ module.exports = {
     getTableTotalAmout,
     getAllTables,
     setFanDays,
-    getFanDays
+    getFanDays,
+    updadeHasDuck
 };

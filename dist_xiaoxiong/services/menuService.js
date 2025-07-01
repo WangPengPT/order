@@ -51,7 +51,11 @@ function loadMenu() {
 
 function getDishCategory(id)
 {
-  if ((!id) || (id == 0)) return  "Caixa Aleatória";
+  if (!id) return  "Caixa Aleatória";
+
+  if (id == 2) return "XIAOXIONG® RAMEN";
+  if (id == 1) return "Pato assado";
+
   if (appState.dishTags[id]) return appState.dishTags[id];
   return appState.dishCategory[id];
 }

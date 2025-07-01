@@ -20,6 +20,11 @@ function saveOrderMenuTab(data)
   menuService.saveOrderMenuTab(data);
 }
 
+function sendMsg2TableClient(io,table){
+  const chanel = 'client_table' + table.data.id
+  io.emit(chanel, table)
+}
+
 function init(io) {
   appState.socket_io = io;
 
@@ -81,10 +86,11 @@ function init(io) {
         logger.info(`失败原因: ${result.data}`)
       }
       // 更新客户端桌子信息
-      io.emit('client_table', () => {
-        //logger.info(`发送给客户端桌子信息, 桌号-${tableId}`)
-        return tableService.getTableById(tableId)
-      })
+      // io.emit('client_table', () => {
+      //   //logger.info(`发送给客户端桌子信息, 桌号-${tableId}`)
+      //   return tableService.getTableById(tableId)
+      // })
+      sendMsg2TableClient(io,tableService.getTableById(tableId))
 
       cb(result)
     })
@@ -160,7 +166,8 @@ function init(io) {
         // 给客户端发送桌子信息
         const table = tableService.getTableById(order.data.table)
         if (table.success) {
-          io.emit('client_table', table)
+          // io.emit('client_table', table)
+          sendMsg2TableClient(io,table)
         }
         
       } else {
@@ -186,7 +193,8 @@ function init(io) {
     // 返回table id ，发送桌子信息，目前价格
     socket.on('get_table_id', (value) => {
       const result = tableService.getTableById(value)
-      socket.emit('client_table', result)
+      // socket.emit('client_table', result)
+      sendMsg2TableClient(io,result)
       socket.emit("table_id", value);
       const price = appStateService.getCurrentPrice()
       socket.emit('client_currentPrice', price)

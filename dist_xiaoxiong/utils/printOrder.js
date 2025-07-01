@@ -25,7 +25,12 @@ function print_order(order) {
         }
 
         if (hasData) {
+            //logger.info( "print...", order);
             print_orde_to_io(printer,order,printer.data.every_one == "true");
+        }
+        else
+        {
+            //console.log( "didn't print", order, printer.data );
         }
     }
 }

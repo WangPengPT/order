@@ -21,6 +21,7 @@ app.use(compression());
 
 // 路由只保留上传接口
 app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
+app.post('/upload_image', uploadMiddleware.single('image'), uploadController.handleUploadImage);
 
 // 创建 HTTP 服务器和 Socket.IO
 let server;
