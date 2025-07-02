@@ -298,20 +298,30 @@ function init(io) {
 
     socket.on("update_menu_item", (item) => {
       let found = false;
+
+      let id = item.id;
+      if (item.org_id) id = item.org_id;
+
       for (let i = 0; i < appState.menu.length; i++) {
-          if (appState.menu[i].id == item.org_id)
-          {
-            appState.menu[i] = {...appState.menu[i], ...item};
-            logger.debug(appState.menu[i]);
-            io.emit("menu_item_changed", item);
-            found = true;
-            break;
-          }
+        if (appState.menu[i].id == id)
+        {
+          appState.menu[i] = {...appState.menu[i], ...item};
+          logger.debug(appState.menu[i]);
+          io.emit("menu_item_changed", item);
+          found = true;
+          break;
+        }
       }
 
       if (!found)
       {
         appState.menu.push(item);
+        io.emit("menu_item_changed", item);
+      }
+
+      if (item.tags)
+      {
+        appState.dishTags[id] = item.tags;
       }
     });
 
