@@ -133,6 +133,14 @@ function print_orde_to_io(printer,order,every_one)
 
 function format_datetime(timestamp)
 {
+    const options = { timeZone: 'Europe/Lisbon', hour12: false };
+    const portugalTime = new Date(timestamp).toLocaleString('pt-PT', options);
+
+    return portugalTime;
+}
+
+function format_datetime_base(timestamp)
+{
     var today = new Date(timestamp);
 
     // date

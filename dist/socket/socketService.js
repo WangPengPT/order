@@ -318,6 +318,11 @@ function init(io) {
         appState.menu.push(item);
         io.emit("menu_item_changed", item);
       }
+
+      if (item.tags)
+      {
+        appState.dishTags[id] = item.tags;
+      }
     });
 
   });
