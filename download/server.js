@@ -72,6 +72,7 @@ app.get('/', (req, res) => {
         <p>click file to download</p>
        
         <div><a href="https://learn.microsoft.com/en-us/java/openjdk/download">JDK</a><div>
+		<div><a href="https://www.azul.com/downloads/?package=jdk#zulu">JDK32</a><div>
 		<div><a href="https://cmder.app">cmder</a><div>
         <h2>files: (${files.length}):</h2>
         <ul>${fileList}</ul>
