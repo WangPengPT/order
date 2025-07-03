@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{d as s,o as r,f as t}from"./index-CebFqYmd.js";const o={class:"user-manual-container"},n={__name:"UserManual",setup(l){return(c,a)=>(r(),s("div",o,a[0]||(a[0]=[t("iframe",{src:"/usermanual.html",class:"user-manual-frame",title:"用户手册"},null,-1)])))}},_=e(n,[["__scopeId","data-v-abd06341"]]);export{_ as default};
