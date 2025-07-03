@@ -38,6 +38,7 @@ function init(io) {
       QR_ADDR: process.env.QR_ADDR,
       showRoastDuckPage: process.env.showRoastDuckPage,
       SAVE_ADDR: process.env.SAVE_ADDR,
+      RESERVE_URL: process.env.RESERVE_URL,
     });
 
     const tableSocket = new TableSocket(io)
