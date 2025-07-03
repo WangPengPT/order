@@ -56,7 +56,9 @@ function getDishCategory(id)
   if (id == 2) return "XIAOXIONG® RAMEN";
   if (id == 1) return "Pato assado";
 
-  if (appState.dishTags[id]) return appState.dishTags[id];
+  let tag = appState.dishTags[id];
+  if (tag && tag != "") return tag;
+
   return appState.dishCategory[id];
 }
 
@@ -72,10 +74,16 @@ function updateMenu(data, update_all)
   try {
     //console.log(appState.menu);
 
-    if (update_all) {
+    if (update_all && update_all != "false") {
+      console.log("updateMenu update_all");
       appState.menu = data;
     }
     else {
+      console.log("updateMenu...");
+      let mapUpdate = {
+
+      };
+
       for (let i = 0; i < data.length; i++) {
         const orgData = data[i];
         let oldData = undefined;
@@ -83,6 +91,16 @@ function updateMenu(data, update_all)
           oldData = appState.menu[j];
           if (oldData.id == orgData.id && oldData.handle == orgData.handle) {
             //appState.menu[j] = {...oldData, ...orgData};
+            oldData.name =  orgData.name;
+            oldData.subname =  orgData.subname;
+            oldData.note =  orgData.note;
+            oldData.category =  orgData.category;
+            oldData.image =  orgData.image;
+            oldData.price =  orgData.price;
+
+            if (!mapUpdate[orgData.handle]) mapUpdate[orgData.handle] = [];
+            mapUpdate[orgData.handle].push(orgData.id);
+
             //console.log("update..." , appState.menu[j].id);
             break;
           } else {
@@ -92,17 +110,28 @@ function updateMenu(data, update_all)
 
         if (!oldData) {
           appState.menu.push(orgData);
+
+          if (!mapUpdate[orgData.handle]) mapUpdate[orgData.handle] = [];
+          mapUpdate[orgData.handle].push(orgData.id);
           //console.log("add..." , orgData.id);
         }
       }
+
+      appState.menu = appState.menu.filter(data => {
+        if (mapUpdate[data.handle]) {
+          return mapUpdate[data.handle].includes(data.id)
+        }
+        return true;
+      });
+
     }
 
     db.saveData('menu', appState.menu);
 
     const types = [];
 
-    for (let i = 0; i < data.length; i++) {
-      const value = data[i];
+    for (let i = 0; i < appState.menu.length; i++) {
+      const value = appState.menu[i];
       if (!types.includes(value.category)) {
         if (value.category != "") types.push(value.category);
       }

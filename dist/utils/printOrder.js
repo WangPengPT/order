@@ -60,7 +60,7 @@ function print_orde_to_io(printer,order,every_one)
     print_data = "";
 
     add_print( "\torder id: " + order.id);
-    add_print(  BLOD_HAD + "\ttable: " + order.table );
+    add_print(  BLOD_HAD + "\ttable: " + order.table  + "  (" + order.people + ")");
     add_print(  "\ttime: " + format_datetime(order.timestamp) );
     add_print(  "-----------------------------------" );
 
@@ -102,17 +102,24 @@ function print_orde_to_io(printer,order,every_one)
             else
                 name = item.name + " - " + name;
 
-            add_print( BLOD_HAD + item.dishid + "   x " + item.quantity);
-            add_print(  BLOD_HAD + name );
-            add_print();
+
+            let space = " ";
+            let strId = "" + item.dishid;
+            for (let i= 5; i>strId.length; i--)
+            {
+                space += " ";
+            }
+
+            add_print( BLOD_HAD + item.dishid + " x " + item.quantity + space + name);
+            //add_print();
         }
         else
         {
-            add_print(  item.name + "   x " + item.quantity );
+            add_print(  BLOD_HAD + item.name + "   x " + item.quantity );
             for (let j = 0; j < item.notes.length; j++) {
                 add_print( "  " + item.notes[j] );
             }
-            add_print();
+            //add_print();
         }
 
         if (every_one) {
