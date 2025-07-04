@@ -42,7 +42,37 @@ function loadMenu() {
     appState.dishTags = dishTags;
 
     appState.menu = menu;
+
+
     appState.orderMenuTab = db.loadData('orderMenuTab', []);
+
+    const types = [];
+
+    for (let i = 0; i < appState.menu.length; i++) {
+      const value = appState.menu[i];
+      if (!types.includes(value.category)) {
+        if (value.category != "") types.push(value.category);
+      }
+    }
+
+    const orderTabs = [];
+
+    for (let i = 0; i < appState.orderMenuTab.length; i++) {
+      const tab = appState.orderMenuTab[i];
+      if (types.includes(tab)) {
+        orderTabs.push(tab);
+      }
+    }
+
+    for (let i = 0; i < types.length; i++) {
+      const tab = types[i];
+      if (!orderTabs.includes(tab)) {
+        orderTabs.push(tab);
+      }
+    }
+
+    appState.orderMenuTab = orderTabs;
+
   } catch (error) {
     console.warn("Error: ", error)
   }
@@ -53,7 +83,7 @@ function getDishCategory(id)
 {
   if (!id) return  "Caixa Aleatória";
 
-  if (id == 2) return "XIAOXIONG® RAMEN";
+  if (id == 2) return "Korean Babecue DIY MEET";
   if (id == 1) return "Pato assado";
 
   let tag = appState.dishTags[id];
