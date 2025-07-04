@@ -65,3 +65,25 @@ exports.processCSV = (file,all) => {
       .on('error', reject);
   });
 };
+
+exports.processJSON = (file, all) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const fileContent = fs.readFileSync(file.path, 'utf8');
+
+      const jsonData = JSON.parse(fileContent);
+
+      // 更新菜单数据
+      menuService.updateMenu(jsonData, all);
+
+      fs.unlinkSync(file.path);
+
+      resolve(jsonData);
+    } catch (error) {
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+      reject(error);
+    }
+  });
+};

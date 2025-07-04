@@ -4,6 +4,12 @@ const { logger } = require('../utils/logger.js')
 const fs = require('fs');
 const path = require('path')
 
+
+
+function getFileExtension(filename) {
+  return filename.split('.').pop();
+}
+
 exports.handleUpload = async (req, res) => {
   logger.info("上传菜单");
   const file = req.files && req.files[0];                 // ⚠️ 这次是 req.file，不是 req.files[0]
@@ -14,11 +20,23 @@ exports.handleUpload = async (req, res) => {
 
 
   try {
-    const rows = await uploadService.processCSV(file, req.body.update_all); // 假设返回解析行数
+
+    if (getFileExtension(file.path) == "csv")
+    {
+      const rows = await uploadService.processCSV(file, req.body.update_all);
+      console.log("update csv count:", rows.length);
+    }
+    else
+    {
+      const rows = await uploadService.processJSON(file, req.body.update_all);
+      console.log("update json count:", rows.length);
+    }
+
+    // 假设返回解析行数
     menuController.loadMenu();                  // 刷新菜单
 
     logger.info("菜单上传成功")
-    res.json({ success: true, msg: 'Processed OK', rows });
+    res.json({ success: true, msg: 'Processed OK' });
   } catch (err) {
     console.error('CSV processing error:', err);
     logger.info("菜单上传失败")

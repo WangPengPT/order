@@ -63,9 +63,14 @@ function getMenu() {
   return appState.menu;
 }
 
+const fileds = ["name", "note", "subname"];
+const filedLangs = ["","_en","_cn"]
+
+const singlefileds = ["category","image","price"]
+
 function updateMenu(data, update_all)
 {
-    console.log("updateMenu update_all:",update_all);
+    console.log("updateMenu update_all:",update_all, data);
 
     try {
       //console.log(appState.menu);
@@ -87,12 +92,22 @@ function updateMenu(data, update_all)
             oldData = appState.menu[j];
             if (oldData.id == orgData.id && oldData.handle == orgData.handle) {
               //appState.menu[j] = {...oldData, ...orgData};
-              oldData.name =  orgData.name;
-              oldData.subname =  orgData.subname;
-              oldData.note =  orgData.note;
-              oldData.category =  orgData.category;
-              oldData.image =  orgData.image;
-              oldData.price =  orgData.price;
+
+              console.log("oldData before: ", oldData);
+
+              for (let k = 0; k < fileds.length; k++) {
+                const key = singlefileds[k];
+                if (orgData[key]) oldData[key] =  orgData[key];
+              }
+
+              for (let k = 0; k < fileds.length; k++) {
+                for (let l = 0; l < filedLangs.length; l++) {
+                  const key = fileds[k] + filedLangs[l];
+                  if (orgData[key]) oldData[key] =  orgData[key];
+                }
+              }
+
+              console.log("oldData after: ", oldData);
 
               if (!mapUpdate[orgData.handle]) mapUpdate[orgData.handle] = [];
               mapUpdate[orgData.handle].push(orgData.id);
