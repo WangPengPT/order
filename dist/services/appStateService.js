@@ -152,7 +152,6 @@ function changeTable(oldId, newId) {
             throw new Errro(`The new table status is invalid`)
         }
 
-
         return {
             success: true,
             data: appState.tables.toJSON()
@@ -165,6 +164,7 @@ function changeTable(oldId, newId) {
     }
 }
 
+
 module.exports = {
     loadAppState,
     saveAppState,
@@ -175,5 +175,5 @@ module.exports = {
     getTableTotalAmout,
     getCurrentPrice,
     getAllTables,
-    changeTable
+    changeTable,
 };

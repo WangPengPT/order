@@ -175,7 +175,9 @@ class Table {
       people: this.people,
       status: this.status.toPt(), // 转换为葡萄牙语
       order: this.order.map(dish => dish.toJSON()),
-      peopleType: this.peopleType.toJSON()
+      peopleType: this.peopleType.toJSON(),
+      msg_pay: this.msg_pay,
+      msg_call: this.msg_call
     };
   }
 
@@ -184,12 +186,14 @@ class Table {
       id: data.id,
       peopleType: data.peopleType,
       status: data.status, // 这里会自动调用 TableStatus.fromString
-      order: data.order
+      order: data.order,
+      msg_pay: data.msg_pay,
+      msg_call: data.msg_call
     });
   }
 
 }
-
+/*
 class TableVer {
   constructor({ id, password, time }) {
     this.id = id
@@ -249,5 +253,5 @@ class TableVer {
   }
 
 }
-
-module.exports = { Table, TableVer }
+*/
+module.exports = { Table }

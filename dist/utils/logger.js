@@ -23,21 +23,20 @@ const logger = winston.createLogger({
 })
 
 function formatOrderLog(order) {
-  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19)
   const name = order.name?.trim() || '(sem nome)'
   const note = order.note?.trim() || '(nenhuma)'
 
   let lines = [
-    `[${timestamp}] Novo Pedido - Mesa: ${order.table}`,
-    `Nome: ${name}`,
-    `Nota: ${note}`,
-    `Itens:`
+    `新的订单 - 桌号: ${order.table}`,
+    `名字: ${name}`,
+    `备注: ${note}`,
+    `菜:`
   ]
 
   for (const item of order.items) {
     const line = `- ${item.name} x${item.quantity}` +
-      (item.dishid || item.price
-        ? ` | ID: ${item.dishid || '---'} | €${parseFloat(item.price || 0).toFixed(2)}`
+      (item.dishid || item.price || item.discount
+        ? ` | ID: ${item.dishid || '---'} | €${parseFloat(item.price || 0).toFixed(2)} | %${item.discount}`
         : ''
       )
     lines.push(line)
@@ -47,8 +46,34 @@ function formatOrderLog(order) {
   return lines.join('\n')
 }
 
+function formatPrintLog(order) {
+  const people = order.people
+  const table = order.table
+  const name = order.name?.trim() || '(sem nome)'
+  const note = order.note?.trim() || '(nenhuma)'
+  let lines = [
+    `桌号: ${table} | 人数: ${people}`,
+    `名字: ${name}`,
+    `备注: ${note}`,
+    `菜: `,
+  ]
+
+  for (const item of order.items) {
+    const line = "- "+(item.dishid
+        ? ` | ID: ${item.dishid || '---'}`
+        : ''
+      ) + `| Notes: ${item.notes}` + 
+      `${item.name} x${item.quantity}`
+      
+    lines.push(line)
+  }
+
+  lines.push('--------------------------------------------------')
+  return lines.join('\n')
+}
 
 module.exports = {
   logger,
-  formatOrderLog
+  formatOrderLog,
+  formatPrintLog
 }

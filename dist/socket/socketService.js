@@ -38,6 +38,7 @@ function init(io) {
       QR_ADDR: process.env.QR_ADDR,
       showRoastDuckPage: process.env.showRoastDuckPage,
       SAVE_ADDR: process.env.SAVE_ADDR,
+      INS_URL: process.env.INS_URL
     });
 
     const tableSocket = new TableSocket(io)
@@ -86,11 +87,7 @@ function init(io) {
         logger.info(`管理端请求删除盲盒失败, 桌号-${tableId}`)
         logger.info(`失败原因: ${result.data}`)
       }
-      // 更新客户端桌子信息
-      // io.emit('client_table', () => {
-      //   //logger.info(`发送给客户端桌子信息, 桌号-${tableId}`)
-      //   return tableService.getTableById(tableId)
-      // })
+
       sendMsg2TableClient(io,tableService.getTableById(tableId))
 
       cb(result)
@@ -324,6 +321,7 @@ function init(io) {
       {
         appState.dishTags[id] = item.tags;
       }
+
     });
 
   });

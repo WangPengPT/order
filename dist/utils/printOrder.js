@@ -1,5 +1,5 @@
 const menuService = require('../services/menuService');
-const { logger } = require('./logger.js')
+const { logger, formatPrintLog } = require('./logger.js')
 
 
 const printers = [];
@@ -7,6 +7,7 @@ const printers = [];
 
 function print_order(order) {
     logger.info(`打印订单 订单号 - ${order.id}`)
+    logger.info(formatPrintLog(order))
     for (const key in printers) {
         const printer = printers[key];
 
@@ -25,6 +26,7 @@ function print_order(order) {
         }
 
         if (hasData) {
+            logger.info(`发送打印订单`)
             print_orde_to_io(printer,order,printer.data.every_one == "true");
         }
     }
@@ -61,7 +63,7 @@ function print_orde_to_io(printer,order,every_one)
 
     add_print( "\torder id: " + order.id);
     add_print(  BLOD_HAD + "\ttable: " + order.table  + "  (" + order.people + ")");
-    add_print(  "\ttime: " + format_datetime(order.timestamp) );
+    add_print(  "\t" + format_datetime(order.timestamp) );
     add_print(  "-----------------------------------" );
 
     let needLine = false;

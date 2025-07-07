@@ -45,21 +45,7 @@ updateTableWithoutOrder(updatedTableData) {
   }
 
  toJSON() {
-    return Array.from(this.tables.values()).map(table => ({
-      id: table.id,
-      people: table.people,
-      peopleType: table.peopleType,
-      status: table.status.toPt(), // 使用TableStatus的toPt方法转换为葡萄牙语
-      order: table.order.map(item => ({
-        dishid: item.dishid,
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        orderIds: item.orderIds
-      })),
-      msg_call: table.msg_call,
-      msg_pay: table.msg_pay,
-    }));
+    return Array.from(this.tables.values()).map(table => (table.toJSON()));
   }
 
   static fromJSON(data) {
