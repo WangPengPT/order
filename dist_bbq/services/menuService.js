@@ -83,7 +83,7 @@ function getDishCategory(id)
 {
   if (!id) return  "Caixa Aleatória";
 
-  if (id == 2) return "Korean Babecue DIY MEET";
+  if (id == 2) return "My BOX";
   if (id == 1) return "Pato assado";
 
   let tag = appState.dishTags[id];

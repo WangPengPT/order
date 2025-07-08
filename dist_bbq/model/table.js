@@ -95,7 +95,7 @@ class Table {
     if (!Array.isArray(deletedDishes)) return;
 
     deletedDishes.forEach(({ dishid, quantity, name, price }) => {
-      if (name === 'Korean Babecue DIY MEET' || name.toLowerCase() === 'pato assado') {
+      if (name === 'My BOX' || name.toLowerCase() === 'pato assado') {
         const index = this.order.findIndex(d => d.name == name && d.price == price);
         if (index === -1) {
           console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
