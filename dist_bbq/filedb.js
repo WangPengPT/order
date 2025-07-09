@@ -3,6 +3,7 @@ const path = require("path");
 
 const appStateFile = 'appState.json'
 const dirFolder = process.env.SAVE_ADDR || 'save/default'
+const pageDir =  `${dirFolder}/webPages/`
 
 const datas = {};
 
@@ -81,15 +82,49 @@ function fileExists(filename) {
   return fs.existsSync(fullPath);
 }
 
+function hasPageFile(filename) {
+	const fullPath = path.join(pageDir, filename);
+	return fs.existsSync(fullPath);
+}
+
 if (!fs.existsSync(dirFolder)) {
 	fs.mkdirSync(dirFolder,{ recursive: true });
 }
 
+if (!fs.existsSync(pageDir)) {
+	fs.mkdirSync(pageDir,{ recursive: true });
+}
+
+function loadPage(filename) {
+	try {
+		const filePath = path.join(__dirname, pageDir, filename);
+		const data = fs.readFileSync(filePath, 'utf8');
+		const jsonData = JSON.parse(data);
+		return jsonData
+	} catch (err) {
+		console.log("bd load error: ", err.message)
+	}
+}
+
+function save(value, filename, path) {
+	try {
+		var saveStr = JSON.stringify(value, null, 2);
+		const pathDir = path ? dirFolder : path
+		const filePath = path.join(__dirname, pathDir, filename);
+		fs.writeFileSync(filePath, saveStr, 'utf8');
+	} catch (err) {
+		console.log("bd save error: ", err.message)
+	}
+}
+
 module.exports = {
-	loadData: loadData,
-	saveData: saveData,
+	loadData,
+	saveData,
 	saveAppStateData,
 	loadAppStateData,
 	loadDataForce,
-	fileExists
+	fileExists,
+	loadPage,
+	save,
+	hasPageFile
 };

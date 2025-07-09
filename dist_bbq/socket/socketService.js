@@ -10,6 +10,7 @@ const { logger, formatOrderLog } = require('../utils/logger.js')
 const userService = require("../services/userService.js");
 const { TableSocket } = require('./tableSocket.js')
 const { OrderSocket } = require('./orderSocket.js')
+const { WebPageDesignSocket } = require('./webPageDesignSocket.js')
 
 function emit(...datas) {
   appState.socket_io.emit(...datas);
@@ -47,6 +48,9 @@ function init(io) {
 
     const orderSocket = new OrderSocket(io)
     orderSocket.registerHandlers(socket)
+
+    const webPageDesignSocket = new WebPageDesignSocket(io)
+    webPageDesignSocket.registerHandlers(socket)
     // 餐桌密码验证
     //tableService.tableLogin(socket)
 
