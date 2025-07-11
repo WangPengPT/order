@@ -1,0 +1,65 @@
+{
+    "title": {
+        "disable": false,
+        "emoji": "",
+        "description": {
+            "text_zh": "",
+            "text_en": "",
+            "text_pt": ""
+        }
+    },
+    "images_description": {
+        "disable": false,
+        "images": [
+            {
+                "imagePath": ""
+            },
+            {
+                "imagePath": ""
+            }
+        ]
+    },
+    "informations": [
+        {
+            "title_zh": "",
+            "description_zh": "",
+            "title_en": "",
+            "description_en": "",
+            "title_pt": "",
+            "description_pt": ""
+        },
+        {
+            "title_zh": "",
+            "description_zh": "",
+            "title_en": "",
+            "description_en": "",
+            "title_pt": "",
+            "description_pt": ""
+        }
+    ],
+    "moreButton": {
+        "disable": false,
+        "ref": ""
+    },
+    "schedule": {
+        "disable": false,
+        "times": [
+            {
+                "title_zh": "",
+                "description_zh": "",
+                "title_en": "",
+                "description_en": "",
+                "title_pt": "",
+                "description_pt": ""
+            },
+            {
+                "title_zh": "",
+                "description_zh": "",
+                "title_en": "",
+                "description_en": "",
+                "title_pt": "",
+                "description_pt": ""
+            }
+        ]
+    }
+}
