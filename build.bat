@@ -22,8 +22,8 @@ xcopy .\dist\spa %DST_PATH%\dist\public /E /Y /I
 cd ..
 cd client
 call npm run build
-ren .\dist\index.html client.html
-xcopy .\dist %DST_PATH%\dist\public /E /Y /I
+rem ren .\dist\index.html client.html
+xcopy .\dist %DST_PATH%\dist\public\client /E /Y /I
 
 
 cd %DST_PATH%
