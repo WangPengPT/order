@@ -19,6 +19,7 @@ call npm run build
 ren .\dist\spa\index.html manager.html
 xcopy .\dist\spa %DST_PATH%\public /E /Y /I
 
+cd ..
 cd managerPrime
 call npm install
 call npm run build
