@@ -109,6 +109,16 @@ function getFanDays() {
     return appState.isFanDays
 }
 
+function getMenuAndTab() {
+    return {
+        success: true,
+        data: {
+            menu: appState.menu,
+            menuTab: appState.orderMenuTab
+        }
+    }
+}
+
 module.exports = {
     loadAppState,
     saveAppState,
@@ -117,5 +127,6 @@ module.exports = {
     getAllTables,
     setFanDays,
     getFanDays,
-    updadeHasDuck
+    updadeHasDuck,
+    getMenuAndTab
 };

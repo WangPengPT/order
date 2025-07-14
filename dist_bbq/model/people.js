@@ -1,10 +1,10 @@
 
 class PeopleType {
-  constructor({ adults = 0, childres = 0 } = {}) {
+  constructor({ adults = 0, children = 0 } = {}) {
     this.adults = PeopleType.parseNumber(adults)
-    this.childres = PeopleType.parseNumber(childres)
+    this.children = PeopleType.parseNumber(children)
 
-    if ( this.adults < 0 || this.childres < 0) throw new Error("The people can not be negative")
+    if ( this.adults < 0 || this.children < 0) throw new Error("The people can not be negative")
   }
 
   static parseNumber(value) {
@@ -13,24 +13,24 @@ class PeopleType {
   }
   
   getCount() {
-    return this.adults + this.childres
+    return this.adults + this.children
   }
 
   clean() {
     this.adults = 0
-    this.childres = 0
+    this.children = 0
   }
 
     toJSON() {
     return {
       adults: this.adults,
-      childres: this.childres
+      children: this.children
     };
   }
 
   // ✅ 可选：添加反序列化方法
   static fromJSON(data) {
-    return new PeopleType(data?.adults, data?.childres);
+    return new PeopleType(data?.adults, data?.children);
   }
 
 }

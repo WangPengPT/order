@@ -7,7 +7,7 @@ class Order {
     this.table = table
     this.items = items.map(item => new Dish({ ...item, orderId: this.id }))
     this.key = key || table?.replace('#', '') || ''
-    this.status = status || 'Readed'
+    this.status = status || "new"
     this.timestamp = timestamp || Date.now()
     this.name = name;
     this.note = note;
