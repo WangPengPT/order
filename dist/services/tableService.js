@@ -93,6 +93,22 @@ function updateTableWithoutOrder(tableData) {
 
     const table = appState.tables.getTableById(id)
 
+    console.log("updateTableWithoutOrder: " , oldStatus, newStatus);
+    // 设置开台时间
+    if (oldStatus != newStatus && newStatus === '用餐中') {
+      const timestamp = Date.now().toString(36);
+      table.UUID = "" + id + "_" + timestamp;
+
+      const chanel = 'client_table' + table.id
+      const sendData = { success: true, data: table.toJSON() };
+      console.log(chanel,sendData);
+      appState.socket_io.emit(chanel, sendData);
+    }
+
+    if (oldStatus != newStatus && oldStatus === '用餐中') {
+      table.UUID = undefined;
+    }
+
     return { success: true, data: table.toJSON() }
   } catch (error) {
     console.warn("Error: ", error)

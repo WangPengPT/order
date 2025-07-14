@@ -3,7 +3,7 @@ const { PeopleType } = require("./people.js")
 const { TableStatus } = require("./TableStatus.js")
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [] }) {
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], UUID }) {
     this.id = id;
     this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType);
 
@@ -20,6 +20,8 @@ class Table {
 
     this.msg_pay = false;
     this.msg_call = false;
+    this.UUID = UUID;
+
   }
 
   get people() {
@@ -29,6 +31,7 @@ class Table {
   getTotalPeople() {
     return this.peopleType.getCount()
   }
+
 
   // 增加点菜
   addOrderItem(dishData, orderId) {
@@ -97,6 +100,7 @@ class Table {
     this.order = []
     this.msg_pay = false;
     this.msg_call = false;
+    this.UUID = undefined;
   }
 
   clientCmd(cmd) {
@@ -177,7 +181,8 @@ class Table {
       order: this.order.map(dish => dish.toJSON()),
       peopleType: this.peopleType.toJSON(),
       msg_pay: this.msg_pay,
-      msg_call: this.msg_call
+      msg_call: this.msg_call,
+      UUID:  this.UUID,
     };
   }
 
@@ -188,7 +193,8 @@ class Table {
       status: data.status, // 这里会自动调用 TableStatus.fromString
       order: data.order,
       msg_pay: data.msg_pay,
-      msg_call: data.msg_call
+      msg_call: data.msg_call,
+      UUID:  data.UUID,
     });
   }
 

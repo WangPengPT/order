@@ -43,7 +43,7 @@ function saveData(key,value) {
 		const filePath = path.join(__dirname, dirFolder, key + '.json');
 		fs.writeFileSync(filePath, saveStr, 'utf8');
 	} catch (err) {
-
+		console.log(err);
 	}
 }
 
@@ -53,6 +53,7 @@ function saveAppStateData(appState) {
         const filePath = path.join(__dirname, dirFolder, appStateFile);
         fs.writeFileSync(filePath, json, 'utf8');
     } catch (err) {
+		console.log("save appState err:", err);
         throw err;
     }
 }

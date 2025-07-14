@@ -82,6 +82,12 @@ app.use(express.static(path.join(__dirname, "public"), {
   }
 }));
 
+
+app.get('/client/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/client/index.html'));
+});
+//app.use('/client', express.static(path.join(__dirname, 'public/client')));
+
 (async () => {
   await initUserData();
   // 后续正常启动 HTTP/Socket 服务

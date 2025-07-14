@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SushiCome</title>
-    <script type="module" crossorigin src="/assets/index-DB69b3dz.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-HpRlMOCv.css">
-  </head>
-  <body>
-    <div id="app"></div>
-  </body>
+<html>
+<head>
+  <title>client</title>
+</head>
+<body>
+  <h1>client</h1>
+	
+  <script>
+
+    const utcTime = new Date().toUTCString();
+    localStorage.setItem('local_scan_utcTime', utcTime);
+
+    const currentParams = window.location.search;
+    window.location.href = `/client/${currentParams}`;
+  </script>
+</body>
 </html>

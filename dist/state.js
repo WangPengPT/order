@@ -73,6 +73,12 @@ class AppState {
             throw new Error(`Mesa ${order.table} não tem permissão`)
         }
 
+
+
+        if (orderData.UUID && table.UUID != orderData.UUID) {
+            throw new Error(`Please rescan!`);
+        }
+
         // add order
         this.orders.set(orderId, order)
         // add order to Table
