@@ -16,6 +16,7 @@ module.exports = {
       QR_ADDR: "https://sushi.xiaoxiong.pt:8002/client.html?table=",
       TABLE_NUMBER: [[1,9],[17,19],[20,31]],
       SAVE_ADDR: "save/sc_expo",
+      INS_URL: "https://www.instagram.com/sushicome_expo/",
     }
   }]
 }
