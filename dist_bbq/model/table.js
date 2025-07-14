@@ -51,7 +51,7 @@ class Table {
 
     // ✅ 更新 peopleType
     if (updatedTableData.peopleType) {
-      this.peopleType = new PeopleType({ adults: updatedTableData.peopleType.adults, childres: updatedTableData.peopleType.childres });
+      this.peopleType = new PeopleType({ adults: updatedTableData.peopleType.adults, children: updatedTableData.peopleType.children });
     }
 
     // ✅ 更新 status
@@ -87,7 +87,7 @@ class Table {
   // 清理桌子，清空订单、人数和状态
   clearTable() {
     this.status = TableStatus.FREE;
-    this.peopleType = new PeopleType({ adults: 0, childres: 0 })
+    this.peopleType = new PeopleType({ adults: 0, children: 0 })
     this.order = []
   }
 

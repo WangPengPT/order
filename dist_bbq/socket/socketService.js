@@ -98,8 +98,9 @@ function init(io) {
       cb(result)
     })
 
-    socket.on("manager_updateMenu_refresh", (value) => {
-      io.emit("menu_data", appState.menu, appState.orderMenuTab);
+    socket.on("manager_get_menu", (value, bc) => {
+      const menus = appStateService.getMenuAndTab()
+      bc(menus)
     })
 
     socket.emit("manager_send_hasDuck", appState.hasDuck)

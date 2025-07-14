@@ -48,7 +48,7 @@ class TableSocket {
 
     // 修改桌子
     updateTable(tableData, callback) {
-        logger.info(`管理端修改桌子状态 桌号 - ${tableData.id}; 成人 - ${tableData.peopleType.adults}; 儿童 - ${tableData.peopleType.childres}; 桌子状态 - ${tableData.status}`)
+        logger.info(`管理端修改桌子状态 桌号 - ${tableData.id}; 成人 - ${tableData.peopleType.adults}; 儿童 - ${tableData.peopleType.children}; 桌子状态 - ${tableData.status}`)
         const result = tableService.updateTableWithoutOrder(tableData)
 
         if (result.success) {
