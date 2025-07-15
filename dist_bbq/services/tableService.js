@@ -139,6 +139,33 @@ function getTableById(id) {
   }
 }
 
+function clientCmd(id,cmd)
+{
+  try {
+    // 更新服务器状态
+    const table = appState.tables.getTableById(id)
+
+    if (table == null) throw new Error("Not found the table")
+    table.clientCmd(cmd);
+  } catch (error) {
+    console.warn("Error: ", error)
+  }
+}
+
+function clickMsg(id,cmd)
+{
+  try {
+    // 更新服务器状态
+    const table = appState.tables.getTableById(id)
+
+    if (table == null) throw new Error("Not found the table")
+    table.clickMsg(cmd);
+  } catch (error) {
+    console.warn("Error: ", error)
+  }
+}
+
+
 
 module.exports = {
   addNewTable,
@@ -148,5 +175,7 @@ module.exports = {
   updateTablePassword,
   refreshTablePassword,
   tableLogin,
-  getTableById
+  getTableById,
+  clientCmd,
+  clickMsg
 };

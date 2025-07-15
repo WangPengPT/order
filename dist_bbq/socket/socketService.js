@@ -312,6 +312,18 @@ function init(io) {
       }
     });
 
+
+    socket.on("client_cmd", (id,cmd) => {
+      tableService.clientCmd(id,cmd);
+      io.emit("client_cmd", id, cmd);
+    });
+
+    socket.on("click_msg", (id,cmd) => {
+      tableService.clickMsg(id,cmd);
+    });
+
+
+
   });
 
 

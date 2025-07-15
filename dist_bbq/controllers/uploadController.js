@@ -44,6 +44,9 @@ exports.handleUpload = async (req, res) => {
 };
 
 const publicDir = path.join(process.cwd(), 'public', 'uploads')
+
+const welcomeImageDie = path.join(process.cwd(), 'public', 'uploads', 'welcome')
+
 if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir,{ recursive: true });
 }
@@ -70,4 +73,34 @@ exports.handleUploadImage = async (req, res) => {
   });
 
   fs.unlink(req.file.path, () => { });
+};
+
+exports.handleUploadWelcomeImage = async (req, res) => {
+  logger.info("上传主页照片");
+  
+  // 检查多文件（不是 req.file！）
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: '没有上传文件' });
+  }
+
+  const uploadedUrls = [];
+  
+  // 处理每个文件
+  for (const file of req.files) {
+    let name = file.filename;
+    let pos = name.indexOf("-");
+    let endPos = name.lastIndexOf(".");
+    name = name.substring(0, pos) + name.substring(endPos);
+
+    const fullPublicPath = path.join(welcomeImageDie, name);
+    fs.copyFileSync(file.path, fullPublicPath);
+    uploadedUrls.push(`/uploads/welcome/${name}`); // 修复变量名 processedFileName → name
+    
+    fs.unlink(file.path, () => {}); // 删除临时文件
+  }
+
+  res.json({
+    success: true,
+    imageUrls: uploadedUrls
+  });
 };

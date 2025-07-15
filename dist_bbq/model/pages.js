@@ -32,6 +32,6 @@ class Pages{
   }
 }
 
-const pages = new Pages({1: {name:"welcome", data: undefined}, 2:"other"})
+const pagesManager = new Pages({1: {name:"welcome", description: "This is welcome page",data: undefined, id:1}, 2:{name: "other", id: 2}})
 
-module.exports = { pages }
+module.exports = { pagesManager }
