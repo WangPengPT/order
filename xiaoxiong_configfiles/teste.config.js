@@ -15,7 +15,9 @@ module.exports = {
       PORT: 5000,
       QR_ADDR: "http://146.59.150.128:5000/client.html?table=",
       TABLE_NUMBER: [[1,50]],
-      SAVE_ADDR: "save/test",
+      SAVE_ADDR: "save/xx_test",
+	  ENABLE_ROAST_DUCK: true,
+	  ENABLE_MENU_LUNCH: true,
     }
   }]
 }
