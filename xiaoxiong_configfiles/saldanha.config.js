@@ -17,6 +17,7 @@ module.exports = {
       TABLE_NUMBER: [[2, 48]],
       SAVE_ADDR: "save/xx_saldanha",
       ENABLE_ROAST_DUCK: true,
+	  ENABLE_MENU_LUNCH: true,
     }
   }]
 }

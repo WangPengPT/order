@@ -95,6 +95,18 @@ if (!fs.existsSync(pageDir)) {
 	fs.mkdirSync(pageDir,{ recursive: true });
 }
 
+function hasPageFiles() {
+	try {
+    const files = fs.readdirSync(pageDir);
+    // 过滤出 .json 文件
+    const jsonFiles = files.filter(file => file.endsWith('.json'));
+    return jsonFiles.length > 0;
+  } catch (err) {
+    console.error('Error reading directory:', err.message);
+    return false;
+  }
+}
+
 function loadPage(filename) {
 	try {
 		const filePath = path.join(__dirname, pageDir, filename);
@@ -106,11 +118,31 @@ function loadPage(filename) {
 	}
 }
 
-function save(value, filename, path) {
+function loadPages() {
+  try {
+    const res = [];
+    const dirPath = path.join(__dirname, pageDir);
+    const files = fs.readdirSync(dirPath);
+    files.forEach(file => {
+      if (file.endsWith('.json')) {
+        const filePath = path.join(dirPath, file);
+        const data = fs.readFileSync(filePath, 'utf8');
+        const jsonData = JSON.parse(data);
+        res.push(jsonData);
+      }
+    });
+
+    return res;
+  } catch (err) {
+    console.log("loadPages error: ", err.message);
+    return [];
+  }
+}
+
+function savePage(value, filename) {
 	try {
 		var saveStr = JSON.stringify(value, null, 2);
-		const pathDir = path ? dirFolder : path
-		const filePath = path.join(__dirname, pathDir, filename);
+		const filePath = path.join(__dirname, pageDir, filename);
 		fs.writeFileSync(filePath, saveStr, 'utf8');
 	} catch (err) {
 		console.log("bd save error: ", err.message)
@@ -125,6 +157,8 @@ module.exports = {
 	loadDataForce,
 	fileExists,
 	loadPage,
-	save,
-	hasPageFile
+	loadPages,
+	savePage,
+	hasPageFile,
+	hasPageFiles
 };

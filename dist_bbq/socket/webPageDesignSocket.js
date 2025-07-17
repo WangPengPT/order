@@ -23,8 +23,14 @@ class WebPageDesignSocket{
         return webPageDesignService.getAllPageInformation()
     }
 
+    getPageWelcomeImages(id, cb) {
+        const images = webPageDesignService.getPageWelcomeImages(id)
+        cb(images)
+    }
+
      registerHandlers(socket) {
         socket.on("manager_get_page", (id, cb) => { this.getPageById(id, cb) })
+        socket.on("manager_get_welcome_images", (id, cb) => { this.getPageWelcomeImages(id, cb) })
         socket.emit("manager_get_all_pagesInfo", this.getAllPageInfo())
      }
 }

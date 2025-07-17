@@ -9,20 +9,29 @@ const path = require("path");
 const menuController = require('./controllers/menuController.js');
 const uploadController = require('./controllers/uploadController.js');
 const socketService = require('./socket/socketService.js');
-const uploadMiddleware = require('./middlewares/uploadMiddleware.js');
+const {upload, uploadMiddleware} = require('./middlewares/uploadMiddleware.js');
 const appStateService = require('./services/appStateService.js')
 const { logger } = require('./utils/logger.js')
 const {appState} = require("./state");
-const { initUserData, saveUserData } = require('./services/userService.js')
+const { initUserData, saveUserData } = require('./services/userService.js');
+const { webPageDesignService } = require("./services/webPageDesignService.js");
 
 const app = express();
 app.use(cors());
 app.use(compression());
 
+app.use(express.urlencoded({ extended: true }))
+
 // 路由只保留上传接口
-app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
-app.post('/upload_image', uploadMiddleware.single('image'), uploadController.handleUploadImage);
-app.post('/upload_welcomeImage', uploadMiddleware.array('image', 10), uploadController.handleUploadWelcomeImage);
+app.post('/upload', upload.any(), uploadController.handleUpload);
+app.post('/upload_image', upload.single('image'), uploadController.handleUploadImage);
+app.post('/upload_welcomeImage', 
+  uploadMiddleware.array('image', 10),
+  (req, res) => {
+    uploadController.handleUploadWelcomeImage(req, res)
+  }
+);
+
 
 // 创建 HTTP 服务器和 Socket.IO
 let server;
@@ -84,6 +93,7 @@ app.use(express.static(path.join(__dirname, "public"), {
 
 async function main() {
   await initUserData();
+  webPageDesignService.loadPagesSafe()
   appStateService.loadAppState();
   menuController.loadMenu();
   socketService.init(io);
@@ -104,6 +114,7 @@ process.on("SIGINT", () => {
   logger.info(`🛑 收到退出信号，正在保存数据...`)
   appStateService.saveAppState();
   saveUserData()
+  webPageDesignService.savePages()
   process.exit(0);
 });
 
@@ -111,6 +122,7 @@ process.on("SIGTERM", () => {
   logger.info("\n🛑 收到终止信号，正在保存数据...");
   appStateService.saveAppState();
   saveUserData()
+  webPageDesignService.savePages()
   process.exit(0);
 });
 

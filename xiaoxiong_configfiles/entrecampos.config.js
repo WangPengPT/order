@@ -17,6 +17,7 @@ module.exports = {
       TABLE_NUMBER: [[1, 35]],
       SAVE_ADDR: "save/xx_entrecampos",
       ENABLE_ROAST_DUCK: false,
+	  ENABLE_MENU_LUNCH: false,
     }
   }]
 }
