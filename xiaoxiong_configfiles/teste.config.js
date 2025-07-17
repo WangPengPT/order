@@ -3,7 +3,7 @@ module.exports = {
   apps: [{
     name: "XX_TEST",
     script: "./server.js",
-	cwd: "../dist_bbq",
+	cwd: "../dist_xiaoxiong",
     instances: 1,
     autorestart: false,
     watch: false,
