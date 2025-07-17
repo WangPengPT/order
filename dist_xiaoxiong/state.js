@@ -17,6 +17,7 @@ class AppState {
         this.maxOrderId = 0
         this.isFanDays = false
         this.hasDuck = true
+        this.hasLunch = true
         this.initTables()
     }
 
@@ -38,6 +39,10 @@ class AppState {
 
     updateDuck(value) {
         this.hasDuck = value
+    }
+
+    updateLunch(value) {
+        this.hasLunch = value
     }
 
     createTable(startIdx, endIdx) {

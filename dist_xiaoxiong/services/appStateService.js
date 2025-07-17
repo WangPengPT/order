@@ -21,7 +21,7 @@ function loadAppState() {
 
 }
 
-function updadeHasDuck(value) {
+function updateHasDuck(value) {
     try {
         appState.updateDuck(value)
         if (appState.hasDuck === value) return {success: true, data: value}
@@ -30,6 +30,16 @@ function updadeHasDuck(value) {
         return {success: false, data: error.message}
     }
     
+}
+
+function updateHasLunch(value){
+    try {
+        appState.updateLunch(value)
+        if (appState.hasLunch === value) return {success: true, data: value}
+        else throw new Error("Faild upadte has lunch")
+    } catch (error) {
+        return {success: false, data: error.message}
+    }
 }
 
 
@@ -117,5 +127,6 @@ module.exports = {
     getAllTables,
     setFanDays,
     getFanDays,
-    updadeHasDuck
+    updateHasDuck,
+    updateHasLunch,
 };

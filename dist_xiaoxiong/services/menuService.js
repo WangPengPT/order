@@ -53,8 +53,9 @@ function getDishCategory(id)
 {
   if (!id) return  "Caixa Aleatória";
 
-  if (id == 2) return "XIAOXIONG® RAMEN";
   if (id == 1) return "Pato assado";
+  if (id == 2) return "XIAOXIONG® RAMEN";
+  if (id == 3) return "Menu Almoço"
 
   let tag = appState.dishTags[id];
   if (tag && tag != "") return tag;

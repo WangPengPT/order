@@ -40,6 +40,7 @@ function init(io) {
     io.emit("env", {
       QR_ADDR: process.env.QR_ADDR,
       ENABLE_ROAST_DUCK: process.env.ENABLE_ROAST_DUCK,
+      ENABLE_MENU_LUNCH: process.env.ENABLE_MENU_LUNCH,
     });
 
     const tableSocket = new TableSocket(io)
@@ -58,6 +59,7 @@ function init(io) {
     })
 
     socket.emit("clent_send_hasDuck", appState.hasDuck)
+    socket.emit("client_send_hasLunch",appState.hasLunch)
 
     // 管理端更新今日红日
     socket.on("manager_set_fanDays", (value, cb) => {
@@ -99,15 +101,29 @@ function init(io) {
     })
 
     socket.emit("manager_send_hasDuck", appState.hasDuck)
+    socket.emit("manager_send_hasLunch", appState.hasLunch)
 
     socket.on("manager_update_hasDuck", (value, callback) => {
       logger.info(`管理端更新鸭子状态-${value}`)
-      const result = appStateService.updadeHasDuck(value)
+      const result = appStateService.updateHasDuck(value)
       if (result.success) {
         logger.info(`管理端更新鸭子成功`)
         socket.emit("clent_send_hasDuck", appState.hasDuck)
       } else {
         logger.info(`管理端更新鸭子失败`)
+        logger.info(`失败原因: ${result.data}`)
+      }
+      callback(result)
+    })
+
+    socket.on("manager_update_hasLunch", (value, callback) => {
+      logger.info(`管理端更新午间菜单状态-${value}`)
+      const result = appStateService.updateHasLunch(value)
+      if (result.success) {
+        logger.info(`管理端更新午间菜单状态成功`)
+        socket.emit("client_send_hasLunch", appState.hasLunch)
+      } else {
+        logger.info(`管理端更新午间菜单状态失败`)
         logger.info(`失败原因: ${result.data}`)
       }
       callback(result)
