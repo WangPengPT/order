@@ -35,13 +35,14 @@ class Table {
 
   // 增加点菜
   addOrderItem(dishData, orderId) {
-    const existing = this.order.find(i => i.dishid === dishData.dishid)
+
+    const existing = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name)
     if (existing) {
       existing.quantity += dishData.quantity
       existing.orderIds.push(orderId)
     } else {
       this.order.push(new Dish(dishData))
-      const ord = this.order.find(i => i.dishid === dishData.dishid)
+      const ord = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name && i.price === dishData.price)
       ord.orderIds.push(orderId)
     }
   }

@@ -12,12 +12,11 @@ function getFileExtension(filename) {
 
 exports.handleUpload = async (req, res) => {
   logger.info("上传菜单");
-  const file = req.files && req.files[0];                 // ⚠️ 这次是 req.file，不是 req.files[0]
+  const file = req.files && req.files[0];
 
   if (!file) {
     return res.status(400).json({ success: false, msg: 'No CSV uploaded' });
   }
-
 
   try {
 

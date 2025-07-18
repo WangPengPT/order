@@ -101,7 +101,6 @@ function updateTableWithoutOrder(tableData) {
 
       const chanel = 'client_table' + table.id
       const sendData = { success: true, data: table.toJSON() };
-      console.log(chanel,sendData);
       appState.socket_io.emit(chanel, sendData);
     }
 
