@@ -51,6 +51,7 @@ function loadMenu() {
 
 function getDishCategory(id)
 {
+  if (id == 1) return  "Poke Bowl";
   if ((!id) || (id == 0)) return  "Caixa Aleatória";
   let tag = appState.dishTags[id];
   if (tag && tag != "") return tag;
