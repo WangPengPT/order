@@ -17,7 +17,7 @@ class TableSocket {
             logger.info(`管理端添加桌子失败`)
             logger.info(`失败原因: ${result.message}`)
         }
-        callback(result);;
+        callback(result);
     }
 
 
