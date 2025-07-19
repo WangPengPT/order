@@ -75,9 +75,9 @@ class AppState {
 
 
 
-        if (orderData.UUID && table.UUID != orderData.UUID) {
-            throw new Error(`Please rescan!`);
-        }
+        //if (orderData.UUID && table.UUID != orderData.UUID) {
+        //    throw new Error(`Please rescan!`);
+        //}
 
         // add order
         this.orders.set(orderId, order)
