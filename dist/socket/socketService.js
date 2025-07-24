@@ -324,6 +324,17 @@ function init(io) {
 
     });
 
+    socket.on("rate_dish", (id, like, rate) => {
+      const result = menuService.saveDishRating(id, like, rate);
+      if (result) {
+        io.emit("rating_changed", result.data.id, result.data.likes, result.data.rates);
+        logger.info(`客服端评分成功, id-${id}`)
+      } else {
+        logger.info(`客服端评分失败, id-${id}`)
+        logger.info(`失败原因: ${result.data}`)
+      }
+    });
+
   });
 
 
