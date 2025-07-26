@@ -140,6 +140,8 @@ function init(io) {
     // 发送菜单数据给用户端和管理端
     socket.emit("menu_data", appState.menu,appState.orderMenuTab);
 
+    socket.emit("special_dishes_data", appState.specialDishes);
+
     // 处理订单提交
     socket.on("submit_order", (orderData) => {
       logger.info(`订单提交`)
@@ -196,6 +198,18 @@ function init(io) {
       const price = appStateService.getCurrentPrice()
       socket.emit('client_currentPrice', price)
     });
+
+    // 返回 年、月，发送其年月对应的菜单评价数据
+    socket.on('manager_get_month_rates', (value,callback) => {
+      logger.info(`管理端获取${value.year}年${value.month}月的菜单评价`)
+      const result = appStateService.getMonthRatesWithDate(value.year,value.month)
+      if(result.success) {
+        logger.info("获取菜单评价成功")
+      }else{
+        logger.info(`获取菜单评价失败，原因：${result.data}`)
+      }
+      callback(result)
+    })
 
     socket.on('manager_login', async (value, callback) => {
       logger.info("用户登录")
@@ -331,6 +345,17 @@ function init(io) {
         logger.info(`客服端评分成功, id-${id}`)
       } else {
         logger.info(`客服端评分失败, id-${id}`)
+        logger.info(`失败原因: ${result.data}`)
+      }
+    });
+
+    socket.on("rate_special_dish", (name, like, rate) => {
+      const result = menuService.saveSpecialDishRating(name, like, rate);
+      if (result) {
+        io.emit("special_dish_rating_changed", result.data.name, result.data.likes, result.data.rates);
+        logger.info(`客服端评分成功, name-${name}`)
+      } else {
+        logger.info(`客服端评分失败, name-${name}`)
         logger.info(`失败原因: ${result.data}`)
       }
     });

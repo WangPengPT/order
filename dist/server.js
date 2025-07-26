@@ -145,9 +145,37 @@ function runInterval() {
     }
 
     runInterval();
-  }, 1000 * 60);
+  }, 1000 * 60 * 5);
+}
+
+/*
+ 每6小时检查当前日期是否为28号
+ 若是：将单月的评分写入文件
+ 文件地址：保存json的文件夹里的MonthRates文件夹
+*/
+let needWriteMonthRates = true;
+function writeMonthRates() {
+  setTimeout(() => {
+    const now = new Date();
+    if (now.getDate() === 28) // 每月28号
+    {
+      if ( needWriteMonthRates ) {
+        appStateService.saveMonthRates() // 将当月的评分数据写入文件
+        appStateService.clearnMonthRates() // 清空当月的评分数据
+      }
+      needWriteMonthRates = false;
+    }
+    else
+    {
+      needWriteMonthRates = true;
+    }
+
+    writeMonthRates();
+  }, 1000 * 60 * 60 * 6 ); // 每6小时
 }
 
 // update today for appState.isFestiveDay
 holiday.updateToday(appState);
 runInterval();
+// 每月28号写当月的评分
+writeMonthRates();

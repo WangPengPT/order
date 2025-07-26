@@ -47,7 +47,52 @@ function saveAppState() {
     } catch (error) {
         console.warn("Error: ", error)
     }
+}
 
+function saveMonthRates() {
+    try{
+        const monthRates = []
+        appState.menu.forEach(item => {
+            if(item.category !== ""){
+                monthRates.push({
+                    id : item.id,
+                    category : item.category,
+                    handle : item.handle,
+                    name : item.name === "" ? item.subname : item.name,
+                    monthRate : item.monthRates ? item.monthRates : {likes:0, rates:0}
+                })
+            }
+        })
+        const now = new Date();
+        db.saveMonthRates("monthrates_"+now.getFullYear()+"_"+now.getMonth(),monthRates)
+    }catch(error){
+        console.warn("Error: ", error)
+    }
+}
+
+function clearnMonthRates() {
+    try{
+        appState.menu.forEach(item => {
+            item.monthRate.likes = 0
+            item.monthRate.rates = 0
+        })
+    }catch(error){
+        console.warn("Error: ", error)
+    }
+}
+
+function getMonthRatesWithDate(year, month){
+    try{
+        const result = db.loadMonthRates("monthrates_"+year+"_"+month,"file not found")
+        if(result==="file not found"){
+            return { success: false, data:result }
+        }else{
+            return { success: true, data: result }
+        }
+    }catch(error){
+        console.warn("Error: ", error)
+        return { success: false, data: error.message }
+    }
 }
 
 function updatePrice(lunchPrice, dinnerPrice) {
@@ -168,6 +213,9 @@ function changeTable(oldId, newId) {
 module.exports = {
     loadAppState,
     saveAppState,
+    saveMonthRates,
+    clearnMonthRates,
+    getMonthRatesWithDate,
     updatePrice,
     getPrice,
     setFestivalDay,

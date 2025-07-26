@@ -20,8 +20,10 @@ class AppState {
         this.holidayPrice = 19.90
         this.clientPort = 5173
         this.isFestiveDay= false
+        this.specialDishes = []
 
         this.initTables()
+        this.initSpecialDishes()
     }
 
     initTables() {
@@ -236,6 +238,22 @@ class AppState {
         return getCurentPeoplePrice(this.lunchPrice, this.dinnerPrice, this.isFestiveDay)
     }
 
+    initSpecialDishes() {
+        const randomSushi = {
+           name: "Random Sushi",
+           likes: 0,
+           rates: 0,
+        }
+        const pokeBowl = {
+           name: "Poke Bowl",
+           likes: 0,
+           rates: 0,
+        }
+        
+        this.specialDishes.push(randomSushi)
+        this.specialDishes.push(pokeBowl)
+    }
+
 
     toJSON() {
         return {
@@ -248,6 +266,7 @@ class AppState {
             adultPrice: this.adultPrice,
             holidayPrice: this.holidayPrice,
             isFestiveDay: this.isFestiveDay,
+            specialDishes: this.specialDishes,
         };
     }
 
@@ -278,6 +297,7 @@ class AppState {
         instance.adultPrice = data.adultPrice || 1
         instance.childPrice = data.childPrice || 0.5
         instance.isFestiveDay = data.isFestiveDay || false
+        instance.specialDishes = data.specialDishes || []
         return instance
     }
 }
