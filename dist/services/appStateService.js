@@ -43,6 +43,7 @@ function getAllTables() {
 function saveAppState() {
     try {
         db.saveAppStateData(appState)
+        console.log("saved dishes: ", appState.specialDishes)
         db.saveData("menu",appState.menu);
     } catch (error) {
         console.warn("Error: ", error)

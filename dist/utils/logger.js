@@ -1,4 +1,6 @@
 const winston = require('winston')
+const { DateTime } = require('luxon')
+
 require('winston-daily-rotate-file') // 引入插件
 
 const transport = new winston.transports.DailyRotateFile({
@@ -11,7 +13,9 @@ const transport = new winston.transports.DailyRotateFile({
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
-    winston.format.timestamp(),
+    winston.format.timestamp({
+      format: () => DateTime.now().setZone('Europe/Lisbon').toFormat('yyyy-MM-dd HH:mm:ss')
+    }),
     winston.format.printf(({ level, message, timestamp }) => {
       return `${timestamp} [${level.toUpperCase()}] ${message}`
     })
