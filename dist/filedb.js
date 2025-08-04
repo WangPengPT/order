@@ -69,8 +69,9 @@ function saveMonthRates(key,value) {
 		var saveStr = JSON.stringify(value, null, 2);
 		const filePath = path.join(__dirname, dirMonthRates, key + '.json');
 		fs.writeFileSync(filePath, saveStr, 'utf8');
+		console.log("save MonthRate("+key+".json) success.");
 	} catch (err) {
-		console.log(err);
+		console.log("save MonthRate("+key+".json) err:", err);
 	}
 }
 

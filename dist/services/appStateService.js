@@ -65,7 +65,9 @@ function saveMonthRates() {
             }
         })
         const now = new Date();
-        db.saveMonthRates("monthrates_"+now.getFullYear()+"_"+now.getMonth(),monthRates)
+        const month = now.getMonth()===0? 12 : now.getMonth() // 0代表1月，输出12月(上一年)，否则输出getMonth()函数值(getMonth()函数默认输出值比当前月份少1)
+        const year = month===12? now.getFullYear()-1:now.getFullYear()
+        db.saveMonthRates("monthrates_"+year+"_"+month,monthRates)
     }catch(error){
         console.warn("Error: ", error)
     }
@@ -74,8 +76,10 @@ function saveMonthRates() {
 function clearnMonthRates() {
     try{
         appState.menu.forEach(item => {
-            item.monthRate.likes = 0
-            item.monthRate.rates = 0
+            if(item.monthRate){
+                item.monthRate.likes = 0
+                item.monthRate.rates = 0
+            }
         })
     }catch(error){
         console.warn("Error: ", error)

@@ -157,11 +157,11 @@ let needWriteMonthRates = true;
 function writeMonthRates() {
   setTimeout(() => {
     const now = new Date();
-    if (now.getDate() === 28) // 每月28号
+    if (now.getDate() === 1) // 每月1号
     {
       if ( needWriteMonthRates ) {
-        appStateService.saveMonthRates() // 将当月的评分数据写入文件
-        appStateService.clearnMonthRates() // 清空当月的评分数据
+        appStateService.saveMonthRates() // 将上月的评分数据写入文件
+        appStateService.clearnMonthRates() // 清空上月的评分数据
       }
       needWriteMonthRates = false;
     }
@@ -171,7 +171,7 @@ function writeMonthRates() {
     }
 
     writeMonthRates();
-  }, 1000 * 60 * 60 * 6 ); // 每6小时
+  }, 1000 * 60 * 5  ); // 每5分钟
 }
 
 // update today for appState.isFestiveDay
