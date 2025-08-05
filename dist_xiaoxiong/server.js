@@ -94,8 +94,10 @@ async function main() {
 
   runCleanInterval();
   runFandaysInterval();
-  if(process.env.ENABLE_MENU_LUNCH){
+  if(process.env.ENABLE_MENU_LUNCH == 'true'){
     runMenuLunchInterval()
+  }else{
+    console.log("process.env.ENABLE_MENU_LUNCH:",process.env.ENABLE_MENU_LUNCH)
   }
 }
 
@@ -162,7 +164,7 @@ function runFandaysInterval(){
 function runMenuLunchInterval(){
   setTimeout(() => {
     const now = new Date();
-    if (now.getMinutes() % 2 !== 0)
+    if (now.getHours() < 17)
     {
       if (!appState.hasLunch){
         appState.hasLunch = true;
@@ -176,7 +178,6 @@ function runMenuLunchInterval(){
         socketService.emitMenuLunchStatus()
       }
     }
-    console.log("appState.hasLunch:",appState.hasLunch)
     runMenuLunchInterval();
   }, 1000 * 60 * 5);
 }
