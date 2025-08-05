@@ -16,8 +16,8 @@ class AppState {
         this.printers = []
         this.maxOrderId = 0
         this.isFanDays = false
-        this.hasDuck = process.env.ENABLE_ROAST_DUCK?  process.env.ENABLE_ROAST_DUCK == 'true'? true : false : true
-        this.hasLunch = process.env.ENABLE_MENU_LUNCH?  process.env.ENABLE_MENU_LUNCH == 'true'? true : false : true
+        this.hasDuck = process.env.ENABLE_ROAST_DUCK?  process.env.ENABLE_ROAST_DUCK == 'true'? true : false : false
+        this.hasLunch = process.env.ENABLE_MENU_LUNCH?  process.env.ENABLE_MENU_LUNCH == 'true'? true : false : false
 
         // this.initSettingVar()
         this.initTables()
