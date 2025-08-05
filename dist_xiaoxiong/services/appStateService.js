@@ -119,6 +119,10 @@ function getFanDays() {
     return appState.isFanDays
 }
 
+function getMenuLunch(){
+    return appState.hasLunch
+}
+
 module.exports = {
     loadAppState,
     saveAppState,
@@ -127,6 +131,7 @@ module.exports = {
     getAllTables,
     setFanDays,
     getFanDays,
+    getMenuLunch,
     updateHasDuck,
     updateHasLunch,
 };

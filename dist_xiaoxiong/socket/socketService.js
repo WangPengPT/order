@@ -24,6 +24,11 @@ function emitFandaysStatus() {
   appState.socket_io.emit("client_fandays", appStateService.getFanDays())
 }
 
+function emitMenuLunchStatus() {
+  appState.socket_io.emit("manager_send_hasLunch", appStateService.getMenuLunch())
+  appState.socket_io.emit("client_send_hasLunch", appStateService.getMenuLunch())
+}
+
 function sendMsg2TableClient(io,table){
   const chanel = 'client_table' + table.data.id
   io.emit(chanel, table)
@@ -332,4 +337,5 @@ module.exports = {
   init,
   emit,
   emitFandaysStatus,
+  emitMenuLunchStatus,
 };

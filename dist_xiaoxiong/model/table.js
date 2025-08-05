@@ -17,6 +17,9 @@ class Table {
     }
 
     this.order = order.map(item => new Dish(item));
+
+    this.msg_pay = false;
+    this.msg_call = false;
   }
 
   get people() {
@@ -140,13 +143,44 @@ class Table {
     return this.order
   }
 
+  clientCmd(cmd) {
+    console.log("client cmd:", cmd);
+    if ( cmd == 'call' )
+    {
+      this.msg_call = true;
+    }
+
+    if ( cmd == 'pay' )
+    {
+      this.msg_pay = true;
+    }
+
+  }
+
+  clickMsg(cmd) {
+    console.log("client cmd:", cmd);
+    if ( cmd == 'call' )
+    {
+      this.msg_call = false;
+    }
+
+    if ( cmd == 'pay' )
+    {
+      this.msg_pay = false;
+    }
+
+  }
+
+
   toJSON() {
     return {
       id: this.id,
       people: this.people,
       status: this.status.toPt(), // 转换为葡萄牙语
       order: this.order.map(dish => dish.toJSON()),
-      peopleType: this.peopleType.toJSON()
+      peopleType: this.peopleType.toJSON(),
+      msg_pay: this.msg_pay,
+      msg_call: this.msg_call,
     };
   }
 
@@ -155,7 +189,9 @@ class Table {
       id: data.id,
       peopleType: data.peopleType,
       status: data.status, // 这里会自动调用 TableStatus.fromString
-      order: data.order
+      order: data.order,
+      msg_pay: data.msg_pay,
+      msg_call: data.msg_call,
     });
   }
 

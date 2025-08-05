@@ -16,8 +16,8 @@ class AppState {
         this.printers = []
         this.maxOrderId = 0
         this.isFanDays = false
-        this.hasDuck = true
-        this.hasLunch = true
+        this.hasDuck = process.env.ENABLE_ROAST_DUCK || true
+        this.hasLunch = process.env.ENABLE_MENU_LUNCH || true
         this.initTables()
     }
 
@@ -207,7 +207,9 @@ class AppState {
             tables: this.tables.toJSON(),            // TableManager → array
             printers: this.printers,
             maxOrderId: this.maxOrderId,
-            isFanDays: this.isFanDays
+            isFanDays: this.isFanDays,
+            hasDuck: this.hasDuck,
+            hasLunch: this.hasLunch,
         };
     }
 
