@@ -55,7 +55,7 @@ function getDishCategory(id)
 
   if (id == 1) return "Pato assado";
   if (id == 2) return "XIAOXIONG® RAMEN";
-  if (id == 3) return "Menu Almoço"
+  if (id == 3) return "MENU ALMOÇO"
 
   let tag = appState.dishTags[id];
   if (tag && tag != "") return tag;
