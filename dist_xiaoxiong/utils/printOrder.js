@@ -16,28 +16,21 @@ function print_order(order) {
 
         let hasData = false;
         for (let i=0; i<order.items.length; i++) {
-            console.log("1");
             let item = order.items[i];
-            console.log("2");
             let type  = menuService.getDishCategory(item.dishid);
-            console.log("3");
             if (printer.data.menu.includes(type))
             {
-                console.log("4");
                 hasData = true;
                 break;
             }
-            console.log("5");
         }
 
         if (hasData) {
-            console.log("6");
             logger.info( "print...", order);
             print_orde_to_io(printer,order,printer.data.every_one == "true");
         }
         else
         {
-            console.log("7");
             console.log( "didn't print", order, printer.data );
         }
     }
