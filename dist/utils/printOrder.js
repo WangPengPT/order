@@ -142,6 +142,8 @@ function print_orde_to_io(printer,order,every_one)
 
 function format_datetime(timestamp)
 {
+    if (timestamp) return timestamp;
+
     const options = { timeZone: 'Europe/Lisbon', hour12: false };
     const portugalTime = new Date(timestamp).toLocaleString('pt-PT', options);
 
