@@ -14,13 +14,14 @@ xcopy .\server %DST_PATH%\dist /E /Y /I
 
 
 cd manager
+call npm install
 call npm run build
-ren .\dist\spa\index.html manager.html
 xcopy .\dist\spa %DST_PATH%\dist\public /E /Y /I
 
 
 cd ..
 cd client
+call npm install
 call npm run build
 rem ren .\dist\index.html client.html
 xcopy .\dist %DST_PATH%\dist\public\client /E /Y /I

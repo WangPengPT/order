@@ -10,10 +10,10 @@ module.exports = {
     max_memory_restart: "800M",
     env: {
       NODE_ENV: "production",
-      USE_HTTPS : false,
-	  HTTPS_HEAD: "sushi",
+      USE_HTTPS : true,
+	  HTTPS_HEAD: "v",
       PORT: 5000,
-      QR_ADDR: "http://146.59.150.128:5000/client.html?table=",
+      QR_ADDR: "https://v.xiaoxiong.pt:5000/client.html?table=",
       TABLE_NUMBER: [[1,50]],
       SAVE_ADDR: "save/xx_test",
 	  ENABLE_ROAST_DUCK: true,

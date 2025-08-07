@@ -43,11 +43,61 @@ function getAllTables() {
 function saveAppState() {
     try {
         db.saveAppStateData(appState)
+        console.log("saved dishes: ", appState.specialDishes)
         db.saveData("menu",appState.menu);
     } catch (error) {
         console.warn("Error: ", error)
     }
+}
 
+function saveMonthRates() {
+    try{
+        const monthRates = []
+        appState.menu.forEach(item => {
+            if(item.category !== ""){
+                monthRates.push({
+                    id : item.id,
+                    category : item.category,
+                    handle : item.handle,
+                    name : item.name === "" ? item.subname : item.name,
+                    monthRate : item.monthRates ? item.monthRates : {likes:0, rates:0}
+                })
+            }
+        })
+        const now = new Date();
+        const month = now.getMonth()===0? 12 : now.getMonth() // 0代表1月，输出12月(上一年)，否则输出getMonth()函数值(getMonth()函数默认输出值比当前月份少1)
+        const year = month===12? now.getFullYear()-1:now.getFullYear()
+        db.saveMonthRates("monthrates_"+year+"_"+month,monthRates)
+    }catch(error){
+        console.warn("Error: ", error)
+    }
+}
+
+function clearnMonthRates() {
+    try{
+        appState.menu.forEach(item => {
+            if(item.monthRate){
+                item.monthRate.likes = 0
+                item.monthRate.rates = 0
+            }
+        })
+    }catch(error){
+        console.warn("Error: ", error)
+    }
+}
+
+function getMonthRatesWithDate(year, month){
+    try{
+        const result = db.loadMonthRates("monthrates_"+year+"_"+month,"file not found")
+        if(result==="file not found"){
+            return { success: false, data:result }
+        }else{
+            return { success: true, data: result }
+        }
+    }catch(error){
+        console.warn("Error: ", error)
+        return { success: false, data: error.message }
+    }
 }
 
 function updatePrice(lunchPrice, dinnerPrice) {
@@ -168,6 +218,9 @@ function changeTable(oldId, newId) {
 module.exports = {
     loadAppState,
     saveAppState,
+    saveMonthRates,
+    clearnMonthRates,
+    getMonthRatesWithDate,
     updatePrice,
     getPrice,
     setFestivalDay,

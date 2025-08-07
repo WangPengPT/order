@@ -16,8 +16,10 @@ class AppState {
         this.printers = []
         this.maxOrderId = 0
         this.isFanDays = false
-        this.hasDuck = true
-        this.hasLunch = true
+        this.hasDuck = process.env.ENABLE_ROAST_DUCK?  process.env.ENABLE_ROAST_DUCK == 'true'? true : false : false
+        this.hasLunch = process.env.ENABLE_MENU_LUNCH?  process.env.ENABLE_MENU_LUNCH == 'true'? true : false : false
+
+        // this.initSettingVar()
         this.initTables()
     }
 
@@ -35,6 +37,23 @@ class AppState {
         const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
 
+    }
+
+    initSettingVar(){
+        if(process.env.ENABLE_ROAST_DUCK){
+            if(process.env.ENABLE_ROAST_DUCK == 'true'){
+                this.hasDuck = true
+            }else{
+                this.hasDuck = false
+            }
+        }
+        if(process.env.ENABLE_MENU_LUNCH){
+            if(process.env.ENABLE_MENU_LUNCH == 'true'){
+                this.hasDuck = true
+            }else{
+                this.hasDuck = false
+            }
+        }
     }
 
     updateDuck(value) {
@@ -207,7 +226,9 @@ class AppState {
             tables: this.tables.toJSON(),            // TableManager → array
             printers: this.printers,
             maxOrderId: this.maxOrderId,
-            isFanDays: this.isFanDays
+            isFanDays: this.isFanDays,
+            hasDuck: this.hasDuck,
+            hasLunch: this.hasLunch,
         };
     }
 

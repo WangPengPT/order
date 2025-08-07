@@ -1,8 +1,10 @@
 const fs = require('fs');
 const path = require("path");
+const {logger} = require("./utils/logger");
 
 const appStateFile = 'appState.json'
 const dirFolder = process.env.SAVE_ADDR || 'save/default'
+const dirMonthRates = dirFolder + '/MonthRates';
 
 const datas = {};
 
@@ -58,7 +60,32 @@ function saveAppStateData(appState) {
     }
 }
 
+function saveMonthRates(key,value) {
 
+	if (!value) value = datas[key];
+	datas[key] = value;
+
+	try {
+		var saveStr = JSON.stringify(value, null, 2);
+		const filePath = path.join(__dirname, dirMonthRates, key + '.json');
+		fs.writeFileSync(filePath, saveStr, 'utf8');
+		console.log("save MonthRate("+key+".json) success.");
+	} catch (err) {
+		console.log("save MonthRate("+key+".json) err:", err);
+	}
+}
+
+function loadMonthRates(key,defaultValue) {
+	try {
+		const filePath = path.join(__dirname, dirMonthRates, key + '.json');
+		const data = fs.readFileSync(filePath, 'utf8');
+		const jsonData = JSON.parse(data);
+
+		return jsonData ? jsonData : defaultValue;
+	} catch (err) {
+		return defaultValue
+	}
+}
 
 function loadAppStateData() {
     try {
@@ -87,10 +114,16 @@ if (!fs.existsSync(dirFolder)) {
 	fs.mkdirSync(dirFolder,{ recursive: true });
 }
 
+if (!fs.existsSync(dirMonthRates)) {
+	fs.mkdirSync(dirMonthRates,{ recursive: true });
+}
+
 module.exports = {
-	loadData: loadData,
-	saveData: saveData,
+	loadData,
+	saveData,
 	saveAppStateData,
+	saveMonthRates,
+	loadMonthRates,
 	loadAppStateData,
 	loadDataForce,
 	fileExists

@@ -94,6 +94,11 @@ async function main() {
 
   runCleanInterval();
   runFandaysInterval();
+  if(process.env.ENABLE_MENU_LUNCH == 'true'){
+    runMenuLunchInterval()
+  }else{
+    console.log("process.env.ENABLE_MENU_LUNCH:",process.env.ENABLE_MENU_LUNCH)
+  }
 }
 
 main();
@@ -131,7 +136,7 @@ function runCleanInterval() {
     }
 
     runCleanInterval();
-  }, 1000 * 600);
+  }, 1000 * 60 * 10);
 }
 
 function runFandaysInterval(){
@@ -153,5 +158,26 @@ function runFandaysInterval(){
     }
 
     runFandaysInterval();
-  }, 1000 * 3600);
+  }, 1000 * 60 * 60 );
+}
+
+function runMenuLunchInterval(){
+  setTimeout(() => {
+    const now = new Date();
+    if (now.getHours() < 17)
+    {
+      if (!appState.hasLunch){
+        appState.hasLunch = true;
+        socketService.emitMenuLunchStatus()
+      }
+    }
+    else
+    {
+      if(appState.isFanDays){
+        appState.hasLunch = false;
+        socketService.emitMenuLunchStatus()
+      }
+    }
+    runMenuLunchInterval();
+  }, 1000 * 60 * 5);
 }

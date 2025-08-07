@@ -8,6 +8,7 @@ const printers = [];
 function print_order(order) {
     logger.info(`打印订单 订单号 - ${order.id}`)
     for (const key in printers) {
+        console.log("key",key);
         const printer = printers[key];
 
         if (!printer) continue;
@@ -25,12 +26,12 @@ function print_order(order) {
         }
 
         if (hasData) {
-            //logger.info( "print...", order);
+            logger.info( "print...", order);
             print_orde_to_io(printer,order,printer.data.every_one == "true");
         }
         else
         {
-            //console.log( "didn't print", order, printer.data );
+            console.log( "didn't print", order, printer.data );
         }
     }
 }

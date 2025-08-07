@@ -20,13 +20,15 @@ class AppState {
         this.holidayPrice = 19.90
         this.clientPort = 5173
         this.isFestiveDay= false
+        this.specialDishes = []
 
         this.initTables()
+        this.initSpecialDishes()
     }
 
     initTables() {
         const iniTable = [];
-        let tablesNumber = [[1,50]]
+        let tablesNumber = [[1,5]]
         if(process.env.TABLE_NUMBER) {
             tablesNumber = JSON.parse(process.env.TABLE_NUMBER)
         }
@@ -209,6 +211,9 @@ class AppState {
         this.childPrice = newAppState.childPrice
         this.holidayPrice = newAppState.holidayPrice
         this.isFestiveDay = newAppState.isFestiveDay
+        if (newAppState.specialDishes.length !== 0) {
+            this.specialDishes = newAppState.specialDishes
+        }
     }
 
     updatePrice(lunchPrice, dinnerPrice) {
@@ -236,6 +241,22 @@ class AppState {
         return getCurentPeoplePrice(this.lunchPrice, this.dinnerPrice, this.isFestiveDay)
     }
 
+    initSpecialDishes() {
+        const randomSushi = {
+           name: "Random Sushi",
+           likes: 0,
+           rates: 0,
+        }
+        const pokeBowl = {
+           name: "Poke Bowl",
+           likes: 0,
+           rates: 0,
+        }
+        
+        this.specialDishes.push(randomSushi)
+        this.specialDishes.push(pokeBowl)
+    }
+
 
     toJSON() {
         return {
@@ -248,12 +269,12 @@ class AppState {
             adultPrice: this.adultPrice,
             holidayPrice: this.holidayPrice,
             isFestiveDay: this.isFestiveDay,
+            specialDishes: this.specialDishes,
         };
     }
 
     static fromJSON(data) {
         const instance = new AppState()
-
         instance.menu = data.menu || []
 
         // 恢复 Map
@@ -278,6 +299,7 @@ class AppState {
         instance.adultPrice = data.adultPrice || 1
         instance.childPrice = data.childPrice || 0.5
         instance.isFestiveDay = data.isFestiveDay || false
+        instance.specialDishes = data.specialDishes || []
         return instance
     }
 }

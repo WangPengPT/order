@@ -185,6 +185,83 @@ function saveOrderMenuTab(data) {
 
 }
 
+function saveDishRating(id, like, rate) {
+  try {
+    const item = appState.menu.find(m => m.id === id);
+
+    if (!item) throw new Error("invalid item id: ", id);
+
+    if (![-1, 0, 1].includes(like)) throw new Error("invalid like value: ", like);
+
+    if (![-1, 0, 1].includes(rate)) throw new Error("invalid rate value: ", rate);
+
+    if (!item.rates) {
+      item.likes = 0;
+      item.rates = 0;
+    }
+    item.likes += like;
+    item.rates += rate;
+
+    // 数据写入每月评分
+    saveMonthRates(item)
+
+    return {
+      success: true,
+      data: {
+        id: id,
+        likes: item.likes,
+        rates: item.rates
+      }
+    }
+  } catch (error) {
+    return {
+      success: false,
+      data: error.message
+    }
+  }
+}
+
+function saveMonthRates(item){
+  if(!item.monthRates){
+    item.monthRates = {likes:item.likes, rates:item.rates};
+  }else{
+    item.monthRates.likes = item.likes
+    item.monthRates.rates = item.rates
+  }
+}
+
+function saveSpecialDishRating(name, like, rate) {
+  try {
+    const item = appState.specialDishes.find(m => m.name === name);
+
+    if (!item) throw new Error("invalid item name: ", name);
+
+    if (![-1, 0, 1].includes(like)) throw new Error("invalid like value: ", like);
+
+    if (![-1, 0, 1].includes(rate)) throw new Error("invalid rate value: ", rate);
+
+    if (!item.rates) {
+      item.likes = 0;
+      item.rates = 0;
+    }
+    item.likes += like;
+    item.rates += rate;
+
+    return {
+      success: true,
+      data: {
+        name: name,
+        likes: item.likes,
+        rates: item.rates
+      }
+    }
+  } catch (error) {
+    return {
+      success: false,
+      data: error.message
+    }
+  }
+}
 
 function findDish(id)
 {
@@ -206,4 +283,6 @@ module.exports = {
   saveOrderMenuTab,
   findDish,
   getDishCategory,
+  saveDishRating,
+  saveSpecialDishRating,
 };
