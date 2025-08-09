@@ -15,6 +15,7 @@ const { logger } = require('./utils/logger.js')
 const {appState} = require("./state");
 const holiday = require('./utils/holiday.js')
 const { initUserData, saveUserData } = require('./services/userService.js')
+const { translaterFilter } = require('./utils/translateFilter.js')
 const app = express();
 app.use(cors());
 app.use(compression());
