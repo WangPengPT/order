@@ -14,7 +14,7 @@ module.exports = {
       HTTPS_HEAD: "order",
       PORT: 503,
       QR_ADDR: "https://order.xiaoxiong.pt:503/client.html?table=",
-      TABLE_NUMBER: [[2,14],[19,26],[33,38]],
+      TABLES_NUMBER: [[2,14],[19,26],[33,38]],
       SAVE_ADDR: "save/xx_odivelas",
       ENABLE_ROAST_DUCK: false,
 	  ENABLE_MENU_LUNCH: false,
