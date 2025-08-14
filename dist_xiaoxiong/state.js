@@ -41,18 +41,10 @@ class AppState {
 
     initSettingVar(){
         if(process.env.ENABLE_ROAST_DUCK){
-            if(process.env.ENABLE_ROAST_DUCK == 'true'){
-                this.hasDuck = true
-            }else{
-                this.hasDuck = false
-            }
+            this.hasDuck = process.env.ENABLE_ROAST_DUCK == 'true'
         }
         if(process.env.ENABLE_MENU_LUNCH){
-            if(process.env.ENABLE_MENU_LUNCH == 'true'){
-                this.hasDuck = true
-            }else{
-                this.hasDuck = false
-            }
+            this.hasLunch = process.env.ENABLE_MENU_LUNCH == 'true'
         }
     }
 
