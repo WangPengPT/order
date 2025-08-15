@@ -9,10 +9,16 @@ const { logger, formatOrderLog } = require('../utils/logger.js')
 const { TableSocket } = require('./tableSocket.js')
 const { OrderSocket } = require('./orderSocket.js')
 const userService = require("../services/userService.js");
+const centerSocket = require('./centerSocket.js');
 
 function emit(...datas)
 {
   appState.socket_io.emit(...datas);
+}
+
+function on(...datas)
+{
+  appState.socket_io.on(...datas);
 }
 
 function saveOrderMenuTab(data)
@@ -34,7 +40,7 @@ function init(io) {
 
     process.env.QR_ADDR = process.env.QR_ADDR || `http://localhost:${appState.clientPort}?table=`;
 
-    io.emit("env", {
+    socket.emit("env", {
       QR_ADDR: process.env.QR_ADDR,
       showRoastDuckPage: process.env.showRoastDuckPage,
       SAVE_ADDR: process.env.SAVE_ADDR,
@@ -360,6 +366,10 @@ function init(io) {
       }
     });
 
+    socket.on("get_shopify_orders", ()=> {
+      centerSocket.get_shopify_orders(socket)
+    })
+
   });
 
 
@@ -369,4 +379,5 @@ function init(io) {
 module.exports = {
   init,
   emit,
+  on
 };

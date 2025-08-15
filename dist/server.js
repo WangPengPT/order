@@ -11,10 +11,14 @@ const uploadController = require('./controllers/uploadController.js');
 const socketService = require('./socket/socketService.js');
 const uploadMiddleware = require('./middlewares/uploadMiddleware.js');
 const appStateService = require('./services/appStateService.js')
+
+const centerSocket = require('./socket/centerSocket.js');
+
 const { logger } = require('./utils/logger.js')
 const {appState} = require("./state");
 const holiday = require('./utils/holiday.js')
 const { initUserData, saveUserData } = require('./services/userService.js')
+const { translaterFilter } = require('./utils/translateFilter.js')
 const app = express();
 app.use(cors());
 app.use(compression());
@@ -102,9 +106,11 @@ menuController.loadMenu();
 // 初始化 Socket.IO 事件
 socketService.init(io);
 
+centerSocket.init()
+
 // 启动服务器
-const PORT = process.env.PORT || 80;
-server.listen(PORT, () => {
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, '0.0.0.0', () => {
   logger.info(`🟢 服务器已启动，监听端口 ${PORT}`)
 });
 
