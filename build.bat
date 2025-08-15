@@ -16,6 +16,7 @@ xcopy .\server %DST_PATH%\dist /E /Y /I
 cd manager
 call npm install
 call npm run build
+copy .\dist\spa\index.html .\dist\spa\manager.html 
 xcopy .\dist\spa %DST_PATH%\dist\public /E /Y /I
 
 
