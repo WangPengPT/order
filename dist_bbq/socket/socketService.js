@@ -85,6 +85,7 @@ class SocketServices {
       this.io.emit("env", {
         QR_ADDR: process.env.QR_ADDR,
         ENABLE_ROAST_DUCK: ENABLE_ROAST_DUCK,
+        TEST_ENVIRONMENT: process.env.TEST_ENVIRONMENT
       });
 
 
