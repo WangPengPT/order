@@ -1,52 +1,58 @@
-// 数据存储
-
-const { Order } = require('./model/order.js')
-const { TableManager } = require('./model/tableManager.js')
-const { getCurentPeoplePrice } = require('./utils/timePrice.js')
-const { add } = require('./utils/manualMath.js')
-const { TableStatus } = require('./model/TableStatus.js')
-const { Table } = require('./model/table.js')
-const { pagesManager } = require('./model/pages.js')
+const {Order} = require('./model/order.js')
+const {TableManager} = require('./model/tableManager.js')
+const {TableStatus} = require('./model/TableStatus.js')
+const {Table} = require('./model/table.js')
 
 class AppState {
     constructor() {
+        this.specialDishes = [{category: "My BOX"}, {category: "Bibimbap"}]
         this.menu = []
         this.orderMenuTab = []
         this.orders = new Map()
         this.tables = []
         this.printers = []
         this.maxOrderId = 0
-        this.isFanDays = false
-        this.hasDuck = true
+
+        this.hasBox = true
+        this.hasBibimbap = true
+        this.checkIP = false;
+
         this.currentPageID = 1
+
         this.initTables()
+
+        this.recordProps(this, ['menu'])
     }
 
     initTables() {
         const iniTable = [];
         const tablesNumber = []
-        if(process.env.TABLES_NUMBER){
+        if (process.env.TABLES_NUMBER) {
             tablesNumber.push.apply(tablesNumber, JSON.parse(process.env.TABLES_NUMBER))
-        }else{
-            tablesNumber.push([1,50])
+        } else {
+            tablesNumber.push([1, 50])
         }
         for (let i = 0; i < tablesNumber.length; i++) {
-            iniTable.push.apply(iniTable, this.createTable(tablesNumber[i][0],tablesNumber[i][1]))
+            iniTable.push.apply(iniTable, this.createTable(tablesNumber[i][0], tablesNumber[i][1]))
         }
         const tablesCenter = new TableManager(iniTable)
         this.tables = tablesCenter
 
     }
 
-    updateDuck(value) {
-        this.hasDuck = value
+    updateBibimbap(value) {
+        this.hasBibimbap = value
+    }
+
+    updateBox(value) {
+        this.hasBox = value
     }
 
     createTable(startIdx, endIdx) {
         const tables = [];
-        for(let i = startIdx; i <= endIdx; i++) {
+        for (let i = startIdx; i <= endIdx; i++) {
             let id = '' + i;
-            if( id <= 9 ) id = '0' + id;
+            if (id <= 9) id = '0' + id;
             tables.push(Table.fromJSON({id: id, people: 0, status: TableStatus.FREE}))
         }
         return tables
@@ -62,14 +68,14 @@ class AppState {
         }
     }
 
-    setFanDays(value) {
-        this.isFanDays = value
+    setHasBox(value) {
+        this.hasBox = value
     }
 
     addOrderTable(orderData) {
         this.maxOrderId++
         const orderId = this.maxOrderId.toString().padStart(4, '0')
-        const order = new Order({ ...orderData, id: orderId })
+        const order = new Order({...orderData, id: orderId})
         const table = this.getTableById(order.table)
         if (table == null) {
             throw new Error(`桌号${order.table}未能找到！`)
@@ -126,13 +132,10 @@ class AppState {
         }
         const id = tableId.replace('#', '')
         const table = this.tables.getTableById(id)
-        if (table)
-        {
+        if (table) {
             const dishes = table.order
             return dishes.map(dish => dish.toJSON())
-        }
-        else
-        {
+        } else {
             return "{}";
         }
     }
@@ -145,100 +148,159 @@ class AppState {
 
 
     getOrdersByTableID(tableId) {
-    if (!tableId) return []
+        if (!tableId) return []
 
-    // 去掉可能的 # 号，保持和你其他地方一致
-    const id = typeof tableId === 'string' ? tableId.replace('#', '') : tableId;
+        // 去掉可能的 # 号，保持和你其他地方一致
+        const id = typeof tableId === 'string' ? tableId.replace('#', '') : tableId;
 
-    // 过滤 orders Map，返回属于这个桌号的订单数组
-    const result = [];
+        // 过滤 orders Map，返回属于这个桌号的订单数组
+        const result = [];
 
-    for (const order of this.orders.values()) {
-        if (order.table === id) {
-            result.push(order);
+        for (const order of this.orders.values()) {
+            if (order.table === id) {
+                result.push(order);
+            }
         }
-    }
 
         return result;
     }
 
     updateAppState(newAppState) {
-        this.menu = newAppState.menu || []
+        for (const key of this._dataKeys) {
+            const value = newAppState[key];
 
-        // orders 应该是 Map 或需要转换
-        if (newAppState.orders instanceof Map) {
-            this.orders = newAppState.orders
-        } else if (newAppState.orders) {
-            this.orders = new Map(Object.entries(newAppState.orders))
-        } else {
-            this.orders = new Map()
+            if (key === 'orders') {
+                if (value instanceof Map) {
+                    this.orders = value;
+                } else if (value) {
+                    this.orders = new Map(
+                        Object.entries(value).map(([id, obj]) => [id, Order.fromJSON(obj)])
+                    );
+                } else {
+                    this.orders = new Map();
+                }
+            } else if (key === 'tables') {
+                if (value instanceof TableManager) {
+                    this.tables = value;
+                } else if (Array.isArray(value)) {
+                    const tableManager = new TableManager();
+                    value.forEach(tableData => {
+                        tableManager.addTable(tableData);
+                    });
+                    this.tables = tableManager;
+                } else {
+                    this.tables = new TableManager([]);
+                }
+            } else {
+                // 普通字段自动更新
+                this[key] = value;
+            }
         }
-
-        // tables 应该是 TableManager 实例
-        if (newAppState.tables instanceof TableManager) {
-            this.tables = newAppState.tables
-        } else if (Array.isArray(newAppState.tables)) {
-            this.tables = new TableManager(newAppState.tables)
-        } else {
-            this.tables = new TableManager([])
-        }
-
-        this.printers = newAppState.printers || []
-        this.maxOrderId = newAppState.maxOrderId || 0
     }
+
 
     getTableTotalAmout(tableId) {
         const table = this.tables.getTableById(tableId)
         if (table == null) throw new Error('Noot found the table')
-        const tableOrdersAmout =  parseFloat(table.getTableOrdersTotalAmount()).toFixed(2)
+        const tableOrdersAmout = parseFloat(table.getTableOrdersTotalAmount()).toFixed(2)
         return {
             total: tableOrdersAmout
         }
     }
 
+    recordProps(target, except = []) {
+        const keys = Object.keys(target);
+        target._dataKeys = keys.filter(k => !k.startsWith('_') && !except.includes(k));
+    }
+
+    incrementOrder(orderData) {
+        const items = orderData.items
+        const result = []
+        for (const item of items) {
+            const menuItem = this.menu.find(m => m.id === item.dishid)
+            menuItem.dailyOrders = (menuItem.dailyOrders | 0) + item.quantity
+            menuItem.monthlyOrders = (menuItem.monthlyOrders | 0) + item.quantity
+            menuItem.yearlyOrders = (menuItem.yearlyOrders | 0) + item.quantity
+            menuItem.orders = (menuItem.orders | 0) + item.quantity
+            result.push({id: menuItem.id, orders: menuItem.orders})
+        }
+        return result
+    }
 
     toJSON() {
-        return {
-            menu: this.menu,
-            orders: Object.fromEntries(this.orders), // Map → object
-            tables: this.tables.toJSON(),            // TableManager → array
-            printers: this.printers,
-            maxOrderId: this.maxOrderId,
-            isFanDays: this.isFanDays,
-            currentPageID: this.currentPageID,
-        };
+        const result = {}
+        for (const key of this._dataKeys) {
+            const val = this[key]
+            if (val instanceof Map) {
+                result[key] = Object.fromEntries(val)
+            } else if (typeof val?.toJSON === 'function') {
+                result[key] = val.toJSON()
+            } else {
+                result[key] = val
+            }
+        }
+        return result
     }
+
 
     static fromJSON(data) {
         const instance = new AppState()
 
-        instance.menu = data.menu || []
-
-        // 恢复 Map
-        if (data.orders) {
-            instance.orders = new Map(
-                Object.entries(data.orders).map(([id, obj]) => [id, Order.fromJSON(obj)])
-            );
+        for (const key of instance._dataKeys) {
+            if (key === 'orders' && data.orders) {
+                // 特殊处理 Map
+                instance.orders = new Map(
+                    Object.entries(data.orders).map(([id, obj]) => [id, Order.fromJSON(obj)])
+                )
+            } else if (key === 'tables' && data.tables) {
+                // 特殊处理 tables，假设是 TableManager 实例
+                if (Array.isArray(data.tables)) {
+                    const tableManager = new TableManager()
+                    data.tables.forEach(tableData => {
+                        tableManager.addTable(tableData)
+                    })
+                    instance.tables = tableManager
+                } else {
+                    instance.tables = data.tables
+                }
+            } else {
+                // 其他字段直接赋值
+                if (data.hasOwnProperty(key)) {
+                    instance[key] = data[key]
+                }
+            }
         }
 
-        // 恢复 tables
-        if (data.tables && Array.isArray(data.tables)) {
-            const tableManager = new TableManager()
-            data.tables.forEach(tableData => {
-                tableManager.addTable(tableData)
-            })
-            instance.tables = tableManager
-        }
-
-        instance.printers = data.printers || []
-        instance.maxOrderId = data.maxOrderId || 0
-
-        instance.isFanDays = data.isFanDays
-        instance.currentPageID = data.currentPageID
         return instance
+    }
+
+    localIps = []
+
+
+    getClientIP(socket) {
+        const headers = socket.handshake.headers;
+        return headers['x-real-ip'] ||
+            (headers['x-forwarded-for'] && headers['x-forwarded-for'].split(',')[0].trim()) ||
+            socket.handshake.address;
+    }
+
+    addLocalIP(socket) {
+        const ip = this.getClientIP(socket)
+        if (this.localIps.includes(ip)) return;
+        console.log("add local ip: " + ip);
+        this.localIps.push(ip)
+    }
+
+    checkLocalIP(socket) {
+        if (this.localIps && this.localIps.length > 0) {
+            const ip = this.getClientIP(socket)
+            return this.localIps.includes(ip)
+        }
+
+        return true
     }
 }
 
 const appState = new AppState()
 
-module.exports = { appState, AppState }
+module.exports = {appState, AppState}

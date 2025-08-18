@@ -86,6 +86,7 @@ class TableSocket {
         socket.on('remove_table', (id, callback) => { this.deleteTable(id, callback) })
         socket.on('clean_table', (id, callback) => { this.cleanTable(id, callback) });
         socket.on('update_table_exceptOrder', (tableData, callback) => { this.updateTable(tableData, callback) });
+        // console.log("appState.tables.toJSON()",appState.tables.toJSON())
         this.io.emit('send_tables', appState.tables.toJSON());
 
         socket.on('client_get_table', (id, callback) => {callback(tableService.getTableById(id))})

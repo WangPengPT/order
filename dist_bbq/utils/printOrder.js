@@ -6,6 +6,7 @@ const printers = [];
 
 
 function print_order(order) {
+    // console.log("order:",order);
     logger.info(`打印订单 订单号 - ${order.id}`)
     for (const key in printers) {
         const printer = printers[key];
@@ -16,7 +17,7 @@ function print_order(order) {
         let hasData = false;
         for (let i=0; i<order.items.length; i++) {
             let item = order.items[i];
-            let type  = menuService.getDishCategory(item.dishid);
+            let type  = menuService.getDishCategory(item);
             if (printer.data.menu.includes(type))
             {
                 hasData = true;
@@ -92,7 +93,7 @@ function print_orde_to_io(printer,order,every_one)
     for (let i=0; i<order.items.length; i++)
     {
         let item = order.items[i];
-        let type =menuService.getDishCategory(item.dishid);
+        let type =menuService.getDishCategory(item);
 
         if (!printer.data.menu.includes(type)) continue;
 
@@ -102,13 +103,17 @@ function print_orde_to_io(printer,order,every_one)
         if (dish)
         {
             let name = dish.subname;
-            if (name == undefined || name == "Default Title" || name == "undefined")
+            if (name == undefined || name == "Default Title" || name == "undefined") {
                 name = item.name;
-            else
+            } else {
                 name = item.name + " - " + name;
+            }
 
             add_print( BLOD_HAD + item.dishid + "   x " + item.quantity);
             add_print(  BLOD_HAD + name );
+            if(item.dishNote){
+                add_print(  "(note: "+item.dishNote+" )" );
+            }
             add_print();
         }
         else
@@ -116,6 +121,9 @@ function print_orde_to_io(printer,order,every_one)
             add_print(  item.name + "   x " + item.quantity );
             for (let j = 0; j < item.notes.length; j++) {
                 add_print( "  " + item.notes[j] );
+            }
+            if(item.dishNote){
+                add_print(  "(note: "+item.dishNote+" )" );
             }
             add_print();
         }

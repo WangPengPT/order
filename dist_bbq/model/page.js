@@ -25,7 +25,7 @@ init() {
 
   
   generateUnique() {
-    return Date.now().toString();
+    return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
   }
 
   get welcomePath() {

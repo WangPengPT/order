@@ -57,7 +57,9 @@ updateTableWithoutOrder(updatedTableData) {
         price: item.price,
         orderIds: item.orderIds,
         notes: item.notes
-      }))
+      })),
+      msg_pay: table.msg_pay,
+      msg_call: table.msg_call,
     }));
   }
 

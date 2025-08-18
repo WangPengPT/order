@@ -20,6 +20,9 @@ class Table {
 
     this.msg_pay = false;
     this.msg_call = false;
+    this.nif_note = {nif:undefined, note:undefined}
+
+    this.recordProps(this)
   }
 
   get people() {
@@ -28,6 +31,11 @@ class Table {
 
   getTotalPeople() {
     return this.peopleType.getCount()
+  }
+
+  recordProps(target) {
+    const keys = Object.keys(target)
+    target._dataKeys = keys.filter(k => !k.startsWith('_'))
   }
 
   // 增加点菜
@@ -67,7 +75,6 @@ class Table {
       if (!(status instanceof TableStatus)) {
         throw new Error(`无效状态: ${updatedTableData.status}，有效值为: ${TableStatus.values().map(s => s.value).join(', ')}`);
       }
-
       this.status = status;
     }
 
@@ -92,33 +99,29 @@ class Table {
     this.status = TableStatus.FREE;
     this.peopleType = new PeopleType({ adults: 0, children: 0 })
     this.order = []
+    this.msg_pay = false
   }
 
   clientCmd(cmd) {
-    console.log("client cmd:", cmd);
-    if ( cmd == 'call' )
-    {
+    if (cmd.cmd == 'call') {
       this.msg_call = true;
     }
 
-    if ( cmd == 'pay' )
-    {
+    if (cmd.cmd == 'pay') {
       this.msg_pay = true;
+      this.nif_note = {nif:cmd.nif? cmd.nif : undefined, note:cmd.note? cmd.note : undefined};
     }
 
   }
 
-    clickMsg(cmd) {
-    console.log("client cmd:", cmd);
-    if ( cmd == 'call' )
-    {
+  clickMsg(cmd) {
+    if (cmd == 'call') {
       this.msg_call = false;
     }
 
-    if ( cmd == 'pay' )
-    {
-      this.msg_pay = false;
-    }
+    // if (cmd == 'pay') {
+    //   this.msg_pay = false;
+    // }
 
   }
 
@@ -174,26 +177,33 @@ class Table {
   }
 
   toJSON() {
-    return {
-      id: this.id,
-      people: this.people,
-      status: this.status.toPt(), // 转换为葡萄牙语
-      order: this.order.map(dish => dish.toJSON()),
-      peopleType: this.peopleType.toJSON(),
-      msg_pay: this.msg_pay,
-      msg_call: this.msg_call,
-    };
+    const specialSerializers = {
+      status: val => val instanceof TableStatus ? val.toPt() : val,
+      peopleType: val => val?.toJSON?.() ?? val,
+      order: val => Array.isArray(val) ? val.map(d => d?.toJSON?.() ?? d) : val,
+    }
+
+    const result = {}
+    for (const key of this._dataKeys) {
+      const val = this[key]
+      result[key] = specialSerializers[key]?.(val) ?? val
+    }
+    return result
   }
 
   static fromJSON(data) {
-    return new Table({
-      id: data.id,
-      peopleType: data.peopleType,
-      status: data.status, // 这里会自动调用 TableStatus.fromString
-      order: data.order,
-      msg_pay: data.msg_pay,
-      msg_call: data.msg_call,
-    });
+    const specialParsers = {
+      status: val => TableStatus.fromString(val) || TableStatus.fromPt(val) || val,
+      peopleType: val => new PeopleType(val),
+      order: val => Array.isArray(val) ? val.map(item => new Dish(item)) : [],
+    }
+
+    const raw = {}
+    for (const key in data) {
+      raw[key] = specialParsers[key]?.(data[key]) ?? data[key]
+    }
+
+    return new Table(raw)
   }
 
 }

@@ -13,26 +13,17 @@ cd %SRC_PATH%
 xcopy .\server %DST_PATH% /E /Y /I
 
 
-cd manager
-call npm install
-call npm run build
-ren .\dist\spa\index.html manager.html
-xcopy .\dist\spa %DST_PATH%\public /E /Y /I
-
-cd ..
 cd managerPrime
 call npm install
 call npm run build
-ren .\dist\index.html managerPrime.html
+ren .\dist\index.html manager.html
 xcopy .\dist %DST_PATH%\public /E /Y /I
 
 cd ..
 cd client
 call npm install
 call npm run build
-ren .\dist\index.html client.html
 xcopy .\dist %DST_PATH%\public /E /Y /I
-
 
 cd %DST_PATH%
 

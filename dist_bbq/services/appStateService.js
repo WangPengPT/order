@@ -1,132 +1,317 @@
-const { appState, AppState } = require('../state.js');
-const { tablesPassword } = require('../model/tableManager.js')
-const db = require('../filedb.js')
-const { logger } = require('../utils/logger.js')
+const { AppState, appState } = require('../state.js');
+const { tablesPassword } = require('../model/tableManager.js');
+const db = require('../filedb.js');
+const DB = require('../db.js');
+const { logger } = require('../utils/logger.js');
+const AppStateRepository = require('../repositories/appStateRepository.js');
+const OrderQuantityRepository = require('../repositories/orderQuantityRepository.js');
 
-function loadAppState() {
-    try {
-        const data = db.loadAppStateData()
-        if (data) {
-            const loaded = AppState.fromJSON(data)
-            // 用数据覆盖全局 appState
-            appState.updateAppState(loaded)
-            logger.info(`加载现有数据`)
+class AppStateService {
+    constructor(appStateRepository = new AppStateRepository(appState), orderQuantityRepository = new OrderQuantityRepository()) {
+        this.appStateRepository = appStateRepository;
+        this.orderQuantityRepository = orderQuantityRepository
+    }
+
+    async loadAppState() {
+        try {
+            const data = await this.appStateRepository.load()
+            if (data && data != null) {
+                const loaded = AppState.fromJSON(data);
+                this.appStateRepository.appState.updateAppState(loaded);
+                logger.info(`加载现有数据`);
+            } else {
+                logger.info(`创建新数据`);
+            }
+            // tablesPassword.init(appState.tables);
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    }
+
+    updateHasBibimbap(value) {
+        try {
+            appState.updateBibimbap(value)
+            if (appState.hasBibimbap === value) return {success: true, data: value}
+            else throw new Error("Faild upadte has Bibimbap")
+        } catch (error) {
+            return {success: false, data: error.message}
+        }
+    }
+
+    updateHasBox(value) {
+        try {
+            appState.updateBox(value)
+            if (appState.hasBox === value) return {success: true, data: value}
+            else throw new Error("Faild upadte has Bibimbap")
+        } catch (error) {
+            return {success: false, data: error.message}
+        }
+    }
+
+    getAllTables() {
+        try {
+            const tables = this.appStateRepository.appState.tables;
+            return {
+                success: true,
+                data: tables.toJSON()
+            };
+        } catch (error) {
+            console.warn("Error: ", error);
+            return {
+                success: false,
+                data: error.message
+            };
+        }
+    }
+
+    async saveAppState() {
+        try {
+            await this.appStateRepository.save()
+            db.saveData("menu", this.appStateRepository.appState.menu);
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    }
+
+    async saveDailyOrders() {
+        const getNumberDays = (year, month) => {
+            if (month < 1 || month > 12) return 0;
+            const isLeapYear = year && ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0));
+            const daysInMonth = [31, (isLeapYear ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            return daysInMonth[month - 1];
+        };
+
+        try {
+            const dailyOrders = [];
+            this.appStateRepository.appState.menu.forEach(item => {
+                if (item.category !== "") {
+                    dailyOrders.push({
+                        id: item.id,
+                        category: item.category,
+                        handle: item.handle,
+                        name: item.name === "" ? item.subname : item.name,
+                        dailyOrders: item.dailyOrders | 0
+                    });
+                }
+            });
+
+            const now = new Date();
+            let year = now.getFullYear();
+            let month = now.getMonth() + 1;
+            let day = now.getDate() - 1;
+            if (now.getDate() === 1) {
+                month = now.getMonth() === 0 ? 12 : now.getMonth();
+                year = month === 12 ? now.getFullYear() - 1 : now.getFullYear();
+                day = getNumberDays(year, month);
+            }
+
+            const data = { year, month, day, data: dailyOrders };
+            await this.orderQuantityRepository.save(data);
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    }
+
+    clearDailyOrders() {
+        try {
+            this.appStateRepository.appState.menu.forEach(item => { item.dailyOrders = 0; });
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    }
+
+    async saveMonthlyOrders() {
+        try {
+            const monthlyOrders = [];
+            this.appStateRepository.appState.menu.forEach(item => {
+                if (item.category !== "") {
+                    monthlyOrders.push({
+                        id: item.id,
+                        category: item.category,
+                        handle: item.handle,
+                        name: item.name === "" ? item.subname : item.name,
+                        monthlyOrders: item.monthlyOrders | 0
+                    });
+                }
+            });
+            const now = new Date();
+            const month = now.getMonth() === 0 ? 12 : now.getMonth();
+            const year = month === 12 ? now.getFullYear() - 1 : now.getFullYear();
+
+            const data = { year, month, day: 0, data: monthlyOrders };
+            await this.orderQuantityRepository.save(data);
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    }
+
+    clearMonthlyOrders() {
+        try {
+            this.appStateRepository.appState.menu.forEach(item => { item.monthlyOrders = 0; });
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    }
+
+    async saveYearlyOrders() {
+        try {
+            const yearlyOrders = [];
+            this.appStateRepository.appState.menu.forEach(item => {
+                if (item.category !== "") {
+                    yearlyOrders.push({
+                        id: item.id,
+                        category: item.category,
+                        handle: item.handle,
+                        name: item.name === "" ? item.subname : item.name,
+                        yearlyOrders: item.yearlyOrders | 0
+                    });
+                }
+            });
+            const now = new Date();
+            const data = { year: now.getFullYear() - 1, month: 0, day: 0, data: yearlyOrders };
+            await this.orderQuantityRepository.save(data);
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    }
+
+    clearYearlyOrders() {
+        try {
+            this.appStateRepository.appState.menu.forEach(item => { item.yearlyOrders = 0; });
+        } catch (error) {
+            console.warn("Error: ", error);
+        }
+    }
+
+    updatePrice(lunchPrice, dinnerPrice) {
+        try {
+            const newAppState = this.appStateRepository.appState.updatePrice(lunchPrice, dinnerPrice);
+            return { success: true, data: { lunchPrice: newAppState.lunchPrice, dinnerPrice: newAppState.dinnerPrice } };
+        } catch (error) {
+            console.warn("Error: ", error);
+            return { success: false, data: error.message };
+        }
+    }
+
+    getTableTotalAmout(tableId) {
+        try {
+            if (!tableId) throw new Error("Non Input Value");
+            const prices = this.appStateRepository.appState.getTableTotalAmout(tableId);
+            return { success: true, data: prices };
+        } catch (error) {
+            console.warn("Error: ", error);
+            return { success: false, data: error.message };
+        }
+    }
+
+    setHasBox(value) {
+        try {
+            if (typeof value !== "boolean") throw new Error('Invalid input');
+            this.appStateRepository.appState.setHasBox(value);
+            return { success: true, data: this.appStateRepository.appState.hasBox };
+        } catch (error) {
+            console.warn("Error: ", error);
+            return { success: false, data: error.message };
+        }
+    }
+
+    getHasBox() {
+        return this.appStateRepository.appState.hasBox;
+    }
+
+    getMenuAndTab() {
+        return { success: true, data: { menu: this.appStateRepository.appState.menu, menuTab: this.appStateRepository.appState.orderMenuTab } };
+    }
+
+    updateSpecialDishRates(dish) {
+        const findSpecialDish = this.appStateRepository.appState.specialDishes.find(item => item.category === dish.category);
+        if (findSpecialDish) {
+            findSpecialDish.rates = findSpecialDish.rates ? findSpecialDish.rates + dish.rate : 1;
+            const like = dish.rate === 0 ? dish.like : dish.like === 1 ? 1 : 0;
+            findSpecialDish.likes = (findSpecialDish.likes || 0) + like;
+            const findMonthRates = findSpecialDish.monthRates || { rates: 0, likes: 0 };
+            findMonthRates.rates += dish.rate;
+            findMonthRates.likes += like;
+            findSpecialDish.monthRates = findMonthRates;
+            return { success: true, data: this.appStateRepository.appState.specialDishes };
         } else {
-            logger.info(`创建新数据`)
-        }
-        //tablesPassword.init(appState.tables)
-    } catch (error) {
-        console.warn("Error: ", error)
-    }
-
-}
-
-function updadeHasDuck(value) {
-    try {
-        appState.updateDuck(value)
-        if (appState.hasDuck === value) return {success: true, data: value}
-        else throw new Error("Faild upadte has duck")
-    } catch (error) {
-        return {success: false, data: error.message}
-    }
-    
-}
-
-
-function getAllTables() {
-    try {
-        const tables = appState.tables
-        return {
-            success: true,
-            data: tables.toJSON()
-        }
-    } catch (error) {
-        console.warn("Error: ", error)
-        return {
-            success: false,
-            data: error.message
+            console.log("Special Dish Not Found");
+            return { success: false, data: "Special Dish Not Found" };
         }
     }
-}
 
-function saveAppState() {
-    try {
-        db.saveAppStateData(appState)
-        db.saveData("menu",appState.menu);
-    } catch (error) {
-        console.warn("Error: ", error)
-    }
-
-}
-
-function updatePrice(lunchPrice, dinnerPrice) {
-    try {
-        const newAppState = appState.updatePrice(lunchPrice, dinnerPrice)
-        const data = {
-            lunchPrice: newAppState.lunchPrice,
-            dinnerPrice: newAppState.dinnerPrice
+    saveMonthRates() {
+        try {
+            const monthRates = [];
+            this.appStateRepository.appState.specialDishes.forEach(item => {
+                monthRates.push({
+                    id: item.id,
+                    category: item.category,
+                    handle: item.category,
+                    name: item.category,
+                    monthRates: item.monthRates ? item.monthRates : { likes: 0, rates: 0 },
+                });
+            })
+            this.appStateRepository.appState.menu.forEach(item => {
+                if (item.category !== "") {
+                    monthRates.push({
+                        id: item.id,
+                        category: item.category,
+                        handle: item.handle,
+                        name: item.name === "" ? item.subname : item.name,
+                        monthRate: item.monthRates ? item.monthRates : { likes: 0, rates: 0 }
+                    });
+                }
+            });
+            const now = new Date();
+            const month = now.getMonth() === 0 ? 12 : now.getMonth();
+            const year = month === 12 ? now.getFullYear() - 1 : now.getFullYear();
+            db.saveMonthRates(`monthrates_${year}_${month}`, monthRates);
+        } catch (error) {
+            console.warn("Error: ", error);
         }
-        return { success: true, data: data }
-    } catch (error) {
-        console.warn("Error: ", error)
-        return { success: false, data: error.message }
     }
 
-}
-
-
-function getTableTotalAmout(tableId) {
-    try {
-        if (!tableId) throw new Error("Non Input Value")
-        const prices = appState.getTableTotalAmout(tableId)
-        const res = {
-            success: true,
-            data:
-                prices
+    clearnMonthRates() {
+        try {
+            this.appStateRepository.appState.menu.forEach(item => {
+                if (item.monthRate) {
+                    item.monthRate.likes = 0;
+                    item.monthRate.rates = 0;
+                }
+            });
+        } catch (error) {
+            console.warn("Error: ", error);
         }
-        return res
-    } catch (error) {
-        console.warn("Error: ", error)
-        return { success: false, data: error.message }
     }
 
-}
-
-function setFanDays(value) {
-    try {
-        if (typeof value !== "boolean") { throw new Error('Invalid input') }
-        appState.setFanDays(value)
-        const res = { success: true, data: appState.isFanDays }
-        return res
-    } catch (error) {
-        console.warn("Error: ", error)
-        return { success: false, data: error.message }
+    getMonthRatesWithDate(year, month) {
+        try {
+            const result = db.loadMonthRates(`monthrates_${year}_${month}`, "file not found");
+            if (result === "file not found") {
+                return { success: false, data: result };
+            } else {
+                return { success: true, data: result };
+            }
+        } catch (error) {
+            console.warn("Error: ", error);
+            return { success: false, data: error.message };
+        }
     }
 
-}
-
-function getFanDays() {
-    return appState.isFanDays
-}
-
-function getMenuAndTab() {
-    return {
-        success: true,
-        data: {
-            menu: appState.menu,
-            menuTab: appState.orderMenuTab
+    async getOrderQuantityWithDate(date) {
+        try {
+            const result = await this.orderQuantityRepository.load(date);
+            if (!result) {
+                return { success: false, data: result };
+            } else {
+                return { success: true, data: result };
+            }
+        } catch (error) {
+            console.warn("Error: ", error);
+            return { success: false, data: error.message };
         }
     }
 }
 
-module.exports = {
-    loadAppState,
-    saveAppState,
-    updatePrice,
-    getTableTotalAmout,
-    getAllTables,
-    setFanDays,
-    getFanDays,
-    updadeHasDuck,
-    getMenuAndTab
-};
+module.exports = AppStateService;

@@ -43,8 +43,8 @@ function loadMenu() {
 
     appState.menu = menu;
 
-
-    appState.orderMenuTab = db.loadData('orderMenuTab', []);
+    const tabs = db.loadData('orderMenuTab', []);
+    appState.orderMenuTab = tabs
 
     const types = [];
 
@@ -79,17 +79,28 @@ function loadMenu() {
 
 }
 
-function getDishCategory(id)
+function getDishCategory(item)
 {
-  if (!id) return  "Caixa Aleatória";
+  if (item.category ) return  item.category ;
 
-  if (id == 2) return "My BOX";
-  if (id == 1) return "Pato assado";
+  const id = item.dishid;
 
   let tag = appState.dishTags[id];
   if (tag && tag != "") return tag;
 
-  return appState.dishCategory[id];
+  let ret = appState.dishCategory[id];
+  if (ret) return ret;
+
+  const data = appState.menu.find(data => data.id == id);
+  if (data) {
+    if (data.tags && data.tags != "") {
+      return data.tags
+    } else {
+      return data.category;
+    }
+  }
+
+  return "";
 }
 
 // 获取菜单
@@ -215,6 +226,59 @@ function findDish(id)
   return undefined;
 }
 
+function saveDishRating(id, like, rate) {
+  try {
+    const item = appState.menu.find(m => m.id === id);
+
+    if (!item) throw new Error("invalid item id: ", id);
+
+    if (![-1, 0, 1].includes(like)) throw new Error("invalid like value: ", like);
+
+    if (![-1, 0, 1].includes(rate)) throw new Error("invalid rate value: ", rate);
+
+    if (!item.rates) {
+      item.likes = 0;
+      item.rates = 0;
+    }
+    item.likes += like;
+    item.rates += rate;
+
+    // 数据写入每月评分
+    //saveMonthRates(item)
+
+    return {
+      success: true,
+      data: {
+        id: id,
+        likes: item.likes,
+        rates: item.rates
+      }
+    }
+  } catch (error) {
+    return {
+      success: false,
+      data: error.message
+    }
+  }
+}
+
+function incrementOrder(orderData) {
+  try {
+    if (!orderData.table) throw new Error("No table id")
+    const orders = appState.incrementOrder(orderData)
+    return {
+        success: true,
+        data: orders
+    }
+  } catch (error) {
+    console.warn("Error: ", error)
+    return {
+        success: false,
+        data: error.message
+    }     
+  }
+}
+
 // 导出函数和状态
 module.exports = {
   loadMenu,
@@ -224,4 +288,6 @@ module.exports = {
   saveOrderMenuTab,
   findDish,
   getDishCategory,
+  saveDishRating,
+  incrementOrder
 };

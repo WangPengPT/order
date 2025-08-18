@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 
+const SALT_ROUDS = 10
+
 class User {
     constructor({ phoneNumber, password }) {
         this.phoneNumber = phoneNumber
@@ -15,7 +17,7 @@ class User {
     }
 
     static async create(phoneNumber, plainPassword) {
-        const hash = await bcrypt.hash(plainPassword, 10); // 10 是 salt rounds
+        const hash = await bcrypt.hash(plainPassword, SALT_ROUDS); // 10 是 salt rounds
         return new User({ phoneNumber, password: hash });
     }
 
