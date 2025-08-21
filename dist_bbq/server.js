@@ -7,40 +7,22 @@ const fs = require('fs');
 const { Server } = require("socket.io");
 const path = require("path");
 const menuController = require('./controllers/menuController.js');
-const uploadController = require('./controllers/uploadController.js');
+const { UploadController } = require('./controllers/uploadController.js');
 const { SocketServices } = require('./socket/socketService.js');
 const {upload, uploadMiddleware} = require('./middlewares/uploadMiddleware.js');
 const { logger } = require('./utils/logger.js')
-const {appState} = require("./state");
-const { initUserData, saveUserData } = require('./services/userService.js');
 const { webPageDesignService } = require("./services/webPageDesignService.js");
 const DB = require("./db.js");
-const AppStateService = require("./services/appStateService.js");
 
-const appStateService = new AppStateService()
+
+
+
 
 const app = express();
 app.use(cors());
 app.use(compression());
 
 app.use(express.urlencoded({ extended: true }))
-
-// 路由只保留上传接口
-app.post('/upload', upload.any(), uploadController.handleUpload);
-app.post('/upload_image', upload.single('image'), uploadController.handleUploadImage);
-app.post('/upload_welcomeImage', 
-  uploadMiddleware.array('image', 5),
-  (req, res) => {
-    uploadController.handleUploadWelcomeImage(req, res)
-  }
-);
-app.post('/upload_logo', upload.single('image'),
-  (req, res) => {
-    uploadController.handleUploadWelcomeLogo(req, res)
-  }
-);
-
-let socketService;
 
 // 创建 HTTP 服务器和 Socket.IO
 let server;
@@ -83,13 +65,31 @@ else
   server = http.createServer(app);
 }
 
-
 const io = new Server(server, {
   cors: {
     origin: '*',
     methods: ["GET", "POST"]
   }
 });
+
+const socketService = new SocketServices(io)
+
+const uploadController = new UploadController(socketService.webPageDesignSocket.webPageDesignService)
+
+// 路由只保留上传接口
+app.post('/upload', upload.any(), uploadController.handleUpload);
+app.post('/upload_image', upload.single('image'), uploadController.handleUploadImage);
+app.post('/upload_welcomeImage', 
+  uploadMiddleware.array('image', 5),
+  (req, res) => {
+    uploadController.handleUploadWelcomeImage(req, res)
+  }
+);
+app.post('/upload_logo', upload.single('image'),
+  (req, res) => {
+    uploadController.handleUploadWelcomeLogo(req, res)
+  }
+);
 
 app.use(compression());
 app.use(express.static(path.join(__dirname, "public"), {
@@ -102,8 +102,6 @@ app.use(express.static(path.join(__dirname, "public"), {
 
 async function main() {
   await DB.init();
-  webPageDesignService.loadPagesSafe()
-  socketService = new SocketServices(io)
 
   await socketService.initializeDatas()
   menuController.loadMenu();
@@ -197,8 +195,8 @@ function writeOrders() {
     // 每天0点
     if (now.getHours() === 0) {
       if (needWriteDailyOrders) {
-        appStateService.saveDailyOrders() // 将当天的销售量数据写入文件
-        appStateService.clearDailyOrders() // 清空当天的销售量数据
+        socketService.appStateSocket.appStateService.saveDailyOrders() // 将当天的销售量数据写入文件
+        socketService.appStateSocket.appStateService.clearDailyOrders() // 清空当天的销售量数据
       }
       needWriteDailyOrders = false;
     } else {
@@ -208,8 +206,8 @@ function writeOrders() {
     // 每月1号
     if (now.getDate() === 1) {
       if (needWriteMonthlyOrders) {
-        appStateService.saveMonthlyOrders() // 将当月的销售量数据写入文件
-        appStateService.clearMonthlyOrders() // 清空当月的销售量数据
+        socketService.appStateSocket.appStateService.saveMonthlyOrders() // 将当月的销售量数据写入文件
+        socketService.appStateSocket.appStateService.clearMonthlyOrders() // 清空当月的销售量数据
       }
       needWriteMonthlyOrders = false;
     } else {
@@ -219,8 +217,8 @@ function writeOrders() {
     // 每年1月1号
     if (now.getMonth() && now.getDate() === 1) {
       if (needWriteYearlyOrders) {
-        appStateService.saveYearlyOrders() // 将当月的销售量数据写入文件
-        appStateService.clearYearlyOrders() // 清空当月的销售量数据
+        socketService.appStateSocket.appStateService.saveYearlyOrders() // 将当月的销售量数据写入文件
+        socketService.appStateSocket.appStateService.clearYearlyOrders() // 清空当月的销售量数据
       }
       needWriteYearlyOrders = false;
     } else {
@@ -243,8 +241,8 @@ function writeMonthRates() {
     if (now.getDate() === 1) // 每月1号
     {
       if ( needWriteMonthRates ) {
-        appStateService.saveMonthRates() // 将上月的评分数据写入文件
-        appStateService.clearnMonthRates() // 清空上月的评分数据
+        socketService.appStateSocket.appStateService.saveMonthRates() // 将上月的评分数据写入文件
+        socketService.appStateSocket.appStateService.clearnMonthRates() // 清空上月的评分数据
       }
       needWriteMonthRates = false;
     }

@@ -1,79 +1,79 @@
-const { pagesManager } = require("../model/pages")
+const { pagesManager, Pages } = require("../model/pages")
+const DB = require('../db');
 const db = require('../filedb.js');
 const { logger } = require("../utils/logger.js");
 const path = require("path");
 const { Page } = require("../model/page.js");
 const { appState } = require("../state.js");
+const WebPageRepository = require("../repositories/webpageRepository.js");
 
 class WebPageDesignService {
 
-    getWebpageDataById(id) {
-        try {
-            const page = pagesManager.get(Number(id))
-            if (!page || page === undefined) new Error("Not found the page")
-            if (page?.data) return { success: true, data: page.data }
-            const name = page?.name
-            const filename = name + ".json"
-            const hasPageFile = db.hasPageFile(filename)
-            if (!hasPageFile) throw new Error(`Not fount the file: ${filename}`)
-            const pageContent = db.loadPage(filename)
-            if (!pageContent) throw new Error("Faild load page content")
-            page.data = pageContent
-            return {
-                success: true,
-                data: page.data
-            }
-        } catch (error) {
-            console.log("Unexpected Error", error.message)
-            return {
-                success: false,
-                data: error.message
-            }
-        }
-
+    constructor(webPageRepository = new WebPageRepository()) {
+        this.webPageRepository = webPageRepository
     }
 
-    getWebpageById(id) {
+    async getWebpageById(id) {
         try {
-            const page = pagesManager.get(Number(id))
-            if (!page || page === undefined) new Error("Not found the page")
-            return {
-                success: true,
-                data: page
-            }
-        } catch (error) {
-            console.log("Unexpected Error", error.message)
-            return {
-                success: false,
-                data: error.message
-            }
-        }
-
-    }
-
-    loadPagesSafe() {
-        if (db.hasPageFiles()) {
-            logger.info("找到页面信息，载入现有数据")
-            this.loadPages()
-        } else {
-            logger.info("未找到页面信息，初始化数据")
-        }
-    }
-
-    savePageData(id, pageData) {
-        try {
-            const pageId = Number(id)
-            const page = pagesManager.get(pageId)
-            if (!page || page === undefined) throw new Error("Not found the page")
-            if (page.data) {
-                page.data = pageData
+            return await DB.withTransaction(async (session) => {
+                const ID = Number(id)
+                const page = await this.webPageRepository.getPageById(ID, session)
+                if (!page) throw new Error("Not found the page")
+                const jsonPage = page.toJSON()
                 return {
                     success: true,
-                    data: page.data
+                    data: jsonPage
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+
+    }
+
+    async initialize() {
+        await DB.withTransaction(async (session) => {
+            const hasData = await this.webPageRepository.hasDatas(session)
+            if (hasData) {
+                logger.info("找到页面信息，载入现有数据")
+
+                const pagesManager = await this.webPageRepository.getPages(session)
+                if (pagesManager !== null) {
+                    pagesManager.pages.forEach(page => {
+                        page.loadWelcomeImages()
+                        page.loadWelcomeLogo()
+                    })
                 }
             } else {
-                throw new Error("Not found the page data")
+                const newPages = new Pages()
+                await this.webPageRepository.savePages(newPages.pages.values(), session)
+                logger.info("未找到页面信息，初始化数据")
             }
+        })
+    }
+
+    async savePageData(id, pageData) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                const pageId = Number(id)
+                const page = await this.webPageRepository.getPageById(pageId, session)
+                if (!page || page === undefined) throw new Error("Not found the page")
+                if (page.data) {
+                    page.data = pageData
+                    this.webPageRepository.savePage(page, page.id, session)
+                    return {
+                        success: true,
+                        data: page.data
+                    }
+                } else {
+                    throw new Error("Not found the page data")
+                }
+            })
+
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -83,38 +83,31 @@ class WebPageDesignService {
         }
     }
 
-    loadPages() {
-        pagesManager.loadFromDisk()
-    }
-
-    savePage(page) {
-        const name = `${page.name}_${page.id}.json`;
-        const json = page.toJSON()
-        db.savePage(json, name)
-    }
-
-    savePages() {
+    async savePages() {
         try {
-            pagesManager.pages.forEach((page) => {
-                this.savePage(page)
-            })
+            await this.webPageRepository.savePages()
         } catch (error) {
             console.log("error web service: ", error.message)
         }
     }
 
-    addPage(name, description) {
+    async addPage(name, description) {
         try {
-            const newPage = new Page({ name: name, description: description })
-            const newPageID = pagesManager.add(newPage)
-            if (!newPageID) throw new Error("Can not add page")
-            const page = pagesManager.get(newPageID)
-            if (!page) throw new Error("Faild create new page")
-            const json = page.toJSON()
-            return {
-                success: true,
-                data: json
-            }
+            return await DB.withTransaction(async (session) => {
+                const newId = this.webPageRepository.getPages(session).length + 1
+                const newPage = new Page({ name: name, description: description, id: newId })
+
+                await this.webPageRepository.create(newPage, session)
+
+                const page = await this.webPageRepository.getPageById(newPage.id, session)
+                if (!page) throw new Error("Faild create new page")
+                const json = page.toJSON()
+                return {
+                    success: true,
+                    data: json
+                }
+            })
+
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -124,20 +117,22 @@ class WebPageDesignService {
         }
     }
 
-    deletePage(id) {
+    async deletePage(id) {
         try {
-            const page = pagesManager.get(id)
-            if (!page) throw new Error("Not found the page")
-            const imagesPath = page.imagesPath
-            db.removePageImage(imagesPath)
-            const name = `${page.name}_${page.id}.json`;
-            db.removePageData(name)
-            const res = pagesManager.deletePage(id)
-            if (!res) throw new Error("Faild delete page")
-            return {
-                success: true,
-                data: undefined
-            }
+            return await DB.withTransaction(async (session) => {
+                const page = await this.webPageRepository.getPageById(id, session)
+                if (!page) throw new Error("Not found the page")
+                const imagesPath = page.imagesPath
+                db.removePageImage(imagesPath)
+                await this.webPageRepository.deletePage(id, session)
+                const find = this.webPageRepository.getPageById(id, session)
+                if (find) new Error("Delete page faild")
+                return {
+                    success: true,
+                    data: undefined
+                }
+            })
+
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -147,16 +142,20 @@ class WebPageDesignService {
         }
     }
 
-    uploadedWelcomeImages(id, imagesPath) {
+    async uploadedWelcomeImages(id, imagesPath) {
         try {
-            const pageId = Number(id)
-            const page = pagesManager.get(pageId)
-            if (!page || page === undefined) new Error("Not found the page")
-            pagesManager.updateWelcomeImages(pageId, imagesPath)
-            return {
-                success: true,
-                data: page.data
-            }
+            return await DB.withTransaction(async (session) => {
+                const pageId = Number(id)
+                const page = await this.webPageRepository.getPageById(pageId, session)
+                if (!page) new Error("Not found the page")
+                page.updateWelcomeImges(imagesPath)
+                this.webPageRepository.updatePage(page, session)
+                return {
+                    success: true,
+                    data: page.data
+                }
+            })
+
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -166,23 +165,26 @@ class WebPageDesignService {
         }
     }
 
-    uploadedWelcomeLogo(id, imagePath) {
+    async uploadedWelcomeLogo(id, imagePath) {
         try {
-            const pageId = Number(id)
-            const page = pagesManager.get(pageId)
-            if (!page || page === undefined) new Error("Not found the page")
-            //检测是否有现有logo
-            //删除之前的
-            const oldLogoPath = page.data.logoPath
-            if (oldLogoPath) {
+            return await DB.withTransaction(async (session) => {
+                const pageId = Number(id)
+                const page = await this.webPageRepository.getPageById(pageId, session)
+                if (!page) new Error("Not found the page")
+                //检测是否有现有logo
                 //删除之前的
-                db.deleteOldLogo(oldLogoPath)
-            }
-            pagesManager.uploadedWelcomeLogo(pageId, imagePath)
-            return {
-                success: true,
-                data: page.data
-            }
+                const oldLogoPath = page.data.logoPath
+                if (oldLogoPath) {
+                    //删除之前的
+                    db.deleteOldLogo(oldLogoPath)
+                }
+                page.updateWelcomeLogo(imagePath)
+                this.webPageRepository.updatePage(page, session)
+                return {
+                    success: true,
+                    data: page.data
+                }
+            })
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -192,11 +194,12 @@ class WebPageDesignService {
         }
     }
 
-    getAllPageInformation() {
+    async getAllPageInformation() {
         try {
-            const pages = []
+            const res = []
+            const pagesManager = await this.webPageRepository.getPages()
             pagesManager.pages.forEach((page) => {
-                pages.push({
+                res.push({
                     id: page.id,
                     name: page.name,
                     description: page.description
@@ -204,7 +207,7 @@ class WebPageDesignService {
             })
             return {
                 success: true,
-                data: pages
+                data: res
             }
         } catch (error) {
             console.log("Unexpected Error", error.message)
@@ -215,40 +218,44 @@ class WebPageDesignService {
         }
     }
 
-    getPageWelcomeImages(id) {
+    // async getPageWelcomeImages(id) {
+    //     try {
+    //         const pageId = Number(id)
+    //         const page = await this.webPageRepository.getPageById(pageId)
+    //         if (!page || page === undefined) new Error("Not found the page")
+    //         const imagesDescription = page.data.images_description
+    //         return {
+    //             success: true,
+    //             data: imagesDescription
+    //         }
+    //     } catch (error) {
+    //         console.log("Unexpected Error", error.message)
+    //         return {
+    //             success: false,
+    //             data: error.message
+    //         }
+    //     }
+    // }
+
+    async deleteDescriptionIamges(id, paths) {
+
         try {
-            const pageId = Number(id)
-            const page = pagesManager.get(pageId)
-            if (!page || page === undefined) new Error("Not found the page")
-            const imagesDescription = pagesManager.get(pageId).images_description
-            return {
-                success: true,
-                data: imagesDescription
-            }
-        } catch (error) {
-            console.log("Unexpected Error", error.message)
-            return {
-                success: false,
-                data: error.message
-            }
-        }
-    }
+            return await DB.withTransaction(async (session) => {
+                if (paths.length === 0) throw new Error("The paths id empty")
+                //  console.log("the page: ", id)
+                const page = await this.webPageRepository.getPageById(id, session)
+                if (!page || page === undefined) throw new Error("Not found the page")
+                const imageDescription = page.data.images_description
+                imageDescription.images = imageDescription.images.filter(image => !paths.includes(image.imagePath))
+                const names = paths.map(p => path.basename(p));
+                db.deleteWelcomeImages(page.imagesPath, names)
+                await this.webPageRepository.updatePage(page, session)
+                return {
+                    success: true,
+                    data: imageDescription
+                }
+            })
 
-    deleteDescriptionIamges(id, paths) {
-
-        try {
-            if (paths.length === 0) throw new Error("The paths id empty")
-            //  console.log("the page: ", id)
-            const page = pagesManager.get(id)
-            if (!page || page === undefined) throw new Error("Not found the page")
-            const imageDescription = page.data.images_description
-            imageDescription.images = imageDescription.images.filter(image => !paths.includes(image.imagePath))
-            const names = paths.map(p => path.basename(p));
-            db.deleteWelcomeImages(names)
-            return {
-                success: true,
-                data: imageDescription
-            }
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -259,10 +266,10 @@ class WebPageDesignService {
 
     }
 
-    applayPage(id) {
+    async applayPage(id) {
         try {
             const pageID = Number(id)
-            const page = pagesManager.get(pageID)
+            const page = await this.webPageRepository.getPageById(id, session)
             if (!page) throw new Error("Not found the page")
             appState.currentPageID = pageID
             if (appState.currentPageID !== pageID) throw new Error("Faild update current page")
@@ -270,6 +277,7 @@ class WebPageDesignService {
                 success: true,
                 data: undefined
             }
+
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -279,12 +287,12 @@ class WebPageDesignService {
         }
     }
 
-    getCurrentPage() {
+    async getCurrentPage() {
         try {
             const current = appState.currentPageID
             if (!current) throw new Error("Undefined currentPageId")
             const pageID = Number(current)
-            const page = pagesManager.get(pageID)
+            const page = await this.webPageRepository.getPageById(pageID)
             if (!page) throw new Error("Not found the page")
             return {
                 success: true,
@@ -303,4 +311,4 @@ class WebPageDesignService {
 
 const webPageDesignService = new WebPageDesignService()
 
-module.exports = { webPageDesignService }
+module.exports = { webPageDesignService, WebPageDesignService }

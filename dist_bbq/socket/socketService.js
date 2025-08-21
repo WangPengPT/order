@@ -52,6 +52,7 @@ class SocketServices {
   }
 
   async initializeDatas() {
+    await this.webPageDesignSocket.webPageDesignService.initialize()
     await this.appStateSocket.appStateService.loadAppState()
     await this.userSocket.userService.InitOrLoadUserData()
   }
@@ -63,7 +64,7 @@ class SocketServices {
   initSocket() {
     this.appStateSocket.appStateService.appStateRepository.appState.socket_io = this.io
 
-    this.io.on("connection", (socket) => {
+    this.io.on("connection", async (socket) => {
 
       const ip = socket.handshake.address;
 
@@ -82,18 +83,18 @@ class SocketServices {
         ENABLE_ROAST_DUCK = true;
       }
 
-      this.io.emit("env", {
+      socket.emit("env", {
         QR_ADDR: process.env.QR_ADDR,
         ENABLE_ROAST_DUCK: ENABLE_ROAST_DUCK,
-        TEST_ENVIRONMENT: process.env.TEST_ENVIRONMENT
+        TEST_ENVIRONMENT: process.env.TEST_ENVIRONMENT,
+        shopType: appState.shopType
       });
-
 
       this.tableSocket.registerHandlers(socket)
 
       this.orderSocket.registerHandlers(socket)
 
-      this.webPageDesignSocket.registerHandlers(socket)
+      await this.webPageDesignSocket.registerHandlers(socket)
 
       this.appStateSocket.registerHandlers(socket)
 
@@ -108,9 +109,6 @@ class SocketServices {
         const result = this.appStateSocket.appStateService.getTableTotalAmout(tableId)
         cb(result)
       })
-
-      socket.emit("clent_send_hasBibimbap", appState.hasBibimbap)
-      socket.emit("clent_send_hasBox", appState.hasBox)
 
       socket.on("manager_delete_order", ({ order: ordername, tableId: tableId }, cb) => {
         logger.info(`管理端请求删除盲盒, 桌号-${tableId}`)
@@ -130,10 +128,6 @@ class SocketServices {
 
         cb(result)
       })
-
-    socket.emit("manager_send_hasBibimbap", appState.hasBibimbap)
-    socket.emit("manager_send_hasBox", appState.hasBox)
-    socket.emit("manager_send_checkIP", appState.checkIP)
 
     socket.on("manager_update_checkIP", (value, callback) => {
       appState.checkIP = value;
@@ -157,7 +151,7 @@ class SocketServices {
       // 处理订单提交
       socket.on("submit_order", (orderData) => {
 
-        if (appState.checkIP && (!appState.checkLocalIP(socket))) {
+        if (appState.settings.checkIP && (!appState.checkLocalIP(socket))) {
           logger.info(`订单提交失败`)
           logger.info(`失败原因: invalid ip`)
           socket.emit('error', "please connected wifi.")
@@ -310,7 +304,6 @@ class SocketServices {
           appState.dishTags[id] = item.tags;
         }
       });
-
 
       socket.on("client_cmd", (id, cmd) => {
         tableService.clientCmd(id, cmd);

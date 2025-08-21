@@ -9,7 +9,7 @@ class AppStateRepository {
     }
 
     // 保存 AppState
-    async save(id = "default") {
+    async save(session = null, id = "default") {
         try {
             let data = this.appState;
             if (typeof this.appState.toJSON === "function") {
@@ -18,7 +18,8 @@ class AppStateRepository {
 
             await DB.set(this.tableName, {
                 id: id,
-                value: data
+                value: data,
+                session
             });
 
             logger.info(`repo: ✅ App state 保存成功 [id=${id}]`);
@@ -29,9 +30,9 @@ class AppStateRepository {
     }
 
     // 读取 AppState
-    async load(id = "default") {
+    async load(session = null, id = "default") {
         try {
-            const result = await DB.get(this.tableName, id, null);
+            const result = await DB.get(this.tableName, id, session);
             if (!result) {
                 logger.info(`repo: ⚠ 未能找到 app state 数据 [id=${id}]`);
                 return null;
@@ -44,9 +45,9 @@ class AppStateRepository {
     }
 
     // 删除 AppState
-    async delete(id = "default") {
+    async delete(session = null, id = "default") {
         try {
-            await DB.del(this.tableName, id);
+            await DB.del(this.tableName, id, session);
             logger.info(`repo: 🗑 App state 已删除 [id=${id}]`);
         } catch (err) {
             logger.error(`❌ 删除 app state 失败: ${err}`);

@@ -1,7 +1,9 @@
 const  welcomeTemplate = require("./welcomeTemplate")
+const db = require('../filedb.js');
+const { logger } = require('../utils/logger.js');
 
 class Page {
-  constructor({ name, description = "", data = undefined, id, imagesPath }) {
+  constructor({ name, description = "", data = welcomeTemplate, id, imagesPath }) {
     this.name = name;
     this.description = description;
     this.data = data;
@@ -81,6 +83,34 @@ init() {
     }
 
     return deepMerge(template, data);
+  }
+
+  loadWelcomeImages() {
+    const allWelcomeFiles = db.getWelcomeImageFiles(this.welcomePath);
+    if (this.data.images_description.images.length < allWelcomeFiles.length) {
+      logger.info("内存图片地址丢失，重新导入中")
+      const imageList = allWelcomeFiles
+        .map(filename => ({
+          imagePath: db.getImagePath(this.welcomePath, filename)
+        }));
+      this.data.images_description.images = imageList
+    }
+  }
+
+  loadWelcomeLogo() {
+    const hasFiles = db.hasSomeFile(db.formatedPublicUploadsDir(this.data.logoPath))
+    if (this.data.logoPath === "" || !hasFiles) {
+      logger.info("发现没有LOGO，尝试导入")
+      const file = db.getWelcomeLogoFile(this.logoPath)
+      const hasFile = db.hasSomeFile(db.formatedPublicDir(file))
+      if (hasFile) {
+        logger.info("LOGO导入成功")
+        this.data.logoPath = file
+      } else {
+        logger.info("创建空LOGO")
+        this.data.logoPath = ""
+      }
+    }
   }
 }
 

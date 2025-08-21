@@ -7,9 +7,9 @@ class OrderQuantityRepository {
     }
 
     // 保存销售量
-    async save(data) {
+    async save(data, session) {
         try {
-            await DB.set(this.tableName, data);
+            await DB.set(this.tableName, data, session);
 
             logger.info(`repo: ✅ Order quantity 保存成功 [date=${data.year}/${data.month}/${data.day}]`);
         } catch (err) {
@@ -19,9 +19,9 @@ class OrderQuantityRepository {
     }
 
     // 读取销售量
-    async load(date) {
+    async load(date, session) {
         try {
-            const result = await DB.find(this.tableName, date);
+            const result = await DB.find(this.tableName, date, session);
             if (result.length === 0) {
                 logger.info(`repo: ⚠ 未能找到 Order quantity 数据 [date=${date.year}/${date.month}/${date.day}]`);
                 return null;

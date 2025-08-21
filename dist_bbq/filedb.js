@@ -25,7 +25,7 @@ function formatedPublicDir(...args) {
 }
 
 function getImagePath(pageImagePath, name) {
-    return '/uploads/' + pageImagePath + name
+    return '/uploads/' + pageImagePath +'/' + name
 }
 
 function loadData(key, defaultValue) {
@@ -207,9 +207,9 @@ function getWelcomeLogoFile(logoPath) {
     }
 }
 
-function deleteWelcomeImages(filenames) {
+function deleteWelcomeImages(foldername,filenames) {
     filenames.forEach(filename => {
-        const filePath = path.join('', filename)
+        const filePath = path.join(process.cwd(), 'public', 'uploads', foldername, filename)
         fs.unlink(filePath, (err) => {
             if (err) {
                 if (err.code === 'ENOENT') {

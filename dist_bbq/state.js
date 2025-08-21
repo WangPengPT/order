@@ -13,11 +13,17 @@ class AppState {
         this.printers = []
         this.maxOrderId = 0
 
+        this.settings = {hasBox: true, hasBibimbap: true, checkIP: false}
         this.hasBox = true
         this.hasBibimbap = true
         this.checkIP = false;
 
         this.currentPageID = 1
+
+        this.shopType = {
+            dineIn: process.env.DINE_IN? (process.env.DINE_IN=="true") : true,
+            takeAway: process.env.TAKE_AWAY? (process.env.TAKE_AWAY=="true") : true,
+        }
 
         this.initTables()
 
@@ -40,13 +46,17 @@ class AppState {
 
     }
 
-    updateBibimbap(value) {
-        this.hasBibimbap = value
+    updateSettings(key, value){
+        this.settings[key] = value
     }
 
-    updateBox(value) {
-        this.hasBox = value
-    }
+    // updateBibimbap(value) {
+    //     this.hasBibimbap = value
+    // }
+    //
+    // updateBox(value) {
+    //     this.hasBox = value
+    // }
 
     createTable(startIdx, endIdx) {
         const tables = [];
@@ -83,6 +93,24 @@ class AppState {
 
         if (table.status !== TableStatus.SEATED) {
             throw new Error(`Mesa ${order.table} não tem permissão`)
+        }
+
+        // 查看限量菜
+        const totalPeople = table.peopleType.adults + table.peopleType.children
+        for (let i = 0; i < orderData.items.length; i++) {
+            if (orderData.items[i].limit) {
+                const id = orderData.items[i].dishid
+                const item = table.order.find(i => i.dishid == id)
+                let totalOrders = orderData.items[i].quantity
+                if (item) {
+                    totalOrders += item.quantity
+                }
+                // console.log(totalOrders)
+                // console.log(totalPeople * orderData.items[i].limit)
+                if (totalOrders > totalPeople * orderData.items[i].limit) {
+                    throw new Error(`Mesa ${order.table} ultrapassou o número de pedidos para ${item.dishid}`)
+                }
+            }
         }
 
         // add order

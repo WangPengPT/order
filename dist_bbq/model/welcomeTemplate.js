@@ -61,6 +61,14 @@ const welcomeTemplate = {
                 "right_description_pt": "",
             },
         ]
+    },
+    reserveButton: {
+        enable: false,
+        src: ""
+    },
+    takewayButton: {
+        enable: false,
+        src: ""
     }
 }
 

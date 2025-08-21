@@ -8,6 +8,8 @@ class Pages {
     this.pages = new Map();
     this.initKey = 0;
 
+    this.initialize()
+
     if (Array.isArray(pages)) {
       pages.forEach(pageObj => {
         // 转换成 Page 实例，如果已经是 Page 就直接用
@@ -35,17 +37,11 @@ class Pages {
         if (numKey > this.initKey) this.initKey = numKey;
       });
     }
+    
   }
 
   getMaxKey() {
     return Math.max(0, ...Array.from(this.pages.keys()).map(k => Number(k)));
-  }
-
-  init(id) {
-    const page = this.get(id)
-    if (page) {
-      page.init()
-    }
   }
 
   get(id) {
@@ -68,52 +64,10 @@ class Pages {
     return page.id;
   }
 
-  loadFromDisk() {
-    const rawPages = db.loadPages();
-    if (!Array.isArray(rawPages)) return;
-    rawPages.forEach(raw => {
-      try {
-        const page = Page.fromJSON(raw);
-        this.add(page);
-        this.loadWelcomeImages(page)
-        this.loadWelcomeLogo(page)
-      } catch (e) {
-        console.warn('转换Page失败:', e.message);
-      }
-    });
-  }
-
   deletePage(id) {
     return this.pages.delete(id)
   }
 
-  loadWelcomeLogo(page) {
-    const hasFiles = db.hasSomeFile(db.formatedPublicUploadsDir(page.data.logoPath))
-    if (page.data.logoPath === "" || !hasFiles) {
-      logger.info("发现没有LOGO，尝试导入")
-      const file = db.getWelcomeLogoFile(page.logoPath)
-      const hasFile = db.hasSomeFile(db.formatedPublicDir(file))
-      if (hasFile) {
-        logger.info("LOGO导入成功")
-        page.data.logoPath = file
-      } else {
-        logger.info("创建空LOGO")
-        page.data.logoPath = ""
-      }
-    }
-  }
-
-  loadWelcomeImages(page) {
-    const allWelcomeFiles = db.getWelcomeImageFiles(page.welcomePath);
-    if (page.data.images_description.images.length < allWelcomeFiles.length) {
-      logger.info("内存图片地址丢失，重新导入中")
-      const imageList = allWelcomeFiles
-        .map(filename => ({
-          imagePath: db.getImagePath(page.welcomePath, filename)
-        }));
-      page.data.images_description.images = imageList
-    }
-  }
 
   updateWelcomeImages(id, paths) {
     const page = this.pages.get(id)
@@ -146,15 +100,14 @@ class Pages {
     pagesInstance.initKey = pagesInstance.getMaxKey();
     return pagesInstance;
   }
+
+  initialize() {
+    const page1 = new Page({ id: 1, name: "welcome", description: "This is welcome page" })
+    const page2 = new Page({ id: 2, name: "other", description: "Another page" })
+    this.add(page1)
+    this.add(page2)
+  }
 }
 
-
-const pagesData = [
-  { id: 1, name: "welcome", description: "This is welcome page" },
-  { id: 2, name: "other", description: "Another page" }
-];
-
-const pagesManager = new Pages(pagesData);
-pagesManager.get(1).init()
-pagesManager.get(2).init()
-module.exports = { pagesManager }
+const pagesManager = new Pages();
+module.exports = { pagesManager, Pages }

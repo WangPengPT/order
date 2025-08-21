@@ -24,25 +24,15 @@ class AppStateService {
             }
             // tablesPassword.init(appState.tables);
         } catch (error) {
-            console.warn("Error: ", error);
+            console.warn("错误: ", error);
         }
     }
 
-    updateHasBibimbap(value) {
+    updateSettings(key, value){
         try {
-            appState.updateBibimbap(value)
-            if (appState.hasBibimbap === value) return {success: true, data: value}
-            else throw new Error("Faild upadte has Bibimbap")
-        } catch (error) {
-            return {success: false, data: error.message}
-        }
-    }
-
-    updateHasBox(value) {
-        try {
-            appState.updateBox(value)
-            if (appState.hasBox === value) return {success: true, data: value}
-            else throw new Error("Faild upadte has Bibimbap")
+            appState.updateSettings(key, value)
+            if (appState.settings[key] === value) return {success: true, data: value}
+            else throw new Error(key+"更新失败")
         } catch (error) {
             return {success: false, data: error.message}
         }
