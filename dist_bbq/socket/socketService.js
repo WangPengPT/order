@@ -37,6 +37,10 @@ class SocketServices {
     menuService.saveOrderMenuTab(data);
   }
 
+  saveOrderMenu(data, update_all) {
+    menuService.updateMenu(data, update_all);
+  }
+
   sendMsg2TableClient(io, table) {
     const chanel = 'client_table' + table.data.id
     io.emit(chanel, table)
@@ -206,6 +210,9 @@ class SocketServices {
         // socket.emit('client_table', result)
         this.sendMsg2TableClient(this.io, result)
         socket.emit("table_id", value);
+
+        const price = this.appStateSocket.appStateService.getCurrentPrice()
+        socket.emit('client_currentPrice', price)
       });
 
       socket.on('admin', (value, callback) => {
@@ -267,12 +274,17 @@ class SocketServices {
         }
       });
 
-      socket.on('updateMenuIndex', data => {
+      socket.on('updateMenuIndex', (menuTab, dish) => {
 
-        if (!data) return;
-        if (data.length == 0) return;
+        if (!menuTab) return;
+        if (menuTab.length == 0) return;
 
-        this.saveOrderMenuTab(data);
+        this.saveOrderMenuTab(menuTab);
+
+        if (!dish) return;
+        if (dish.length == 0) return;
+
+        this.saveOrderMenu(dish, true);
       });
 
       socket.on("disconnect", (reason) => {
@@ -285,8 +297,10 @@ class SocketServices {
         let id = item.id;
         if (item.org_id) id = item.org_id;
 
+        const handle = item.handle;
+
         for (let i = 0; i < appState.menu.length; i++) {
-          if (appState.menu[i].id == id) {
+          if (appState.menu[i].handle == handle && appState.menu[i].id == id) {
             appState.menu[i] = { ...appState.menu[i], ...item };
             logger.debug(appState.menu[i]);
             this.io.emit("menu_item_changed", item);
@@ -297,6 +311,9 @@ class SocketServices {
 
         if (!found) {
           appState.menu.push(item);
+          if (!(item.category in appState.orderMenuTab)) {
+            appState.orderMenuTab.push(item.category)
+          }
           this.io.emit("menu_item_changed", item);
         }
 

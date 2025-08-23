@@ -269,7 +269,7 @@ class WebPageDesignService {
     async applayPage(id) {
         try {
             const pageID = Number(id)
-            const page = await this.webPageRepository.getPageById(id, session)
+            const page = await this.webPageRepository.getPageById(id)
             if (!page) throw new Error("Not found the page")
             appState.currentPageID = pageID
             if (appState.currentPageID !== pageID) throw new Error("Faild update current page")

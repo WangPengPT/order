@@ -1,8 +1,9 @@
 const winston = require('winston')
+const {dirFolder} = require('../filedb.js')
 require('winston-daily-rotate-file') // 引入插件
 
 const transport = new winston.transports.DailyRotateFile({
-  filename: 'logs/socket-%DATE%.log',   // 每天一个新文件
+  filename: `logs/${dirFolder}/socket-%DATE%.log`,   // 每天一个新文件
   datePattern: 'YYYY-MM-DD',            // 日期格式
   zippedArchive: false,                 // 可设为 true 开启 .gz 压缩
   maxSize: '5m',                        // 每个文件最多 5MB
