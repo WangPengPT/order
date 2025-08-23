@@ -15,7 +15,7 @@ const { webPageDesignService } = require("./services/webPageDesignService.js");
 const DB = require("./db.js");
 
 
-
+const centerSocket = require('./socket/centerSocket.js');
 
 
 const app = express();
@@ -107,6 +107,8 @@ async function main() {
   menuController.loadMenu();
 
   socketService.initSocket()
+  centerSocket.init()
+
   const PORT = process.env.PORT || 8080;
   server.listen(PORT, '0.0.0.0', () => {
     logger.info(`🟢 服务器已启动，监听端口 ${PORT}`);

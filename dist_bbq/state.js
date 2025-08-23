@@ -2,6 +2,7 @@ const {Order} = require('./model/order.js')
 const {TableManager} = require('./model/tableManager.js')
 const {TableStatus} = require('./model/TableStatus.js')
 const {Table} = require('./model/table.js')
+const WeekPrice = require("./model/WeekPrice");
 
 class AppState {
     constructor() {
@@ -13,10 +14,15 @@ class AppState {
         this.printers = []
         this.maxOrderId = 0
 
-        this.settings = {hasBox: true, hasBibimbap: true, checkIP: false}
-        this.hasBox = true
-        this.hasBibimbap = true
-        this.checkIP = false;
+        this.settings = {
+            hasBox: true,
+            hasBibimbap: true,
+            checkIP: false,
+            delivery: false,
+            isFestiveDay: false,
+            peoplePrice: false,
+            useChildrenDiscount: false
+        }
 
         this.currentPageID = 1
 
@@ -24,6 +30,10 @@ class AppState {
             dineIn: process.env.DINE_IN? (process.env.DINE_IN=="true") : true,
             takeAway: process.env.TAKE_AWAY? (process.env.TAKE_AWAY=="true") : true,
         }
+
+        this.childrenPricePercentage = 50
+        this.weekPrice = new WeekPrice()
+        this.childrenWeekPrice = new WeekPrice()
 
         this.initTables()
 
@@ -46,17 +56,47 @@ class AppState {
 
     }
 
-    updateSettings(key, value){
-        this.settings[key] = value
+
+    // 所有 Get 函数
+    getPriceData(){
+        const result = {
+            weekPrice: this.weekPrice.getAllPrices(),
+            childrenWeekPrice: this.childrenWeekPrice.getAllPrices(),
+            childrenPricePercentage: this.childrenPricePercentage,
+        }
+        return result
     }
 
-    // updateBibimbap(value) {
-    //     this.hasBibimbap = value
-    // }
-    //
-    // updateBox(value) {
-    //     this.hasBox = value
-    // }
+    getWeekPrice(){
+        let success = false
+        if(this.weekPrice){
+            success = true
+        }
+        return {success: success, data: this.weekPrice}
+    }
+
+    getChildrenWeekPrice(){
+        let success = false
+        if(this.childrenWeekPrice){
+            success = true
+        }
+        return {success: success, data: this.childrenWeekPrice}
+    }
+
+    getChildrenPricePercentage(){
+        let success = false
+        if(this.childrenPricePercentage){
+            success = true
+        }
+        return {success: success, data: this.childrenPricePercentage}
+    }
+
+    // 所有 Update 函数
+
+
+    updateSettings(key, value) {
+        this.settings[key] = value
+    }
 
     createTable(startIdx, endIdx) {
         const tables = [];
@@ -194,45 +234,70 @@ class AppState {
     }
 
     updateAppState(newAppState) {
-        for (const key of this._dataKeys) {
-            const value = newAppState[key];
-
-            if (key === 'orders') {
+        const handlers = {
+            orders: (value) => {
                 if (value instanceof Map) {
-                    this.orders = value;
-                } else if (value) {
-                    this.orders = new Map(
+                    return value;
+                }
+                if (value) {
+                    return new Map(
                         Object.entries(value).map(([id, obj]) => [id, Order.fromJSON(obj)])
                     );
-                } else {
-                    this.orders = new Map();
                 }
-            } else if (key === 'tables') {
+                return new Map();
+            },
+            tables: (value) => {
                 if (value instanceof TableManager) {
-                    this.tables = value;
-                } else if (Array.isArray(value)) {
-                    const tableManager = new TableManager();
-                    value.forEach(tableData => {
-                        tableManager.addTable(tableData);
-                    });
-                    this.tables = tableManager;
-                } else {
-                    this.tables = new TableManager([]);
+                    return value;
                 }
+                if (Array.isArray(value)) {
+                    const tableManager = new TableManager();
+                    value.forEach(tableData => tableManager.addTable(tableData));
+                    return tableManager;
+                }
+                return new TableManager([]);
+            },
+            settings: (value) => {
+                if (!value) return this.settings;
+                for (const k of Object.keys(value)) {
+                    this.settings[k] = value[k];
+                }
+                return this.settings;
+            },
+            weekPrice: (value) => {
+                if (!value) return this.weekPrice;
+                for (const k of Object.keys(value)) {
+                    this.weekPrice[k] = value[k];
+                }
+                return this.weekPrice;
+            },
+            childrenWeekPrice: (value) => {
+                if (!value) return this.childrenWeekPrice;
+                for (const k of Object.keys(value)) {
+                    this.childrenWeekPrice[k] = value[k];
+                }
+                return this.childrenWeekPrice;
+            }
+        };
+
+        for (const key of this._dataKeys) {
+            const value = newAppState[key];
+            if (handlers[key]) {
+                this[key] = handlers[key](value);
             } else {
-                // 普通字段自动更新
                 this[key] = value;
             }
         }
     }
 
-
     getTableTotalAmout(tableId) {
         const table = this.tables.getTableById(tableId)
-        if (table == null) throw new Error('Noot found the table')
-        const tableOrdersAmout = parseFloat(table.getTableOrdersTotalAmount()).toFixed(2)
+        if (table == null) throw new Error('Not found the table')
+        const tableOrdersAmount = parseFloat(table.getTableOrdersTotalAmount())
+        const tablePeoplesAmount = parseFloat(table.getTablePeopleTotalAmount(this.weekPrice.getCurrentPrice(), this.childrenPricePercentage))
+        console.log("tablePeoplesAmount",tablePeoplesAmount)
         return {
-            total: tableOrdersAmout
+            total: (tableOrdersAmount + tablePeoplesAmount).toFixed(2)
         }
     }
 
@@ -263,7 +328,7 @@ class AppState {
                 result[key] = Object.fromEntries(val)
             } else if (typeof val?.toJSON === 'function') {
                 result[key] = val.toJSON()
-            } else {
+            }else {
                 result[key] = val
             }
         }

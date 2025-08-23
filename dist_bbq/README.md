@@ -5,6 +5,7 @@
 C:\Program Files\MongoDB\Server\8.0\bin\mongod.cfg
 ````
 添加
+注意Tab，跟预设配置一致，必须间距一样
 ````
 replication: 
   replSetName: rs0
@@ -20,25 +21,13 @@ net start MongoDB
 ````
 
 ## 初始化: 
+下载mongoDB shell
 
-输入指令
+打开 进入 ADMIN 数据库
 ````
-mongod --dbpath /var/lib/mongodb --replSet rs0
+use admin
 ````
-
-
-确保mongod确保已经添加进环境变量
-
-打开 Compass / mongosh，执行： 
-进入指定数据库
-
-查看所有数据库:
-````
-show dbs
-````
-````
-use [数据库名字]
-````
+确认进去admin后
 
 输入:
 ````

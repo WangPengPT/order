@@ -32,7 +32,7 @@ class UploadController {
     }
 
     try {
-      if (this.getFileExtension(file.path) == "csv") {
+      if (file.path.split('.').pop() == "csv") {
         const rows = await uploadService.processCSV(file, req.body.update_all);
         console.log("update csv count:", rows.length);
       }

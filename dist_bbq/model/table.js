@@ -87,7 +87,13 @@ class Table {
     this.order = this.order.filter(i => i.dishid !== itemId)
   }
 
-  // 以点菜单总价
+  // 人头总价
+  getTablePeopleTotalAmount(price,childrenPricePercentage){
+    console.log("this.peopleType.getPriceCount(price, this.childrenPricePercentage)",this.peopleType.getPriceCount(price, childrenPricePercentage))
+    return this.peopleType.getPriceCount(price)
+  }
+
+  // 已点菜单总价
   getTableOrdersTotalAmount() {
     return this.order.reduce((sum, item) => {
       return sum + item.price * item.quantity

@@ -333,4 +333,5 @@ module.exports = {
     formatedPublicDir,
     saveMonthRates,
     loadMonthRates,
+    dirFolder
 };
