@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>client</title>
+</head>
+<body>
+  <h1>client</h1>
+	
+  <script>
+
+    const utcTime = new Date().toUTCString();
+    localStorage.setItem('local_scan_utcTime', utcTime);
+
+    const currentParams = window.location.search;
+    window.location.href = `/${currentParams}`;
+  </script>
+</body>
+</html>
