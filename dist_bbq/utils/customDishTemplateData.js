@@ -43,7 +43,7 @@ const mysteryBoxDescriptions = [
             description_zh: "一场颠覆传统的创新体验！Sushi Aleatória® 就像一份“惊喜寿司”——每一份都由主厨根据您的口味即兴创作，独一无二。只需告诉我们您的偏好，便可收获满满惊喜！这是一段日本风味的“盲盒”味觉之旅，最适合热爱探索未知的食客！",
         }],
         image: {
-            src: "",
+            src: "/images/sushiBox.jpg",
             enable: true
         }
     },
@@ -69,7 +69,7 @@ const mysteryBoxDescriptions = [
     }
 ]
 
-const mysteryBox = new CustomDishTemplate(1, mysteryBoxTypes, "Sushi Aleatória®", 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, { quantity: true, quantitySetp: 5, maxQuantity: 50 })
+const mysteryBox = new CustomDishTemplate(1, mysteryBoxTypes, "Sushi Aleatória®", 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, { quantity: true, quantitySetp: 5, maxQuantity: 50, extraInfo: "De que é que gosta? ®" })
 
 const bibiumbapTypes = [
     new CustomDishType(1, "base", [
@@ -128,7 +128,7 @@ const bibiumbapDescription = [
             description_zh: "Poke Bowl 是一道结合了夏威夷风味和日式元素的清新美食。你可以自定义选择 基础主食（如寿司饭）、添加主配料（如三文鱼或金枪鱼）、搭配新鲜蔬菜与配菜，加入额外点缀，最后浇上你喜欢的酱汁。既健康又美味，适合每一位追求个性化饮食的食客！",
         }],
         image: {
-            src: "",
+            src: "/images/pokeBowl.jpg",
             enable: true
         }
     },
