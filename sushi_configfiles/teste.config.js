@@ -16,6 +16,7 @@ module.exports = {
       QR_ADDR: "https://v.xiaoxiong.pt:7000/client.html?table=",
       TABLE_NUMBER: [[1,50]],
       SAVE_ADDR: "save/sc_teste",
+      JWT_SECRET: "my_jwt_secret_key"
     }
   }]
 }

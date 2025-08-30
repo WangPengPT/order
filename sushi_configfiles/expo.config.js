@@ -17,6 +17,7 @@ module.exports = {
       TABLE_NUMBER: [[1,9],[17,19],[20,31]],
       SAVE_ADDR: "save/sc_expo",
       INS_URL: "https://www.instagram.com/sushicome_expo/",
+      JWT_SECRET: "my_jwt_secret_key"
     }
   }]
 }

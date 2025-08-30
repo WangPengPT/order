@@ -16,6 +16,7 @@ module.exports = {
       QR_ADDR: "https://sushi.xiaoxiong.pt:8001/client.html?table=",
       TABLE_NUMBER: [[1,3],[21,25],[42,45],[47,48],[61,63]],
       SAVE_ADDR: "save/sc_roma",
+      JWT_SECRET: "my_jwt_secret_key"
     }
   }]
 }
