@@ -1,383 +1,406 @@
+const db = require('../filedb.js');
 const { appState } = require('../state.js');
 const orderService = require('../services/orderService.js')
 const tableService = require('../services/tableService.js');
-const appStateService = require("../services/appStateService.js")
-const menuService = require("../services/menuService.js")
+const {MenuService} = require("../services/menuService.js")
 const { print_order } = require('../utils/printOrder.js');
 const { printers } = require('../utils/printOrder.js');
 const { logger, formatOrderLog } = require('../utils/logger.js')
 const { TableSocket } = require('./tableSocket.js')
 const { OrderSocket } = require('./orderSocket.js')
-const userService = require("../services/userService.js");
+const { WebPageDesignSocket } = require('./webPageDesignSocket.js');
+const { AppStateSocket } = require('./AppStateSocket.js');
+const { UserSocket } = require('./userSocket.js');
+const { CustomDishSocket } = require('./customDishSocket.js');
+const VIPUserManager = require("../services/vipUserManager.js")
 const centerSocket = require('./centerSocket.js');
 
-function emit(...datas)
-{
-  appState.socket_io.emit(...datas);
-}
+class SocketServices {
+  constructor(io ,
+    menuService = new MenuService(this.customDish.customDishService.customDishRepository),
+    appStateSocket = new AppStateSocket(io),
+    orderSocket = new OrderSocket(io),
+    tableSocket = new TableSocket(io),
+    webPageDesignSocket = new WebPageDesignSocket(io),
+    userSocket = new UserSocket(io),
+    customDish = new CustomDishSocket()
+  ) {
 
-function on(...datas)
-{
-  appState.socket_io.on(...datas);
-}
+    this.io = io
+    this.menuService = menuService
+    this.appStateSocket = appStateSocket
+    this.orderSocket = orderSocket
+    this.tableSocket = tableSocket
+    this.webPageDesignSocket = webPageDesignSocket
+    this.userSocket = userSocket
+    this.customDish = customDish
+  }
 
-function saveOrderMenuTab(data)
-{
-  menuService.saveOrderMenuTab(data);
-}
+  emit(...datas) {
+    appState.socket_io.emit(...datas);
+  }
 
-function sendMsg2TableClient(io,table){
-  const chanel = 'client_table' + table.data.id
-  io.emit(chanel, table)
-}
+  saveOrderMenuTab(data) {
+    this.menuService.saveOrderMenuTab(data);
+  }
 
-function init(io) {
-  appState.socket_io = io;
+  async saveOrderMenu(data, update_all) {
+    await this.menuService.updateMenu(data, update_all);
+  }
 
-  io.on("connection", (socket) => {
-    logger.info(`客户端连接: ${socket.id}`)
+  sendMsg2TableClient(io, table) {
+    const chanel = 'client_table' + table.data.id
+    io.emit(chanel, table)
+  }
 
+  async close() {
+    await this.appStateSocket.appStateService.saveAppState()
+    this.menuService.save()
+  }
 
-    process.env.QR_ADDR = process.env.QR_ADDR || `http://localhost:${appState.clientPort}?table=`;
+  async initializeDatas() {
+    await this.webPageDesignSocket.webPageDesignService.initialize()
+    await this.appStateSocket.appStateService.loadAppState()
+    await this.userSocket.userService.InitOrLoadUserData()
+    await this.customDish.customDishService.initializeCustomDish()
+    await this.menuService.loadMenu()
+  }
 
-    socket.emit("env", {
-      QR_ADDR: process.env.QR_ADDR,
-      showRoastDuckPage: process.env.showRoastDuckPage,
-      SAVE_ADDR: process.env.SAVE_ADDR,
-      INS_URL: process.env.INS_URL
-    });
+  initSocket() {
+    this.appStateSocket.appStateService.appStateRepository.appState.socket_io = this.io
 
-    const tableSocket = new TableSocket(io)
-    tableSocket.registerHandlers(socket)
+    this.io.on("connection", async (socket) => {
 
-    const orderSocket = new OrderSocket(io)
-    orderSocket.registerHandlers(socket)
+      VIPUserManager.initSocket(socket)
 
+      const ip = socket.handshake.address;
 
-    // 客户端获取总消费 // add signal
-    socket.on("client_tableTotalAmount", (tableId, cb) => {
-      //logger.info(`管理端亲求桌号 ${tableId} 总消费`)
-      const result = appStateService.getTableTotalAmout(tableId)
-      cb(result)
-    })
+      logger.info(`客户端连接: ${socket.id}`);
+      logger.info(`来源 IP: ${ip}`)
 
-    // 管理端更新今日红日
-    socket.on("manager_set_festivalDay", (value, cb) => {
-      logger.info(`管理端设置红日: ${value}`)
-      const result = appStateService.setFestivalDay(value)
-      if (result.success) {
+      process.env.QR_ADDR = process.env.QR_ADDR || `http://localhost:5173?table=`;
+      process.env.ADDR =  process.env.ADDR || `http://localhost:5173`;
 
-        socket.emit('manager_get_currentPrice', appStateService.getCurrentPrice())
+      let ENABLE_ROAST_DUCK = false
 
-        logger.info(`管理端设置红日成功: ${value}`)
-      } else {
-        logger.info(`管理端设置红日失败: ${value}`)
-        logger.info(`失败原因: ${result.data}`)
-      }
-      cb(result)
-    })
-
-    socket.on('manager_get_isFestival', (value, cb) => {
-      cb(appStateService.getFestivalDay())
-    })
-
-    // 发送管理端获取今日红日
-    socket.emit("manager_festival", appStateService.getFestivalDay())
-
-    socket.on("manager_delete_order", ({order: ordername, tableId: tableId}, cb) => {
-      logger.info(`管理端请求删除盲盒, 桌号-${tableId}`)
-      const result = orderService.deleteSushiBoxInTable(ordername, tableId)
-      if (result.success) {
-        logger.info(`管理端请求删除盲盒成功, 桌号-${tableId}`)
-      } else {
-        logger.info(`管理端请求删除盲盒失败, 桌号-${tableId}`)
-        logger.info(`失败原因: ${result.data}`)
+      if (process.env.ENABLE_ROAST_DUCK == undefined) {
+        ENABLE_ROAST_DUCK = true;
       }
 
-      sendMsg2TableClient(io,tableService.getTableById(tableId))
+      if (process.env.ENABLE_ROAST_DUCK == "true") {
+        ENABLE_ROAST_DUCK = true;
+      }
 
-      cb(result)
-    })
+      socket.emit("env", {
+        QR_ADDR: process.env.QR_ADDR,
+        ADDR: process.env.ADDR,
+        ENABLE_ROAST_DUCK: ENABLE_ROAST_DUCK,
+        TEST_ENVIRONMENT: process.env.TEST_ENVIRONMENT,
+        shopType: appState.shopType,
+        restaurant: centerSocket.getRestaurant()
+      });
 
-    
-    socket.on("manager_updateMenu_refresh", (value) => {
-      io.emit("menu_data", appState.menu,appState.orderMenuTab);
-    })
+      this.tableSocket.registerHandlers(socket)
 
-    // 发送价格信息
-    socket.emit("get_people_price", () => {
-      //logger.info(`发送给管理端价格信息`)
-      appStateService.getPrice()
-    })
+      this.orderSocket.registerHandlers(socket)
 
-    socket.emit('manager_get_currentPrice', appStateService.getCurrentPrice())
+      await this.webPageDesignSocket.registerHandlers(socket)
 
-    // 管理端亲求获取价格
-    socket.on('manager_get_price', (_, cb) => {
-      const price = appStateService.getPrice()
-      cb(price)
-    })
+      this.appStateSocket.registerHandlers(socket)
 
-    socket.on('manager_get_currentPrice', ({}, cb) => {
-      const currentPrice = appStateService.getCurrentPrice()
-      cb(currentPrice)
-    })
+      this.userSocket.registerHandlers(socket)
+
+      await this.customDish.registerHandlers(socket)
 
 
-    // 管理端更新价格
-    socket.on("update_people_price", (value, cb) => {
-        logger.info(`管理端更改价格, 中午价格-${value.lunchPrice}; 晚上价格-${value.dinnerPrice}`)
-        const res = appStateService.updatePrice(value.lunchPrice, value.dinnerPrice)
-        if (res.success) {
-          logger.info(`管理端更改价格成功`)
+      socket.emit("menu_data", await this.menuService.getMenu(), this.appStateSocket.appStateService.appStateRepository.appState.orderMenuTab);
+
+
+      // 餐桌密码验证
+      //tableService.tableLogin(socket)
+
+      // 客户端获取总消费 // add signal
+      socket.on("client_tableTotalAmount", (tableId, cb) => {
+        //logger.info(`管理端亲求桌号 ${tableId} 总消费`)
+        const result = this.appStateSocket.appStateService.getTableTotalAmout(tableId)
+        cb(result)
+      })
+
+      socket.on("manager_delete_order", ({ order: ordername, tableId: tableId }, cb) => {
+        logger.info(`管理端请求删除盲盒, 桌号-${tableId}`)
+        const result = orderService.deleteSushiBoxInTable(ordername, tableId)
+        if (result.success) {
+          logger.info(`管理端请求删除盲盒成功, 桌号-${tableId}`)
         } else {
-          logger.info(`管理端更改价格失败`)
+          logger.info(`管理端请求删除盲盒失败, 桌号-${tableId}`)
           logger.info(`失败原因: ${result.data}`)
         }
-        cb(res)
-    })
+        // 更新客户端桌子信息
+        // io.emit('client_table', () => {
+        //   //logger.info(`发送给客户端桌子信息, 桌号-${tableId}`)
+        //   return tableService.getTableById(tableId)
+        // })
+        this.sendMsg2TableClient(this.io, tableService.getTableById(tableId))
 
-    // 管理端更新桌子
-    socket.on("manager_refresh_table", (value, cb) => {
-      const tables = appStateService.getAllTables()
-      cb(tables)
-    })
+        cb(result)
+      })
 
-    // 发送菜单数据给用户端和管理端
-    socket.emit("menu_data", appState.menu,appState.orderMenuTab);
-
-    socket.emit("special_dishes_data", appState.specialDishes);
-
-    // 处理订单提交
-    socket.on("submit_order", (orderData) => {
-      logger.info(`订单提交`)
-      const order = orderService.addOrder(orderData)
-      if (order.success) {
-        logger.info(`订单提交成功 订单号 - ${order.data.id}`)
-        logger.info(formatOrderLog(orderData))
-
-        io.emit("new_order", order.data);
-        socket.emit("📢 已广播新订单:", order.data);
-
-        // 返回确认给用户端
-        socket.emit("order_confirmed", order.data.id);
-
-        // 更新管理端的桌子信息
-        io.emit("send_tables", appState.tables.toJSON())
-
-        // 给客户端发送桌子信息
-        const table = tableService.getTableById(order.data.table)
-        if (table.success) {
-          // io.emit('client_table', table)
-          sendMsg2TableClient(io,table)
-          order.data.people = table.data.people;
-        }
-
-        print_order(order.data);
-        
-      } else {
-        logger.info(`订单提交失败`)
-        logger.info(`失败原因: ${order.data}`)
-        socket.emit('error', order.data)
+    socket.on("manager_update_checkIP", (value, callback) => {
+      appState.checkIP = value;
+      const result = {
+        success: true,
+        data: value
       }
-
-    }); 
-
-    socket.on('change_table', ({oldId: oldId, newId: newId}, callback) => {
-      logger.info(`更换桌子`)
-      const result = appStateService.changeTable(oldId, newId)
-      if (result.success) {
-        logger.info(`更换成功`)
-        callback(result)
-      } else {
-        logger.info(`更换失败`)
-        logger.info(`失败原因: ${result.data}`)
-      }
-    })
-
-    // 返回table id ，发送桌子信息，目前价格
-    socket.on('get_table_id', (value) => {
-      const result = tableService.getTableById(value)
-      // socket.emit('client_table', result)
-      sendMsg2TableClient(io,result)
-      socket.emit("table_id", value);
-      const price = appStateService.getCurrentPrice()
-      socket.emit('client_currentPrice', price)
-    });
-
-    // 返回 年、月，发送其年月对应的菜单评价数据
-    socket.on('manager_get_month_rates', (value,callback) => {
-      logger.info(`管理端获取${value.year}年${value.month}月的菜单评价`)
-      const result = appStateService.getMonthRatesWithDate(value.year,value.month)
-      if(result.success) {
-        logger.info("获取菜单评价成功")
-      }else{
-        logger.info(`获取菜单评价失败，原因：${result.data}`)
-      }
+      logger.info(`manager_update_checkIP return: ${result}`)
       callback(result)
     })
 
-    socket.on('manager_login', async (value, callback) => {
-      logger.info("用户登录")
-      const result = await userService.login(value.phoneNumber, value.password)
-      if (result.success && result.data) {
-        logger.info("用户登录成功")
-      } else {
-        logger.info("用户登录失败")
-        if (!result.data){
-          logger.info(`失败原因: 密码错误`)
+    // 管理端更改密码
+    tableService.updateTablePassword(socket)
+
+      // 管理端刷新密码
+      tableService.refreshTablePassword(socket)
+
+      // 处理订单提交
+      socket.on("submit_order", (orderData) => {
+
+        if (appState.settings.checkIP && (!appState.checkLocalIP(socket))) {
+          logger.info(`订单提交失败`)
+          logger.info(`失败原因: invalid ip`)
+          socket.emit('error', "please connected wifi.")
+          return;
+        }
+
+        logger.info(`订单提交`)
+
+        const order = orderService.addOrder(orderData)
+        if (order.success) {
+          const increment = this.menuService.incrementOrder(orderData)
+          if (increment.success) {
+            // TODO: log不出来
+            logger.info(`销售量添加成功 - ${increment.data}`)
+          }
+
+          logger.info(`订单提交成功 订单号 - ${order.data.id}`)
+          logger.info(formatOrderLog(orderData))
+
+          // console.log("order.data",order.data)
+          print_order(order.data);
+
+          //logger.info(`发送给客户端服务端订单桌子信息`)
+
+          this.io.emit("new_order", order.data);
+          logger.info("📢 已广播新订单:", order.data);
+
+          // 返回确认给用户端
+          socket.emit("order_confirmed", order.data.id);
+
+          // 更新管理端的桌子信息
+          this.io.emit("send_tables", appState.tables.toJSON())
+
+          // 给客户端发送桌子信息
+          const table = tableService.getTableById(order.data.table)
+          if (table.success) {
+            // io.emit('client_table', table)
+            this.sendMsg2TableClient(this.io, table)
+          }
+
         } else {
-          logger.info(`失败原因: ${result.data}`)
+          logger.info(`订单提交失败`)
+          logger.info(`失败原因: ${order.data}`)
+          socket.emit('error', order.data)
         }
-      }
-      callback(result)
-    })
 
-    socket.on("manager_createNewUser", async (value, callback) => {
-      logger.info("创建新的用户")
-      const result = await userService.register(value.phoneNumber, value.password)
-      if (result.success) {
-        logger.info(`用户创建成功 ${result.data}`)
-      } else {
-        logger.info("用户创建失败")
-        logger.info(`失败原因: ${result.data}`)
-      }
-      callback(result)
-    })
+      });
 
-    socket.on('disconnect', ()=> {
-      if (printers[socket.id]) printers[socket.id] = undefined;
-    })
+      // 返回table id ，发送桌子信息，目前价格
+      socket.on('get_table_id', (value) => {
+        const result = tableService.getTableById(value)
+        // socket.emit('client_table', result)
+        this.sendMsg2TableClient(this.io, result)
+        socket.emit("table_id", value);
 
-    // printer
-    socket.on('add_printer', (value) => {
-      logger.info(`添加打印机`)
-      const id = socket.id;
-      value = JSON.parse(value);
-      value.id = id;
-      printers[id]= {socket: socket, data: value}
+        const price = this.appStateSocket.appStateService.getCurrentPrice()
+        socket.emit('client_currentPrice', price)
+      });
 
-    });
+      socket.on('admin', (value, callback) => {
+        const user = db.loadDataForce('admin', { password: "0000" });
+        socket.is_admin = false;
+        if (user.password == value) {
+          orderService.sendOrder(socket)
+          socket.is_admin = true;
+        }
+        callback(socket.is_admin);
+      });
 
-    socket.on('get_printers', (callback) => {
-      const ret = [];
-      for (const key in printers) {
-        const printer = printers[key];
-        if (printer) ret.push(printer.data);
-      }
-      callback(ret)
-    });
+      socket.on('disconnect', () => {
+        if (printers[socket.id]) printers[socket.id] = undefined;
+      })
 
-    socket.on('select_printer', (value) => {
-      for (const key in printers) {
-        if (key == value.id) {
+      socket.on('i_am_mg', () => {
+        appState.addLocalIP(socket)
+      })
+
+      // printer
+      socket.on('add_printer', (value) => {
+        const id = socket.id;
+        value = JSON.parse(value);
+        value.id = id;
+        printers[id] = { socket: socket, data: value }
+
+        appState.addLocalIP(socket)
+      });
+
+      socket.on('get_printers', (callback) => {
+        const ret = [];
+        for (const key in printers) {
           const printer = printers[key];
-          if (printer)
-          {
-            printer.data.curPrinter = value.printer;
-            printer.data.menu = value.menu;
-            printer.data.every_one = value.every_one;
-            printer.data.fontSize = value.fontSize;
-            printer.socket.emit('select_printer',value.printer, value.menu.toString(), value.every_one,value.fontSize);
+          if (printer) ret.push(printer.data);
+        }
+        callback(ret)
+      });
+
+      socket.on('select_printer', (value) => {
+        for (const key in printers) {
+          if (key == value.id) {
+            const printer = printers[key];
+            if (printer) {
+              printer.data.curPrinter = value.printer;
+              printer.data.menu = value.menu;
+              printer.data.every_one = value.every_one;
+              printer.data.fontSize = value.fontSize;
+              printer.socket.emit('select_printer', value.printer, value.menu.toString(), value.every_one, value.fontSize);
+            }
           }
         }
-      }
-    });
+      });
 
-    socket.on('print_test', (key)=> {
-      const printer = printers[key];
-      if (printer)
-      {
-        printer.socket.emit('print_test');
-      }
-    });
-
-    socket.on('updateMenuIndex', data => {
-
-      if (!data) return;
-      if (data.length == 0) return;
-
-      saveOrderMenuTab(data);
-    });
-
-    
-    socket.on("disconnect", (reason) => {
-        logger.info(`连接取消: ${reason}`)
-    });
-
-    socket.on("client_cmd", (id,cmd) => {
-      tableService.clientCmd(id,cmd);
-      io.emit("client_cmd", id, cmd);
-    });
-
-    socket.on("click_msg", (id,cmd) => {
-      tableService.clickMsg(id,cmd);
-    });
-
-    socket.on("update_menu_item", (item) => {
-      let found = false;
-
-      let id = item.id;
-      if (item.org_id) id = item.org_id;
-
-      for (let i = 0; i < appState.menu.length; i++) {
-        if (appState.menu[i].id == id)
-        {
-          appState.menu[i] = {...appState.menu[i], ...item};
-          logger.debug(appState.menu[i]);
-          io.emit("menu_item_changed", item);
-          found = true;
-          break;
+      socket.on('print_test', (key) => {
+        const printer = printers[key];
+        if (printer) {
+          printer.socket.emit('print_test');
         }
-      }
+      });
 
-      if (!found)
-      {
-        appState.menu.push(item);
-        io.emit("menu_item_changed", item);
-      }
+      socket.on('manager_updateMenuIndex', async (newMenuSorted, callback) => {
+        logger.info("更新菜品与分类顺序")
+        if (!newMenuSorted) return;
+        if (newMenuSorted.length == 0) return;
 
-      if (item.tags)
-      {
-        appState.dishTags[id] = item.tags;
-      }
+        const result = await this.menuService.updateMenuSorted(newMenuSorted)
+        if (result.success) {
+          callback(result)
+          logger.info("更新菜品与分类顺序成功")
+        } else {
+          logger.info("更新菜品与分类顺序失败")
+        }
+      });
 
-    });
+      socket.on("disconnect", (reason) => {
+        logger.info(`连接取消: ${reason}`)
+      });
 
-    socket.on("rate_dish", (id, like, rate) => {
-      const result = menuService.saveDishRating(id, like, rate);
-      if (result) {
-        io.emit("rating_changed", result.data.id, result.data.likes, result.data.rates);
-        logger.info(`客服端评分成功, id-${id}`)
-      } else {
-        logger.info(`客服端评分失败, id-${id}`)
-        logger.info(`失败原因: ${result.data}`)
-      }
-    });
+      //Old update_menu_item
+      socket.on("update_menu_item", async (item) => {
+        console.log("In menu update item socket")
+        try {
+         let id = item._id;
+         if (!id) id = item.id
+        if (item.org_id) id = item.org_id;
 
-    socket.on("rate_special_dish", (name, like, rate) => {
-      const result = menuService.saveSpecialDishRating(name, like, rate);
-      if (result) {
-        io.emit("special_dish_rating_changed", result.data.name, result.data.likes, result.data.rates);
-        logger.info(`客服端评分成功, name-${name}`)
-      } else {
-        logger.info(`客服端评分失败, name-${name}`)
-        logger.info(`失败原因: ${result.data}`)
-      }
-    });
+        console.log("item:", item)
+          // Update MongoDB
+          await this.menuService.updatedMenuById({...item, id: id})
 
-    socket.on("get_shopify_orders", ()=> {
-      centerSocket.get_shopify_orders(socket)
+           // Refresh appState.menu from DB
+          appState.menu = await this.menuService.getMenu()
+
+          // Update orderMenuTab if needed
+          if (!appState.orderMenuTab.includes(item.category)) {
+            appState.orderMenuTab.push(item.category);
+          }
+
+          // Update dishTags if present
+          if (item.tags) {
+            appState.dishTags[id] = item.tags;
+          }
+          // Broadcast updated item and full menu
+          this.io.emit("menu_item_changed", item);
+          this.io.emit("menu_data", appState.menu, appState.orderMenuTab || "defaultTab");
+
+          logger.info(`Dish updated and broadcasted: ${item.name || item.handle}`);
+        } catch (err) {
+          logger.error("Failed to update dish in MongoDB:", err);
+          socket.emit("menu_error", "Failed to update dish");
+        }
+      });
+
+
+
+      socket.on("client_cmd", (id, cmd) => {
+        tableService.clientCmd(id, cmd);
+        this.io.emit("client_cmd", id, cmd);
+      });
+
+      socket.on("click_msg", (id, cmd) => {
+        tableService.clickMsg(id, cmd);
+      });
+
+      socket.on("rate_dish", (id, like, rate) => {
+        const result = this.menuService.saveDishRating(id, like, rate);
+        if (result) {
+          this.io.emit("rating_changed", result.data.id, result.data.likes, result.data.rates);
+          logger.info(`客服端评分成功, id-${id}`)
+        } else {
+          logger.info(`客服端评分失败, id-${id}`)
+          logger.info(`失败原因: ${result.data}`)
+        }
+      });
+
+      // 返回 年、月，发送其年月对应的菜单评价数据
+      socket.on('manager_get_month_rates', (value, callback) => {
+        logger.info(`管理端获取${value.year}年${value.month}月的菜单评价`)
+        const result = this.appStateSocket.appStateService.getMonthRatesWithDate(value.year, value.month)
+        if (result.success) {
+          logger.info("获取菜单评价成功")
+        } else {
+          logger.info(`获取菜单评价失败，原因：${result.data}`)
+        }
+        callback(result)
+      })
+
+      socket.on('manager_get_order_quantity', async (value, callback) => {
+        logger.info(`管理端获取${value.year}年${value.month}月${value.day}日的菜品销售量`)
+        const result = await this.appStateSocket.appStateService.getOrderQuantityWithDate(value)
+        if (result.success) {
+          logger.info("获取菜品销售量成功")
+        } else {
+          logger.info(`获取菜品销售量失败，原因：${result.data}`)
+        }
+        callback(result)
+      })
+
+      socket.on('manager_delete_item', async (id, callback) => {
+        logger.info(`管理端删除-ID: ${id}`)
+        const result = await this.menuService.deleteItem(id)
+        if (result.success) {
+          logger.info(`管理端删除${result.data}成功`)
+        } else {
+          logger.info(`管理端删除失败，原因：${result.data}`)
+        }
+        callback(result)
+      })
+
+      socket.on("get_shopify_orders", ()=> {
+        centerSocket.get_shopify_orders(socket)
+      })
+
     })
-
-  });
-
-
+  }
 
 }
 
 module.exports = {
-  init,
-  emit,
-  on
+  SocketServices
 };

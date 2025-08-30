@@ -17,7 +17,7 @@ class TableSocket {
             logger.info(`管理端添加桌子失败`)
             logger.info(`失败原因: ${result.message}`)
         }
-        callback(result);
+        callback(result);;
     }
 
 
@@ -48,7 +48,7 @@ class TableSocket {
 
     // 修改桌子
     updateTable(tableData, callback) {
-        logger.info(`管理端修改桌子状态 桌号 - ${tableData.id}; 成人 - ${tableData.peopleType.adults}; 儿童 - ${tableData.peopleType.childres}; 桌子状态 - ${tableData.status}`)
+        logger.info(`管理端修改桌子状态 桌号 - ${tableData.id}; 成人 - ${tableData.peopleType.adults}; 儿童 - ${tableData.peopleType.children}; 桌子状态 - ${tableData.status}`)
         const result = tableService.updateTableWithoutOrder(tableData)
 
         if (result.success) {
@@ -69,8 +69,8 @@ class TableSocket {
         // 返回table id ，发送桌子信息，目前价格
     clientGetTableById(socket,value, callback){
           const result = tableService.getTableById(value)
-          const price = appStateService.getCurrentPrice()
-          socket.emit('client_currentPrice', price)
+          //const price = appStateService.getCurrentPrice()
+          //socket.emit('client_currentPrice', price)
           callback(result)
         }
 
@@ -86,6 +86,7 @@ class TableSocket {
         socket.on('remove_table', (id, callback) => { this.deleteTable(id, callback) })
         socket.on('clean_table', (id, callback) => { this.cleanTable(id, callback) });
         socket.on('update_table_exceptOrder', (tableData, callback) => { this.updateTable(tableData, callback) });
+        // console.log("appState.tables.toJSON()",appState.tables.toJSON())
         this.io.emit('send_tables', appState.tables.toJSON());
 
         socket.on('client_get_table', (id, callback) => {callback(tableService.getTableById(id))})

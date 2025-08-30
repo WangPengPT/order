@@ -6,31 +6,31 @@ const https = require('https');
 const fs = require('fs');
 const { Server } = require("socket.io");
 const path = require("path");
+
+const { authMiddleware } = require('./middlewares/authMiddleware.js')
 const menuController = require('./controllers/menuController.js');
-const uploadController = require('./controllers/uploadController.js');
-const socketService = require('./socket/socketService.js');
-const uploadMiddleware = require('./middlewares/uploadMiddleware.js');
-const appStateService = require('./services/appStateService.js')
-
-const centerSocket = require('./socket/centerSocket.js');
-
+const { UploadController } = require('./controllers/uploadController.js');
+const { SocketServices } = require('./socket/socketService.js');
+const {upload, uploadMiddleware, memoryUpload} = require('./middlewares/uploadMiddleware.js');
 const { logger } = require('./utils/logger.js')
-const {appState} = require("./state");
-const holiday = require('./utils/holiday.js')
-const { initUserData, saveUserData } = require('./services/userService.js')
-const { translaterFilter } = require('./utils/translateFilter.js')
+const { webPageDesignService } = require("./services/webPageDesignService.js");
+const DB = require("./db.js");
+const centerSocket = require('./socket/centerSocket.js');
+const { menuService } = require("./services/menuService.js");
+const { DataAnalizeService } = require("./services/dataAnalizeService.js");
+const { AppState, appState } = require("./state.js");
+const DatasController = require("./controllers/DatasController.js");
+
 const app = express();
 app.use(cors());
 app.use(compression());
+app.use(express.json());
 
-// 路由只保留上传接口
-app.post('/upload', uploadMiddleware.any(), uploadController.handleUpload);
-app.post('/upload_image', uploadMiddleware.single('image'), uploadController.handleUploadImage);
+app.use(express.urlencoded({ extended: true }))
 
 // 创建 HTTP 服务器和 Socket.IO
 let server;
-const usedHttps = process.env.USE_HTTPS || "false";
-
+const usedHttps = process.env.USE_HTTPS || false;
 if (usedHttps == "true")
 {
   let key_name = "order";
@@ -69,13 +69,40 @@ else
   server = http.createServer(app);
 }
 
-
 const io = new Server(server, {
   cors: {
     origin: '*',
     methods: ["GET", "POST"]
   }
 });
+
+const socketService = new SocketServices(io, menuService)
+const datasController = new DatasController(socketService.appStateSocket.appStateService.appStateRepository, socketService.userSocket.userService)
+const uploadController = new UploadController(socketService.webPageDesignSocket.webPageDesignService)
+
+// 路由只保留上传接口
+app.post('/upload', upload.any(), uploadController.handleUpload);
+app.post('/upload_image', upload.single('image'), uploadController.handleUploadImage);
+app.post('/upload_welcomeImage', 
+  uploadMiddleware.array('image', 5),
+  (req, res) => {
+    uploadController.handleUploadWelcomeImage(req, res)
+  }
+);
+app.post('/upload_logo', upload.single('image'),
+  (req, res) => {
+    uploadController.handleUploadWelcomeLogo(req, res)
+  }
+);
+
+app.get('/api/exportDatas', authMiddleware, datasController.exportDatas)
+
+
+app.post('/api/import/appState', authMiddleware, memoryUpload.single('file'), datasController.importAppState)
+
+app.post('/api/import/menu',authMiddleware, memoryUpload.single('file'), datasController.importMenu)
+
+app.post('/api/import/users',authMiddleware, memoryUpload.single('file'), datasController.importUsers)
 
 app.use(compression());
 app.use(express.static(path.join(__dirname, "public"), {
@@ -86,62 +113,59 @@ app.use(express.static(path.join(__dirname, "public"), {
   }
 }));
 
+async function main() {
+  await DB.init();
 
-app.get('/client/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/client/index.html'));
-});
-//app.use('/client', express.static(path.join(__dirname, 'public/client')));
+  await socketService.initializeDatas()
 
-(async () => {
-  await initUserData();
-  // 后续正常启动 HTTP/Socket 服务
-})();
+  socketService.initSocket()
+  centerSocket.init()
 
-// 载入AppState数据
-appStateService.loadAppState()
+  const PORT = process.env.PORT || 8080;
+  server.listen(PORT, '0.0.0.0', () => {
+    logger.info(`🟢 服务器已启动，监听端口 ${PORT}`);
+  });
 
-// 载入菜单数据
-menuController.loadMenu();
+  runCleanInterval();
+  // runFandaysInterval();
+  writeOrders();
+  writeMonthRates()
+  // appStateService.saveDailyOrders();
+}
 
-// 初始化 Socket.IO 事件
-socketService.init(io);
+app.get('/table', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
 
-centerSocket.init()
+main();
 
-// 启动服务器
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, '0.0.0.0', () => {
-  logger.info(`🟢 服务器已启动，监听端口 ${PORT}`)
-});
+async function OnQuit()
+{
+  logger.info("\n🛑 收到终止信号，正在保存数据...");
+  await socketService.close()
+  webPageDesignService.savePages()
+  process.exit(0);
+}
 
 // 捕获关闭信号时保存数据
-process.on("SIGINT", () => {
-  logger.info(`🛑 收到退出信号，正在保存数据...`)
-  appStateService.saveAppState();
-  saveUserData()
-  process.exit(0);
+process.on("SIGINT",  async () => {
+  await OnQuit();
 });
 
-process.on("SIGTERM", () => {
-  logger.info("\n🛑 收到终止信号，正在保存数据...");
-  appStateService.saveAppState();
-  saveUserData()
-  process.exit(0);
+process.on("SIGTERM", async () => {
+  await OnQuit();
 });
+
 
 let needClean = true;
 
-function runInterval() {
+function runCleanInterval() {
   setTimeout(() => {
     const now = new Date();
     if (now.getHours() == 1)
     {
       if ( needClean ) {
-        logger.info('自动清除订单和更新红日')
-        appState.clearAll();
-
-        // update today for appState.isFestiveDay
-        holiday.updateToday(appState);
+        //appState.clearAll();
       }
       needClean = false;
     }
@@ -150,8 +174,73 @@ function runInterval() {
       needClean = true;
     }
 
-    runInterval();
-  }, 1000 * 60 * 5);
+    runCleanInterval();
+  }, 1000 * 600);
+}
+
+// function runFandaysInterval(){
+//   setTimeout(() => {
+//     const now = new Date();
+//     if (now.getDate() == 11 || now.getDate() == 12 || now.getDate() == 25 || now.getDate() == 26)
+//     {
+//       if (!appState.hasBox){
+//         appState.hasBox = true;
+//         socketService.emitHasBoxStatus()
+//       }
+//     }
+//     else
+//     {
+//       if(appState.hasBox){
+//         appState.hasBox = false;
+//         socketService.emitHasBoxStatus()
+//       }
+//     }
+//
+//     runFandaysInterval();
+//   }, 1000 * 3600);
+// }
+
+let needWriteDailyOrders = true;
+let needWriteMonthlyOrders = true;
+let needWriteYearlyOrders = true;
+function writeOrders() {
+  setTimeout(() => {
+    const now = new Date();
+    // 每天0点
+    if (now.getHours() === 0) {
+      if (needWriteDailyOrders) {
+        socketService.appStateSocket.appStateService.saveDailyOrders() // 将当天的销售量数据写入文件
+        socketService.appStateSocket.appStateService.clearDailyOrders() // 清空当天的销售量数据
+      }
+      needWriteDailyOrders = false;
+    } else {
+      needWriteDailyOrders = true;
+    }
+
+    // 每月1号
+    if (now.getDate() === 1) {
+      if (needWriteMonthlyOrders) {
+        socketService.appStateSocket.appStateService.saveMonthlyOrders() // 将当月的销售量数据写入文件
+        socketService.appStateSocket.appStateService.clearMonthlyOrders() // 清空当月的销售量数据
+      }
+      needWriteMonthlyOrders = false;
+    } else {
+      needWriteMonthlyOrders = true;
+    }
+
+    // 每年1月1号
+    if (now.getMonth() && now.getDate() === 1) {
+      if (needWriteYearlyOrders) {
+        socketService.appStateSocket.appStateService.saveYearlyOrders() // 将当月的销售量数据写入文件
+        socketService.appStateSocket.appStateService.clearYearlyOrders() // 清空当月的销售量数据
+      }
+      needWriteYearlyOrders = false;
+    } else {
+      needWriteYearlyOrders = true;
+    }
+
+    writeOrders();
+  }, 1000 * 60 * 5); // 每五分钟
 }
 
 /*
@@ -166,8 +255,8 @@ function writeMonthRates() {
     if (now.getDate() === 1) // 每月1号
     {
       if ( needWriteMonthRates ) {
-        appStateService.saveMonthRates() // 将上月的评分数据写入文件
-        appStateService.clearnMonthRates() // 清空上月的评分数据
+        socketService.appStateSocket.appStateService.saveMonthRates() // 将上月的评分数据写入文件
+        socketService.appStateSocket.appStateService.clearnMonthRates() // 清空上月的评分数据
       }
       needWriteMonthRates = false;
     }
@@ -179,9 +268,3 @@ function writeMonthRates() {
     writeMonthRates();
   }, 1000 * 60 * 5  ); // 每5分钟
 }
-
-// update today for appState.isFestiveDay
-holiday.updateToday(appState);
-runInterval();
-// 每月28号写当月的评分
-writeMonthRates();

@@ -32,7 +32,8 @@ class CenterSocket {
                 console.error('连接被拒绝，请检查服务器是否运行');
             }
 
-            setTimeout(() => socket.connect(), 3000);
+            //本来是 3000
+            setTimeout(() => socket.connect(), 10000);
         });
 
         socket.on('error', (err) => {
@@ -74,7 +75,6 @@ class CenterSocket {
         const send = (rawData) => {
             try {
                 const jsonData = JSON.parse(rawData); // 解析JSON字符串
-                console.log(jsonData);
                 if (client_socket && client_socket.connected) client_socket.emit("shopify_orders", jsonData)
             } catch (error) {
                 console.error('JSON解析失败:', error);

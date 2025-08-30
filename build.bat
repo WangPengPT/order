@@ -10,7 +10,7 @@ set SRC_PATH=%script_dir%..\orderDemo
 set DST_PATH=%script_dir%\dist
 
 cd %SRC_PATH%
-xcopy .\server %DST_PATH%\dist /E /Y /I
+xcopy .\server %DST_PATH% /E /Y /I
 
 cd managerPrime
 call npm install

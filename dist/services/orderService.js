@@ -81,12 +81,37 @@ function deleteOrderAndTableDishes(tableId, orders) {
     try {
         const table = appState.getTableById(tableId)
         if (table == null || table == undefined) throw new Error("Not found the table")
-        table.deteleDishesByIds(orders)
+        table.deteleDishesByIdAndName(orders)
         const newTables = appState.tables.toJSON()
         return {
             success: true,
-            data: newTables}
+            data: newTables
+        }
     } catch (error) {
+        console.warn("Error: ", error)
+        return {
+            success: false,
+            data: error.message
+        }
+    }
+}
+
+
+function updateOrderStatus(order) {
+    try{
+        const getOrder = appState.orders.get(order.id)
+        if (!getOrder) {
+            throw new Error("No order id found")
+        }
+        getOrder.status = order.status
+        if(appState.orders.get(order.id).status != order.status){
+            throw new Error("Fail update the order status")
+        }
+        return{
+            success: true,
+            data: getOrder
+        }
+    }catch (error){
         console.warn("Error: ", error)
         return {
             success: false,
@@ -100,5 +125,6 @@ module.exports = {
     sendOrder,
     getOrders,
     deleteOrderAndTableDishes,
-    deleteSushiBoxInTable
+    deleteSushiBoxInTable,
+    updateOrderStatus,
 };

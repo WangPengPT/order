@@ -1,6 +1,7 @@
 const fs = require('fs');
 const csv = require('csv-parser');
-const menuService = require('./menuService.js')
+const {menuService} = require('./menuService.js')
+const {logger} = require("../utils/logger");
 
 const xkeys = [
   "AIPO", "AMENDOIM", "CRUSTÁCEOS", "DIÓXIDO DE ENXOFRE E SULFITOS",
@@ -28,8 +29,8 @@ function makeDishData(data) {
   let note = data['Body (HTML)'];
   if (note) {
     note = note
-      .replaceAll(/<\/?(div|p|span|blockquote|img)>/g, '')
-      .replaceAll("<br>", "\n");
+        .replaceAll(/<\/?(div|p|span|blockquote|img)>/g, '')
+        .replaceAll("<br>", "\n");
   }
 
   const ret = {
@@ -48,23 +49,25 @@ function makeDishData(data) {
 }
 
 exports.processCSV = (file,all) => {
+  logger.info("Processing CSV:",all);
   return new Promise((resolve, reject) => {
     const results = [];
 
     fs.createReadStream(file.path)
-      .pipe(csv())
-      .on('data', (data) => {
-        const transformed = makeDishData(data);
-        results.push(transformed);
-      })
-      .on('end', () => {
-        menuService.updateMenu(results,all);
-        fs.unlinkSync(file.path); // 删除临时文件
-        resolve(results);
-      })
-      .on('error', reject);
+        .pipe(csv())
+        .on('data', (data) => {
+          const transformed = makeDishData(data);
+          results.push(transformed);
+        })
+        .on('end', () => {
+          menuService.updateMenu(results,all);
+          fs.unlinkSync(file.path); // 删除临时文件
+          resolve(results);
+        })
+        .on('error', reject);
   });
 };
+
 
 exports.processJSON = (file, all) => {
   return new Promise((resolve, reject) => {

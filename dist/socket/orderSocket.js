@@ -30,10 +30,23 @@ class OrderSocket {
         return appState.getOrders()
     }
 
+    updateOrderStatus(order, cb) {
+        logger.info(`管理端修改订单状态, 订单号-${order.id}-订单状态-${order.status}`)
+        const result = orderService.updateOrderStatus(order)
+        if(result.success) {
+            logger.info(`管理端修改订单状态成功, 订单号-${order.id}-订单状态-${order.status}`)
+        }else{
+            logger.info(`管理端修改订单状态成功, 订单号-${order.id}-订单状态-${order.status}`)
+            logger.info(`失败原因: ${result.data}`)
+        }
+        cb(result)
+    }
+
     registerHandlers(socket) {
 
         socket.on("manager_get_order_signal", (id, cb) => { cb(orderService.getOrders(id)) })
         socket.on("manager_delete_orders", (value, cb) => { this.deleteOrderAndTableDishes(value, cb) })
+        socket.on("updateOrderStatus", (value,cb) => { this.updateOrderStatus(value, cb) })
 
         socket.emit("manager_order_data", this.getOrders())
     }

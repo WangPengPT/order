@@ -3,7 +3,7 @@ const { PeopleType } = require("./people.js")
 const { TableStatus } = require("./TableStatus.js")
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], UUID }) {
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [] }) {
     this.id = id;
     this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType);
 
@@ -20,8 +20,9 @@ class Table {
 
     this.msg_pay = false;
     this.msg_call = false;
-    this.UUID = UUID;
+    this.nif_note = {nif:undefined, note:undefined}
 
+    this.recordProps(this)
   }
 
   get people() {
@@ -32,11 +33,14 @@ class Table {
     return this.peopleType.getCount()
   }
 
+  recordProps(target) {
+    const keys = Object.keys(target)
+    target._dataKeys = keys.filter(k => !k.startsWith('_'))
+  }
 
   // 增加点菜
   addOrderItem(dishData, orderId) {
-
-    const existing = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name)
+    const existing = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name && i.price === dishData.price)
     if (existing) {
       existing.quantity += dishData.quantity
       existing.orderIds.push(orderId)
@@ -58,7 +62,7 @@ class Table {
 
     // ✅ 更新 peopleType
     if (updatedTableData.peopleType) {
-      this.peopleType = new PeopleType({ adults: updatedTableData.peopleType.adults, childres: updatedTableData.peopleType.childres });
+      this.peopleType = new PeopleType({ adults: updatedTableData.peopleType.adults, children: updatedTableData.peopleType.children });
     }
 
     // ✅ 更新 status
@@ -71,11 +75,7 @@ class Table {
       if (!(status instanceof TableStatus)) {
         throw new Error(`无效状态: ${updatedTableData.status}，有效值为: ${TableStatus.values().map(s => s.value).join(', ')}`);
       }
-
       this.status = status;
-
-      this.msg_call = false;
-      this.msg_pay = false;
     }
 
     return this
@@ -87,7 +87,14 @@ class Table {
     this.order = this.order.filter(i => i.dishid !== itemId)
   }
 
-  // 以点菜单总价
+  // 人头总价
+  getTablePeopleTotalAmount(adultPrice,childrenPrice){
+    const totalAdultPrice = this.peopleType.getPriceCount("adults", adultPrice)
+    const totalChildrenPrice = this.peopleType.getPriceCount("children", childrenPrice)
+    return totalAdultPrice + totalChildrenPrice
+  }
+
+  // 已点菜单总价
   getTableOrdersTotalAmount() {
     return this.order.reduce((sum, item) => {
       return sum + item.price * item.quantity
@@ -97,62 +104,70 @@ class Table {
   // 清理桌子，清空订单、人数和状态
   clearTable() {
     this.status = TableStatus.FREE;
-    this.peopleType = new PeopleType({adults:0, childres:0})
+    this.peopleType = new PeopleType({ adults: 0, children: 0 })
     this.order = []
-    this.msg_pay = false;
-    this.msg_call = false;
-    this.UUID = undefined;
+    this.msg_pay = false
   }
 
   clientCmd(cmd) {
-    console.log("client cmd:", cmd);
-    if ( cmd == 'call' )
-    {
+    if (cmd.cmd == 'call') {
       this.msg_call = true;
     }
 
-    if ( cmd == 'pay' )
-    {
+    if (cmd.cmd == 'pay') {
       this.msg_pay = true;
+      this.nif_note = {nif:cmd.nif? cmd.nif : undefined, note:cmd.note? cmd.note : undefined};
     }
 
   }
 
   clickMsg(cmd) {
-    console.log("client cmd:", cmd);
-    if ( cmd == 'call' )
-    {
+    if (cmd == 'call') {
       this.msg_call = false;
     }
 
-    if ( cmd == 'pay' )
-    {
-      this.msg_pay = false;
-    }
+    // if (cmd == 'pay') {
+    //   this.msg_pay = false;
+    // }
 
   }
 
 
-  deteleDishesByIds(dishesIdAndQty) {
-    if (!Array.isArray(dishesIdAndQty)) return;
 
-    dishesIdAndQty.forEach(({ dishid, quantity }) => {
-      if (!dishid || !Number.isInteger(quantity) || quantity <= 0) {
-        console.warn('跳过非法输入:', { dishid, quantity });
-        return;
+  deteleDishesByIdAndName(deletedDishes) {
+    if (!Array.isArray(deletedDishes)) return;
+
+    deletedDishes.forEach(({ dishid, quantity, name, price }) => {
+      if (name === 'My BOX' || name.toLowerCase() === 'pato assado') {
+        const index = this.order.findIndex(d => d.name == name && d.price == price);
+        if (index === -1) {
+          console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
+          return;
+        }
+        const dish = this.order[index];
+        dish.quantity -= quantity;
+        if (dish.quantity <= 0) {
+          this.order.splice(index, 1);
+        }
       }
+      else {
+        if (!dishid || !Number.isInteger(quantity) || quantity <= 0) {
+          console.warn('跳过非法输入:', { dishid, quantity });
+          return;
+        }
 
-      const index = this.order.findIndex(d => d.dishid == dishid); // ✅ 使用 == 宽松比较
+        const index = this.order.findIndex(d => d.dishid == dishid); // ✅ 使用 == 宽松比较
 
-      if (index === -1) {
-        console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
-        return;
-      }
+        if (index === -1) {
+          console.warn('未找到 dishid:', dishid, '当前订单:', this.order.map(d => d.dishid));
+          return;
+        }
 
-      const dish = this.order[index];
-      dish.quantity -= quantity;
-      if (dish.quantity <= 0) {
-        this.order.splice(index, 1);
+        const dish = this.order[index];
+        dish.quantity -= quantity;
+        if (dish.quantity <= 0) {
+          this.order.splice(index, 1);
+        }
       }
     });
   }
@@ -161,46 +176,45 @@ class Table {
     if (!ordername) return;
     const index = this.order.findIndex(d => d.name == ordername);
     if (index === -1) {
-        console.warn('未找到 盲盒');
-        return;
+      console.warn('未找到 盲盒');
+      return;
     }
     this.order.splice(index, 1);
     return this.order
   }
 
-  update(newTable) {
-    this.peopleType = newTable.peopleType
-    this.status = newTable.status
-    this.order = newTable.order
-  }
-
   toJSON() {
-    return {
-      id: this.id,
-      people: this.people,
-      status: this.status.toPt(), // 转换为葡萄牙语
-      order: this.order.map(dish => dish.toJSON()),
-      peopleType: this.peopleType.toJSON(),
-      msg_pay: this.msg_pay,
-      msg_call: this.msg_call,
-      UUID:  this.UUID,
-    };
+    const specialSerializers = {
+      status: val => val instanceof TableStatus ? val.toPt() : val,
+      peopleType: val => val?.toJSON?.() ?? val,
+      order: val => Array.isArray(val) ? val.map(d => d?.toJSON?.() ?? d) : val,
+    }
+
+    const result = {}
+    for (const key of this._dataKeys) {
+      const val = this[key]
+      result[key] = specialSerializers[key]?.(val) ?? val
+    }
+    return result
   }
 
   static fromJSON(data) {
-    return new Table({
-      id: data.id,
-      peopleType: data.peopleType,
-      status: data.status, // 这里会自动调用 TableStatus.fromString
-      order: data.order,
-      msg_pay: data.msg_pay,
-      msg_call: data.msg_call,
-      UUID:  data.UUID,
-    });
+    const specialParsers = {
+      status: val => TableStatus.fromString(val) || TableStatus.fromPt(val) || val,
+      peopleType: val => new PeopleType(val),
+      order: val => Array.isArray(val) ? val.map(item => new Dish(item)) : [],
+    }
+
+    const raw = {}
+    for (const key in data) {
+      raw[key] = specialParsers[key]?.(data[key]) ?? data[key]
+    }
+
+    return new Table(raw)
   }
 
 }
-/*
+
 class TableVer {
   constructor({ id, password, time }) {
     this.id = id
@@ -245,9 +259,7 @@ class TableVer {
     return {
       id: this.id,
       password: this.password,
-      time: this.time ? this.time.toISOString() : null,
-      msg_call: this.msg_call,
-      msg_pay: this.msg_pay,
+      time: this.time ? this.time.toISOString() : null
     };
   }
 
@@ -260,5 +272,5 @@ class TableVer {
   }
 
 }
-*/
-module.exports = { Table }
+
+module.exports = { Table, TableVer }

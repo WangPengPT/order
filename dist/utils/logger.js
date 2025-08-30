@@ -1,10 +1,10 @@
 const winston = require('winston')
-const { DateTime } = require('luxon')
-
 require('winston-daily-rotate-file') // 引入插件
 
+const dirFolder = process.env.SAVE_ADDR || 'save/default'
+
 const transport = new winston.transports.DailyRotateFile({
-  filename: 'logs/socket-%DATE%.log',   // 每天一个新文件
+  filename: `logs/${dirFolder}/socket-%DATE%.log`,   // 每天一个新文件
   datePattern: 'YYYY-MM-DD',            // 日期格式
   zippedArchive: false,                 // 可设为 true 开启 .gz 压缩
   maxSize: '5m',                        // 每个文件最多 5MB
@@ -13,9 +13,7 @@ const transport = new winston.transports.DailyRotateFile({
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
-    winston.format.timestamp({
-      format: () => DateTime.now().setZone('Europe/Lisbon').toFormat('yyyy-MM-dd HH:mm:ss')
-    }),
+    winston.format.timestamp(),
     winston.format.printf(({ level, message, timestamp }) => {
       return `${timestamp} [${level.toUpperCase()}] ${message}`
     })
@@ -27,20 +25,21 @@ const logger = winston.createLogger({
 })
 
 function formatOrderLog(order) {
+  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19)
   const name = order.name?.trim() || '(sem nome)'
   const note = order.note?.trim() || '(nenhuma)'
 
   let lines = [
-    `新的订单 - 桌号: ${order.table}`,
-    `名字: ${name}`,
-    `备注: ${note}`,
-    `菜:`
+    `[${timestamp}] Novo Pedido - Mesa: ${order.table}`,
+    `Nome: ${name}`,
+    `Nota: ${note}`,
+    `Itens:`
   ]
 
   for (const item of order.items) {
     const line = `- ${item.name} x${item.quantity}` +
-      (item.dishid || item.price || item.discount
-        ? ` | ID: ${item.dishid || '---'} | €${parseFloat(item.price || 0).toFixed(2)} | %${item.discount}`
+      (item.dishid || item.price
+        ? ` | ID: ${item.dishid || '---'} | €${parseFloat(item.price || 0).toFixed(2)}`
         : ''
       )
     lines.push(line)
@@ -50,34 +49,8 @@ function formatOrderLog(order) {
   return lines.join('\n')
 }
 
-function formatPrintLog(order) {
-  const people = order.people
-  const table = order.table
-  const name = order.name?.trim() || '(sem nome)'
-  const note = order.note?.trim() || '(nenhuma)'
-  let lines = [
-    `桌号: ${table} | 人数: ${people}`,
-    `名字: ${name}`,
-    `备注: ${note}`,
-    `菜: `,
-  ]
-
-  for (const item of order.items) {
-    const line = "- "+(item.dishid
-        ? ` | ID: ${item.dishid || '---'}`
-        : ''
-      ) + `| Notes: ${item.notes}` + 
-      `${item.name} x${item.quantity}`
-      
-    lines.push(line)
-  }
-
-  lines.push('--------------------------------------------------')
-  return lines.join('\n')
-}
 
 module.exports = {
   logger,
-  formatOrderLog,
-  formatPrintLog
+  formatOrderLog
 }

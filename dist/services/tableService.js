@@ -1,6 +1,6 @@
 const { appState } = require('../state.js');
 const { tablesPassword } = require('../model/tableManager.js')
-const logger = require('../utils/logger.js')
+const { logger } = require('../utils/logger.js')
 const { TableStatus } = require('../model/TableStatus.js')
 
 function addNewTable(tableData) {
@@ -16,17 +16,12 @@ function addNewTable(tableData) {
     }
 
     // 添加桌子
-    const add = appState.tables.addTable(tableData)
-
-    if (!add) throw new Error("Faild create new table")
+    appState.tables.addTable(tableData)
 
     const res = appState.tables.getTableById(tableData.id)
-    // 广播新桌子列表给管理端
-    //sendTablesInfo(io)
-
     return { success: true, data: res.toJSON() };
   } catch (err) {
-    console.warn("Error: ", err)
+    console.warn("Error: ", err.message)
     return { success: false, message: err.message };
   }
 }
@@ -40,7 +35,7 @@ function tableLogin(io) {
       const res = table.checkPassword(value.password)
       cb(res)
     } catch (error) {
-      console.warn("Error: ", error)
+      console.warn("Error: ", error.message)
       cb({ success: false, message: error.message })
     }
   })
@@ -54,7 +49,7 @@ function updateTablePassword(io) {
       tablesPassword.changePassword(id, password)
       cb(tablesPassword.toJSON())
     } catch (e) {
-      console.warn("Error: ", e)
+      console.warn("Error: ", e.messsage)
       cb({ success: false, message: e.message });
     }
   })
@@ -74,7 +69,7 @@ function refreshTablePassword(io) {
 
 function updateTableWithoutOrder(tableData) {
   try {
-
+    if (tableData.status === null) throw new Error("Invalid table status")
     const id = tableData.id
 
     const oldStatus = appState.tables.getTableById(id).status.value
@@ -92,26 +87,10 @@ function updateTableWithoutOrder(tableData) {
     }
 
     const table = appState.tables.getTableById(id)
-
-    console.log("updateTableWithoutOrder: " , oldStatus, newStatus);
-    // 设置开台时间
-    if (oldStatus != newStatus && newStatus === '用餐中') {
-      const timestamp = Date.now().toString(36);
-      table.UUID = "" + id + "_" + timestamp;
-
-      const chanel = 'client_table' + table.id
-      const sendData = { success: true, data: table.toJSON() };
-      appState.socket_io.emit(chanel, sendData);
-    }
-
-    if (oldStatus != newStatus && oldStatus === '用餐中') {
-      table.UUID = undefined;
-    }
-
     return { success: true, data: table.toJSON() }
   } catch (error) {
-    console.warn("Error: ", error)
-    return { success: false, message: error.message }
+    console.warn("Error: ", error.message)
+    return { success: false, data: error.message }
   }
 }
 
@@ -121,29 +100,29 @@ function removeTable(id) {
     const res = appState.tables.removeTable(id)
 
     if (!res) throw new Error('Faild delete table')
-    // 广播更新后的 tables 给所有客户端
-    //io.emit('remove_table', appState.tables.toJSON())
 
-    return { success: true, data: true }
+    return { success: true, tables: true }
   } catch (error) {
-    console.warn("Error: ", error)
+    console.warn("Error: ", error.message)
     return { success: false, message: error.message }
   }
 }
-
 
 function cleanTable(id) {
   try {
     // 更新服务器状态
     const table = appState.tables.getTableById(id)
+
     if (table == null) throw new Error("Not found the table")
     table.clearTable()
+
     const cleanedTable = appState.tables.getTableById(id)
+    // console.log(cleanedTable)
     if (cleanedTable.status !== TableStatus.FREE) throw new Error('Faild clean table')
 
     return { success: true, data: cleanedTable.toJSON() }
   } catch (error) {
-    console.warn("Error: ", error)
+    console.warn("Error: ", error.message)
     return { success: false, message: error.message }
   }
 }
@@ -156,13 +135,12 @@ function getTableById(id) {
     if (!table) throw new Error('Not found the table')
     return { success: true, data: table.toJSON() }
   } catch (error) {
-    console.warn("Error: ", error)
+    console.warn("Error: ", error.message)
     return { success: false, data: error.message }
   }
 }
 
-function clientCmd(id,cmd)
-{
+function clientCmd(id,cmd) {
   try {
     // 更新服务器状态
     const table = appState.tables.getTableById(id)
@@ -170,7 +148,7 @@ function clientCmd(id,cmd)
     if (table == null) throw new Error("Not found the table")
     table.clientCmd(cmd);
   } catch (error) {
-    console.warn("Error: ", error)
+    console.warn("Error: ", error.message)
   }
 }
 
@@ -183,9 +161,11 @@ function clickMsg(id,cmd)
     if (table == null) throw new Error("Not found the table")
     table.clickMsg(cmd);
   } catch (error) {
-    console.warn("Error: ", error)
+    console.warn("Error: ", error.message)
   }
 }
+
+
 
 module.exports = {
   addNewTable,
