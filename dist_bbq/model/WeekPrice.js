@@ -1,7 +1,7 @@
 class WeekPrice {
 
-    constructor(){
-        this.dividerTime = 17 // 区分午餐与晚餐时间
+    constructor(dividerTime){
+        this.dividerTime = dividerTime || 17 // 区分午餐与晚餐时间
 
         this.weekName = ["special","monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
         for(const dayName of this.weekName){

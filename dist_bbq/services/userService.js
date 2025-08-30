@@ -1,35 +1,30 @@
-const { User, users } = require('../model/users.js');
-const db = require('../filedb.js')
+const User = require('../model/users.js');
+
 const { logger } = require('../utils/logger.js');
 const UserRepository = require('../repositories/userRepository.js');
+const DB = require('../db.js');
 
 const ADMIN_PHONE = 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASS || "0000";
+const ADMIN_PASSWORD = process.env.ADMIN_PASS || "1015";
 
 class UserService {
-    constructor(usersRepository = new UserRepository(users)) {
+    constructor(usersRepository = new UserRepository()) {
         this.usersRepository = usersRepository
-    }
-
-    async saveUserData() {
-        await this.usersRepository.save()
     }
 
     async InitOrLoadUserData() {
         try {
-            const data = await this.usersRepository.load()
-            if (data && data != null) {
-                for (const [phone, content] of Object.entries(data)) {
-                    this.usersRepository.users.set(phone, User.fromJSON(content));
+            return await DB.withTransaction(async (session) => {
+                const hasUser = await this.usersRepository.hasUsers(session)
+                if (hasUser) {
+                    logger.info(`加载现有用户数据`);
+                    return await this.usersRepository.getAllUsers(session)
+                } else {
+                    const admin = await User.create(ADMIN_PHONE, ADMIN_PASSWORD)
+                    logger.info(`创建新的用户数据`);
+                    this.usersRepository.save(admin, session)
                 }
-                logger.info(`加载现有用户数据`);
-            } else {
-                const admin = await User.create(ADMIN_PHONE, ADMIN_PASSWORD);
-                this.usersRepository.users.set(ADMIN_PHONE, admin);
-                await this.saveUserData()
-                logger.info(`创建新的用户数据`);
-            }
-            // tablesPassword.init(appState.tables);
+            })
         } catch (error) {
             console.warn("Error: ", error);
         }
@@ -37,17 +32,35 @@ class UserService {
 
     async register(phoneNumber, password) {
         try {
-            const hasUser = this.usersRepository.users.get(phoneNumber)
-            if (hasUser) throw new Error("This user already exists")
-            const user = await User.create(phoneNumber, password);
-            this.usersRepository.users.set(phoneNumber, user)
+            return await DB.withTransaction(async (session) => {
+                const hasUser = this.usersRepository.getUserById(phoneNumber, session)
+                if (hasUser) throw new Error("This user already exists")
+                const user = await User.create(phoneNumber, password);
+                this.usersRepository.save(user, session)
 
-            const userVer = this.usersRepository.users.get(phoneNumber)
-            if (!userVer) throw new Error("Faild create new User")
-            return {
-                success: true,
-                data: userVer.phoneNumber
-            }
+                const userVer = this.usersRepository.getUserById(phoneNumber, session)
+                if (!userVer) throw new Error("Faild create new User")
+                return {
+                    success: true,
+                    data: userVer.phoneNumber
+                }
+            })
+        } catch (error) {
+            return { success: false, data: error.message }
+        }
+    }
+
+    async saveUsers(users) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                for (let element of users) {
+                    const user = User.fromJSON(element)
+                    await this.usersRepository.save(user, session)
+                }
+                return {
+                    success: true
+                }
+            })
         } catch (error) {
             return { success: false, data: error.message }
         }
@@ -55,12 +68,20 @@ class UserService {
 
     async login(phoneNumber, password) {
         try {
-            const result = await this.usersRepository.login(phoneNumber, password)
-            if (!result || result == null) throw new Error("User not found or password wrong")
-            return {
-                success: true,
-                data: result
-            }
+            return await DB.withTransaction(async (session) => {
+                console.log("login: ", phoneNumber, password)
+                const phone = await this.usersRepository.login(phoneNumber, password, session)
+                if (!phone || phone == null) throw new Error("User not found or password wrong")
+                const user = await this.usersRepository.getUserById(phone, session)
+                if (!user) throw new Error("Unexpected error, not foud the user")
+                user.generateToken()
+                await this.usersRepository.save(user, session)
+                const result = user.token
+                return {
+                    success: true,
+                    data: result
+                }
+            })
         } catch (error) {
             return { success: false, data: error.message }
         }

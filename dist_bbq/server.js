@@ -6,21 +6,25 @@ const https = require('https');
 const fs = require('fs');
 const { Server } = require("socket.io");
 const path = require("path");
+
+const { authMiddleware } = require('./middlewares/authMiddleware.js')
 const menuController = require('./controllers/menuController.js');
 const { UploadController } = require('./controllers/uploadController.js');
 const { SocketServices } = require('./socket/socketService.js');
-const {upload, uploadMiddleware} = require('./middlewares/uploadMiddleware.js');
+const {upload, uploadMiddleware, memoryUpload} = require('./middlewares/uploadMiddleware.js');
 const { logger } = require('./utils/logger.js')
 const { webPageDesignService } = require("./services/webPageDesignService.js");
 const DB = require("./db.js");
-
-
 const centerSocket = require('./socket/centerSocket.js');
-
+const { menuService } = require("./services/menuService.js");
+const { DataAnalizeService } = require("./services/dataAnalizeService.js");
+const { AppState, appState } = require("./state.js");
+const DatasController = require("./controllers/DatasController.js");
 
 const app = express();
 app.use(cors());
 app.use(compression());
+app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }))
 
@@ -72,8 +76,8 @@ const io = new Server(server, {
   }
 });
 
-const socketService = new SocketServices(io)
-
+const socketService = new SocketServices(io, menuService)
+const datasController = new DatasController(socketService.appStateSocket.appStateService.appStateRepository, socketService.userSocket.userService)
 const uploadController = new UploadController(socketService.webPageDesignSocket.webPageDesignService)
 
 // 路由只保留上传接口
@@ -91,6 +95,15 @@ app.post('/upload_logo', upload.single('image'),
   }
 );
 
+app.get('/api/exportDatas', authMiddleware, datasController.exportDatas)
+
+
+app.post('/api/import/appState', authMiddleware, memoryUpload.single('file'), datasController.importAppState)
+
+app.post('/api/import/menu',authMiddleware, memoryUpload.single('file'), datasController.importMenu)
+
+app.post('/api/import/users',authMiddleware, memoryUpload.single('file'), datasController.importUsers)
+
 app.use(compression());
 app.use(express.static(path.join(__dirname, "public"), {
   setHeaders: (res, filePath) => {
@@ -104,7 +117,6 @@ async function main() {
   await DB.init();
 
   await socketService.initializeDatas()
-  menuController.loadMenu();
 
   socketService.initSocket()
   centerSocket.init()

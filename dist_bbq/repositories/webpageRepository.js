@@ -52,7 +52,7 @@ class WebPageRepository {
         try {
             const result = await DB.getAll(this.tableName, session)
             if (!result) {
-                logger.info(`repo: ⚠ 未能找到 Pages 数据 [id=${id}]`);
+                logger.info(`repo: ⚠ 未能找到 Pages 数据`);
                 return null;
             }
             if (!Array.isArray(result)) throw new Error("Loaded page isn't array")

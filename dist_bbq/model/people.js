@@ -16,11 +16,9 @@ class PeopleType {
     return this.adults + this.children
   }
 
-  getPriceCount(price, childrenPercentage = 50){
-    console.log("price", price,"childrenPercentage",childrenPercentage)
-    const totalAdultPrice = this.adults * price
-    const totalChildrenPrice = this.children * price * (childrenPercentage/100)
-    return totalAdultPrice + totalChildrenPrice
+  getPriceCount(key, price){
+    const result = this[key] * price
+    return result
   }
 
   clean() {

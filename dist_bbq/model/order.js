@@ -1,5 +1,5 @@
 const { Dish } = require('./dish.js') // 确保导入 Dish 类
-const { DateTime } = require('luxon')
+const dataTime = require('../utils/dateTime.js')
 
 class Order {
   constructor({ id, people, table, items = [], key, status, timestamp, name, note }) {
@@ -9,7 +9,7 @@ class Order {
     this.items = items.map(item => new Dish({ ...item, orderId: this.id }))
     this.key = key || table?.replace('#', '') || ''
     this.status = status || "new"
-    this.timestamp = Date.now() //timestamp || DateTime.now().setZone('Europe/Lisbon').toFormat('yyyy-MM-dd HH:mm:ss')
+    this.timestamp = timestamp || dataTime.get_portugal_timestemp()
     this.name = name;
     this.note = note;
   }

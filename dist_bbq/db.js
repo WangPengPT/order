@@ -2,6 +2,7 @@
 const { MongoClient } = require('mongodb');
 const uri = 'mongodb://localhost:27017';
 const client = new MongoClient(uri);
+const { ObjectId } = require('mongodb');
 
 let db = undefined
 
@@ -65,10 +66,10 @@ class DB {
         }
     }
 
-    static async del(table, id, session = null) {
-        const collection = db.collection(table);
-        await collection.deleteOne({ id: id }, { session });
-    }
+ static async del(table, id, session = null) {
+  const collection = db.collection(table);
+  return await collection.deleteOne({ _id: new ObjectId(id) }, { session });
+}
 
 
     static async getAll(table, session = null) {
@@ -99,6 +100,25 @@ class DB {
         if (datas) return datas
 
         return []
+    }
+
+    static async findOne(table, q, session = null) {
+
+        const collection = db.collection(table);
+        const data = await collection.findOne(q, { session });
+        return data
+    }
+
+    static async updateById(table, id, updatedData, session = null) {
+        const collection = db.collection(table);
+        return await collection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updatedData },
+            { session }
+  );
+}
+    static async cleanTable(table, session = null) {
+        await db.collection(table).deleteMany({}, { session })
     }
 
 }

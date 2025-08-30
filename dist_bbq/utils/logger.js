@@ -1,6 +1,7 @@
 const winston = require('winston')
-const {dirFolder} = require('../filedb.js')
 require('winston-daily-rotate-file') // 引入插件
+
+const dirFolder = process.env.SAVE_ADDR || 'save/default'
 
 const transport = new winston.transports.DailyRotateFile({
   filename: `logs/${dirFolder}/socket-%DATE%.log`,   // 每天一个新文件

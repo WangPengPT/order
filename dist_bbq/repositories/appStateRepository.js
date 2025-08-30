@@ -18,9 +18,8 @@ class AppStateRepository {
 
             await DB.set(this.tableName, {
                 id: id,
-                value: data,
-                session
-            });
+                value: data
+            }, session);
 
             logger.info(`repo: ✅ App state 保存成功 [id=${id}]`);
         } catch (err) {

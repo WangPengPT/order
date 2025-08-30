@@ -88,9 +88,10 @@ class Table {
   }
 
   // 人头总价
-  getTablePeopleTotalAmount(price,childrenPricePercentage){
-    console.log("this.peopleType.getPriceCount(price, this.childrenPricePercentage)",this.peopleType.getPriceCount(price, childrenPricePercentage))
-    return this.peopleType.getPriceCount(price)
+  getTablePeopleTotalAmount(adultPrice,childrenPrice){
+    const totalAdultPrice = this.peopleType.getPriceCount("adults", adultPrice)
+    const totalChildrenPrice = this.peopleType.getPriceCount("children", childrenPrice)
+    return totalAdultPrice + totalChildrenPrice
   }
 
   // 已点菜单总价

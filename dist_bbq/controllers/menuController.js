@@ -1,4 +1,4 @@
-const menuService = require('../services/menuService');
+const {menuService} = require('../services/menuService');
 
 function loadMenu() {
   menuService.loadMenu();

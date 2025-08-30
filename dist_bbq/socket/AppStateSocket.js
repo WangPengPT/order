@@ -1,9 +1,11 @@
 const AppStateService = require("../services/appStateService.js");
 const { logger } = require('../utils/logger.js')
+const {MenuService} = require('../services/menuService.js')
 
 class AppStateSocket {
-    constructor(io, appStateService = new AppStateService()) {
+    constructor(io, appStateService = new AppStateService(), menuService = new MenuService()) {
         this.appStateService = appStateService,
+        this.menuService = menuService
             this.io = io
     }
 
@@ -22,9 +24,9 @@ class AppStateSocket {
 
 
     管理端更新价格
-    updateWeekPrice(value, callback) {
+    updatePriceData(key, value, callback) {
         logger.info(`管理端更改价格`)
-        const res = this.appStateService.updateWeekPrice(value)
+        let res = this.appStateService.updateWeekPrice(key,value)
         if (res.success) {
             logger.info(`管理端更改价格成功`)
         } else {
@@ -35,25 +37,28 @@ class AppStateSocket {
     }
 
     // 管理端获取数据
-    managerGetData(key, value){
+    async managerGetData(key, value, callback){
         let result
         switch (key){
             case "menu":
-                result = this.appStateService.getMenuAndTab()
+                result = await this.menuService.getMenuAndTab()
                 break
             case "weekPrice":
                 result = this.appStateService.appStateRepository.appState.getWeekPrice()
                 break
-            case "children_week_price":
+            case "childrenWeekPrice":
                 result = this.appStateService.appStateRepository.appState.getChildrenWeekPrice()
                 break
-            case "children_price_percentage":
+            case "childrenPricePercentage":
                 result = this.appStateService.appStateRepository.appState.getChildrenPricePercentage()
+                break
+            case "people_data":
+                result = this.appStateService.appStateRepository.appState.getPeopleCurrentPriceData(value.tableId)
                 break
             default:
                 result = {success: false, data: "Not Found Get Key"}
         }
-        return result
+        callback(result)
     }
 
     // 管理端更新数据
@@ -62,8 +67,10 @@ class AppStateSocket {
             case "settings":
                 this.updateSettings(value, callback)
                 break
-            case "week_price":
-                this.updateWeekPrice(value, callback)
+            case "weekPrice":
+            case "childrenWeekPrice":
+            case "childrenPricePercentage":
+                this.updatePriceData(key, value, callback)
                 break
 
             default:
@@ -73,14 +80,12 @@ class AppStateSocket {
 
     registerHandlers(socket) {
 
-        socket.on("manager_get", (key, value, callback)=>{callback(this.managerGetData(key, value))})
+        // manager get data socket
+        socket.on("manager_get", async (key, value, callback) => {await this.managerGetData(key, value, callback)})
 
-        // socket.on("manager_get_menu", (value, bc) => { bc(this.appStateService.getMenuAndTab()) })
-
+        // manager update data socket
         socket.on("manager_update", (key, value,callback) => {this.managerUpdateData(key, value, callback)})
-        // socket.on("manager_update_settings", (key,value,callback) => {this.updateSettings(key, value, callback)})
 
-        // socket.on("update_week_price", (value, callback) => { this.updateWeekPrice(value, callback) })
 
         socket.on("manager_refresh_table", (value, cb) => { cb(this.appStateService.getAllTables()) })
 
@@ -89,6 +94,7 @@ class AppStateSocket {
 
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
         socket.emit("price_data", this.appStateService.appStateRepository.appState.getPriceData())
+        socket.emit("pickup_data", this.appStateService.appStateRepository.appState.getPickupData())
     }
 
 }

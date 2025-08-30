@@ -1,0 +1,194 @@
+const CustomDishRepository = require("../repositories/customDishRepository");
+const templateData = require('../utils/customDishTemplateData.js')
+const DB = require('../db.js');
+const { logger } = require("../utils/logger.js");
+const CustomDishTemplate = require("../model/customDishTemplate.js");
+const { filter } = require("compression");
+
+class CustomDishService {
+    constructor(customDishRepository = new CustomDishRepository()) {
+        this.customDishRepository = customDishRepository
+    }
+
+    async initializeCustomDish() {
+        try {
+            return await DB.withTransaction(async (session) => {
+                logger.info("初始化自定义菜数据")
+                const templatesCount = await this.customDishRepository.templatesLength(session)
+                if (templatesCount === 0) {
+                    logger.info("未找到自定义菜数据，开始创建")
+                    for (const template of templateData.values) {
+                        await this.customDishRepository.saveTemplate(template, session)
+                    }
+                } else {
+                    logger.info("找到现有数据")
+                }
+            })
+        } catch (error) {
+            console.error("error: ", error)
+        }
+    }
+
+    async getCustomDishById(templateId) {
+        try {
+            logger.info("获取自定义菜")
+            const id = Number(templateId)
+            const template = await this.customDishRepository.get(id)
+            if (!template) throw new Error("Not found the custom dish template")
+            const jsonTemplate = template.toJSON()
+            logger.info("自定义菜获取成功")
+            return {
+                success: true,
+                data: jsonTemplate
+            }
+        } catch (error) {
+            logger.info("自定义菜获取失败")
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+
+    }
+
+    async addNew(template) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                if (!template) throw new Error("Empty input")
+                const maxId = await this.customDishRepository.templatesLength(session) + 1
+                const templateInstance = template instanceof CustomDishTemplate
+                    ? template
+                    : CustomDishTemplate.fromJSON(template)
+                templateInstance.id = maxId
+                const id = await this.customDishRepository.saveTemplate(templateInstance, session)
+                const newTemplate = await this.customDishRepository.get(id, session)
+                if (newTemplate.id !== templateInstance.id) throw new Error("Faild create template")
+                return {
+                    success: true,
+                    data: id
+                }
+            })
+
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    async updateLike(id, isLike) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                const templateId = Number(id)
+                const template = await this.customDishRepository.get(templateId, session)
+                if (isLike) {
+                    template.likeDish()
+                } else {
+                    template.unlikeDish()
+                }
+                await this.customDishRepository.update(template, session)
+                return {
+                    success: true,
+                    data: { like: template.like, rate: template.rate }
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    async getAllTemplates() {
+        try {
+            const result = await this.customDishRepository.getAllTemplates()
+            return {
+                success: true,
+                data: result
+            }
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    async getSimplyAllTemplate() {
+        try {
+            const result = await this.customDishRepository.getAllTemplates().map((it) => {
+                return {
+                    id: it.id,
+                    name: it.name,
+                    enable: it.enable
+                }
+            })
+            return {
+                success: true,
+                data: result
+            }
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    async getAllEnableTemplates() {
+        try {
+            const result = await this.customDishRepository.getAllEnableTemplates()
+            return {
+                success: true,
+                data: result
+            }
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    async updateEnbale(newState) {
+        try {
+            return await DB.withTransaction(async (session) => {
+
+                const id = Number(newState.id)
+                const template = await this.customDishRepository.get(id, session)
+                if (template.enable !== newState.enable) {
+                    template.enable = newState.enable
+                    await this.customDishRepository.update(template, session)
+                }
+
+                const newTemplate = await this.customDishRepository.get(template.id, session)
+                if (newTemplate.enable !== newState.enable) {
+                    throw new Error("Faild update the custom dish enable")
+                }
+                const json = newTemplate.toJSON()
+                return {
+                    success: true,
+                    data: json
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+}
+
+module.exports = {
+    CustomDishService
+}

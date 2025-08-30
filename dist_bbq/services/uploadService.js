@@ -1,6 +1,6 @@
 const fs = require('fs');
 const csv = require('csv-parser');
-const menuService = require('./menuService.js')
+const {menuService} = require('./menuService.js')
 const {logger} = require("../utils/logger");
 
 const xkeys = [

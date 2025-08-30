@@ -13,7 +13,10 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
 });
 
+const memoryStorage = multer.memoryStorage()
+
 const upload = multer({ storage });
+const memoryUpload = multer({ memoryStorage })
 
 const uploadMiddleware = multer({
   storage: multer.diskStorage({
@@ -32,4 +35,4 @@ const uploadMiddleware = multer({
 });
 
 
-module.exports = {upload, uploadMiddleware};
+module.exports = {upload, uploadMiddleware, memoryUpload};

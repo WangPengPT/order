@@ -6,7 +6,6 @@ const WeekPrice = require("./model/WeekPrice");
 
 class AppState {
     constructor() {
-        this.specialDishes = [{category: "My BOX"}, {category: "Bibimbap"}]
         this.menu = []
         this.orderMenuTab = []
         this.orders = new Map()
@@ -15,15 +14,18 @@ class AppState {
         this.maxOrderId = 0
 
         this.settings = {
-            hasBox: true,
-            hasBibimbap: true,
             checkIP: false,
             delivery: false,
             isFestiveDay: false,
             peoplePrice: false,
-            useChildrenDiscount: false
+            useChildrenDiscount: false,
+            dividerTime: 17,
         }
 
+        this.pickupData = {
+            timeInterval: 15, // 每隔15分钟取一次餐
+            beginEndInterval: {}, // 默认从12点到15点，19点到23点
+        }
         this.currentPageID = 1
 
         this.shopType = {
@@ -32,14 +34,16 @@ class AppState {
         }
 
         this.childrenPricePercentage = 50
-        this.weekPrice = new WeekPrice()
-        this.childrenWeekPrice = new WeekPrice()
+        this.weekPrice = new WeekPrice(this.settings.dividerTime)
+        this.childrenWeekPrice = new WeekPrice(this.settings.dividerTime)
 
         this.initTables()
+        this.initPickupDataBeginEndInterval()
 
-        this.recordProps(this, ['menu'])
+        this.recordProps(this, ['menu', 'orderMenuTab'])
     }
 
+    // 所有 init 函数
     initTables() {
         const iniTable = [];
         const tablesNumber = []
@@ -56,6 +60,14 @@ class AppState {
 
     }
 
+    initPickupDataBeginEndInterval(){
+        const days = ["special","monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
+        const iniInterval = {}
+        for(const day of days){
+            iniInterval[day] = [{begin:{hour:12,minute:0},end:{hour:15,minute:0}},{begin:{hour:19,minute:0},end:{hour:23,minute:0}}]
+        }
+        this.pickupData.beginEndInterval = iniInterval
+    }
 
     // 所有 Get 函数
     getPriceData(){
@@ -63,6 +75,42 @@ class AppState {
             weekPrice: this.weekPrice.getAllPrices(),
             childrenWeekPrice: this.childrenWeekPrice.getAllPrices(),
             childrenPricePercentage: this.childrenPricePercentage,
+        }
+        return result
+    }
+
+    getPeopleCurrentPriceData(tableId){
+        let success = false
+        const data = []
+        const peopleType = this.tables.getTableById(tableId).peopleType
+        for(const key in peopleType){
+            const price = key.toLowerCase().includes("adult") ? this.getAdultCurrentPrice() : this.getChildrenCurrentPrice()
+            data.push({
+                peopleType: key,
+                price: price,
+                quantity: peopleType[key],
+                totalPrice: (peopleType[key] * price).toFixed(2),
+            })
+        }
+        if(Object.keys(data).length >= 0) success = true
+        return { success:success, data:data }
+    }
+
+    getAdultCurrentPrice(){
+        return this.weekPrice.getCurrentPrice()
+    }
+
+    getChildrenCurrentPrice(){
+        const childrenPrice = this.settings.useChildrenDiscount?
+            (this.getAdultCurrentPrice() * this.childrenPricePercentage / 100 ) : this.childrenWeekPrice.getCurrentPrice()
+        // console.log("getChildrenCurrentPrice:",childrenPrice)
+        return childrenPrice
+    }
+
+    getPickupData(){
+        const result = {}
+        for(const key in this.pickupData){
+            result[key] = this.pickupData[key]
         }
         return result
     }
@@ -92,10 +140,16 @@ class AppState {
     }
 
     // 所有 Update 函数
-
-
     updateSettings(key, value) {
+        console.log("key:", key)
+        console.log("value: ", value)
         this.settings[key] = value
+        console.log("res: ", key,this.settings[key])
+    }
+
+    updateChildrenPricePercentage(percentage){
+        this.childrenWeekPrice = percentage
+        return this.childrenWeekPrice
     }
 
     createTable(startIdx, endIdx) {
@@ -294,10 +348,18 @@ class AppState {
         const table = this.tables.getTableById(tableId)
         if (table == null) throw new Error('Not found the table')
         const tableOrdersAmount = parseFloat(table.getTableOrdersTotalAmount())
-        const tablePeoplesAmount = parseFloat(table.getTablePeopleTotalAmount(this.weekPrice.getCurrentPrice(), this.childrenPricePercentage))
-        console.log("tablePeoplesAmount",tablePeoplesAmount)
+
+        const adultPrice = this.getAdultCurrentPrice()
+        const childrenPrice = this.getChildrenCurrentPrice()
+        const tablePeoplesAmount = parseFloat(table.getTablePeopleTotalAmount(adultPrice, childrenPrice))
+
+        const adultQty = table.peopleType.adults
+        const childrenQty = table.peopleType.children
+
         return {
-            total: (tableOrdersAmount + tablePeoplesAmount).toFixed(2)
+            total: (tableOrdersAmount + tablePeoplesAmount).toFixed(2),
+            adultPrice: {quantity: adultQty,price: adultPrice},
+            childrenPrice: {quantity: childrenQty,price: childrenPrice}
         }
     }
 

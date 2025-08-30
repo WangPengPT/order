@@ -3,7 +3,7 @@ const { getImagePath, formatedPublicUploadsDir, hasSomeFile, deleteOldLogo } = r
 const menuController = require('./menuController');
 const { WebPageDesignService } = require('../services/webPageDesignService.js')
 const { logger } = require('../utils/logger.js')
-const { pagesManager } = require("../model/pages")
+const db = require('../filedb.js')
 const fs = require('fs');
 const path = require('path')
 
@@ -34,14 +34,14 @@ class UploadController {
     try {
       if (file.path.split('.').pop() == "csv") {
         const rows = await uploadService.processCSV(file, req.body.update_all);
-        console.log("update csv count:", rows.length);
       }
       else {
         const rows = await uploadService.processJSON(file, req.body.update_all);
-        console.log("update json count:", rows.length);
       }
 
-      menuController.loadMenu();                  // 刷新菜单
+      const d = db.loadData('menu', []);
+
+      menuController.loadMenu(d);                  // 刷新菜单
 
       logger.info("菜单上传成功")
       res.json({ success: true, msg: 'Processed OK' });

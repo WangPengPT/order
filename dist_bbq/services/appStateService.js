@@ -4,12 +4,14 @@ const db = require('../filedb.js');
 const DB = require('../db.js');
 const { logger } = require('../utils/logger.js');
 const AppStateRepository = require('../repositories/appStateRepository.js');
-const OrderQuantityRepository = require('../repositories/orderQuantityRepository.js');
+const OrderQuantityRepository = require('../repositories/dailyOrderRepository.js');
+const CustomDishRepository = require('../repositories/customDishRepository.js');
 
 class AppStateService {
-    constructor(appStateRepository = new AppStateRepository(appState), orderQuantityRepository = new OrderQuantityRepository()) {
+    constructor(appStateRepository = new AppStateRepository(appState), orderQuantityRepository = new OrderQuantityRepository(), customDishRepository = new CustomDishRepository()) {
         this.appStateRepository = appStateRepository;
         this.orderQuantityRepository = orderQuantityRepository
+        this.customDishRepository = customDishRepository
     }
 
     async loadAppState() {
@@ -21,20 +23,31 @@ class AppStateService {
                 logger.info(`加载现有数据`);
             } else {
                 logger.info(`创建新数据`);
+
+                const customDishTemplates = await this.customDishRepository.getAllTemplates()
+                const customDishes = customDishTemplates.map((it) => {
+                    return {
+                        id: it.id,
+                        name: it.name,
+                        enable: it.enable
+                    }
+                })
+                this.appStateRepository.appState.settings.customDishes = customDishes
             }
+
             // tablesPassword.init(appState.tables);
         } catch (error) {
             console.warn("错误: ", error);
         }
     }
 
-    updateSettings(key, value){
+    updateSettings(key, value) {
         try {
             appState.updateSettings(key, value)
-            if (appState.settings[key] === value) return {success: true, data: value}
-            else throw new Error(key+"更新失败")
+            if (appState.settings[key] === value) return { success: true, data: value }
+            else throw new Error(key + "更新失败")
         } catch (error) {
-            return {success: false, data: error.message}
+            return { success: false, data: error.message }
         }
     }
 
@@ -188,14 +201,26 @@ class AppStateService {
         }
     }
 
-    updateWeekPrice(price) {
+    updateWeekPrice(key, price) {
         try {
-            const newPrices = this.appStateRepository.appState.weekPrice.setAllPrices(price);
+            console.log("updateWeekPrice", key, price);
+            const newPrices = this.appStateRepository.appState[key].setAllPrices(price);
             return { success: true, data: newPrices };
         } catch (error) {
             console.warn("Error: ", error);
             return { success: false, data: error.message };
         }
+    }
+
+    updataChildrenPricePercentage(percentage) {
+        try {
+            const newPercentage = this.appStateRepository.appState.updateChildrenPricePercentage(percentage)
+            return { success: true, data: newPercentage };
+        } catch (error) {
+            console.error("Error: ", error);
+            return { success: false, data: error.message };
+        }
+
     }
 
     getTableTotalAmout(tableId) {
@@ -206,42 +231,6 @@ class AppStateService {
         } catch (error) {
             console.warn("Error: ", error);
             return { success: false, data: error.message };
-        }
-    }
-
-    setHasBox(value) {
-        try {
-            if (typeof value !== "boolean") throw new Error('Invalid input');
-            this.appStateRepository.appState.setHasBox(value);
-            return { success: true, data: this.appStateRepository.appState.hasBox };
-        } catch (error) {
-            console.warn("Error: ", error);
-            return { success: false, data: error.message };
-        }
-    }
-
-    getHasBox() {
-        return this.appStateRepository.appState.hasBox;
-    }
-
-    getMenuAndTab() {
-        return { success: true, data: { menu: this.appStateRepository.appState.menu, menuTab: this.appStateRepository.appState.orderMenuTab } };
-    }
-
-    updateSpecialDishRates(dish) {
-        const findSpecialDish = this.appStateRepository.appState.specialDishes.find(item => item.category === dish.category);
-        if (findSpecialDish) {
-            findSpecialDish.rates = findSpecialDish.rates ? findSpecialDish.rates + dish.rate : 1;
-            const like = dish.rate === 0 ? dish.like : dish.like === 1 ? 1 : 0;
-            findSpecialDish.likes = (findSpecialDish.likes || 0) + like;
-            const findMonthRates = findSpecialDish.monthRates || { rates: 0, likes: 0 };
-            findMonthRates.rates += dish.rate;
-            findMonthRates.likes += like;
-            findSpecialDish.monthRates = findMonthRates;
-            return { success: true, data: this.appStateRepository.appState.specialDishes };
-        } else {
-            console.log("Special Dish Not Found");
-            return { success: false, data: "Special Dish Not Found" };
         }
     }
 
