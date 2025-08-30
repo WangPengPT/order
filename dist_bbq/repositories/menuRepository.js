@@ -55,6 +55,7 @@ class MenuRepository {
                 ...oldDish,
                 ...dish
             }
+            console.log("newDish: ", newDish)
             await DB.setValue(this.tableName, id, newDish, session)
             logger.info(`repo: ✅ menu 更新成功 [id=${id}]`);
         } catch (error) {
@@ -82,7 +83,7 @@ class MenuRepository {
         try {
             await DB.del(this.tableName, id, session)
         } catch (error) {
-            logger.error(`repo:❌ 保存 menu 失败: ${error}`);
+            logger.error(`repo:❌ 删除 菜品 失败: ${error}`);
             throw error;
         }
     }
@@ -92,7 +93,7 @@ class MenuRepository {
             await DB.cleanTable(this.tableName, session)
             await this.saveMenu(menu, session)
         } catch (error) {
-            logger.error(`repo:❌ 保存 menu 失败: ${error}`);
+            logger.error(`repo:❌ 更新 menu 失败: ${error}`);
             throw error;
         }
     }

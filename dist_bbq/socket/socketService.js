@@ -306,9 +306,8 @@ class SocketServices {
         console.log("In menu update item socket")
         try {
          let id = item._id;
+         if (!id) id = item.id
         if (item.org_id) id = item.org_id;
-
-        
 
         console.log("item:", item)
           // Update MongoDB
@@ -382,9 +381,9 @@ class SocketServices {
         callback(result)
       })
 
-      socket.on('manager_delete_item', (id, callback) => {
+      socket.on('manager_delete_item', async (id, callback) => {
         logger.info(`管理端删除-ID: ${id}`)
-        const result = this.menuService.deleteItem(id)
+        const result = await this.menuService.deleteItem(id)
         if (result.success) {
           logger.info(`管理端删除${result.data}成功`)
         } else {

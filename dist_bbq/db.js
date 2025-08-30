@@ -68,7 +68,7 @@ class DB {
 
  static async del(table, id, session = null) {
   const collection = db.collection(table);
-  return await collection.deleteOne({ _id: new ObjectId(id) }, { session });
+  return await collection.deleteOne({ id: id }, { session });
 }
 
 

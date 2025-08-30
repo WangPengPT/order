@@ -389,6 +389,7 @@ class MenuService {
   }
 
   async updatedMenuById(dish) {
+    console.log("service dish: ", dish)
     if (!dish.id) return null
     await this.menuRespository.update(dish)
   }
