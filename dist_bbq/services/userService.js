@@ -5,7 +5,7 @@ const UserRepository = require('../repositories/userRepository.js');
 const DB = require('../db.js');
 
 const ADMIN_PHONE = 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASS || "1015";
+const ADMIN_PASSWORD = process.env.ADMIN_PASS || "0000";
 
 class UserService {
     constructor(usersRepository = new UserRepository()) {
