@@ -97,7 +97,7 @@ class CenterSocket {
                 rawData += chunk;
             }); // 逐块拼接
             response.on('end', () => {
-                console.log(rawData);
+                //console.log(rawData);
                 send(rawData)
             });   // 最终处理
         });

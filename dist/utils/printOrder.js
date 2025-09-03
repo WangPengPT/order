@@ -97,6 +97,12 @@ function print_orde_to_io(printer, order, every_one) {
                 name = item.name + " - " + name;
             }
 
+            if (item.notes) {
+                for (let j = 0; j < item.notes.length; j++) {
+                    add_print("  " + item.notes[j]);
+                }
+            }
+
             add_print(BLOD_HAD + item.dishid + "   x " + item.quantity);
             add_print(BLOD_HAD + name);
             if (item.dishNote) {

@@ -85,20 +85,9 @@ init() {
     return deepMerge(template, data);
   }
 
-  loadWelcomeImages() {
-    const allWelcomeFiles = db.getWelcomeImageFiles(this.welcomePath);
-    if (this.data.images_description.images.length < allWelcomeFiles.length) {
-      logger.info("内存图片地址丢失，重新导入中")
-      const imageList = allWelcomeFiles
-        .map(filename => ({
-          imagePath: db.getImagePath(this.welcomePath, filename)
-        }));
-      this.data.images_description.images = imageList
-    }
-  }
-
   loadWelcomeLogo() {
     const hasFiles = db.hasSomeFile(db.formatedPublicUploadsDir(this.data.logoPath))
+    /*
     if (this.data.logoPath === "" || !hasFiles) {
       logger.info("发现没有LOGO，尝试导入")
       const file = db.getWelcomeLogoFile(this.logoPath)
@@ -111,6 +100,7 @@ init() {
         this.data.logoPath = ""
       }
     }
+      */
   }
 }
 

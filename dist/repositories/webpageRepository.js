@@ -8,14 +8,15 @@ class WebPageRepository {
     }
 
     async getPageById(pageId, session = null) {
-        const raw = await DB.get(this.tableName, pageId, null,session)
+        const raw = await DB.get(this.tableName, pageId, null, session)
         if (!raw) return null
         const page = Page.fromJSON(raw.value)
         return page
     }
 
-    async savePage(page, id = "default", session = null) {
+    async savePage(page, session = null) {
         try {
+            const id = page.id
             const json = page.toJSON()
             await DB.set(this.tableName, {
                 id: id,
@@ -28,14 +29,14 @@ class WebPageRepository {
     }
 
     async savePages(pages, session = null) {
-        pages.forEach((page) => {
-            this.savePage(page, page.id, session)
+        pages.forEach(async (page) => {
+            await this.savePage(page, session)
         })
     }
 
     async updatePage(page, session = null) {
         const json = page.toJSON()
-        DB.setValue(this.tableName, page.id, json,session)
+        DB.setValue(this.tableName, page.id, json, session)
     }
 
     async deletePage(pageId, session = null) {
@@ -58,8 +59,11 @@ class WebPageRepository {
             if (!Array.isArray(result)) throw new Error("Loaded page isn't array")
             const pages = new Pages()
             result.forEach(data => {
-                const page = Page.fromJSON(data.value)
-                pages.add(page)
+                const json = data.value
+                if (json) {
+                    const page = Page.fromJSON(json)
+                    pages.add(page)
+                }
             })
             return pages
         } catch (error) {
@@ -73,11 +77,6 @@ class WebPageRepository {
         if (!datas) return false;
         if (!Array.isArray(datas)) throw new Error("Type error")
         return datas.length !== 0
-    }
-
-    async create(page, session = null) {
-        const json = page.toJSON()
-        await DB.set(this.tableName, json, session)
     }
 
 }

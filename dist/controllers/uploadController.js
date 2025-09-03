@@ -5,7 +5,7 @@ const { WebPageDesignService } = require('../services/webPageDesignService.js')
 const { logger } = require('../utils/logger.js')
 const db = require('../filedb.js')
 const fs = require('fs');
-const path = require('path')
+const path = require("path");
 
 
 const publicDir = path.join(process.cwd(), 'public', 'uploads')
@@ -119,54 +119,105 @@ class UploadController {
     }
   }
 
-  async handleUploadWelcomeImage(req, res) {
+  // async handleUploadWelcomeImage(req, res) {
+  //   logger.info("上传主页照片");
+  //   // 检查多文件
+  //   try {
+  //     const { id, logo, titleImages, informationImages } = req.body;
+  //     const page = await this.webPageDesignService.webPageRepository.getPageById(Number(id))
+  //     const imagesPath = page.imagesPath
+  //   const uploadDir = path.join(process.cwd(), db.pageDir, imagesPath); // 保存目录
+  //   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+  //   // 保存单张 logo
+  //   if (logo?.file && logo.filename) {
+  //     const logoPath = path.join(uploadDir, logo.filename);
+  //     const buffer = Buffer.from(logo.file, 'base64');
+  //     fs.writeFileSync(logoPath, buffer);
+  //   }
+
+  //   // 保存多张 titleImages
+  //   if (Array.isArray(titleImages)) {
+  //     for (const img of titleImages) {
+  //       if (img.file && img.filename) {
+  //         const imgPath = path.join(uploadDir, img.filename);
+  //         const buffer = Buffer.from(img.file, 'base64');
+  //         fs.writeFileSync(imgPath, buffer);
+  //       }
+  //     }
+  //   }
+
+  //   // 保存多层嵌套的 informationImages
+  //   if (Array.isArray(informationImages)) {
+  //     for (const frame of informationImages) {
+  //       for (const info of frame) {
+  //         for (const img of info) {
+  //           if (img.file && img.filename) {
+  //             const imgPath = path.join(uploadDir, img.filename);
+  //             const buffer = Buffer.from(img.file, 'base64');
+  //             fs.writeFileSync(imgPath, buffer);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   res.json({ success: true, message: '文件保存成功' });
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).json({ error: '保存文件失败' });
+  // }
+  // }
+
+     handleUploadWelcomeImage = async (req, res) => {
     logger.info("上传主页照片");
     // 检查多文件
     try {
-      if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ error: '没有上传文件' });
+      console.log('上传主页照片');
+
+      // 获取 pageId
+      const pageId = req.body.id;
+      if (!pageId) {
+        return res.status(400).json({ error: '缺少 pageId' });
       }
 
-      const body = await req.body
-      const id = body.id
-      const page = await this.webPageDesignService.webPageRepository.getPageById(Number(id))
-      if (!page) throw new Error("Not found the page")
-
-      const imageFolder = formatedPublicUploadsDir(page.imagesPath)
-      // 确保目标目录存在（不存在则自动创建）
-      if (!fs.existsSync(imageFolder)) {
-        fs.mkdirSync(imageFolder, { recursive: true });
-        logger.info(`创建目录: ${imageFolder}`);
+      const page = await this.webPageDesignService.webPageRepository.getPageById(Number(pageId))
+      if (!page) {
+        return res.status(404).json({ error: '页面不存在' });
       }
 
-      const uploadedUrls = [];
+      const imagesPath = page.imagesPath;
+      const uploadDir = path.join(process.cwd(), db.pageDir, imagesPath);
+      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-      // 处理每个文件
-      for (const file of req.files) {
-        let name = file.filename;
-        let pos = name.indexOf("-");
-        let endPos = name.lastIndexOf(".");
-        name = name.substring(0, pos) + name.substring(endPos);
-
-        const fullPublicPath = path.join(imageFolder, name);
-
-        // 复制文件到目标目录
-        fs.copyFileSync(file.path, fullPublicPath);
-        uploadedUrls.push(getImagePath(page.imagesPath, name));
-        // 删除临时文件
-        fs.unlink(file.path, () => { });
+      // 单张 logo
+      if (req.files['logo'] && req.files['logo'].length > 0) {
+        const logoFile = req.files['logo'][0];
+        fs.renameSync(logoFile.path, path.join(uploadDir, logoFile.originalname));
       }
-      await this.webPageDesignService.uploadedWelcomeImages(id, uploadedUrls)
 
-      res.json({
-        success: true,
-        imageUrls: uploadedUrls
-      });
+      // 多张标题图
+      if (req.files['titleImages'] && req.files['titleImages'].length > 0) {
+        for (const file of req.files['titleImages']) {
+          fs.renameSync(file.path, path.join(uploadDir, file.originalname));
+        }
+      }
+
+      // 多层嵌套的描述图
+      if (req.files['informationImages'] && req.files['informationImages'].length > 0) {
+        for (const file of req.files['informationImages']) {
+          // 可以根据需要生成唯一文件名或者保留原始文件名
+          fs.renameSync(file.path, path.join(uploadDir, file.originalname));
+        }
+      }
+
+      return res.json({ success: true, message: '文件保存成功' });
 
     } catch (err) {
-      logger.error('文件处理失败:', err.message);
-      res.status(500).json({ error: '服务器处理文件时出错' });
+      console.error('文件上传失败', err);
+      return res.status(500).json({ error: '保存文件失败' });
     }
+
   }
 
 }

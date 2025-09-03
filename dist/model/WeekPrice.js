@@ -3,7 +3,7 @@ class WeekPrice {
     constructor(dividerTime){
         this.dividerTime = dividerTime || 17 // 区分午餐与晚餐时间
 
-        this.weekName = ["special","monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
+        this.weekName = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday","special"]
         for(const dayName of this.weekName){
             this[dayName] = {lunch: 0, dinner: 0}
         }
@@ -36,10 +36,10 @@ class WeekPrice {
     }
 
     getDayPrice(day) {
-        if(day>0 && day<8){
+        if(day>=0 && day<7){
             return this[this.weekName[day]]
         }else{
-            return this[this.weekName[0]]
+            return this[this.weekName[7]]
         }
     }
 

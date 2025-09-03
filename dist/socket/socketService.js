@@ -96,6 +96,7 @@ class SocketServices {
         ADDR: process.env.ADDR,
         ENABLE_ROAST_DUCK: ENABLE_ROAST_DUCK,
         TEST_ENVIRONMENT: process.env.TEST_ENVIRONMENT,
+        pageDir: db.pageDir,
         shopType: appState.shopType,
         restaurant: centerSocket.getRestaurant()
       });

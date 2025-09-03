@@ -22,11 +22,29 @@ class AppStateSocket {
         callback(result)
     }
 
+    updatePickupDate(value, callback){
+        logger.info(`更新取餐数据${value.key}:${value.value}`)
+        const result = this.appStateService.updatePickupDate(value.key, value.value)
+        if(result.success){
+            logger.info(`管理端更新取餐数据${value.key}成功`)
+            this.io.emit("client_send_pickupDate", {key: value.key, value: result.data})
+        }else{
+            logger.info(`管理端更${value.key}失败`)
+            logger.info(`失败原因: ${result.data}`)
+        }
+        callback(result)
+    }
+
 
     管理端更新价格
     updatePriceData(key, value, callback) {
         logger.info(`管理端更改价格`)
-        let res = this.appStateService.updateWeekPrice(key,value)
+        let res
+        if(key == 'childrenPricePercentage'){
+            res = this.appStateService.updataChildrenPricePercentage(value)
+        }else{
+            res = this.appStateService.updateWeekPrice(key,value)
+        }
         if (res.success) {
             logger.info(`管理端更改价格成功`)
         } else {
@@ -67,12 +85,14 @@ class AppStateSocket {
             case "settings":
                 this.updateSettings(value, callback)
                 break
+            case "childrenPricePercentage":
             case "weekPrice":
             case "childrenWeekPrice":
-            case "childrenPricePercentage":
                 this.updatePriceData(key, value, callback)
                 break
-
+            case "pickup_data":
+                this.updatePickupDate(value, callback)
+                break
             default:
                 callback({success: false, data: "Not Found Update Key"})
         }
