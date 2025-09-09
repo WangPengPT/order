@@ -1,7 +1,7 @@
 const {menuService} = require('../services/menuService');
 
-function loadMenu() {
-  menuService.loadMenu();
+async function loadMenu() {
+  await menuService.loadMenu();
 };
 
 function getMenu() {

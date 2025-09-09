@@ -331,13 +331,18 @@ function getImageAbsolutPath(imagesPath, name) {
 }
 
 function importPageImages(images, imagesPath) {
-    const paths = pageDir.split('/').filter(it => it !== '')
-    
-    images.forEach(element => {
-        const folderDir = path.join(process.cwd(), ...paths, imagesPath, element.name)
-        fs.writeFileSync(folderDir, element.data)
-    });
-    
+  const paths = pageDir.split('/').filter(it => it !== '')
+
+  images.forEach(element => {
+    const folderDir = path.join(process.cwd(), ...paths, imagesPath)
+
+    if (!fs.existsSync(folderDir)) {
+      fs.mkdirSync(folderDir, { recursive: true })
+    }
+
+    const filePath = path.join(folderDir, element.name)
+    fs.writeFileSync(filePath, element.data)
+  })
 }
 
 module.exports = {

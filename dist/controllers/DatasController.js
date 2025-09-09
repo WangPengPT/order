@@ -152,21 +152,22 @@ class DatasController {
       const images = []
       zipEntries.forEach(entry => {
         if (entry.entryName.endsWith('.json')) {
-          jsonFiles.push(entry.getData().toString('utf-8')) // 读取 JSON 字符串
+          jsonFiles.push(JSON.parse(entry.getData().toString('utf-8'))) // 读取 JSON 字符串
         } else if (/\.(jpg|jpeg|png|webp)$/i.test(entry.entryName)) {
           images.push({ name: entry.entryName, data: entry.getData() }) // buffer
         }
       })
-      const uploaded = await this.pageService.importPage(jsonFiles[0])
+      const pageData = jsonFiles[0]
+      const uploaded = await this.pageService.importPage(pageData)
       if (!uploaded.success) {
         return res.status(400).json({ error: '数据导入失败' })
       }
 
-      importPageImages(images, jsonFiles[0].imagesPath)
+      importPageImages(images, pageData.imagesPath)
 
     } catch (error) {
-      console.error(err)
-      res.status(400).json({ message: err.message })
+      console.error(error)
+      res.status(400).json({ message: error.message })
     }
 
   }
