@@ -153,7 +153,7 @@ class DatasController {
       zipEntries.forEach(entry => {
         if (entry.entryName.endsWith('.json')) {
           jsonFiles.push(JSON.parse(entry.getData().toString('utf-8'))) // 读取 JSON 字符串
-        } else if (/\.(jpg|jpeg|png|webp)$/i.test(entry.entryName)) {
+        } else if (/\.(jpg|jpeg|png|webp|ico)$/i.test(entry.entryName)) {
           images.push({ name: entry.entryName, data: entry.getData() }) // buffer
         }
       })
