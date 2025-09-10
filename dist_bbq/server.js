@@ -11,7 +11,7 @@ const { authMiddleware } = require('./middlewares/authMiddleware.js')
 const menuController = require('./controllers/menuController.js');
 const { UploadController } = require('./controllers/uploadController.js');
 const { SocketServices } = require('./socket/socketService.js');
-const {upload, uploadMiddleware, memoryUpload} = require('./middlewares/uploadMiddleware.js');
+const {upload, memoryUpload} = require('./middlewares/uploadMiddleware.js');
 const { logger } = require('./utils/logger.js')
 const { webPageDesignService } = require("./services/webPageDesignService.js");
 const DB = require("./db.js");
@@ -83,11 +83,12 @@ const uploadController = new UploadController(socketService.webPageDesignSocket.
 // 路由只保留上传接口
 app.post('/upload', upload.any(), uploadController.handleUpload);
 app.post('/upload_image', upload.single('image'), uploadController.handleUploadImage);
-app.post('/upload_welcomeImage', 
-  uploadMiddleware.array('image', 5),
-  (req, res) => {
-    uploadController.handleUploadWelcomeImage(req, res)
-  }
+app.post('/api/upload_welcomeImage',
+  upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'titleImages' },
+  { name: 'informationImages' }]),
+    uploadController.handleUploadWelcomeImage
 );
 app.post('/upload_logo', upload.single('image'),
   (req, res) => {
@@ -97,6 +98,9 @@ app.post('/upload_logo', upload.single('image'),
 
 app.get('/api/exportDatas', authMiddleware, datasController.exportDatas)
 
+app.get('/api/exportPage/:id', authMiddleware, datasController.exportPage)
+
+app.post('/api/import/page', memoryUpload.single('page'), datasController.importPage)
 
 app.post('/api/import/appState', authMiddleware, memoryUpload.single('file'), datasController.importAppState)
 

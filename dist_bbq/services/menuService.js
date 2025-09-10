@@ -3,6 +3,7 @@ const CustomDishRepository = require('../repositories/customDishRepository.js');
 const { appState } = require('../state.js');
 const { mergeFilteredExact } = require('../utils/mergeFilteredExact.js');
 const MenuRepository = require('../repositories/menuRepository.js');
+const DB = require('../db.js');
 
 class MenuService {
   constructor(menuRespository = new MenuRepository(), customeDishRepository = new CustomDishRepository()) {
@@ -11,84 +12,82 @@ class MenuService {
   }
 
   // 载入菜单数据
-  async loadMenu(inMenu) {
+  async loadMenu() {
     try {
-      let menu;
-      if (!inMenu) {
-        menu = await this.menuRespository.getMenu();
-      } else {
-        await this.menuRespository.saveMenu(inMenu);
-        menu = inMenu // 额外操作
-      }
 
-      const category = {};
-      for (let i = 0; i < menu.length; i++) {
-        const value = menu[i];
-        if (value.category && (value.category != "") && (!category[value.handle])) {
-          category[value.handle] = value.category;
+      return await DB.withTransaction(async (session) => {
+        const menu = await this.menuRespository.getMenu(session);
+
+        const category = {};
+        for (let i = 0; i < menu.length; i++) {
+          const value = menu[i];
+          if (value.category && (value.category != "") && (!category[value.handle])) {
+            category[value.handle] = value.category;
+          }
         }
-      }
-      let dishCategory = {}
-      for (let i = 0; i < menu.length; i++) {
-        const value = menu[i];
-        if (category[value.handle]) {
-          dishCategory[value.id] = category[value.handle];
+        let dishCategory = {}
+        for (let i = 0; i < menu.length; i++) {
+          const value = menu[i];
+          if (category[value.handle]) {
+            dishCategory[value.id] = category[value.handle];
+          }
         }
-      }
 
-      appState.dishCategory = dishCategory
+        appState.dishCategory = dishCategory
 
 
-      const tags = {};
-      for (let i = 0; i < menu.length; i++) {
-        const value = menu[i];
-        if (value.tags && (value.tags != "") && (!tags[value.handle])) {
-          tags[value.handle] = value.tags;
+        const tags = {};
+        for (let i = 0; i < menu.length; i++) {
+          const value = menu[i];
+          if (value.tags && (value.tags != "") && (!tags[value.handle])) {
+            tags[value.handle] = value.tags;
+          }
         }
-      }
-      let dishTags = {}
-      for (let i = 0; i < menu.length; i++) {
-        const value = menu[i];
-        if (tags[value.handle]) {
-          dishTags[value.id] = tags[value.handle];
+        let dishTags = {}
+        for (let i = 0; i < menu.length; i++) {
+          const value = menu[i];
+          if (tags[value.handle]) {
+            dishTags[value.id] = tags[value.handle];
+          }
         }
-      }
-      appState.dishTags = dishTags;
+        appState.dishTags = dishTags;
 
-      appState.menu = menu;
+        appState.menu = menu;
 
-      const localTabs = db.loadData('orderMenuTab', []);
-      appState.orderMenuTab = localTabs
+        const localTabs = db.loadData('orderMenuTab', []);
+        appState.orderMenuTab = localTabs
 
-      const types = [];
+        const types = [];
 
-      for (let i = 0; i < appState.menu.length; i++) {
-        const value = appState.menu[i];
-        if (!types.includes(value.category)) {
-          if (value.category != "") types.push(value.category);
+        for (let i = 0; i < appState.menu.length; i++) {
+          const value = appState.menu[i];
+          if (!types.includes(value.category)) {
+            if (value.category != "") types.push(value.category);
+          }
         }
-      }
 
-      const orderTabs = [];
+        const orderTabs = [];
 
-      for (let i = 0; i < appState.orderMenuTab.length; i++) {
-        const tab = appState.orderMenuTab[i];
-        if (types.includes(tab)) {
-          orderTabs.push(tab);
+        for (let i = 0; i < appState.orderMenuTab.length; i++) {
+          const tab = appState.orderMenuTab[i];
+          if (types.includes(tab)) {
+            orderTabs.push(tab);
+          }
         }
-      }
 
-      for (let i = 0; i < types.length; i++) {
-        const tab = types[i];
-        if (!orderTabs.includes(tab)) {
-          orderTabs.push(tab);
+        for (let i = 0; i < types.length; i++) {
+          const tab = types[i];
+          if (!orderTabs.includes(tab)) {
+            orderTabs.push(tab);
+          }
         }
-      }
 
-      const customDish = await this.customeDishRepository.getAllEnableTemplates()
-      const names = customDish.map(it => it.name)
-      const tabs = mergeFilteredExact(names, types, localTabs);
-      this.saveOrderMenuTab(tabs)
+        const customDish = await this.customeDishRepository.getAllEnableTemplates(session)
+        const names = customDish.map(it => it.name)
+        const tabs = mergeFilteredExact(names, types, localTabs);
+        this.saveOrderMenuTab(tabs)
+      })
+
     } catch (error) {
       console.warn("Error: ", error)
     }
@@ -129,6 +128,8 @@ class MenuService {
 
     try {
       //console.log(appState.menu);
+      // get current menu
+      appState.menu = await this.menuRespository.getMenu()
 
       if (update_all && update_all != "false") {
         console.log("updateMenu update_all");
@@ -180,10 +181,8 @@ class MenuService {
           }
           return true;
         });
-
+        await this.menuRespository.saveMenu(appState.menu)
       }
-
-      await this.menuRespository.saveMenu(appState.menu)
 
       const types = [];
 
@@ -329,47 +328,49 @@ class MenuService {
 
   async updateMenuSorted(newMenSorted) {
     try {
-          const menu = appState.menu;
-    const newTab = [];
-    const mmenu = [];
+      const menu = appState.menu;
+      const newTab = [];
+      const mmenu = [];
 
-    Array.from(newMenSorted).forEach(category => {
-      newTab.push(category.name);
+      Array.from(newMenSorted).forEach(category => {
+        newTab.push(category.name);
 
-      const currentDishSort = category.subitem || [];
-      // 找出数据库中该分类的所有菜品
-      const localDishSort = menu.filter(dish => dish.category === category.name);
+        // main dish
+        const currentDishSort = category.mainDish || [];
+        // 找出数据库中该分类的所有菜品
+        const localDishSort = menu.filter(dish => dish.category === category.name);
+        
+        // 比较 id 顺序是否不同
+        const currentIds = currentDishSort.map(d => d.id);
+        const localIds = localDishSort.map(d => d.id);
 
-      // 比较 id 顺序是否不同
-      const currentIds = currentDishSort.map(d => d.id);
-      const localIds = localDishSort.map(d => d.id);
+        const isDifferent = currentIds.join(',') !== localIds.join(',');
+        if (localDishSort.length && isDifferent) {
+          currentDishSort.forEach(item => {
+            // 找到对应的菜品
+            const dishIndex = menu.findIndex(d => d.id === item.id);
+            if (dishIndex !== -1) {
+              const mainDish = menu[dishIndex]
+              const dishRange = this.joinSubitems(mainDish, menu)
+              const removed = menu.splice(dishIndex, dishRange.length); // 从原menu删除
+              //添加条件 是同一个分类下的 最后添加
+              mmenu.push(...removed); // 按新顺序加入
+            }
+          });
+        }
 
-      const isDifferent = currentIds.join(',') !== localIds.join(',');
-      if (localDishSort.length && isDifferent) {
-        currentDishSort.forEach(item => {
-          // 找到对应的菜品
-          const dishIndex = menu.findIndex(d => d.id === item.id);
-          if (dishIndex !== -1) {
-            const mainDish = menu[dishIndex]
-            const dishRange = this.joinSubitems(mainDish, menu)
-            const removed = menu.splice(dishIndex, dishRange.length); // 从原menu删除
-            //添加条件 是同一个分类下的 最后添加
-            mmenu.push(...removed); // 按新顺序加入
-          }
-        });
+      });
+
+      // 把重新排序后的菜品加回menu
+      appState.menu.push(...mmenu);
+      await this.menuRespository.updateMenuReforce(appState.menu)
+
+      // 更新 tab
+      appState.orderMenuTab = newTab;
+      db.saveData('orderMenuTab', newTab);
+      return {
+        success: true
       }
-    });
-
-    // 把重新排序后的菜品加回menu
-    appState.menu.push(...mmenu);
-    await this.menuRespository.updateMenuReforce(appState.menu)
-
-    // 更新 tab
-    appState.orderMenuTab = newTab;
-    db.saveData('orderMenuTab', newTab);
-    return {
-      success: true
-    }
     } catch (error) {
       console.log("error: ", error.message)
       return {
@@ -378,9 +379,9 @@ class MenuService {
     }
 
   }
-    async getMenuAndTab() {
-        return { success: true, data: { menu: await this.menuRespository.getMenu(), menuTab: appState.orderMenuTab } };
-    }
+  async getMenuAndTab() {
+    return { success: true, data: { menu: await this.menuRespository.getMenu(), menuTab: appState.orderMenuTab } };
+  }
 
   joinSubitems(mainDish, menu) {
     if (mainDish.subname == "Default Title" || !mainDish.subname) return [mainDish]

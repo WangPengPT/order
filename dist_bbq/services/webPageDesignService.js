@@ -43,10 +43,10 @@ class WebPageDesignService {
 
                 const pagesManager = await this.webPageRepository.getPages(session)
                 if (pagesManager !== null) {
-                    pagesManager.pages.forEach(page => {
-                        page.loadWelcomeImages()
-                        page.loadWelcomeLogo()
-                    })
+                    // pagesManager.pages.forEach(page => {
+                    //     page.loadWelcomeImages()
+                    //     page.loadWelcomeLogo()
+                    // })
                 }
             } else {
                 const newPages = new Pages()
@@ -64,10 +64,27 @@ class WebPageDesignService {
                 if (!page || page === undefined) throw new Error("Not found the page")
                 if (page.data) {
                     page.data = pageData
-                    this.webPageRepository.savePage(page, page.id, session)
+                    await this.webPageRepository.savePage(page, session)
+
+                    const imagesName = this.collectImageNames(pageData).filter(Boolean)
+                    
+                    const folderImages = db.getPageImages(page.imagesPath)
+                    if (folderImages.length !== imagesName.length) {
+                        const previous = folderImages
+                        const current = imagesName
+                        const removed = previous.filter(x => !current.includes(x))
+                        console.log("imagesname: ", removed)
+                        if (removed.length !== 0) {
+                            removed.forEach(it => db.removePageImage(page.imagesPath, it))
+                        }
+                        
+                    }
+
+                    const newPage = await this.webPageRepository.getPageById(pageId, session)
+
                     return {
                         success: true,
-                        data: page.data
+                        data: newPage.data
                     }
                 } else {
                     throw new Error("Not found the page data")
@@ -83,6 +100,29 @@ class WebPageDesignService {
         }
     }
 
+    collectImageNames(obj) {
+        const result = []
+
+        function traverse(value) {
+            if (!value) return
+
+            if (typeof value === "object") {
+            for (const key in value) {
+                if (key === "src" || key === "logoPath") {
+                result.push(value[key])
+                } else {
+                traverse(value[key])
+                }
+            }
+            } else if (Array.isArray(value)) {
+            value.forEach(traverse)
+            }
+        }
+
+        traverse(obj)
+    return result
+    }
+
     async savePages() {
         try {
             await this.webPageRepository.savePages()
@@ -94,10 +134,10 @@ class WebPageDesignService {
     async addPage(name, description) {
         try {
             return await DB.withTransaction(async (session) => {
-                const newId = this.webPageRepository.getPages(session).length + 1
+                const pages = await this.webPageRepository.getPages(session)
+                const newId = pages.pages.size + 1
                 const newPage = new Page({ name: name, description: description, id: newId })
-
-                await this.webPageRepository.create(newPage, session)
+                await this.webPageRepository.savePage(newPage, session)
 
                 const page = await this.webPageRepository.getPageById(newPage.id, session)
                 if (!page) throw new Error("Faild create new page")
@@ -123,9 +163,9 @@ class WebPageDesignService {
                 const page = await this.webPageRepository.getPageById(id, session)
                 if (!page) throw new Error("Not found the page")
                 const imagesPath = page.imagesPath
-                db.removePageImage(imagesPath)
+                db.removePageImage(imagesPath, '')
                 await this.webPageRepository.deletePage(id, session)
-                const find = this.webPageRepository.getPageById(id, session)
+                const find = await this.webPageRepository.getPageById(id, session)
                 if (find) new Error("Delete page faild")
                 return {
                     success: true,
@@ -305,6 +345,43 @@ class WebPageDesignService {
                 data: error.message
             }
         }
+    }
+
+    async importPage(data) {
+        try {
+            return await DB.withTransaction(async (session) => {
+            const pages = await this.webPageRepository.getPages(session)
+            const last = Array.from(pages.pages.values()).pop()
+            const incrementID = async (lastId) => {
+            const hasPage = await this.webPageRepository.getPageById(lastId, session)
+            if (!hasPage) {
+                return lastId
+            } else {
+                return incrementID(lastId + 1)  // 必须 return
+            }
+            }
+
+            const id = await incrementID(last.id)
+            const newPage = Page.fromJSON(data)
+            newPage.id = id
+            await this.webPageRepository.savePage(newPage, session)
+
+            const verify = await this.webPageRepository.getPageById(id, session)
+
+            if (!verify) throw new Error("Fail import page")
+
+            return {
+                success: true
+            }
+        })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+        
     }
 
 }

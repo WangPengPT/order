@@ -14,7 +14,6 @@ class MenuRepository {
                 id: id,
                 value: data
             }, session);
-            logger.info(`repo: ✅ dish 保存成功 [id=${id}]`);
         } catch (err) {
             logger.error(`repo:❌ 保存 dish 失败: ${err}`);
             throw err;
@@ -90,6 +89,7 @@ class MenuRepository {
 
     async updateMenuReforce(menu, session = null) {
         try {
+            logger.info("强制更新菜单")
             await DB.cleanTable(this.tableName, session)
             await this.saveMenu(menu, session)
         } catch (error) {
@@ -97,6 +97,7 @@ class MenuRepository {
             throw error;
         }
     }
+
 }
 
 module.exports = MenuRepository;

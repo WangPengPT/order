@@ -16,6 +16,7 @@ class AppState {
         this.settings = {
             checkIP: false,
             delivery: false,
+            reserver: false,
             isFestiveDay: false,
             peoplePrice: false,
             useChildrenDiscount: false,
@@ -23,6 +24,15 @@ class AppState {
         }
 
         this.pickupData = {
+            latitudeAndLongitude:{
+                latitude: undefined,
+                longitude: undefined,
+            },
+            pickupLocation: '',
+            timeInterval: 15, // 每隔15分钟取一次餐
+            beginEndInterval: {}, // 默认从12点到15点，19点到23点
+        }
+        this.reserverData = {
             timeInterval: 15, // 每隔15分钟取一次餐
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
         }
@@ -38,7 +48,8 @@ class AppState {
         this.childrenWeekPrice = new WeekPrice(this.settings.dividerTime)
 
         this.initTables()
-        this.initPickupDataBeginEndInterval()
+        this.pickupData.beginEndInterval = this.initBeginEndInterval()
+        this.reserverData.beginEndInterval = this.initBeginEndInterval()
 
         this.recordProps(this, ['menu', 'orderMenuTab'])
     }
@@ -60,13 +71,13 @@ class AppState {
 
     }
 
-    initPickupDataBeginEndInterval(){
-        const days = ["special","monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
+    initBeginEndInterval(){
+        const days = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday","special"]
         const iniInterval = {}
         for(const day of days){
             iniInterval[day] = [{begin:{hour:12,minute:0},end:{hour:15,minute:0}},{begin:{hour:19,minute:0},end:{hour:23,minute:0}}]
         }
-        this.pickupData.beginEndInterval = iniInterval
+        return iniInterval
     }
 
     // 所有 Get 函数
@@ -115,6 +126,14 @@ class AppState {
         return result
     }
 
+    getReserverData(){
+        const result = {}
+        for(const key in this.reserverData){
+            result[key] = this.reserverData[key]
+        }
+        return result
+    }
+
     getWeekPrice(){
         let success = false
         if(this.weekPrice){
@@ -141,15 +160,31 @@ class AppState {
 
     // 所有 Update 函数
     updateSettings(key, value) {
-        console.log("key:", key)
-        console.log("value: ", value)
         this.settings[key] = value
-        console.log("res: ", key,this.settings[key])
+        console.log("update settings: ", key,this.settings[key])
+    }
+
+    updatePickupDate(key, value){
+        this.pickupData[key] = value
+        console.log("update pickupDate: ", key,this.pickupData[key])
+    }
+
+    updateReserverDate(key, value){
+        this.reserverData[key] = value
+        console.log("update reserverData: ", key,this.reserverData[key])
     }
 
     updateChildrenPricePercentage(percentage){
         this.childrenWeekPrice = percentage
         return this.childrenWeekPrice
+    }
+
+    updateWeekPrice(key,value){
+        if(key == 'childrenWeekPrice'){
+            return this.childrenWeekPrice.setAllPrices(value)
+        }else{
+            return this.weekPrice.setAllPrices(value)
+        }
     }
 
     createTable(startIdx, endIdx) {
@@ -170,10 +205,6 @@ class AppState {
         } else {
             return this.tables.getTableById(tableId)
         }
-    }
-
-    setHasBox(value) {
-        this.hasBox = value
     }
 
     addOrderTable(orderData) {
@@ -317,6 +348,13 @@ class AppState {
                     this.settings[k] = value[k];
                 }
                 return this.settings;
+            },
+            pickupData: (value) => {
+                if (!value) return this.pickupData;
+                for (const k of Object.keys(value)) {
+                    this.pickupData[k] = value[k];
+                }
+                return this.pickupData;
             },
             weekPrice: (value) => {
                 if (!value) return this.weekPrice;

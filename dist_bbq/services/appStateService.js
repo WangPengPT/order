@@ -51,6 +51,48 @@ class AppStateService {
         }
     }
 
+    updatePickupDate(key, value) {
+        try {
+            appState.updatePickupDate(key, value)
+            if (equals(appState.pickupData[key],value)) return { success: true, data: value }
+            else throw new Error(key + "更新失败")
+        } catch (error) {
+            return { success: false, data: error.message }
+        }
+
+        function equals(value1,value2){
+            if(typeof value1 =='object'){
+                for(const key in value1){
+                    if(value1[key] != value2[key]) return false
+                }
+                return true
+            }else{
+                return value1 == value2
+            }
+        }
+    }
+
+    updateReserverDate(key, value) {
+        try {
+            appState.updateReserverDate(key, value)
+            if (equals(appState.reserverData[key],value)) return { success: true, data: value }
+            else throw new Error(key + "更新失败")
+        } catch (error) {
+            return { success: false, data: error.message }
+        }
+
+        function equals(value1,value2){
+            if(typeof value1 =='object'){
+                for(const key in value1){
+                    if(value1[key] != value2[key]) return false
+                }
+                return true
+            }else{
+                return value1 == value2
+            }
+        }
+    }
+
     getAllTables() {
         try {
             const tables = this.appStateRepository.appState.tables;
@@ -204,7 +246,8 @@ class AppStateService {
     updateWeekPrice(key, price) {
         try {
             console.log("updateWeekPrice", key, price);
-            const newPrices = this.appStateRepository.appState[key].setAllPrices(price);
+            const newPrices = this.appStateRepository.appState.updateWeekPrice(key, price);
+            console.log("newPrices",newPrices)
             return { success: true, data: newPrices };
         } catch (error) {
             console.warn("Error: ", error);
