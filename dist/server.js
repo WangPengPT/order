@@ -79,6 +79,7 @@ const io = new Server(server, {
 const socketService = new SocketServices(io, menuService)
 const datasController = new DatasController(socketService.appStateSocket.appStateService.appStateRepository, socketService.userSocket.userService)
 const uploadController = new UploadController(socketService.webPageDesignSocket.webPageDesignService)
+const dataAnalizeService = new DataAnalizeService()
 
 // 路由只保留上传接口
 app.post('/upload', upload.any(), uploadController.handleUpload);
@@ -121,7 +122,7 @@ async function main() {
   await DB.init();
 
   await socketService.initializeDatas()
-
+  
   socketService.initSocket()
   centerSocket.init()
 
@@ -138,6 +139,10 @@ async function main() {
 }
 
 app.get('/table', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
+app.get('/takeReserve', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
 
@@ -169,7 +174,7 @@ function runCleanInterval() {
     if (now.getHours() == 1)
     {
       if ( needClean ) {
-        //appState.clearAll();
+        appState.clearAll();
       }
       needClean = false;
     }

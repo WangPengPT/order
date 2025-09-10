@@ -16,6 +16,7 @@ class AppState {
         this.settings = {
             checkIP: false,
             delivery: false,
+            reserver: false,
             isFestiveDay: false,
             peoplePrice: false,
             useChildrenDiscount: false,
@@ -31,6 +32,10 @@ class AppState {
             timeInterval: 15, // 每隔15分钟取一次餐
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
         }
+        this.reserverData = {
+            timeInterval: 15, // 每隔15分钟取一次餐
+            beginEndInterval: {}, // 默认从12点到15点，19点到23点
+        }
         this.currentPageID = 1
 
         this.shopType = {
@@ -43,7 +48,8 @@ class AppState {
         this.childrenWeekPrice = new WeekPrice(this.settings.dividerTime)
 
         this.initTables()
-        this.initPickupDataBeginEndInterval()
+        this.pickupData.beginEndInterval = this.initBeginEndInterval()
+        this.reserverData.beginEndInterval = this.initBeginEndInterval()
 
         this.recordProps(this, ['menu', 'orderMenuTab'])
     }
@@ -65,13 +71,13 @@ class AppState {
 
     }
 
-    initPickupDataBeginEndInterval(){
+    initBeginEndInterval(){
         const days = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday","special"]
         const iniInterval = {}
         for(const day of days){
             iniInterval[day] = [{begin:{hour:12,minute:0},end:{hour:15,minute:0}},{begin:{hour:19,minute:0},end:{hour:23,minute:0}}]
         }
-        this.pickupData.beginEndInterval = iniInterval
+        return iniInterval
     }
 
     // 所有 Get 函数
@@ -120,6 +126,14 @@ class AppState {
         return result
     }
 
+    getReserverData(){
+        const result = {}
+        for(const key in this.reserverData){
+            result[key] = this.reserverData[key]
+        }
+        return result
+    }
+
     getWeekPrice(){
         let success = false
         if(this.weekPrice){
@@ -153,6 +167,11 @@ class AppState {
     updatePickupDate(key, value){
         this.pickupData[key] = value
         console.log("update pickupDate: ", key,this.pickupData[key])
+    }
+
+    updateReserverDate(key, value){
+        this.reserverData[key] = value
+        console.log("update reserverData: ", key,this.reserverData[key])
     }
 
     updateChildrenPricePercentage(percentage){

@@ -3,7 +3,7 @@ module.exports = {
   apps: [{
     name: "BBQ_DEMO",
     script: "./server.js",
-	cwd: "../dist_bbq",
+	cwd: "../dist",
     instances: 1,
     autorestart: true,
     watch: false,
@@ -14,11 +14,11 @@ module.exports = {
 	  HTTPS_HEAD: "v",
       PORT: 8000,
       QR_ADDR: "https://v.xiaoxiong.pt:8000/client.html?table=",
-      ADDR: "https://v.xiaoxiong.pt:8000/client.html",
+      ADDR: "https://v.xiaoxiong.pt:8000",
       TABLE_NUMBER: [[1,50]],
       SAVE_ADDR: "save/bbq_demo",
 	  TEST_ENVIRONMENT: true,
-    JWT_SECRET: "my_jwt_secret_key"
+      JWT_SECRET: "my_jwt_secret_key"
     }
   }]
 }

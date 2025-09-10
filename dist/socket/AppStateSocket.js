@@ -35,6 +35,19 @@ class AppStateSocket {
         callback(result)
     }
 
+    updateReserverDate(value, callback){
+        logger.info(`更新订台数据${value.key}:${value.value}`)
+        const result = this.appStateService.updateReserverDate(value.key, value.value)
+        if(result.success){
+            logger.info(`管理端更新订台数据${value.key}成功`)
+            this.io.emit("client_send_reserverDate", {key: value.key, value: result.data})
+        }else{
+            logger.info(`管理端更${value.key}失败`)
+            logger.info(`失败原因: ${result.data}`)
+        }
+        callback(result)
+    }
+
 
     管理端更新价格
     updatePriceData(key, value, callback) {
@@ -93,6 +106,9 @@ class AppStateSocket {
             case "pickup_data":
                 this.updatePickupDate(value, callback)
                 break
+            case "reserver_data":
+                this.updateReserverDate(value, callback)
+                break
             default:
                 callback({success: false, data: "Not Found Update Key"})
         }
@@ -115,6 +131,7 @@ class AppStateSocket {
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
         socket.emit("price_data", this.appStateService.appStateRepository.appState.getPriceData())
         socket.emit("pickup_data", this.appStateService.appStateRepository.appState.getPickupData())
+        socket.emit("reserver_data", this.appStateService.appStateRepository.appState.getReserverData())
     }
 
 }

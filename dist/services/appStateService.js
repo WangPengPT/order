@@ -72,6 +72,27 @@ class AppStateService {
         }
     }
 
+    updateReserverDate(key, value) {
+        try {
+            appState.updateReserverDate(key, value)
+            if (equals(appState.reserverData[key],value)) return { success: true, data: value }
+            else throw new Error(key + "更新失败")
+        } catch (error) {
+            return { success: false, data: error.message }
+        }
+
+        function equals(value1,value2){
+            if(typeof value1 =='object'){
+                for(const key in value1){
+                    if(value1[key] != value2[key]) return false
+                }
+                return true
+            }else{
+                return value1 == value2
+            }
+        }
+    }
+
     getAllTables() {
         try {
             const tables = this.appStateRepository.appState.tables;
