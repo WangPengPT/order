@@ -34,6 +34,32 @@ function print_order(order) {
     }
 }
 
+function print_takeaway_order(order){
+    logger.info(`打印外卖订单 订单号 - ${order.name}`)
+    // print_takeaway_orde_to_io(null, order)
+    for (const key in printers) {
+        const printer = printers[key];
+        logger.info("打印机 : "+printer.data)
+        logger.info("打印机 takeaway: "+printer.data.print_takeaway)
+
+        if (!printer) continue;
+        if (!printer.data) continue;
+        if (!printer.data.print_takeaway) continue;
+
+        let hasData = (order.line_items.length > 0);
+        console.log("hasData: "+hasData)
+
+        if (hasData) {
+            logger.info( "print takeaway...", order);
+            print_takeaway_orde_to_io(printer, order)
+        }
+        else {
+            print_takeaway_orde_to_io(printer, order)
+            console.log( "didn't print takeaway", order, printer.data );
+        }
+
+    }
+}
 
 let print_data = "";
 function add_print(value) {
@@ -44,11 +70,10 @@ function add_print(value) {
         print_data += '\n';
     }
 }
-
 function print_orde_to_io(printer, order, every_one) {
-    io = printer.socket
+    const io = printer.socket
 
-    console.log("....", every_one);
+    console.log("-- Every_One?", every_one,"--");
 
 
     let BLOD_HAD = "";
@@ -137,6 +162,38 @@ function print_orde_to_io(printer, order, every_one) {
     }
 }
 
+// TakeAway Print Function
+let print_takeaway_data = "";
+function add_takeaway_print(value){
+    if (value) {
+        print_takeaway_data += value + '\n';
+    }
+    else {
+        print_takeaway_data += '\n';
+    }
+}
+function print_takeaway_orde_to_io(printer, order) {
+    const takeaway_io = printer.socket
+    let price_total = 0
+    add_takeaway_print("Takeaway: " + order.name);
+    add_takeaway_print("Pick up data: " + order.pickupDate)
+    add_takeaway_print("Pick up time: " + order.pickupTime)
+    add_takeaway_print("------------------------------")
+    for(let i=0; i<order.line_items.length; i++) {
+        const item = order.line_items[i]
+        const total = (item.price*item.quantity).toFixed(2)
+        price_total += Number(total)
+        add_takeaway_print(item.sku+" "+item.name+" * "+item.quantity);
+        add_takeaway_print(" "+item.price+" * "+item.quantity+" = "+total);
+        add_takeaway_print()
+    }
+    add_takeaway_print("------------------------------")
+    add_takeaway_print("Total: "+price_total+" Euro");
+
+    console.log("print takeaway data:\n",print_takeaway_data)
+    takeaway_io.emit("print", print_takeaway_data);
+}
+
 function format_portugal_datetime(timestamp) {
     return dataTime.format_portugal_datetime(timestamp)
 }
@@ -159,5 +216,6 @@ function format_datetime_base(timestamp) {
 
 module.exports = {
     print_order,
+    print_takeaway_order,
     printers
 };

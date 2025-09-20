@@ -37,6 +37,7 @@ class AppState {
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
         }
         this.currentPageID = 1
+        this.currentTakeWayPageID = 1
 
         this.shopType = {
             dineIn: process.env.DINE_IN? (process.env.DINE_IN=="true") : true,

@@ -18,13 +18,13 @@ class DB {
             await client.connect();
 
             let nameData = "default"
-            if(process.env.SAVE_ADDR){
+            if (process.env.SAVE_ADDR) {
                 nameData = process.env.SAVE_ADDR.split("/")
                 nameData = nameData[nameData.length - 1];
             }
             const dbName = "db-" + nameData;
             db = client.db(dbName);
-            
+
             console.log('Connected to MongoDB OK!');
         } catch (error) {
             console.error('Connection error:', error);
@@ -46,7 +46,7 @@ class DB {
         }
     }
 
-    static async get(table,id, defValue, session = null) {
+    static async get(table, id, defValue, session = null) {
 
         const collection = db.collection(table);
         const users = await collection.find({ id: id }, { session }).toArray();
@@ -59,17 +59,17 @@ class DB {
     static async set(table, value, session = null) {
         const collection = db.collection(table);
         if (value.id) {
-            await collection.updateOne({ id: value.id }, { $set:  value }, { upsert: true, session });
+            await collection.updateOne({ id: value.id }, { $set: value }, { upsert: true, session });
         }
         else {
             await collection.insertOne(value, { session });
         }
     }
 
- static async del(table, id, session = null) {
-  const collection = db.collection(table);
-  return await collection.deleteOne({ id: id }, { session });
-}
+    static async del(table, id, session = null) {
+        const collection = db.collection(table);
+        return await collection.deleteOne({ id: id }, { session });
+    }
 
 
     static async getAll(table, session = null) {
@@ -78,12 +78,12 @@ class DB {
         return users
     }
 
-    static async setValue(table, key,value, session = null) {
+    static async setValue(table, key, value, session = null) {
         const collection = db.collection(table);
-        await collection.updateOne({ id: value.id }, { $set: {id: key, value: value} }, { upsert: true, session });
+        await collection.updateOne({ id: value.id }, { $set: { id: key, value: value } }, { upsert: true, session });
     }
 
-    static async getValue(key,defValue, session = null) {
+    static async getValue(key, defValue, session = null) {
         const collection = db.collection("key_value");
         const users = await collection.find({ id: key }, { session }).toArray();
 
@@ -115,10 +115,48 @@ class DB {
             { _id: new ObjectId(id) },
             { $set: updatedData },
             { session }
-  );
-}
+        );
+    }
     static async cleanTable(table, session = null) {
         await db.collection(table).deleteMany({}, { session })
+    }
+
+    static async getByDateRange(table, startDate, endDate, session = null) {
+        const collection = db.collection(table);
+
+        const filter = {
+            id: { $gte: startDate, $lte: endDate }
+        };
+
+        return await collection.find(filter, { session }).toArray();
+    }
+
+    static async getTopDishesByDateRange(table, startDate, endDate, session = null) {
+        const collection = db.collection(table);
+
+        // startDate / endDate 格式: "YYYY-MM-DD"
+        const pipeline = [
+            {
+                $match: {
+                    id: { $gte: startDate, $lte: endDate }
+                }
+            },
+            { $unwind: "$value" },
+            { $unwind: "$value.items" },
+            {
+                $group: {
+                    _id: "$value.items.dishid",
+                    name: { $first: "$value.items.name" },
+                    price: { $first: "$value.items.price" },
+                    deliveryPrice: { $first: "$value.items.deliveryPrice" },
+                    quantity: { $sum: "$value.items.quantity" }
+                    
+                }
+            },
+            { $sort: { quantity: -1, _id: 1 } }
+        ];
+
+        return await collection.aggregate(pipeline, { session }).toArray();
     }
 
 }

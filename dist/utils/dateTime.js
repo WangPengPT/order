@@ -19,9 +19,14 @@ function get_portugal_date() {
     return DateTime.now().setZone("Europe/Lisbon").toFormat("yyyy-MM-dd");
 }
 
+function get_portugal_date_without_day() {
+    return DateTime.now().setZone("Europe/Lisbon").toFormat("yyyy-MM");
+}
+
 module.exports = {
     format_portugal_datetime,
     get_portugal_timestemp,
     get_portugal_timeDate,
-    get_portugal_date
+    get_portugal_date,
+    get_portugal_date_without_day
 };

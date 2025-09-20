@@ -85,6 +85,17 @@ class CustomDishRepository {
         if (typeof templateId === "string") id = Number(templateId)
         await DB.del(this.tableName, id, session)
     }
+
+    async updateOrderQuantity(templateId, quantity, session = null) {
+        logger.info("更新自定义菜品的销售")
+        const customDish = await this.get(templateId, session)
+        if (customDish.ordeQuantity) {
+            customDish.ordeQuantity = customDish.ordeQuantity + quantity
+        } else {
+            customDish.ordeQuantity = quantity
+        }
+        await this.update(customDish, session)
+    }
 }
 
 

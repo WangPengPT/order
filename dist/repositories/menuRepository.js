@@ -54,7 +54,6 @@ class MenuRepository {
                 ...oldDish,
                 ...dish
             }
-            console.log("newDish: ", newDish)
             await DB.setValue(this.tableName, id, newDish, session)
             logger.info(`repo: ✅ menu 更新成功 [id=${id}]`);
         } catch (error) {
@@ -67,9 +66,10 @@ class MenuRepository {
         try {
             const menu = []
             const dishes = await DB.getAll(this.tableName, session)
-            if (dishes.length == 0 ) return []
+            if (dishes.length == 0) return []
             for (let dish of dishes) {
-                menu.push(dish.value)
+                if (!dish.value) continue
+                    menu.push(dish.value)
             }
             return menu
         } catch (error) {

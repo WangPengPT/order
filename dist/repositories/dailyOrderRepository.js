@@ -8,9 +8,9 @@ class DailyOrderRepository {
     }
 
     // 保存销售量
-    async save(data, session =  null, id = dataTime.get_portugal_date()) {
+    async save(data, session = null, id = dataTime.get_portugal_date()) {
         try {
-            await DB.set(this.tableName, {id: id, value: data}, session);
+            await DB.set(this.tableName, { id: id, value: data }, session);
 
             logger.info(`repo: ✅ Daily Order 保存成功`);
         } catch (err) {
@@ -22,7 +22,7 @@ class DailyOrderRepository {
     // 读取销售量
     async load(date, session = null) {
         try {
-            const result = await DB.find(this.tableName, date, session);
+            const result = await DB.get(this.tableName, date, null,session);
             if (result.length === 0) {
                 logger.info(`repo: ⚠ 未能找到 Daily Order 数据 [date=${date.year}/${date.month}/${date.day}]`);
                 return null;
@@ -32,6 +32,21 @@ class DailyOrderRepository {
         } catch (err) {
             logger.error(`❌ 读取 Daily Order 失败: ${err}`);
             throw err;
+        }
+    }
+
+    /**
+     * 
+     * @param {String} startDate 格式: "YYYY-MM-DD"
+     * @param {String} endDate 格式: "YYYY-MM-DD"
+     */
+    async getTopDishesByDate(startDate, endDate, session = null) {
+        try {
+            const result = await DB.getTopDishesByDateRange(this.tableName, startDate, endDate, session)
+            return result
+        } catch (error) {
+            logger.error(`❌ 读取 Top 菜品 失败: ${error}`);
+            throw error;
         }
     }
 }

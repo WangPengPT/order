@@ -1,14 +1,15 @@
-const  welcomeTemplate = require("./welcomeTemplate")
+const welcomeTemplate = require("./welcomeTemplate")
 const db = require('../filedb.js');
 const { logger } = require('../utils/logger.js');
 
 class Page {
-  constructor({ name, description = "", data = welcomeTemplate, id, imagesPath }) {
+  constructor({ name, description = "", data = welcomeTemplate, id, imagesPath, type }) {
     this.name = name;
     this.description = description;
     this.data = data;
     this.id = id;
-    this.imagesPath = imagesPath || this.generateUnique()
+    this.imagesPath = imagesPath || this.generateUnique();
+    this.type = type || "Dine-in"
   }
 
   toJSON() {
@@ -17,15 +18,25 @@ class Page {
       description: this.description,
       data: this.data,
       id: this.id,
-      imagesPath: this.imagesPath
+      imagesPath: this.imagesPath,
+      type: this.type
     };
   }
 
-init() {
+  init() {
     this.data = welcomeTemplate
   }
 
-  
+  static Type = Object.freeze({
+    DINE_IN: "Dine-in",
+    TAKEAWAY: "Takeaway",
+  });
+
+  static getTypes() {
+    return Object.values(Page.Type);
+  }
+
+
   generateUnique() {
     return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
   }
@@ -59,7 +70,8 @@ init() {
       description: obj.description,
       data: mergedData,
       id: obj.id,
-      imagesPath: obj.imagesPath
+      imagesPath: obj.imagesPath,
+      type: obj.type
     });
   }
 
@@ -83,24 +95,6 @@ init() {
     }
 
     return deepMerge(template, data);
-  }
-
-  loadWelcomeLogo() {
-    const hasFiles = db.hasSomeFile(db.formatedPublicUploadsDir(this.data.logoPath))
-    /*
-    if (this.data.logoPath === "" || !hasFiles) {
-      logger.info("发现没有LOGO，尝试导入")
-      const file = db.getWelcomeLogoFile(this.logoPath)
-      const hasFile = db.hasSomeFile(db.formatedPublicDir(file))
-      if (hasFile) {
-        logger.info("LOGO导入成功")
-        this.data.logoPath = file
-      } else {
-        logger.info("创建空LOGO")
-        this.data.logoPath = ""
-      }
-    }
-      */
   }
 }
 

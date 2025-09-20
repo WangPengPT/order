@@ -122,10 +122,8 @@ async function main() {
   await DB.init();
 
   await socketService.initializeDatas()
-  
   socketService.initSocket()
   centerSocket.init()
-
   const PORT = process.env.PORT || 8080;
   server.listen(PORT, '0.0.0.0', () => {
     logger.info(`🟢 服务器已启动，监听端口 ${PORT}`);
@@ -184,72 +182,26 @@ function runCleanInterval() {
     }
 
     runCleanInterval();
-  }, 1000 * 600);
+  }, 1000 * 600 * 6);
 }
 
-// function runFandaysInterval(){
-//   setTimeout(() => {
-//     const now = new Date();
-//     if (now.getDate() == 11 || now.getDate() == 12 || now.getDate() == 25 || now.getDate() == 26)
-//     {
-//       if (!appState.hasBox){
-//         appState.hasBox = true;
-//         socketService.emitHasBoxStatus()
-//       }
-//     }
-//     else
-//     {
-//       if(appState.hasBox){
-//         appState.hasBox = false;
-//         socketService.emitHasBoxStatus()
-//       }
-//     }
-//
-//     runFandaysInterval();
-//   }, 1000 * 3600);
-// }
-
 let needWriteDailyOrders = true;
-let needWriteMonthlyOrders = true;
-let needWriteYearlyOrders = true;
 function writeOrders() {
-  setTimeout(() => {
+  setTimeout(async () => {
     const now = new Date();
     // 每天0点
     if (now.getHours() === 0) {
       if (needWriteDailyOrders) {
-        socketService.appStateSocket.appStateService.saveDailyOrders() // 将当天的销售量数据写入文件
-        socketService.appStateSocket.appStateService.clearDailyOrders() // 清空当天的销售量数据
+        await dataAnalizeService.saveDailyOrders()
+        await dataAnalizeService.saveMonthlyRate()
       }
       needWriteDailyOrders = false;
     } else {
       needWriteDailyOrders = true;
     }
 
-    // 每月1号
-    if (now.getDate() === 1) {
-      if (needWriteMonthlyOrders) {
-        socketService.appStateSocket.appStateService.saveMonthlyOrders() // 将当月的销售量数据写入文件
-        socketService.appStateSocket.appStateService.clearMonthlyOrders() // 清空当月的销售量数据
-      }
-      needWriteMonthlyOrders = false;
-    } else {
-      needWriteMonthlyOrders = true;
-    }
-
-    // 每年1月1号
-    if (now.getMonth() && now.getDate() === 1) {
-      if (needWriteYearlyOrders) {
-        socketService.appStateSocket.appStateService.saveYearlyOrders() // 将当月的销售量数据写入文件
-        socketService.appStateSocket.appStateService.clearYearlyOrders() // 清空当月的销售量数据
-      }
-      needWriteYearlyOrders = false;
-    } else {
-      needWriteYearlyOrders = true;
-    }
-
     writeOrders();
-  }, 1000 * 60 * 5); // 每五分钟
+  }, 1000 * 60 * 3); // 每3分钟
 }
 
 /*

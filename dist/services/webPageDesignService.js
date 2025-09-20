@@ -56,6 +56,31 @@ class WebPageDesignService {
         })
     }
 
+    async editPage(id, name, description) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                const page = await this.webPageRepository.getPageById(id, session)
+                page.name = name
+                page.description = description
+                await this.webPageRepository.updatePage(page, session)
+
+                const newPage = await this.webPageRepository.getPageById(id, session)
+                if (newPage.name !== name || newPage.description !== description) {
+                    throw new Error("Faild update")
+                }
+                return {
+                    success: true
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
     async savePageData(id, pageData) {
         try {
             return await DB.withTransaction(async (session) => {
@@ -67,7 +92,7 @@ class WebPageDesignService {
                     await this.webPageRepository.savePage(page, session)
 
                     const imagesName = this.collectImageNames(pageData).filter(Boolean)
-                    
+
                     const folderImages = db.getPageImages(page.imagesPath)
                     if (folderImages.length !== imagesName.length) {
                         const previous = folderImages
@@ -77,7 +102,7 @@ class WebPageDesignService {
                         if (removed.length !== 0) {
                             removed.forEach(it => db.removePageImage(page.imagesPath, it))
                         }
-                        
+
                     }
 
                     const newPage = await this.webPageRepository.getPageById(pageId, session)
@@ -107,20 +132,20 @@ class WebPageDesignService {
             if (!value) return
 
             if (typeof value === "object") {
-            for (const key in value) {
-                if (key === "src" || key === "logoPath") {
-                result.push(value[key])
-                } else {
-                traverse(value[key])
+                for (const key in value) {
+                    if (key === "src" || key === "logoPath") {
+                        result.push(value[key])
+                    } else {
+                        traverse(value[key])
+                    }
                 }
-            }
             } else if (Array.isArray(value)) {
-            value.forEach(traverse)
+                value.forEach(traverse)
             }
         }
 
         traverse(obj)
-    return result
+        return result
     }
 
     async savePages() {
@@ -131,31 +156,52 @@ class WebPageDesignService {
         }
     }
 
-    async addPage(name, description) {
+    async addPage(name, description, type) {
         try {
-            return await DB.withTransaction(async (session) => {
-                const pages = await this.webPageRepository.getPages(session)
-                const newId = pages.pages.size + 1
-                const newPage = new Page({ name: name, description: description, id: newId })
-                await this.webPageRepository.savePage(newPage, session)
 
-                const page = await this.webPageRepository.getPageById(newPage.id, session)
-                if (!page) throw new Error("Faild create new page")
-                const json = page.toJSON()
+            return await DB.withTransaction(async (session) => {
+                const pages = await this.webPageRepository.getPages(session);
+
+                if (!Page.getTypes().includes(type)) {
+                    throw new Error("Invalid Page Type");
+                }
+
+                // 转成数组后再 filter
+                const count = pages.pages.size;
+                const nextId = async (ID) => {
+                    const page = await this.webPageRepository.getPageById(ID, session)
+                    if (page) { 
+                        return nextId(ID + 1) 
+                    } else {
+                        return ID
+                    }
+                }
+                const newId = await nextId(count+1)
+
+                if (typeof newId !== "number" || Number.isNaN(newId)) {
+                    throw new Error("Invalid new id");
+                }
+
+                const newPage = new Page({ name, description, id: newId, type });
+                await this.webPageRepository.savePage(newPage, session);
+
+                const page = await this.webPageRepository.getPageById(newPage.id, session);
+                if (!page) throw new Error("Failed to create new page");
+
                 return {
                     success: true,
-                    data: json
-                }
-            })
-
+                    data: page.toJSON()
+                };
+            });
         } catch (error) {
-            console.log("Unexpected Error", error.message)
+            console.log("Unexpected Error", error.message);
             return {
                 success: false,
                 data: error.message
-            }
+            };
         }
     }
+
 
     async deletePage(id) {
         try {
@@ -242,7 +288,8 @@ class WebPageDesignService {
                 res.push({
                     id: page.id,
                     name: page.name,
-                    description: page.description
+                    description: page.description,
+                    type: page.type || "Dine-in"
                 })
             })
             return {
@@ -257,25 +304,6 @@ class WebPageDesignService {
             }
         }
     }
-
-    // async getPageWelcomeImages(id) {
-    //     try {
-    //         const pageId = Number(id)
-    //         const page = await this.webPageRepository.getPageById(pageId)
-    //         if (!page || page === undefined) new Error("Not found the page")
-    //         const imagesDescription = page.data.images_description
-    //         return {
-    //             success: true,
-    //             data: imagesDescription
-    //         }
-    //     } catch (error) {
-    //         console.log("Unexpected Error", error.message)
-    //         return {
-    //             success: false,
-    //             data: error.message
-    //         }
-    //     }
-    // }
 
     async deleteDescriptionIamges(id, paths) {
 
@@ -295,7 +323,6 @@ class WebPageDesignService {
                     data: imageDescription
                 }
             })
-
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -303,16 +330,19 @@ class WebPageDesignService {
                 data: error.message
             }
         }
-
     }
 
-    async applayPage(id) {
+    async applayPage(id, type) {
         try {
             const pageID = Number(id)
+            if (!Page.getTypes().includes(type)) throw new Error("Invalid type page")
             const page = await this.webPageRepository.getPageById(id)
             if (!page) throw new Error("Not found the page")
-            appState.currentPageID = pageID
-            if (appState.currentPageID !== pageID) throw new Error("Faild update current page")
+            if (Page.Type.DINE_IN) {
+                appState.currentPageID = pageID
+            } else {
+                appState.currentTakeWayPageID = pageID
+            }
             return {
                 success: true,
                 data: undefined
@@ -327,9 +357,13 @@ class WebPageDesignService {
         }
     }
 
-    async getCurrentPage() {
+    async getCurrentPage(type) {
         try {
-            const current = appState.currentPageID
+            if (!Page.getTypes().includes(type)) throw new Error("Invalid Page type")
+            const current =
+            type === Page.Type.DINE_IN
+                ? appState.currentPageID
+                : appState.currentTakeWayPageID;
             if (!current) throw new Error("Undefined currentPageId")
             const pageID = Number(current)
             const page = await this.webPageRepository.getPageById(pageID)
@@ -350,30 +384,30 @@ class WebPageDesignService {
     async importPage(data) {
         try {
             return await DB.withTransaction(async (session) => {
-            const pages = await this.webPageRepository.getPages(session)
-            const last = Array.from(pages.pages.values()).pop()
-            const incrementID = async (lastId) => {
-            const hasPage = await this.webPageRepository.getPageById(lastId, session)
-            if (!hasPage) {
-                return lastId
-            } else {
-                return incrementID(lastId + 1)  // 必须 return
-            }
-            }
+                const pages = await this.webPageRepository.getPages(session)
+                const last = Array.from(pages.pages.values()).pop()
+                const incrementID = async (lastId) => {
+                    const hasPage = await this.webPageRepository.getPageById(lastId, session)
+                    if (!hasPage) {
+                        return lastId
+                    } else {
+                        return incrementID(lastId + 1)
+                    }
+                }
 
-            const id = await incrementID(last.id)
-            const newPage = Page.fromJSON(data)
-            newPage.id = id
-            await this.webPageRepository.savePage(newPage, session)
+                const id = await incrementID(last.id)
+                const newPage = Page.fromJSON(data)
+                newPage.id = id
+                await this.webPageRepository.savePage(newPage, session)
 
-            const verify = await this.webPageRepository.getPageById(id, session)
+                const verify = await this.webPageRepository.getPageById(id, session)
 
-            if (!verify) throw new Error("Fail import page")
+                if (!verify) throw new Error("Fail import page")
 
-            return {
-                success: true
-            }
-        })
+                return {
+                    success: true
+                }
+            })
         } catch (error) {
             console.log("Unexpected Error", error.message)
             return {
@@ -381,7 +415,7 @@ class WebPageDesignService {
                 data: error.message
             }
         }
-        
+
     }
 
 }

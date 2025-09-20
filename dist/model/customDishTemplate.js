@@ -1,7 +1,7 @@
 const CustomDishType = require('./customDishType.js')
 
 class CustomDishTemplate {
-    constructor(id, types = [], name, initialPrice = 0, category, like = 0, rate = 0, descriptions = [], options = {quantity: false}, enable = false) {
+    constructor(id, types = [], name, initialPrice = 0, category, like = 0, rate = 0, descriptions = [], options = {quantity: false}, enable = false, ordeQuantity = 0) {
         this.id = id
         this.types = types  // list of CustomDishType
         this.name = name
@@ -12,6 +12,7 @@ class CustomDishTemplate {
         this.descriptions = descriptions
         this.options = options
         this.enable = enable
+        this.ordeQuantity = ordeQuantity
         this.recordProps(this)
     }
 

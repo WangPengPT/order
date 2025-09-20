@@ -1,3 +1,4 @@
+const { Page } = require("../model/page.js")
 const { WebPageDesignService } = require("../services/webPageDesignService")
 const { logger } = require('../utils/logger.js')
 
@@ -36,11 +37,6 @@ class WebPageDesignSocket {
         return await this.webPageDesignService.getAllPageInformation()
     }
 
-    // getPageWelcomeImages(id, cb) {
-    //     const images = webPageDesignService.getPageWelcomeImages(id)
-    //     cb(images)
-    // }
-
     async deleteDescriptionIamges(id, paths, callback) {
         logger.info(`更新图片: ${paths}`)
         const pageId = Number(id)
@@ -54,9 +50,9 @@ class WebPageDesignSocket {
         callback(result)
     }
 
-    async addPage(name, description, callback) {
+    async addPage(name, description, type, callback) {
         logger.info(`创建新的页面`)
-        const result = await this.webPageDesignService.addPage(name, description)
+        const result = await this.webPageDesignService.addPage(name, description, type)
         if (result.success) {
             logger.info(`新的页面创建成功`)
         } else {
@@ -65,6 +61,18 @@ class WebPageDesignSocket {
         }
         callback(result)
 
+    }
+
+    async editPage(id, name, description, callback) {
+        logger.info("编辑页面")
+        const result = await this.webPageDesignService.editPage(id, name, description)
+        if (result.success) {
+            logger.info(`编辑页面成功`)
+        } else {
+            logger.info(`编辑页面失败`)
+            logger.info(`失败原因: ${result.data}`)
+        }
+        callback(result)
     }
 
     async deletePage(id, callback) {
@@ -83,9 +91,9 @@ class WebPageDesignSocket {
         callback(await this.getAllPageInfo())
     }
 
-    async applayPage(id, callback) {
+    async applayPage(id, type, callback) {
         logger.info(`更新客户端主页`)
-        const result = await this.webPageDesignService.applayPage(id)
+        const result = await this.webPageDesignService.applayPage(id, type)
         if (result.success) {
             logger.info(`客户端主页更新成功`)
         } else {
@@ -97,7 +105,7 @@ class WebPageDesignSocket {
 
     async getCurrentWelcomePage() {
         logger.info(`客户端获取页面`)
-        const result = await this.webPageDesignService.getCurrentPage()
+        const result = await this.webPageDesignService.getCurrentPage(Page.Type.DINE_IN)
         if (result.success) {
             logger.info(`客户端页面获取成功`)
         } else {
@@ -107,20 +115,39 @@ class WebPageDesignSocket {
         return result
     }
 
+    async getCurrentTakeWelcomePage() {
+        logger.info(`客户端获取外卖订台页面`)
+        const result = await this.webPageDesignService.getCurrentPage(Page.Type.TAKEAWAY)
+        if (result.success) {
+            logger.info(`客户端页面获取外卖订台成功`)
+        } else {
+            logger.info(`客户端页面获取外卖订台失败`)
+            logger.info(`失败原因: ${result.data}`)
+        }
+        return result
+    }
+
+    async getCurrentTakeWayWelcomePage() {
+        logger.info('客户端获取外卖主页页面')
+    }
+
     async registerHandlers(socket) {
         socket.on("manager_get_page", async (id, cb) => { await this.getPageById(id, cb) })
         // socket.on("manager_get_welcome_images", (id, cb) => { this.getPageWelcomeImages(id, cb) })
         socket.emit("manager_get_all_pagesInfo", await this.getAllPageInfo())
 
         socket.on("manager_refresh_pages", async (callback) => await this.refrehPage(callback))
-        socket.on("manager_add_page", async ({ name: name, description: description }, callback) => await this.addPage(name, description,callback))
+        socket.on("manager_add_page", async ({ name: name, description: description, type: type }, callback) => await this.addPage(name, description, type,callback))
+        socket.on("manager_edit_page", async ({ id: id, name: name, description: description}, callback) => await this.editPage(id, name, description, callback))
         socket.on("manager_delete_descrition_images", async ({ id: id, paths: paths }, callback) => await this.deleteDescriptionIamges(id, paths, callback))
         socket.on("manager_save_page_data", async ({ id: id, pageData: pageData }, callback) => await this.savePageData(id, pageData, callback))
         socket.on("manager_delete_page", async (id, callback) => await this.deletePage(id, callback))
 
-        socket.on("manager_apply_welcomePage", async (id, callback) => await this.applayPage(id, callback))
+        socket.on("manager_apply_welcomePage", async (id, type, callback) => await this.applayPage(id, type, callback))
 
         socket.emit("client_current_welcome_page", await this.getCurrentWelcomePage())
+        socket.emit("client_current_welcome_takeaway_page", await this.getCurrentWelcomePage())
+
     }
 }
 

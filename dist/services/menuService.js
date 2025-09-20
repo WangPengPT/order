@@ -240,7 +240,7 @@ class MenuService {
     return undefined;
   }
 
-  saveDishRating(id, like, rate) {
+  async saveDishRating(id, like, rate) {
     try {
       const item = appState.menu.find(m => m.id === id);
 
@@ -257,8 +257,7 @@ class MenuService {
       item.likes += like;
       item.rates += rate;
 
-      // 数据写入每月评分
-      //saveMonthRates(item)
+      await this.menuRespository.update(item)
 
       return {
         success: true,

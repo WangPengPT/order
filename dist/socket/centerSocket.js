@@ -70,19 +70,19 @@ class CenterSocket {
         return name;
     }
 
-    static get_shopify_orders(client_socket) {
+    static get_center_datas(client_socket,emit_key,api_key) {
 
         const send = (rawData) => {
             try {
                 const jsonData = JSON.parse(rawData); // 解析JSON字符串
-                if (client_socket && client_socket.connected) client_socket.emit("shopify_orders", jsonData)
+                if (client_socket && client_socket.connected) client_socket.emit(emit_key, jsonData)
             } catch (error) {
                 console.error('JSON解析失败:', error);
             }
         }
 
         const restaurant = this.getRestaurant()
-        const api = "/api/" + 'order_list' + "?restaurant=" + restaurant + "&count=20";
+        const api = "/api/" + api_key + "?restaurant=" + restaurant + "&count=20";
 
 
         let mod = http;
@@ -109,6 +109,10 @@ class CenterSocket {
                 console.log('服务器未启动或地址错误');
             }
         });
+    }
+
+    static updateReserveData(key, value, callback){
+        socket.emit('update_reserve_data', {key:key, value:value}, callback)
     }
 
 }
