@@ -17,11 +17,10 @@ class MenuService {
 
       return await DB.withTransaction(async (session) => {
         const menu = await this.menuRespository.getMenu(session);
-
         const category = {};
         for (let i = 0; i < menu.length; i++) {
           const value = menu[i];
-          if (value.category && (value.category != "") && (!category[value.handle])) {
+          if(value.category && (value.category != "") && (!category[value.handle])) {
             category[value.handle] = value.category;
           }
         }

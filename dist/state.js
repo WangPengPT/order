@@ -24,6 +24,7 @@ class AppState {
         }
 
         this.pickupData = {
+            restaurantName:"Default Restaurant Name",
             latitudeAndLongitude:{
                 latitude: undefined,
                 longitude: undefined,
