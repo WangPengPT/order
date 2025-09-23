@@ -58,6 +58,11 @@ class CenterSocket {
             appState.socket_io.emit("new_shopify_orders", [data])
         });
 
+        socket.on("reserve_"+name, (data) => {
+            console.log('reserve_'+name,data);
+            appState.socket_io.emit("new_reserves", [data])
+        });
+
         socket.connect()
     }
 
