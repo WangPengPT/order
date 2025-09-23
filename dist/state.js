@@ -481,6 +481,7 @@ class AppState {
 
     addLocalIP(socket) {
         const ip = this.getClientIP(socket)
+        if (!this.localIps) this.localIps = []
         if (this.localIps.includes(ip)) return;
         console.log("add local ip: " + ip);
         this.localIps.push(ip)
