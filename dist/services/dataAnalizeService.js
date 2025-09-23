@@ -175,16 +175,18 @@ class DataAnalizeService {
                 if (dishes !== undefined) {
                     dishes.forEach(dish => {
                         const name = this.simplyFormateDishName(dish)
-                        let range = dish.likes - dish.rates
-                        if (range == 0) range = dish.likes
+                        const likes = dish.likes || 0
+                        const rates = dish.rates || 0
+                        let range = likes - rates
+                        if (range == 0) range = likes
                         const currentMenuDish = menu.find(it => it.id == dish.id)
 
                         const form = {
                             id: dish.id,
                             name: name,
                             range: range,
-                            rates: currentMenuDish.rates,
-                            likes: currentMenuDish.likes
+                            rates: currentMenuDish?.rates || 0,
+                            likes: currentMenuDish?.likes || 0
                         }
 
                         result.push(form)
@@ -197,6 +199,7 @@ class DataAnalizeService {
                 data: result
             }
         } catch (error) {
+            console.log("error: ", error)
             return {
                 success: false,
                 data: error.message
