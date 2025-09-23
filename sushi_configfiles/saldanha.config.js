@@ -3,7 +3,7 @@ module.exports = {
   apps: [{
     name: "SC_SALDANHA",
     script: "./server.js",
-	cwd: "../dist",
+	  cwd: "../dist",
     instances: 1,
     autorestart: true,
     watch: false,
@@ -11,9 +11,10 @@ module.exports = {
     env: {
       NODE_ENV: "production",
       USE_HTTPS : true,
-	  HTTPS_HEAD: "sushi",
+	    HTTPS_HEAD: "sushi",
       PORT: 6007,
       QR_ADDR: "https://sushi.xiaoxiong.pt:6007/client.html?table=",
+      ADDR: "https://sushi.xiaoxiong.pt:6007",
       TABLE_NUMBER: [[2,25]],
       SAVE_ADDR: "save/sc_saldanha",
       JWT_SECRET: "my_jwt_secret_key"
