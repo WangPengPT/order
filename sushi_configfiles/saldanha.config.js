@@ -15,6 +15,7 @@ module.exports = {
       PORT: 6007,
       QR_ADDR: "https://sushi.xiaoxiong.pt:6007/client.html?table=",
       ADDR: "https://sushi.xiaoxiong.pt:6007",
+      ADMIN_PASS: "1015",
       TABLE_NUMBER: [[2,25]],
       SAVE_ADDR: "save/sc_saldanha",
       JWT_SECRET: "my_jwt_secret_key"
