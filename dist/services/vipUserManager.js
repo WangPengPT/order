@@ -41,7 +41,8 @@ class VIPUserManager {
 
         if (user && user.password == password) {
             return {
-                result: true
+                result: true,
+                user: user,
             }
         } else {
             return {
