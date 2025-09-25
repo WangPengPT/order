@@ -14,9 +14,11 @@ module.exports = {
 	  HTTPS_HEAD: "sushi",
       PORT: 6005,
       QR_ADDR: "https://sushi.xiaoxiong.pt:6005/client.html?table=",
+      ADDR: "https://sushi.xiaoxiong.pt:6005",
       TABLE_NUMBER: [[1,19],[29,39]],
       SAVE_ADDR: "save/sc_linda_a_velha",
-      JWT_SECRET: "my_jwt_secret_key"
+      JWT_SECRET: "my_jwt_secret_key",
+      ADMIN_PASS: "1015"
     }
   }]
 }

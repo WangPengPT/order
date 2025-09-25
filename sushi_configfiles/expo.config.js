@@ -14,10 +14,12 @@ module.exports = {
 	  HTTPS_HEAD: "sushi",
       PORT: 8002,
       QR_ADDR: "https://sushi.xiaoxiong.pt:8002/client.html?table=",
+      ADDR: "https://sushi.xiaoxiong.pt:8002",
       TABLE_NUMBER: [[1,9],[17,19],[20,31]],
       SAVE_ADDR: "save/sc_expo",
       INS_URL: "https://www.instagram.com/sushicome_expo/",
-      JWT_SECRET: "my_jwt_secret_key"
+      JWT_SECRET: "my_jwt_secret_key",
+      ADMIN_PASS: "1015"
     }
   }]
 }
