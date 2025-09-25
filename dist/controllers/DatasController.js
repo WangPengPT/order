@@ -1,6 +1,6 @@
 const archiver = require("archiver")
 const AppStateRepository = require("../repositories/appStateRepository")
-const { appState } = require("../state")
+const { appState, AppState } = require("../state")
 const User = require("../model/users")
 const { getPageImages, importPageImages, getImageAbsolutPath, getImagePath } = require('../filedb')
 const { UserService } = require("../services/userService")
@@ -55,8 +55,9 @@ class DatasController {
     try {
       const content = req.file.buffer.toString('utf-8')  // 转字符串
       const data = JSON.parse(content)                   // 解析 JSON
+      const newAppState = AppState.fromJSON(data)
 
-      this.appStateRepository.appState.updateAppState(data)
+      this.appStateRepository.appState.updateAppState(newAppState)
 
       res.json({ message: '导入成功', records: Array.isArray(data) ? data.length : 1 })
     } catch (err) {
