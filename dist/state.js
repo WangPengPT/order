@@ -210,16 +210,17 @@ class AppState {
     }
 
     addOrderTable(orderData) {
-        this.maxOrderId++
+        this.maxOrderId++   
         const orderId = this.maxOrderId.toString().padStart(4, '0')
         const order = new Order({...orderData, id: orderId})
-        const table = this.getTableById(order.table)
+        const tableId = String(order.table)
+        const table = this.getTableById(tableId)
         if (table == null) {
-            throw new Error(`桌号${order.table}未能找到！`)
+            throw new Error(`桌号${tableId}未能找到！`)
         }
 
         if (table.status !== TableStatus.SEATED) {
-            throw new Error(`Mesa ${order.table} não tem permissão`)
+            throw new Error(`Mesa ${tableId} não tem permissão`)
         }
 
         // 查看限量菜
@@ -235,7 +236,7 @@ class AppState {
                 // console.log(totalOrders)
                 // console.log(totalPeople * orderData.items[i].limit)
                 if (totalOrders > totalPeople * orderData.items[i].limit) {
-                    throw new Error(`Mesa ${order.table} ultrapassou o número de pedidos para ${item.dishid}`)
+                    throw new Error(`Mesa ${tableId} ultrapassou o número de pedidos para ${item.dishid}`)
                 }
             }
         }

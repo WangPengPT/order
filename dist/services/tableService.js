@@ -6,8 +6,7 @@ const { TableStatus } = require('../model/TableStatus.js')
 function addNewTable(tableData) {
   try {
 
-    const newId = tableData.id
-
+    const newId = String(tableData.id)
     if (!newId) { throw new Error("Invalid table id") }
     // 简单检查是否有重复 ID（可选）
     const exists = appState.tables.getTableById(newId)
