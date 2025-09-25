@@ -177,8 +177,8 @@ class AppState {
     }
 
     updateChildrenPricePercentage(percentage){
-        this.childrenWeekPrice = percentage
-        return this.childrenWeekPrice
+        this.childrenPricePercentage = percentage
+        return this.childrenPricePercentage
     }
 
     updateWeekPrice(key,value){

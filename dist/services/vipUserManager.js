@@ -21,8 +21,35 @@ class VIPUserManager {
 
         socket.on("vip_register", async (user, callback) => {
             const ret = await this.registerUser(socket, user)
+            console.log(ret)
             callback(ret)
         })
+
+        socket.on("vip_change_password", async (oldPwd, newPwd, callback) => {
+            const ret = await this.change_password(socket, oldPwd, newPwd)
+            callback(ret)
+        })
+
+    }
+
+
+    async change_password(socket, oldPwd, newPwd)
+    {
+        console.log(socket.user)
+        if (socket.user &&  socket.user.password == oldPwd) {
+
+            socket.user.password = newPwd
+            DB.set(db_name, socket.user)
+
+            return {
+                result: true
+            }
+        }
+
+        return {
+            result: false,
+            error: "error password"
+        }
     }
 
     async login(socket, key, password) {
@@ -40,6 +67,9 @@ class VIPUserManager {
         const user = await DB.findOne(db_name, q)
 
         if (user && user.password == password) {
+
+            this.onLogin(socket,user)
+            
             return {
                 result: true,
                 user: user,
@@ -62,27 +92,28 @@ class VIPUserManager {
 
     async registerUser(socket, user) {
 
-        if (this.isEmail(user.email)) {
-            return {
-                result: false,
-                error: "invalid email."
-            }
-        }
+        console.log(user)
 
-        if (this.isPhone(user.phone)) {
-            return {
-                result: false,
-                error: "invalid pone"
-            }
-        }
-
-        if (this.check_sting(user.id)) {
+        if (!this.check_sting(user.id)) {
             return {
                 result: false,
                 error: "invalid id"
             }
         }
 
+        if (!this.isEmail(user.email)) {
+            return {
+                result: false,
+                error: "invalid email."
+            }
+        }
+
+        if (!this.isPhone(user.phone)) {
+            return {
+                result: false,
+                error: "invalid pone"
+            }
+        }
 
         const q = {
             $or: [
@@ -101,10 +132,16 @@ class VIPUserManager {
             }
         }
 
+        user.registrationDate = Date.now();
+        user.points = 0;
+
+        DB.set(db_name, user)
+
         this.onLogin(socket,user)
 
         return {
-            result: true
+            result: true,
+            user: user,
         }
     }
 
