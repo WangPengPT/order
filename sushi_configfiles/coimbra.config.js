@@ -14,7 +14,7 @@ module.exports = {
 	  HTTPS_HEAD: "sushi",
       PORT: 8006,
       QR_ADDR: "https://sushi.xiaoxiong.pt:8006/client.html?table=",
-      QR_ADDR: "https://sushi.xiaoxiong.pt:8006",
+      ADDR: "https://sushi.xiaoxiong.pt:8006",
       TABLE_NUMBER: [[1,56]],
       SAVE_ADDR: "save/sc_coimbra",
       JWT_SECRET: "my_jwt_secret_key",
