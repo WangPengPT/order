@@ -6,7 +6,6 @@ const printers = [];
 
 function print_order(order) {
     logger.info(`打印订单 订单号 - ${order.id}`)
-    if (printers.length == 0) logger.info("没有找到任何可用的打印机")
     for (const key in printers) {
         const printer = printers[key];
 
@@ -19,7 +18,7 @@ function print_order(order) {
             let type = menuService.getDishCategory(item);
             if (printer.data.menu.includes(type)) {
                 hasData = true;
-                break;
+                break;  
             }
         }
 
