@@ -169,7 +169,6 @@ class SocketServices {
 
       // 处理订单提交
       socket.on("submit_order", (orderData) => {
-
         if (appState.settings.checkIP && (!appState.checkLocalIP(socket))) {
           logger.info(`订单提交失败`)
           logger.info(`失败原因: invalid ip`)
@@ -193,8 +192,8 @@ class SocketServices {
           // 返回确认给用户端
           socket.emit("order_confirmed", order.data.id);
 
-          // 更新管理端的桌子信息
-          this.io.emit("send_tables", appState.tables.toJSON())
+          // // 更新管理端的桌子信息
+          // this.io.emit("send_tables", appState.tables.toJSON())
 
           // 给客户端发送桌子信息
           const table = tableService.getTableById(order.data.table)
@@ -340,16 +339,6 @@ class SocketServices {
         }
       });
 
-
-
-      socket.on("client_cmd", (id, cmd) => {
-        tableService.clientCmd(id, cmd);
-        this.io.emit("client_cmd", id, cmd);
-      });
-
-      socket.on("click_msg", (id, cmd) => {
-        tableService.clickMsg(id, cmd);
-      });
 
       socket.on("rate_dish", async (id, like, rate) => {
         const result = await this.menuService.saveDishRating(id, like, rate);

@@ -72,14 +72,23 @@ class TableSocket {
           //const price = appStateService.getCurrentPrice()
           //socket.emit('client_currentPrice', price)
           callback(result)
+    }
+
+
+
+    clientCallCMD(id, cmd, callback){
+        logger.info(`桌号: ${id} 客户呼叫: ${cmd.cmd} nif:${cmd.nif} note:${cmd.note} `)
+        const result = tableService.clientCmd(id,cmd)
+        if(result.success) {
+            this.io.emit('client_cmd', id, result.data)
         }
+        callback(result)
+    }
 
-
-        
-    clientCall(id, cmd){
-      tableService.clientCmd(id,cmd);
-      this.io.emit("client_cmd", id, cmd);
-   }
+    managerClickCMD(id, cmd){
+        logger.info(`桌号: ${id} 管理确认: ${cmd} `)
+        tableService.clickMsg(id,cmd)
+    }
 
     registerHandlers(socket) {
         socket.on('add_table', (tableData, callback) => { this.managerAddTable(tableData, callback) })
@@ -91,8 +100,8 @@ class TableSocket {
 
         socket.on('client_get_table', (id, callback) => {callback(tableService.getTableById(id))})
         socket.on('get_table_by_id', (value, callback) => { this.clientGetTableById(socket, value, callback) });
-        socket.on("client_cmd", (id,cmd) => { this.clientCall(id, cmd) });
-        socket.on("click_msg", (id,cmd) => { tableService.clickMsg(id,cmd); });
+        socket.on("client_cmd", (id,cmd,callback) => { this.clientCallCMD(id, cmd, callback) });
+        socket.on("click_msg", (id,cmd) => { this.managerClickCMD(id,cmd) });
     }
 }
 

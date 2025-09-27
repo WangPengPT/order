@@ -60,6 +60,7 @@ updateTableWithoutOrder(updatedTableData) {
       })),
       msg_pay: table.msg_pay,
       msg_call: table.msg_call,
+      nif_note: table.nif_note,
     }));
   }
 

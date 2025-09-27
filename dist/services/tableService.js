@@ -145,9 +145,15 @@ function clientCmd(id,cmd) {
     const table = appState.tables.getTableById(id)
 
     if (table == null) throw new Error("Not found the table")
-    table.clientCmd(cmd);
+
+    const result = table.clientCmd(cmd);
+
+    if(!result[cmd.cmd]) throw new Error("Error Update")
+    return {success: true, data: result }
+
   } catch (error) {
     console.warn("Error: ", error.message)
+    return {success:false, data: error.message}
   }
 }
 

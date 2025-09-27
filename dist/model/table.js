@@ -3,7 +3,7 @@ const { PeopleType } = require("./people.js")
 const { TableStatus } = require("./TableStatus.js")
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [] }) {
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note }) {
     this.id = id;
     this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType);
 
@@ -18,9 +18,9 @@ class Table {
 
     this.order = order.map(item => new Dish(item));
 
-    this.msg_pay = false;
-    this.msg_call = false;
-    this.nif_note = {nif:undefined, note:undefined}
+    this.msg_pay = msg_pay || false;
+    this.msg_call = msg_call || false;
+    this.nif_note = nif_note || {nif:undefined, note:undefined}
 
     this.recordProps(this)
   }
@@ -107,18 +107,22 @@ class Table {
     this.peopleType = new PeopleType({ adults: 0, children: 0 })
     this.order = []
     this.msg_pay = false
+    if(this.nif_note) this.nif_note = {nif:undefined, note:undefined}
   }
 
-  clientCmd(cmd) {
-    if (cmd.cmd == 'call') {
+  clientCmd(data) {
+    let result = {}
+    if (data.cmd == 'call') {
       this.msg_call = true;
+      result = { call: true }
     }
 
-    if (cmd.cmd == 'pay') {
+    if (data.cmd == 'pay') {
       this.msg_pay = true;
-      this.nif_note = {nif:cmd.nif? cmd.nif : undefined, note:cmd.note? cmd.note : undefined};
+      this.nif_note = {nif:(data.nif? data.nif : undefined), note:(data.note? data.note : undefined)};
+      result = { pay: true, nif: this.nif_note.nif, note: this.nif_note.note }
     }
-
+    return {cmd: data.cmd, ...result}
   }
 
   clickMsg(cmd) {

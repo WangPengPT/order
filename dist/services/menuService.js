@@ -123,7 +123,7 @@ class MenuService {
     return menu
   }
 
-  async updateMenu(data, update_all) {
+  async updateMenu(data, update_all, takeaway) {
 
     try {
       //console.log(appState.menu);
@@ -166,6 +166,11 @@ class MenuService {
           }
 
           if (!oldData) {
+
+            if (takeaway) {
+              orgData.orderType = "TAKEAWAY"
+            }
+
             appState.menu.push(orgData);
 
             if (!mapUpdate[orgData.handle]) mapUpdate[orgData.handle] = [];

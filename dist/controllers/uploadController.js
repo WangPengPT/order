@@ -34,10 +34,10 @@ class UploadController {
 
     try {
       if (file.path.split('.').pop() == "csv") {
-         await uploadService.processCSV(file, req.body.update_all);
+         await uploadService.processCSV(file, req.body.update_all, req.body.takeaway);
       }
       else {
-         await uploadService.processJSON(file, req.body.update_all);
+         await uploadService.processJSON(file, req.body.update_all, req.body.takeaway);
       }
 
 

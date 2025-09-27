@@ -49,7 +49,6 @@ class AppStateSocket {
     }
 
 
-    管理端更新价格
     updatePriceData(key, value, callback) {
         logger.info(`管理端更改价格`)
         let res

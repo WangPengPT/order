@@ -4,10 +4,9 @@ const dataTime = require('./dateTime.js')
 
 const printers = [];
 
-
 function print_order(order) {
-    // console.log("order:",order);
     logger.info(`打印订单 订单号 - ${order.id}`)
+    if (printers.length == 0) logger.info("没有找到任何可用的打印机")
     for (const key in printers) {
         const printer = printers[key];
 
@@ -25,10 +24,10 @@ function print_order(order) {
         }
 
         if (hasData) {
-            //logger.info( "print...", order);
             print_orde_to_io(printer, order, printer.data.every_one == "true");
         }
         else {
+            logger.info(`订单打印失败 订单号 - ${order.id}`)
             //console.log( "didn't print", order, printer.data );
         }
     }
@@ -119,7 +118,7 @@ function print_orde_to_io(printer, order, every_one) {
             if (name == undefined || name == "Default Title" || name == "undefined") {
                 name = item.name;
             } else {
-                name = item.name + " - " + name;
+                name = item.name + "-" + name;
             }
 
             if (item.notes) {
@@ -128,22 +127,19 @@ function print_orde_to_io(printer, order, every_one) {
                 }
             }
 
-            add_print(BLOD_HAD + item.dishid + "   x " + item.quantity);
-            add_print(BLOD_HAD + name);
+            add_print(BLOD_HAD + "=>" + item.quantity + "-@" + item.dishid + " " + name);
             if (item.dishNote) {
                 add_print("(note: " + item.dishNote + " )");
             }
-            add_print();
         }
         else {
-            add_print(item.name + "   x " + item.quantity);
+            add_print( "=>"+ item.quantity + "-@" + item.name );
             for (let j = 0; j < item.notes.length; j++) {
                 add_print("  " + item.notes[j]);
             }
             if (item.dishNote) {
                 add_print("(note: " + item.dishNote + " )");
             }
-            add_print();
         }
 
         if (every_one) {
@@ -174,20 +170,27 @@ function add_takeaway_print(value){
 }
 function print_takeaway_orde_to_io(printer, order) {
     const takeaway_io = printer.socket
+    print_takeaway_data = ""
     let price_total = 0
-    add_takeaway_print("Takeaway: " + order.name);
-    add_takeaway_print("Pick up data: " + order.pickupDate)
-    add_takeaway_print("Pick up time: " + order.pickupTime)
-    add_takeaway_print("------------------------------")
+    add_takeaway_print("\bTakeaway: " + order.name);
+    add_takeaway_print("Customer Name:" + order.customer.name);
+
+    add_takeaway_print("-------------------------------")
+
+    add_takeaway_print("\bPick up data: " + order.pickupDate)
+    add_takeaway_print("\bPick up time: " + order.pickupTime)
+
+    add_takeaway_print("-------------------------------")
+
     for(let i=0; i<order.line_items.length; i++) {
         const item = order.line_items[i]
         const total = (item.price*item.quantity).toFixed(2)
         price_total += Number(total)
         add_takeaway_print(item.sku+" "+item.name+" * "+item.quantity);
         add_takeaway_print(" "+item.price+" * "+item.quantity+" = "+total);
-        add_takeaway_print()
     }
-    add_takeaway_print("------------------------------")
+
+    add_takeaway_print("-------------------------------")
     add_takeaway_print("Total: "+price_total+" Euro");
 
     console.log("print takeaway data:\n",print_takeaway_data)

@@ -48,8 +48,8 @@ function makeDishData(data) {
   return ret;
 }
 
-exports.processCSV = (file,all) => {
-  logger.info("Processing CSV:",all);
+exports.processCSV = (file,all,takeaway) => {
+  logger.info("Processing CSV:",all,takeaway);
   return new Promise((resolve, reject) => {
     const results = [];
 
@@ -60,7 +60,7 @@ exports.processCSV = (file,all) => {
           results.push(transformed);
         })
         .on('end', () => {
-          menuService.updateMenu(results,all);
+          menuService.updateMenu(results,all,takeaway);
           fs.unlinkSync(file.path); // 删除临时文件
           resolve(results);
         })
@@ -69,7 +69,7 @@ exports.processCSV = (file,all) => {
 };
 
 
-exports.processJSON = (file, all) => {
+exports.processJSON = (file, all,takeaway) => {
   return new Promise((resolve, reject) => {
     try {
       const fileContent = fs.readFileSync(file.path, 'utf8');
@@ -77,7 +77,7 @@ exports.processJSON = (file, all) => {
       const jsonData = JSON.parse(fileContent);
 
       // 更新菜单数据
-      menuService.updateMenu(jsonData, all);
+      menuService.updateMenu(jsonData, all, takeaway);
 
       fs.unlinkSync(file.path);
 
