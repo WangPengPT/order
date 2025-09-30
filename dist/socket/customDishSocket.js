@@ -36,7 +36,7 @@ class CustomDishSocket{
         const result = await this.customDishService.updateEnbale(newState)
         if (result.success) {
             logger.info("更改自定义菜开关成功")
-            await this.menuService.loadMenu()
+            await this.menuService.reorganizeMenuTab_custom()
             callback(result)
         } else {
             logger.info("更改自定义菜开关失败")

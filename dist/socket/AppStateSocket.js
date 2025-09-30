@@ -113,7 +113,12 @@ class AppStateSocket {
         }
     }
 
-    registerHandlers(socket) {
+    async defaultMenuOrdering() {
+        logger.info("重新排序菜品")
+        await this.menuService.reorganizeAndSaveMenuTab_menu()
+    }
+
+    async registerHandlers(socket) {
 
         // manager get data socket
         socket.on("manager_get", async (key, value, callback) => {await this.managerGetData(key, value, callback)})
@@ -121,11 +126,9 @@ class AppStateSocket {
         // manager update data socket
         socket.on("manager_update", (key, value,callback) => {this.managerUpdateData(key, value, callback)})
 
+        socket.on("default_menu_order_sorting", () => { this.defaultMenuOrdering() })
 
         socket.on("manager_refresh_table", (value, cb) => { cb(this.appStateService.getAllTables()) })
-
-        // 发送菜单数据给用户端和管理端
-        socket.emit("menu_data", this.appStateService.appStateRepository.appState.menu, this.appStateService.appStateRepository.appState.orderMenuTab);
 
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
         socket.emit("price_data", this.appStateService.appStateRepository.appState.getPriceData())

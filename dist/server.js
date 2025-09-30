@@ -120,7 +120,6 @@ app.use(express.static(path.join(__dirname, "public"), {
 
 async function main() {
   await DB.init();
-
   await socketService.initializeDatas()
   socketService.initSocket()
   centerSocket.init()

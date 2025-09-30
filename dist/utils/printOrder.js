@@ -39,10 +39,11 @@ function print_takeaway_order(order){
         const printer = printers[key];
         logger.info("打印机 : "+printer.data)
         logger.info("打印机 takeaway: "+printer.data.print_takeaway)
+        logger.info("打印机 takeaway type: "+ (typeof printer.data.print_takeaway))
 
         if (!printer) continue;
         if (!printer.data) continue;
-        if (!printer.data.print_takeaway) continue;
+        if (printer.data.print_takeaway != 'true') continue;
 
         let hasData = (order.line_items.length > 0);
         console.log("hasData: "+hasData)

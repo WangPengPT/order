@@ -310,7 +310,6 @@ class WebPageDesignService {
         try {
             return await DB.withTransaction(async (session) => {
                 if (paths.length === 0) throw new Error("The paths id empty")
-                //  console.log("the page: ", id)
                 const page = await this.webPageRepository.getPageById(id, session)
                 if (!page || page === undefined) throw new Error("Not found the page")
                 const imageDescription = page.data.images_description

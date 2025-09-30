@@ -69,7 +69,7 @@ class MenuRepository {
             if (dishes.length == 0) return []
             for (let dish of dishes) {
                 if (!dish.value) continue
-                    menu.push(dish.value)
+                menu.push(dish.value)
             }
             return menu
         } catch (error) {

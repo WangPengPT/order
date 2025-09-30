@@ -111,7 +111,7 @@ class SocketServices {
 
       await this.webPageDesignSocket.registerHandlers(socket)
 
-      this.appStateSocket.registerHandlers(socket)
+      await this.appStateSocket.registerHandlers(socket)
 
       this.userSocket.registerHandlers(socket)
 
@@ -119,8 +119,28 @@ class SocketServices {
 
       this.dataAnalizeSocket.registerHandlers(socket)
 
-      socket.emit("menu_data", await this.menuService.getMenu(), this.appStateSocket.appStateService.appStateRepository.appState.orderMenuTab);
+      socket.emit("menu_data", await this.menuService.getMenu(), await this.menuService.getMenuOrdering());
 
+      socket.on("manager_get_menu", async (_, callback) => {
+        const data = {}
+        data.menu = await this.menuService.getMenu()
+        data.menuTab = await this.menuService.getMenuOrdering()
+        callback({
+          success: true,
+          data: data
+        })
+      })
+      
+      socket.on("get_takeaway_menu_data",  async () => {
+          let menu = await this.menuService.getMenu()
+          let data = centerSocket.get_menu_data()
+
+          if (data) {
+              console.log("get is_takeaway menu data ok!");
+              menu = data;
+          }
+        socket.emit("takeaway_menu_data", menu, this.appStateSocket.appStateService.appStateRepository.appState.orderMenuTab);
+      });
 
       // 餐桌密码验证
       //tableService.tableLogin(socket)
@@ -306,7 +326,7 @@ class SocketServices {
 
       //Old update_menu_item
       socket.on("update_menu_item", async (item) => {
-        console.log("In menu update item socket")
+        logger.info("修改菜品")
         try {
          let id = item._id;
          if (!id) id = item.id
@@ -319,10 +339,7 @@ class SocketServices {
            // Refresh appState.menu from DB
           appState.menu = await this.menuService.getMenu()
 
-          // Update orderMenuTab if needed
-          if (!appState.orderMenuTab.includes(item.category)) {
-            appState.orderMenuTab.push(item.category);
-          }
+          appState.orderMenuTab = (await this.menuService.getMenuOrdering()).map(it => it.name )
 
           // Update dishTags if present
           if (item.tags) {
@@ -330,7 +347,7 @@ class SocketServices {
           }
           // Broadcast updated item and full menu
           this.io.emit("menu_item_changed", item);
-          this.io.emit("menu_data", appState.menu, appState.orderMenuTab || "defaultTab");
+          this.io.emit("menu_data", await this.menuService.getMenu(), await this.menuService.getMenuOrdering());
 
           logger.info(`Dish updated and broadcasted: ${item.name || item.handle}`);
         } catch (err) {

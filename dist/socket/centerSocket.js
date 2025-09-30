@@ -5,6 +5,8 @@ const http = require('http');
 const https = require('https');
 const {appState} = require("../state");
 
+
+
 let server_addr = 'https://v.xiaoxiong.pt';
 let socket
 
@@ -13,7 +15,20 @@ function extractAfterSlash(str) {
     return parts.length > 1 ? parts.pop() : str;
 }
 
+let restaurantInfo = {}
+let menuData
+let update_data = false;
+
 class CenterSocket {
+
+    static get_menu_data() {
+        return menuData
+    }
+
+    static set_menu_data(data) {
+        update_data = true;
+        menuData = data;
+    }
 
     static init() {
 
@@ -27,13 +42,10 @@ class CenterSocket {
         });
 
         socket.on('connect_error', (err) => {
-            console.log('连接错误:', err.message);
+            console.log('connect_error:', err.message);
             if (err.message.includes('ECONNREFUSED')) {
-                console.error('连接被拒绝，请检查服务器是否运行');
+                console.error('The connection was refused, please check if the server is running');
             }
-
-            //本来是 3000
-            setTimeout(() => socket.connect(), 10000);
         });
 
         socket.on('error', (err) => {
@@ -41,18 +53,22 @@ class CenterSocket {
         });
 
         socket.on('connect_timeout', (timeout) => {
-            console.log('连接超时:', timeout);
+            console.log('connect_timeout:', timeout);
         });
 
         socket.on('reconnect_failed', () => {
-            console.log('重连彻底失败');
-        });
-
-        socket.on('connect', () => {
-            console.log('connect to center server');
+            console.log('reconnect_failed');
         });
 
         const name = this.getRestaurant()
+
+        socket.on('connect', () => {
+            console.log('connect to center server');
+
+            this.set_menu_data(appState.menu);
+        });
+
+
 
         socket.on(name, (data) => {
             appState.socket_io.emit("new_shopify_orders", [data])
@@ -63,11 +79,61 @@ class CenterSocket {
             appState.socket_io.emit("new_reserves", [data])
         });
 
-        socket.connect()
+
+        this.connect_socket();
+
+        this.timeMessage()
+    }
+
+    static connect_socket() {
+
+        console.log(socket.connected)
+
+        if (!socket.connected) {
+            console.log('call connect to center server');
+            socket.connect();
+        }
+
+        setTimeout(() => {
+            this.connect_socket();
+        }, 10000);
+    }
+
+    static timeMessage() {
+        setTimeout( () => {
+            this.doTime();
+            this.timeMessage()
+        }, 1000 * 1)
+    }
+
+    static doTime() {
+
+        console.log("do time");
+
+        let key = this.getRestaurant()
+        key = key.trim();
+
+        if ( key.startsWith("org_") ) {
+            key  = key.substring(4)
+            if (update_data) {
+                socket.emit('message', "g_set_menu", {key, menuData})
+                update_data = false
+            }
+        }
+        else if ( key != "" ) {
+            socket.emit('message', "g_get_menu", key, (menu)=> {
+                if (menu) {
+                    console.log("get menu data!");
+                    menuData = menu
+                }
+            })
+        }
     }
 
     static getRestaurant() {
         let name = "sc_sushi"
+
+        //name = "org_sushi"
 
         if (process.env.SAVE_ADDR) {
             name = extractAfterSlash(process.env.SAVE_ADDR)
