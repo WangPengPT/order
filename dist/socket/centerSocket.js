@@ -108,7 +108,7 @@ class CenterSocket {
 
     static doTime() {
 
-        console.log("do time");
+        // console.log("do time");
 
         let key = this.getRestaurant()
         key = key.trim();
@@ -123,7 +123,7 @@ class CenterSocket {
         else if ( key != "" ) {
             socket.emit('message', "g_get_menu", key, (menu)=> {
                 if (menu) {
-                    console.log("get menu data!");
+                    // console.log("get menu data!");
                     menuData = menu
                 }
             })
