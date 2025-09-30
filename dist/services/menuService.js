@@ -18,6 +18,14 @@ class MenuService {
   async loadMenu() {
     try {
 
+      let tabs = await this.menuOrderingRepository.get()
+      if (!tabs || tabs == null) {
+        console.log("初始化 菜品顺序")
+        const mm = await this.buildMenuOrdering()
+        await this.saveMenuOrdering(mm)
+        await this.reorganizeMenuTab_custom()
+      }
+      
       return await DB.withTransaction(async (session) => {
         const menu = await this.menuRespository.getMenu(session);
         const category = {};
@@ -56,7 +64,7 @@ class MenuService {
 
         appState.menu = menu;
 
-        const localTabs = await this.getMenuOrdering()
+        const localTabs = await this.getMenuOrdering(session)
         appState.orderMenuTab = localTabs.map(it =>it.name)
 
         const types = [];
@@ -83,8 +91,7 @@ class MenuService {
             orderTabs.push(tab);
           }
         }
-      const tabs = await this.menuOrderingRepository.get()
-
+      tabs = await this.menuOrderingRepository.get(session)
       // 每次load 都查看local 来判断自定义添加到哪里
       appState.orderMenuTab = tabs.map(it => it.name)
       })
@@ -106,12 +113,12 @@ class MenuService {
     console.log("reorganizeAndSaveMenuTab_menu finish")
   }
 
-  async reorganizeMenuTab_custom() {
-    const customDish = (await this.customeDishRepository.getAllEnableTemplates()).map(it => it.name)
-    const localTabs = await this.menuOrderingRepository.get()
-    const menuDish = await this.buildMenuOrdering()
+  async reorganizeMenuTab_custom(session = null) {
+    const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
+    const localTabs = await this.menuOrderingRepository.get(session)
+    const menuDish = await this.buildMenuOrdering(session)
     const tabs = syncCustomDishes(localTabs, customDish, menuDish)
-    await this.saveMenuOrdering(tabs)
+    await this.saveMenuOrdering(tabs, session)
   }
 
 
@@ -183,9 +190,9 @@ class MenuService {
     await this.menuOrderingRepository.save(data, session)
   }
 
-  async getMenuOrdering() {
+  async getMenuOrdering(session = null) {
     //await this.saveMenuOrdering(await this.buildMenuOrdering())
-    return await this.menuOrderingRepository.get()
+    return await this.menuOrderingRepository.get(session)
   }
 
   // 获取菜单
