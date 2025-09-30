@@ -6,6 +6,7 @@ const MenuRepository = require('../repositories/menuRepository.js');
 const DB = require('../db.js');
 const MenuOrderingRepository = require('../repositories/menuOrderingRepository.js');
 const centerSocket = require('../socket/centerSocket.js');
+const { logger } = require('../utils/logger.js');
 
 class MenuService {
   constructor(menuRespository = new MenuRepository(), menuOrderingRepository = new MenuOrderingRepository(), customeDishRepository = new CustomDishRepository()) {
@@ -200,9 +201,8 @@ class MenuService {
 
   // 获取菜单
   async getMenu() {
+    logger.info("获取菜单")
     const menu = await this.menuRespository.getMenu() 
-        console.log("finded::adad", menu.find(it => it.id === "101").name)
-
     appState.menu = menu;
     return menu
   }
