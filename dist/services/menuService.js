@@ -166,6 +166,9 @@ class MenuService {
     const categoryMap = {}  // { category: [{id, subDishes}] }
 
     for (const [handle, main] of Object.entries(handleToMain)) {
+      if (handleToSubs[handle].length >= 1) {
+        handleToSubs[handle].push({id: main.id})
+      }
       const subs = handleToSubs[handle] || []
       const category = main.category
       categoryMap[category] ??= []
@@ -197,7 +200,9 @@ class MenuService {
 
   // 获取菜单
   async getMenu() {
-    const menu = await this.menuRespository.getMenu()
+    const menu = await this.menuRespository.getMenu() 
+        console.log("finded::adad", menu.find(it => it.id === "101").name)
+
     appState.menu = menu;
     return menu
   }

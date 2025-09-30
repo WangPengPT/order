@@ -1,14 +1,9 @@
+
 function ensureMainInSubDishes(dish) {
   // 保证 subDishes 是数组
   if (!Array.isArray(dish.subDishes)) {
     dish.subDishes = [];
   }
-
-  // 如果只有一个或没有子项 → 清空
-  if (dish.subDishes.length == 1 && dish.subDishes[0] == dish.id) {
-    dish.subDishes = [];
-  }
-
   // 如果有真正子项，并且 subDishes 没有主菜 id，则补上
   if (dish.subDishes.length > 0 && !dish.subDishes.includes(dish.id)) {
     dish.subDishes.unshift(dish.id);
