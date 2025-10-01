@@ -362,23 +362,34 @@ class MenuService {
 
   async deleteItem(id) {
     try {
-      const index = appState.menu.findIndex(item => item.id == id);
 
-      if (index === -1) throw new Error("No item id")
-
-      const count = appState.menu.filter(item => item.category === appState.menu[index].category).length
-      if (count === 1) {
-        appState.orderMenuTab = appState.orderMenuTab.filter(tab => tab !== appState.menu[index].category)
+      return await DB.withTransaction(async (session) => {
+      const dish = await this.menuRespository.get(id, session)
+      console.log("dish::::", dish, "id:  _:", id, "handle:_;", dish.handle)
+      let result;
+      //MainDish
+      if (!dish) throw new Error("Not found the dish")
+      if (dish.category !== '') {
+        result = await this.menuRespository.deleteMenuDishByHandle(dish.handle, session)
+      } else {
+        result = await this.menuRespository.deleteDish(dish.id)
       }
 
-      appState.menu.splice(index, 1);
-
-      await this.menuRespository.deleteDish(id)
-      await this.reorganizeAndSaveMenuTab_menu()
-      return {
-        success: true,
-        data: id
-      }
+      if (result.acknowledged && result.deletedCount > 0) {
+          await this.reorganizeAndSaveMenuTab_menu(session)
+          console.log("✅ 删除成功");
+          return {
+            success: true,
+            data: id
+          }
+        } else if (result.acknowledged && result.deletedCount === 0) {
+          console.log("⚠️ 删除请求执行了，但没找到对应数据");
+          throw new Error("Unexpected error")
+        } else {
+          console.error("❌ 删除请求未被确认");
+          throw new Error("Unexpected error")
+        }
+      })
     } catch (error) {
       console.warn("Error: ", error)
       return {

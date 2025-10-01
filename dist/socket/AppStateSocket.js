@@ -68,6 +68,8 @@ class AppStateSocket {
 
     // 管理端获取数据
     async managerGetData(key, value, callback){
+        logger.info("Manager get Key:"+key)
+        if(value) {logger.info("Manager get value:"+value)}
         let result
         switch (key){
             case "menu":
@@ -85,9 +87,16 @@ class AppStateSocket {
             case "people_data":
                 result = this.appStateService.appStateRepository.appState.getPeopleCurrentPriceData(value.tableId)
                 break
+            case 'delivery':
+                result = {success: true, data: this.appStateService.appStateRepository.appState.getPickupData()}
+                break
+            case 'reserver':
+                result = {success: true, data:this.appStateService.appStateRepository.appState.getReserverData()}
+                break
             default:
                 result = {success: false, data: "Not Found Get Key"}
         }
+        logger.info("Manager get data => "+result.success)
         callback(result)
     }
 

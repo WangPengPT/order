@@ -80,9 +80,18 @@ class MenuRepository {
 
     async deleteDish(id, session = null) {
         try {
-            await DB.del(this.tableName, id, session)
+            return await DB.del(this.tableName, id, session)
         } catch (error) {
             logger.error(`repo:❌ 删除 菜品 失败: ${error}`);
+            throw error;
+        }
+    }
+
+    async deleteMenuDishByHandle(handle, session = null) {
+        try {
+            return await DB.deleteMenuDishByHandle(this.tableName, handle, session)
+        } catch (error) {
+            logger.error(`repo:❌ 获取菜品失败: ${error}`);
             throw error;
         }
     }

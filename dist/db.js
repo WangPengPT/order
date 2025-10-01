@@ -159,6 +159,15 @@ class DB {
         return await collection.aggregate(pipeline, { session }).toArray();
     }
 
+    static async deleteMenuDishByHandle(table, handle, session = null) {
+        const collection = db.collection(table);
+        const result = await collection.deleteMany(
+            { "value.handle": handle },
+            { session }
+        );
+        return result; // 返回删除结果 { acknowledged, deletedCount }
+    }
+
 }
 
 module.exports = DB;

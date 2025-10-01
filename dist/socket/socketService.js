@@ -74,6 +74,16 @@ class SocketServices {
 
     this.io.on("connection", async (socket) => {
 
+      // printer 别在这前面写异步
+      socket.on('add_printer', (value) => {
+        const id = socket.id;
+        value = JSON.parse(value);
+        value.id = id;
+        printers[id] = { socket: socket, data: value }
+
+        appState.addLocalIP(socket)
+      });
+
       VIPUserManager.initSocket(socket)
 
       const ip = socket.handshake.address;
@@ -264,16 +274,6 @@ class SocketServices {
         appState.addLocalIP(socket)
       })
 
-      // printer
-      socket.on('add_printer', (value) => {
-        const id = socket.id;
-        value = JSON.parse(value);
-        value.id = id;
-        printers[id] = { socket: socket, data: value }
-
-        appState.addLocalIP(socket)
-      });
-
       socket.on('get_printers', (callback) => {
         const ret = [];
         for (const key in printers) {
@@ -293,7 +293,7 @@ class SocketServices {
               printer.data.print_takeaway = value.print_takeaway;
               printer.data.every_one = value.every_one;
               printer.data.fontSize = value.fontSize;
-              printer.socket.emit('select_printer', value.printer, value.menu.toString(), value.every_one, value.print_takeaway, value.fontSize);
+              printer.socket.emit('select_printer', value.printer, value.menu.toString(), value.every_one, value.fontSize, value.print_takeaway);
             }
           }
         }
