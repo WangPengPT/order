@@ -209,7 +209,23 @@ class MenuService {
 
   async updateMenu(data, update_all, takeaway) {
 
+    if (typeof(takeaway) == 'string') {
+      takeaway = (takeaway === 'true')
+    }
+
     try {
+
+      for (let i = 0; i < data.length; i++) {
+        const orgData = data[i];
+
+        console.log(takeaway)
+        if (takeaway) {
+          console.log("is takeway")
+          orgData.orderType = "TAKEAWAY"
+          orgData.deliveryPrice = orgData.price
+        }
+      }
+
       //console.log(appState.menu);
       // get current menu
       appState.menu = await this.menuRespository.getMenu()
@@ -230,6 +246,7 @@ class MenuService {
 
         for (let i = 0; i < data.length; i++) {
           const orgData = data[i];
+
           let oldData = undefined;
           for (let j = 0; j < appState.menu.length; j++) {
             oldData = appState.menu[j];
@@ -253,10 +270,6 @@ class MenuService {
           }
 
           if (!oldData) {
-
-            if (takeaway) {
-              orgData.orderType = "TAKEAWAY"
-            }
 
             appState.menu.push(orgData);
 
