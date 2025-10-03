@@ -287,7 +287,7 @@ class MenuService {
         });
         await this.menuRespository.saveMenu(appState.menu)
 
-        centerSocket.set_menu_data(appState.menu)
+        await centerSocket.update_menu_data()
       }
       await this.reorganizeAndSaveMenuTab_menu()
     } catch (error) {

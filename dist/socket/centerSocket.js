@@ -18,6 +18,7 @@ function extractAfterSlash(str) {
 let restaurantInfo = {}
 let menuData
 let update_data = false;
+let menuService
 
 class CenterSocket {
 
@@ -25,16 +26,26 @@ class CenterSocket {
         return menuData
     }
 
-    static set_menu_data(data) {
+    static async update_menu_data() {
+
+
+        let menu = await menuService.getMenu()
+        let menuOrdering = await menuService.getMenuOrdering()
+
+        let data = {
+            menu,
+            menuOrdering
+        }
+
         update_data = true;
         menuData = data;
     }
 
-    static init() {
-
-        if (!process.env.SAVE_ADDR) {
-            server_addr = "http://localhost"
-        }
+    static init(menuServiceInstance) {
+        menuService = menuServiceInstance
+        // if (!process.env.SAVE_ADDR) {
+        //     server_addr = "http://localhost"
+        // }
 
         socket = io(server_addr, {
             autoConnect: false, // 禁止自动连接
@@ -62,13 +73,10 @@ class CenterSocket {
 
         const name = this.getRestaurant()
 
-        socket.on('connect', () => {
+        socket.on('connect', async () => {
             console.log('connect to center server');
-
-            this.set_menu_data(appState.menu);
+            await this.update_menu_data();
         });
-
-
 
         socket.on(name, (data) => {
             appState.socket_io.emit("new_shopify_orders", [data])
@@ -123,7 +131,7 @@ class CenterSocket {
         else if ( key != "" ) {
             socket.emit('message', "g_get_menu", key, (menu)=> {
                 if (menu) {
-                    // console.log("get menu data!");
+                    console.log("get menu data!");
                     menuData = menu
                 }
             })
@@ -131,7 +139,7 @@ class CenterSocket {
     }
 
     static getRestaurant() {
-        let name = "sc_sushi"
+        let name = "sc_saldanha"
 
         //name = "org_sushi"
 

@@ -143,13 +143,17 @@ class SocketServices {
       
       socket.on("get_takeaway_menu_data",  async () => {
           let menu = await this.menuService.getMenu()
+          let menuOrdering = await this.menuService.getMenuOrdering()
+
           let data = centerSocket.get_menu_data()
 
           if (data) {
               console.log("get is_takeaway menu data ok!");
-              menu = data;
+              menu = data.menu;
+              menuOrdering = data.menuOrdering
           }
-        socket.emit("takeaway_menu_data", menu, this.appStateSocket.appStateService.appStateRepository.appState.orderMenuTab);
+
+          socket.emit("takeaway_menu_data", menu, menuOrdering );
       });
 
       // 餐桌密码验证
