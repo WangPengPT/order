@@ -66,6 +66,18 @@ class AppStateSocket {
         callback(res)
     }
 
+    updatePrintModel(value, callback){
+        logger.info(`管理端更改打印模板`)
+        const result = this.appStateService.updatePrintModel(value.key, value.value)
+        if(result.success){
+            logger.info(`管理端更新订台数据${value.key}成功`)
+        }else{
+            logger.info(`管理端更${value.key}失败`)
+            logger.info(`失败原因: ${result.data}`)
+        }
+        callback(result)
+    }
+
     // 管理端获取数据
     async managerGetData(key, value, callback){
         logger.info("Manager get Key:"+key)
@@ -117,6 +129,9 @@ class AppStateSocket {
             case "reserver_data":
                 this.updateReserverDate(value, callback)
                 break
+            case "updatePrintModel":
+                this.updatePrintModel(value, callback)
+                break
             default:
                 callback({success: false, data: "Not Found Update Key"})
         }
@@ -143,6 +158,7 @@ class AppStateSocket {
         socket.emit("price_data", this.appStateService.appStateRepository.appState.getPriceData())
         socket.emit("pickup_data", this.appStateService.appStateRepository.appState.getPickupData())
         socket.emit("reserver_data", this.appStateService.appStateRepository.appState.getReserverData())
+        socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
     }
 
 }

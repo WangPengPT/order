@@ -93,6 +93,16 @@ class AppStateService {
         }
     }
 
+    updatePrintModel(key,value){
+        try{
+            appState.updatePrintModel(key, value)
+            if (appState.printModel[key] == value) return { success: true, data: value }
+            else throw new Error(key + "更新失败")
+        }catch (error){
+            return { success: false, data: error.message }
+        }
+    }
+
     getAllTables() {
         try {
             const tables = this.appStateRepository.appState.tables;

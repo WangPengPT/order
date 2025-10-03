@@ -13,6 +13,11 @@ class AppState {
         this.printers = []
         this.maxOrderId = 0
 
+        this.printModel = {
+            order: 0,
+            takeaway: 0,
+        }
+
         this.settings = {
             checkIP: false,
             delivery: false,
@@ -160,6 +165,14 @@ class AppState {
         return {success: success, data: this.childrenPricePercentage}
     }
 
+    getPrintModel(){
+        let success = false
+        if(this.printModel){
+            success = true
+        }
+        return {success:success, data:this.printModel}
+    }
+
     // 所有 Update 函数
     updateSettings(key, value) {
         this.settings[key] = value
@@ -187,6 +200,10 @@ class AppState {
         }else{
             return this.weekPrice.setAllPrices(value)
         }
+    }
+
+    updatePrintModel(key, value){
+        this.printModel[key] = value
     }
 
     createTable(startIdx, endIdx) {

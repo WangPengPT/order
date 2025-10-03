@@ -214,7 +214,7 @@ class SocketServices {
           logger.info(`订单提交成功 订单号 - ${order.data.id}`)
           logger.info(formatOrderLog(orderData))
 
-          print_order(order.data);
+          print_order(order.data,appState.printModel.order);
 
           this.io.emit("new_order", order.data);
           logger.info("📢 已广播新订单:", order.data);
@@ -242,7 +242,7 @@ class SocketServices {
       // 管理端打印外卖订单
       socket.on("manager_takeaway_order", (orderData) => {
         console.log("takeaway order",orderData)
-        print_takeaway_order(orderData);
+        print_takeaway_order(orderData, appState.printModel.takeaway);
       })
 
       // 返回table id ，发送桌子信息，目前价格

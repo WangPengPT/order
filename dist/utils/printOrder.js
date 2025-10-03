@@ -1,10 +1,11 @@
 const {menuService} = require('../services/menuService');
+const { print_order_model, print_takeaway_model } = require('./printModels.js');
 const { logger } = require('./logger.js')
 const dataTime = require('./dateTime.js')
 
 const printers = [];
 
-function print_order(order) {
+function print_order(order, printModelIndex) {
     logger.info(`打印订单 订单号 - ${order.id}`)
     for (const key in printers) {
         const printer = printers[key];
@@ -23,7 +24,12 @@ function print_order(order) {
         }
 
         if (hasData) {
-            print_orde_to_io(printer, order, printer.data.every_one == "true");
+            // print_orde_to_io(printer, order, printer.data.every_one == "true");
+            const datas = print_order_model(order, printModelIndex, printer)
+            console.log("order datas length:",datas.length)
+            datas.forEach((item) => {
+                printer.socket.emit("print", item);
+            })
         }
         else {
             logger.info(`订单打印失败 订单号 - ${order.id}`)
@@ -32,7 +38,7 @@ function print_order(order) {
     }
 }
 
-function print_takeaway_order(order){
+function print_takeaway_order(order,printModelIndex){
     logger.info(`打印外卖订单 订单号 - ${order.name}`)
     // print_takeaway_orde_to_io(null, order)
     for (const key in printers) {
@@ -50,10 +56,11 @@ function print_takeaway_order(order){
 
         if (hasData) {
             logger.info( "print takeaway...", order);
-            print_takeaway_orde_to_io(printer, order)
+            const data = print_takeaway_model(order, printModelIndex,printer)
+            printer.socket.emit("print", data)
+            // print_takeaway_orde_to_io(printer, order)
         }
         else {
-            print_takeaway_orde_to_io(printer, order)
             console.log( "didn't print takeaway", order, printer.data );
         }
 
@@ -69,6 +76,7 @@ function add_print(value) {
         print_data += '\n';
     }
 }
+/*
 function print_orde_to_io(printer, order, every_one) {
     const io = printer.socket
 
@@ -126,8 +134,9 @@ function print_orde_to_io(printer, order, every_one) {
                     add_print("  " + item.notes[j]);
                 }
             }
+            const dishid = item.dishid.toString().replaceAll('-','');
 
-            add_print(BLOD_HAD + "=>" + item.quantity + "-@" + item.dishid + " " + name);
+            add_print(BLOD_HAD + "=>" + item.quantity + "-@" + dishid + " " + name);
             if (item.dishNote) {
                 add_print("(note: " + item.dishNote + " )");
             }
@@ -157,6 +166,7 @@ function print_orde_to_io(printer, order, every_one) {
         console.log("print data:\n" + print_data);
     }
 }
+*/
 
 // TakeAway Print Function
 let print_takeaway_data = "";
