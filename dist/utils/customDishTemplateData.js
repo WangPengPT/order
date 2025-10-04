@@ -207,7 +207,95 @@ const nineSquareGridDescription = [
     },
 ]
 
-const nineSquareGrid = new CustomDishTemplate(3, ninesquareGridTypes, "MY BOX", 32, "MY BOX", 0, 0, nineSquareGridDescription, {dishQuantity: 3})
+const nineSquareGrid = new CustomDishTemplate(3, ninesquareGridTypes, "MY BOX", 32, "MY BOX", 0, 0, nineSquareGridDescription, { dishQuantity: 3 })
+
+const xiaoxiaongRamenTypes = [
+    new CustomDishType(1, "tipo", [
+        new CustomDish(46, "Ramen"),
+        new CustomDish(47, "Lo Mein")
+    ], 1, 1),
+
+    new CustomDishType(2, "sabor", [
+        new CustomDish(52, "Alho picado"),
+        new CustomDish(14, "Molho de soja"),
+        new CustomDish(54, "Picante🌶️"),
+        new CustomDish(16, "Caril"),
+        new CustomDish(56, "Vegetais")
+    ]),
+
+    new CustomDishType(3, "caldo", [
+        new CustomDish(11, "Tonklosu"),
+        new CustomDish(12, "Miso"),
+        new CustomDish(13, "Vegan")
+    ]),
+
+    new CustomDishType(4, "massa", [
+        new CustomDish(17, "Massa Fresca"),
+        new CustomDish(19, "Massa de Arroz"),
+        new CustomDish(49, "Noodles"),
+        new CustomDish(50, "Pho"),
+        new CustomDish(22, "Udon")
+    ]),
+
+    new CustomDishType(5, "extra", [
+        new CustomDish(33, "Char siu", 2.8),
+        new CustomDish(35, "Carne refogada🌶️", 3.5),
+        new CustomDish(34, "Dongpo porco", 3.2),
+        new CustomDish(36, "Frango panado", 2.8),
+        new CustomDish(43, "Pato frito", 3.8),
+        new CustomDish(37, "Perna de pato", 4.5),
+        new CustomDish(44, "Camarão alho picado", 3.8),
+        new CustomDish(67, "Gambas Panadas", 3.5),
+        new CustomDish(38, "Tofu grelhado", 1.8),
+        new CustomDish(41, "Ovo semi cozido", 1.2)
+    ]),
+
+    new CustomDishType(6, "incluido", [
+        new CustomDish(61, "Resíduo de banha"),
+        new CustomDish(29, "Coentros"),
+        new CustomDish(30, "cebolinha")
+    ])
+];
+
+const xiaoxiongRamenDescription = [
+    {
+        title_zh: "搭配您的午间套餐",
+        title_en: "Create Your Combo",
+        title_pt: "Crie Seu Combo",
+        descriptions: [{
+            description_pt: "1. Select your appetizer",
+            description_en: "1. Selecione seu aperitivo",
+            description_zh: "1. 选择前餐",
+        },
+        {
+            description_pt: "2. Escolha seu prato principal",
+            description_en: "2. Choose your main dish",
+            description_zh: "2. 选择主菜",
+        },
+        {
+            description_pt: "3. Escolha um acompanhamento",
+            description_en: "3. Pick a staple food",
+            description_zh: "3. 选择主食",
+        },
+        {
+            description_pt: "4. Opcional: Melhore seus noodles com ingredientes premium",
+            description_en: "4. Optional: Upgrade your noodles with premium toppings",
+            description_zh: "4. 可选：为面条添加升级配料",
+        },
+        {
+            description_pt: "5. Adicionar ao Carrinho",
+            description_en: "5. Add to Cart",
+            description_zh: "5. 加入购物车",
+        }],
+        image: {
+            src: "",
+            enable: true
+        }
+    }
+]
+
+const xiaoxiongRamen = new CustomDishTemplate(3, xiaoxiaongRamenTypes, "XIAOXIONG® RAMEN", 6.90, "XIAOXIONG® RAMEN", 0, 0, xiaoxiongRamenDescription, {})
+
 
 const values = [mysteryBox, bibiumbap, nineSquareGrid]
 
