@@ -59,7 +59,16 @@ const order_model = {
                         add_to_print_order_data("\t" + item.notes[j]);
                     }
                 }
-                const dishid = item.dishid.toString().replaceAll('-','');
+                // let dishid = ''
+                // if(item.dishid.toString().includes('-')){
+                //     const aux = item.dishid.toString().split('-')
+                //     dishid = aux[0]
+                //     if(aux.length > 0) dishid += String.fromCharCode(64+Number(aux[1]))
+                // }else{
+                //     dishid = item.dishid.toString()
+                // }
+
+                const dishid = "(" + item.dishid.toString() + ")";
 
                 add_to_print_order_data(BOLD_HAD + "=>" + item.quantity + "-@" + dishid + " " + name);
                 if (item.dishNote) {
@@ -136,7 +145,7 @@ const order_model = {
                         add_to_print_order_data("\t" + item.notes[j]);
                     }
                 }
-                const dishid =  item.dishid.toString().replaceAll('-','');
+                const dishid = "(" + item.dishid.toString() + ")";
 
                 add_to_print_order_data(BOLD_HAD + '#:' + dishid + " x " + item.quantity + " " + name);
                 if (item.dishNote) {
@@ -208,10 +217,15 @@ const takeaway_model = {
             price_total += Number(total)
             add_to_print_takeaway_data(BOLD_HAD+ "=>" + item.quantity + "-@" +sku+" "+item.name);
             add_to_print_takeaway_data(BOLD_HAD+" "+item.price+" * "+item.quantity+" = "+total);
+            if(item.properties?.length > 0){
+                for(let i=0; i<item.properties?.length; i++){
+                    add_to_print_takeaway_data(BOLD_HAD + "\t " + item.properties[i]);
+                }
+            }
         }
 
         add_to_print_takeaway_data(divider)
-        add_to_print_takeaway_data(BOLD_HAD+"Total: "+price_total+" Euro");
+        add_to_print_takeaway_data(BOLD_HAD+"Total: "+price_total.toFixed(2)+" Euro");
 
         console.log("print takeaway data:\n",print_takeaway_data)
         return print_takeaway_data
@@ -236,10 +250,15 @@ const takeaway_model = {
             price_total += Number(total)
             add_to_print_takeaway_data(BOLD_HAD + "#:" + sku + " " + item.name + " * " + item.quantity);
             add_to_print_takeaway_data(BOLD_HAD + " " + item.price + " * " + item.quantity + " = " + total);
+            if(item.properties?.length > 0){
+                for(let i=0; i<item.properties?.length; i++){
+                    add_to_print_takeaway_data(BOLD_HAD + "\t " + item.properties[i]);
+                }
+            }
         }
 
         add_to_print_takeaway_data(divider)
-        add_to_print_takeaway_data(BOLD_HAD+"Total: "+price_total+" Euro");
+        add_to_print_takeaway_data(BOLD_HAD+"Total: "+price_total.toFixed(2)+" Euro");
 
         console.log("print takeaway data:\n",print_takeaway_data)
         return print_takeaway_data
