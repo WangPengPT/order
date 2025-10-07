@@ -1,5 +1,5 @@
 class Dish {
-  constructor({ dishid, name, price, deliveryPrice, quantity, notes, orderId: orderIds, dishNote, orderType, discount, deliveryDiscount, category}) {
+  constructor({ dishid, name, price, deliveryPrice, quantity, notes, orderIds, dishNote, orderType, discount, deliveryDiscount, category}) {
     this.dishid = dishid
     this.name = name
     this.price = parseFloat(price) || 0

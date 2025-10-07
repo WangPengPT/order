@@ -313,16 +313,13 @@ class SocketServices {
       });
 
       //Old update_menu_item
-      socket.on("update_menu_item", async (item) => {
+      socket.on("update_menu_item", async (item, id) => {
         logger.info("修改菜品")
         try {
-         let id = item._id;
-         if (!id) id = item.id
-        if (item.org_id) id = item.org_id;
 
         console.log("item:", item)
           // Update MongoDB
-          await this.menuService.updatedMenuById({...item, id: id})
+          await this.menuService.updatedMenuById(item, id)
 
            // Refresh appState.menu from DB
           appState.menu = await this.menuService.getMenu()
@@ -383,6 +380,7 @@ class SocketServices {
         logger.info(`管理端删除-ID: ${id}`)
         const result = await this.menuService.deleteItem(id)
         if (result.success) {
+          //io.emit("menu_data", await this.menuService.getMenuOrdering(), await this.menuService.getMenu())
           logger.info(`管理端删除${result.data}成功`)
         } else {
           logger.info(`管理端删除失败，原因：${result.data}`)

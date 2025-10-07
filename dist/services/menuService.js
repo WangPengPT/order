@@ -180,12 +180,13 @@ class MenuService {
     }
 
     // 转换成数组形式
-    const menuOrdering = Object.entries(categoryMap).map(([category, dishes]) => ({
+  const menuOrdering = Object.entries(categoryMap)
+    .filter(([category]) => category !== "Undefined")
+    .map(([category, dishes]) => ({
       name: category,
       dishes
     }))
-
-    return menuOrdering
+  return menuOrdering
   }
 
 
@@ -218,7 +219,7 @@ class MenuService {
       for (let i = 0; i < data.length; i++) {
         const orgData = data[i];
 
-        console.log(takeaway)
+        //console.log(takeaway)
         if (takeaway) {
           console.log("is takeway")
           orgData.orderType = "TAKEAWAY"
@@ -333,7 +334,7 @@ class MenuService {
       item.likes += like;
       item.rates += rate;
 
-      await this.menuRespository.update(item)
+      await this.menuRespository.update(item, id)
 
       return {
         success: true,
@@ -483,11 +484,11 @@ class MenuService {
     return dishes
   }
 
-  async updatedMenuById(dish) {
+  async updatedMenuById(dish, id) {
     try {
       return await DB.withTransaction(async (session) => {
-        if (!dish.id) return null
-        await this.menuRespository.update(dish, session)
+        if (!id) return null
+        await this.menuRespository.update(dish, id,session)
         await this.reorganizeAndSaveMenuTab_menu(session)
       })
     } catch (error) {

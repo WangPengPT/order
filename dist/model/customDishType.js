@@ -1,9 +1,12 @@
 const CustomDish = require('./customDish.js')
 
 class CustomDishType{
-    constructor(id, typeName, dishes = [], maxQuantity = 99, minQuantity = 0, enable = false) {
+    constructor(id, typeName, typeName_zh, typeName_en, typeName_pt,  dishes = [], maxQuantity = 99, minQuantity = 0, enable = true) {
         this.id = id
         this.typeName = typeName
+        this.typeName_zh = typeName_zh
+        this.typeName_pt = typeName_pt
+        this.typeName_en = typeName_en
         this.dishes = dishes
         this.maxQuantity = maxQuantity
         this.minQuantity = minQuantity

@@ -1,9 +1,12 @@
 
 
 class CustomDish {
-    constructor(dishid, name, price = 0, deliveryPrice = 0, orderType, discount, deliveryDiscount, enable = true) {
+    constructor(dishid, name, name_zh, name_en, name_pt, price = 0, deliveryPrice = 0, orderType, discount, deliveryDiscount, enable = true) {
         this.dishid = dishid
         this.name = name
+        this.name_zh = name_zh
+        this.name_en = name_en
+        this.name_pt = name_pt
         this.price = price
         this.deliveryPrice = deliveryPrice
         this.orderType = orderType || undefined

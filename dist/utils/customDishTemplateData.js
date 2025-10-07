@@ -4,31 +4,31 @@ const CustomDishType = require('../model/customDishType')
 
 
 const mysteryBoxTypes = [
-    new CustomDishType(1, "types", [
-        new CustomDish(1, "Aleatória?🍣"),
-        new CustomDish(2, "Salmão"),
-        new CustomDish(3, "Atum"),
-        new CustomDish(4, "Robalo"),
-        new CustomDish(5, "Polvo"),
-        new CustomDish(6, "Peixe Manteiga"),
-        new CustomDish(7, "Gambas cozido"),
-        new CustomDish(8, "Enguia")
+    new CustomDishType(1, "types", "鱼", "Fish", "Peixe", [
+        new CustomDish(1, "Aleatória?🍣", "随机?🍣", "Random?🍣", "Aleatória?🍣"),
+        new CustomDish(2, "Salmão", "三文鱼", "Salmon", "Salmão"),
+        new CustomDish(3, "Atum", "金枪鱼", "Tuna", "Atum"),
+        new CustomDish(4, "Robalo", "海鲈鱼", "Sea bass", "Robalo"),
+        new CustomDish(5, "Polvo", "章鱼", "Octopus", "Polvo"),
+        new CustomDish(6, "Peixe Manteiga", "鳕鱼", "Butterfish", "Peixe Manteiga"),
+        new CustomDish(7, "Gambas cozido", "虾", "Shrimp", "Gambas cozido"),
+        new CustomDish(8, "Enguia", "鳗鱼", "Eel", "Enguia")
     ], 5, 1),
-    new CustomDishType(2, "values", [
-        new CustomDish(9, "Aleatória?🍣"),
-        new CustomDish(10, "Sashimi"),
-        new CustomDish(11, "Nigiri"),
-        new CustomDish(12, "Maki"),
-        new CustomDish(13, "Califórnia"),
-        new CustomDish(14, "Temaki"),
-        new CustomDish(15, "Gunkan"),
-        new CustomDish(16, "Rolos"),
-        new CustomDish(17, "Tostado"),
-        new CustomDish(18, "Frito"),
-        new CustomDish(19, "Vegetais"),
-        new CustomDish(20, "+cebola frita"),
-        new CustomDish(21, "+queijo"),
-        new CustomDish(22, "+ovas")
+    new CustomDishType(2, "values", "寿司", "Sushi", "Sushi", [
+        new CustomDish(9, "Aleatória?🍣", "随机?🍣", "Random?🍣", "Aleatória?🍣"),
+        new CustomDish(10, "Sashimi", "刺身", "Sashimi", "Sashimi"),
+        new CustomDish(11, "Nigiri", "握寿司", "Nigiri", "Nigiri"),
+        new CustomDish(12, "Maki", "寿司卷", "Maki", "Maki"),
+        new CustomDish(13, "Califórnia", "加州卷", "California", "Califórnia"),
+        new CustomDish(14, "Temaki", "手卷", "Temaki", "Temaki"),
+        new CustomDish(15, "Gunkan", "军舰卷", "Gunkan", "Gunkan"),
+        new CustomDish(16, "Rolos", "卷类", "Rolls", "Rolos"),
+        new CustomDish(17, "Tostado", "炙烧", "Seared", "Tostado"),
+        new CustomDish(18, "Frito", "炸的", "Fried", "Frito"),
+        new CustomDish(19, "Vegetais", "蔬菜", "Vegetables", "Vegetais"),
+        new CustomDish(20, "+cebola frita", "+炸洋葱", "+fried onion", "+cebola frita"),
+        new CustomDish(21, "+queijo", "+奶酪", "+cheese", "+queijo"),
+        new CustomDish(22, "+ovas", "+鱼子", "+roe", "+ovas")
     ], 5, 1),
 ]
 
@@ -72,48 +72,48 @@ const mysteryBoxDescriptions = [
 const mysteryBox = new CustomDishTemplate(1, mysteryBoxTypes, "Sushi Aleatória®", 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, { quantity: true, quantitySetp: 5, maxQuantity: 50, extraInfo: "De que é que gosta? ®" })
 
 const bibiumbapTypes = [
-    new CustomDishType(1, "base", [
-        new CustomDish(1, "Arroz de Sushi"),
-        new CustomDish(2, "Arroz Branco"),
+    new CustomDishType(1, "base", "底部", "Base", "Base", [
+        new CustomDish(1, "Arroz de Sushi", "寿司米饭", "Sushi Rice", "Arroz de Sushi"),
+        new CustomDish(2, "Arroz Branco", "白米饭", "White Rice", "Arroz Branco"),
     ], 1, 1),
-    new CustomDishType(2, "protein", [
-        new CustomDish(10, "Salmão"),
-        new CustomDish(11, "Atum"),
-        new CustomDish(12, "Peixe Manteiga"),
-        new CustomDish(13, "Robalo"),
-        new CustomDish(14, "Polvo"),
-        new CustomDish(15, "Enguia"),
-        new CustomDish(16, "Cambas conzidas"),
-        new CustomDish(17, "Frango Grelhado"),
-        new CustomDish(18, "Delicias do mar"),
-        new CustomDish(19, "Ovo cozido")
+    new CustomDishType(2, "protein", "蛋白质", "Protein", "Proteína", [
+        new CustomDish(10, "Salmão", "三文鱼", "Salmon", "Salmão"),
+        new CustomDish(11, "Atum", "金枪鱼", "Tuna", "Atum"),
+        new CustomDish(12, "Peixe Manteiga", "黄油鱼", "Butterfish", "Peixe Manteiga"),
+        new CustomDish(13, "Robalo", "海鲈鱼", "Sea Bass", "Robalo"),
+        new CustomDish(14, "Polvo", "章鱼", "Octopus", "Polvo"),
+        new CustomDish(15, "Enguia", "鳗鱼", "Eel", "Enguia"),
+        new CustomDish(16, "Cambas conzidas", "熟虾", "Cooked Shrimp", "Gambas cozidas"),
+        new CustomDish(17, "Frango Grelhado", "烤鸡肉", "Grilled Chicken", "Frango Grelhado"),
+        new CustomDish(18, "Delicias do mar", "海鲜杂锦", "Seafood Mix", "Delicias do mar"),
+        new CustomDish(19, "Ovo cozido", "水煮蛋", "Boiled egg", "Ovo cozido")
     ], 3, 1),
-    new CustomDishType(3, "vegetable", [
-        new CustomDish(30, "Cenoura"),
-        new CustomDish(31, "Wakame"),
-        new CustomDish(32, "Cenoura"),
-        new CustomDish(33, "Abacate"),
-        new CustomDish(34, "Courgette"),
-        new CustomDish(35, "Tomate Cherry"),
-        new CustomDish(36, "Couve"),
-        new CustomDish(37, "Ovas"),
-        new CustomDish(38, "Milho"),
-        new CustomDish(39, "Pepino"),
-        new CustomDish(40, "Brócolos"),
-        new CustomDish(41, "Manga"),
-        new CustomDish(41, "Sem Ingrediente"),
+    new CustomDishType(3, "vegetable", "素食", "Vegetable", "Vegetal", [
+        new CustomDish(30, "Cenoura", "胡萝卜", "Carrot", "Cenoura"),
+        new CustomDish(31, "Wakame", "裙带菜", "Wakame", "Wakame"),
+        new CustomDish(32, "Cenoura", "胡萝卜", "Carrot", "Cenoura"),
+        new CustomDish(33, "Abacate", "牛油果", "Avocado", "Abacate"),
+        new CustomDish(34, "Courgette", "西葫芦", "Zucchini", "Courgette"),
+        new CustomDish(35, "Tomate Cherry", "小番茄", "Cherry Tomato", "Tomate Cherry"),
+        new CustomDish(36, "Couve", "羽衣甘蓝", "Kale", "Couve"),
+        new CustomDish(37, "Ovas", "鱼籽", "Fish Roe", "Ovas"),
+        new CustomDish(38, "Milho", "玉米", "Corn", "Milho"),
+        new CustomDish(39, "Pepino", "黄瓜", "Cucumber", "Pepino"),
+        new CustomDish(40, "Brócolos", "西兰花", "Broccoli", "Brócolos"),
+        new CustomDish(41, "Manga", "芒果", "Mango", "Manga"),
+        new CustomDish(42, "Sem Ingrediente", "不添加", "Without Ingredient", "Sem Ingrediente"),
     ], 4, 1),
-    new CustomDishType(4, "incluited", [
-        new CustomDish(50, "Cebolinha"),
-        new CustomDish(51, "Coentro"),
-        new CustomDish(52, "Cebola Frita"),
-        new CustomDish(53, "Sésamo"),
+    new CustomDishType(4, "incluited", "小料", "Included", "Incluidos", [
+        new CustomDish(50, "Cebolinha", "细香葱", "Chives", "Cebolinha"),
+        new CustomDish(51, "Coentro", "香菜", "Cilantro", "Coentro"),
+        new CustomDish(52, "Cebola Frita", "炸洋葱", "Fried Onion", "Cebola Frita"),
+        new CustomDish(53, "Sésamo", "芝麻", "Sesame", "Sésamo"),
     ], 2, 0),
-    new CustomDishType(5, "sauce", [
-        new CustomDish(60, "Molho de mostarda caseira"),
-        new CustomDish(61, "Molho Teriyaki"),
-        new CustomDish(62, "Molho Sweet Chilli"),
-        new CustomDish(63, "Sem Molho"),
+    new CustomDishType(5, "sauce", "酱汁", "Sauce", "Molho", [
+        new CustomDish(60, "Molho de mostarda caseira", "自制芥末酱", "Homemade Mustard Sauce", "Molho de mostarda caseira"),
+        new CustomDish(61, "Molho Teriyaki", "照烧酱", "Teriyaki Sauce", "Molho Teriyaki"),
+        new CustomDish(62, "Molho Sweet Chilli", "甜辣酱", "Sweet Chili Sauce", "Molho Sweet Chilli"),
+        new CustomDish(63, "Sem Molho", "不要酱", "Without Sauce", "Sem Molho"),
     ], 1, 0),
 ]
 
@@ -169,24 +169,24 @@ const bibiumbapDescription = [
     }
 ]
 
-const bibiumbap = new CustomDishTemplate(2, bibiumbapTypes, "Bibimbap", 0, "Bibimbap", 0, 0, bibiumbapDescription)
+const bibiumbap = new CustomDishTemplate(2, bibiumbapTypes, "Poke Bowl", 0, "Poke Bowl", 0, 0, bibiumbapDescription)
 
 const ninesquareGridTypes = [
-    new CustomDishType(1, "carne", [
-        new CustomDish(1, "韩国传统牛肉"),
-        new CustomDish(2, "洋葱牛肉"),
-        new CustomDish(3, "牛五花"),
-        new CustomDish(4, "黑猪肉"),
-        new CustomDish(5, "猪五花"),
-        new CustomDish(6, "辣猪五花"),
-        new CustomDish(7, "羊肉"),
-        new CustomDish(8, "鸡肉"),
-        new CustomDish(9, "虾"),
-        new CustomDish(10, "辣虾"),
-        new CustomDish(11, "小章鱼"),
-        new CustomDish(12, "土豆"),
-        new CustomDish(13, "金针菇"),
-        new CustomDish(14, "红薯片"),
+    new CustomDishType(1, "carne", "肉", "Meat", "Carne", [
+        new CustomDish(1, "韩国传统牛肉", "🐂 韩国传统牛肉", "🐂 Korean Traditional Beef", "🐂 Carne Bovina Tradicional Coreana"),
+        new CustomDish(2, "洋葱牛肉", "🧅 洋葱牛肉", "🧅 Beef with Onion", "🧅 Carne Bovina com Cebola"),
+        new CustomDish(3, "牛五花", "🥩 牛五花", "🥩 Beef Brisket", "🥩 Peito Bovino"),
+        new CustomDish(4, "黑猪肉", "🐗 黑猪肉", "🐗 Black Pork", "🐗 Porco Preto"),
+        new CustomDish(5, "猪五花", "🥓 猪五花", "🥓 Pork Belly", "🥓 Barriga de Porco"),
+        new CustomDish(6, "辣猪五花", "🌶️ 辣猪五花", "🌶️ Spicy Pork Belly", "🌶️ Barriga de Porco Picante"),
+        new CustomDish(7, "羊肉", "🐑 羊肉", "🐑 Lamb", "🐑 Cordeiro"),
+        new CustomDish(8, "鸡肉", "🐔 鸡肉", "🐔 Chicken", "🐔 Frango"),
+        new CustomDish(9, "虾", "🦐 虾", "🦐 Shrimp", "🦐 Camarão"),
+        new CustomDish(10, "辣虾", "🔥 辣虾", "🔥 Spicy Shrimp", "🔥 Camarão Picante"),
+        new CustomDish(11, "小章鱼", "🐙 小章鱼", "🐙 Small Octopus", "🐙 Polvo Pequeno"),
+        new CustomDish(12, "土豆", "🥔 土豆", "🥔 Potato", "🥔 Batata"),
+        new CustomDish(13, "金针菇", "🍄 金针菇", "🍄 Enoki Mushroom", "🍄 Cogumelo Enoki"),
+        new CustomDish(14, "红薯片", "🍠 红薯片", "🍠 Sweet Potato Slices", "🍠 Fatias de Batata Doce"),
     ], 14, 9),
 ]
 
@@ -210,54 +210,201 @@ const nineSquareGridDescription = [
 const nineSquareGrid = new CustomDishTemplate(3, ninesquareGridTypes, "MY BOX", 32, "MY BOX", 0, 0, nineSquareGridDescription, { dishQuantity: 3 })
 
 const xiaoxiaongRamenTypes = [
-    new CustomDishType(1, "tipo", [
-        new CustomDish(46, "Ramen"),
-        new CustomDish(47, "Lo Mein")
-    ], 1, 1),
+  // 1️⃣ 类型：风格 / Tipo / Style
+  new CustomDishType(
+    1,
+    "tipo",
+    "✅风格",
+    "✅Style",
+    "✅Estilo",
+    [
+      new CustomDish(46, "Ramen", "汤面", "Ramen", "Noodles com caldo"),
+      new CustomDish(47, "Lo Mein", "拌面", "Lo mein", "Noodles sem caldo")
+    ],
+    1,
+    1
+  ),
 
-    new CustomDishType(2, "sabor", [
-        new CustomDish(52, "Alho picado"),
-        new CustomDish(14, "Molho de soja"),
-        new CustomDish(54, "Picante🌶️"),
-        new CustomDish(16, "Caril"),
-        new CustomDish(56, "Vegetais")
-    ]),
+  // 2️⃣ 类型：口味 / Sabor / Flavor
+  new CustomDishType(
+    2,
+    "sabor",
+    "😋口味",
+    "😋Flavor",
+    "😋Sabor",
+    [
+      new CustomDish(52, "Alho picado", "蒜蓉", "Chopped garlic", "Alho picado"),
+      new CustomDish(14, "Molho de soja", "酱油", "Soy sauce", "Molho de soja"),
+      new CustomDish(54, "Picante🌶️", "辣味 🌶️", "Spicy 🌶️", "Picante 🌶️"),
+      new CustomDish(16, "Caril", "咖喱", "Curry", "Caril"),
+      new CustomDish(56, "Vegetais", "蔬菜", "Vegetables", "Vegetais")
+    ],
+    1,
+    1
+  ),
 
-    new CustomDishType(3, "caldo", [
-        new CustomDish(11, "Tonklosu"),
-        new CustomDish(12, "Miso"),
-        new CustomDish(13, "Vegan")
-    ]),
+  // 3️⃣ 类型：汤底 / Caldo / Broth
+  new CustomDishType(
+    3,
+    "caldo",
+    "🥣汤底",
+    "🥣Broth",
+    "🥣Caldo",
+    [
+      new CustomDish(11, "Tonkotsu", "豚骨", "Tonkotsu", "Tonkotsu"),
+      new CustomDish(12, "Miso", "味噌", "Miso", "Miso"),
+      new CustomDish(13, "Vegan", "素汤", "Vegan", "Vegan")
+    ],
+    1,
+    1
+  ),
 
-    new CustomDishType(4, "massa", [
-        new CustomDish(17, "Massa Fresca"),
-        new CustomDish(19, "Massa de Arroz"),
-        new CustomDish(49, "Noodles"),
-        new CustomDish(50, "Pho"),
-        new CustomDish(22, "Udon")
-    ]),
+  // 4️⃣ 类型：面条 / Massa / Noodles
+  new CustomDishType(
+    4,
+    "massa",
+    "🍜面条",
+    "🍜Noodles",
+    "🍜Massa",
+    [
+      new CustomDish(17, "Massa Fresca", "新鲜拉面", "Fresh noodles", "Massa fresca"),
+      new CustomDish(19, "Massa de Arroz", "米粉", "Rice noodles", "Massa de arroz"),
+      new CustomDish(49, "Noodles", "方便面", "Noodles", "Noodles"),
+      new CustomDish(50, "Pho", "河粉", "Pho", "Pho"),
+      new CustomDish(22, "Udon", "乌冬", "Udon", "Udon")
+    ],
+    1,
+    1
+  ),
 
-    new CustomDishType(5, "extra", [
-        new CustomDish(33, "Char siu", 2.8),
-        new CustomDish(35, "Carne refogada🌶️", 3.5),
-        new CustomDish(34, "Dongpo porco", 3.2),
-        new CustomDish(36, "Frango panado", 2.8),
-        new CustomDish(43, "Pato frito", 3.8),
-        new CustomDish(37, "Perna de pato", 4.5),
-        new CustomDish(44, "Camarão alho picado", 3.8),
-        new CustomDish(67, "Gambas Panadas", 3.5),
-        new CustomDish(38, "Tofu grelhado", 1.8),
-        new CustomDish(41, "Ovo semi cozido", 1.2)
-    ]),
+  // 5️⃣ 类型：包含 / Incluído / Included
+  new CustomDishType(
+    5,
+    "incluido",
+    "🧂包含",
+    "🧂Included",
+    "🧂Incluído",
+    [
+      new CustomDish(61, "Resíduo de banha", "猪油渣", "Pork fat residue", "Resíduo de banha"),
+      new CustomDish(29, "Coentros", "香菜", "Coriander", "Coentros"),
+      new CustomDish(30, "Cebolinha", "葱花", "Spring onion", "Cebolinha")
+    ],
+    3,
+    0
+  ),
 
-    new CustomDishType(6, "incluido", [
-        new CustomDish(61, "Resíduo de banha"),
-        new CustomDish(29, "Coentros"),
-        new CustomDish(30, "cebolinha")
-    ])
+  // 6️⃣ 类型：额外 / Extra / Extra
+  new CustomDishType(
+    6,
+    "extra",
+    "🥢额外",
+    "🥢Extra",
+    "🥢Extra",
+    [
+      new CustomDish(33, "Char siu", "叉烧", "Char Siu", "Char siu", 2.8),
+      new CustomDish(35, "Carne refogada🌶️", "辣炒肉末 🌶️", "Spicy minced pork 🌶️", "Carne refogada 🌶️", 3.5),
+      new CustomDish(34, "Porco Dongpo", "东坡肉", "Dongpo pork", "Porco Dongpo", 3.2),
+      new CustomDish(36, "Frango panado", "日式炸鸡排", "Katsu chicken", "Frango panado", 2.8),
+      new CustomDish(43, "Pato frito", "香酥鸭", "Fried duck", "Pato frito", 3.8),
+      new CustomDish(37, "Perna de pato", "鸭腿", "Duck leg", "Perna de pato", 4.5),
+      new CustomDish(44, "Camarão alho picado", "蒜蓉虾", "Garlic shrimp", "Camarão alho picado", 3.8),
+      new CustomDish(67, "Gambas Panadas", "炸虾", "Fried prawns", "Gambas panadas", 3.5),
+      new CustomDish(38, "Tofu grelhado", "烤豆腐", "Grilled tofu", "Tofu grelhado", 1.8),
+      new CustomDish(41, "Ovo semi-cozido", "溏心蛋", "Soft-boiled egg", "Ovo semi-cozido", 1.2)
+    ],
+    10,
+    0
+  )
 ];
 
 const xiaoxiongRamenDescription = [
+    {
+        title_zh: "XIAOXIONG® 拉面点餐流程",
+        title_en: "How XIAOXIONG® RAMEN Works",
+        title_pt: "Como funciona o XIAOXIONG® RAMEN",
+        descriptions: [
+            {
+                description_pt: "1. Escolha o tipo (Ramen ou Lo Mein)",
+                description_en: "1. Choose the type (Ramen or Lo Mein)",
+                description_zh: "1. 选择种类（汤面或拌面）",
+            },
+            {
+                description_pt: "2. Escolha o sabor que deseja",
+                description_en: "2. Select the flavor you want",
+                description_zh: "2. 选择您喜欢的口味",
+            },
+            {
+                description_pt: "3. Indique a base para o seu caldo",
+                description_en: "3. Select the base for your broth",
+                description_zh: "3. 选择汤底",
+            },
+            {
+                description_pt: "4. Escolha um tipo de massa",
+                description_en: "4. Choose a type of noodles",
+                description_zh: "4. 选择面条类型",
+            },
+            {
+                description_pt: "5. Selecione os acompanhamentos incluídos",
+                description_en: "5. Pick your basic toppings (Included)",
+                description_zh: "5. 勾选基本配料（已包含）",
+            },
+            {
+                description_pt: "6. Descubra as opções adicionais",
+                description_en: "6. Discover our additional options",
+                description_zh: "6. 选择额外加点内容",
+            }
+        ],
+        image: {
+            src: "",
+            enable: true
+        }
+    }
+]
+
+const xiaoxiongRamen = new CustomDishTemplate(4, xiaoxiaongRamenTypes, "XIAOXIONG® RAMEN", 6.90, "XIAOXIONG® RAMEN", 0, 0, xiaoxiongRamenDescription, {
+    included_extra_information_en: "By default, the following are already included: Bamboo, Chinese black fungus, Bean sprouts, Pakchoi cabbage",
+    included_extra_information_zh: "默认包含：竹笋、中国黑木耳、豆芽、白菜（小白菜）",
+    included_extra_information_pt: "Por padrão já está incluído: Bambu, Fungo preto Chinês, Brotos de soja, Couve Pakchoi",
+    fandaysDate: [11, 12, 25, 26],
+    fandaysPrice: 2.9
+})
+
+const xiaoxiongLunchTypes = [
+  new CustomDishType(1, "entrada", "🥟前菜", "🥟Entry", "🥟Entrada", [
+    new CustomDish(1424, "Chūn Juǎn", "春卷", "Spring roll", "Chūn Juǎn"),
+    new CustomDish(2053, "Wonton Frito", "炸馄饨", "Fried wonton", "Wonton Frito"),
+    new CustomDish(2026, "Frango Panado", "炸鸡排", "Fried chicken cutlet", "Frango Panado"),
+    // new CustomDish(4, "Camarão Panado", "面包虾", "Breaded Shrimp", "Camarão Panado")
+  ], 1, 1),
+
+  new CustomDishType(2, "prato", "🥗主菜", "🥗Main Dish", "🥗Prato", [
+    new CustomDish(1452, "Mapo Tofu", "麻婆豆腐", "Mapo tofu", "Mapo Tofu"),
+    new CustomDish(1453, "Lombo Agridoce", "糖醋里脊", "Sweet and sour Pork", "Lombo Agridoce"),
+    new CustomDish(1454, "Carne de Porco Agridoce", "古老肉", "Sweet and Sour Pork (Canton)", "Carne de Porco Agridoce"),
+    new CustomDish(1451, "Frango Kung Pao", "宫保鸡丁", "Kung Pao chicken", "Frango Kung Pao"),
+    new CustomDish(1450, "Frango General Tso", "左宗棠鸡", "General Tso's Chicken", "Frango General Tso"),
+    new CustomDish(1418, "Sizzler Frango Teriyaki", "铁板鸡", "Sizzling Chicken Platter", "Frango Teriyaki"),
+    new CustomDish(1417, "Sizzler carne de vaca com molho de ostra", "铁板牛肉", "Sizzling Beef Platter", "Carne de vaca"),
+    new CustomDish(1416, "Sizzler Camarão com alho", "铁板虾", "Sizzling Shrimp Platter", "Camarão com alho")
+  ], 1, 1),
+
+  new CustomDishType(3, "massa_arroz", "🍚面饭类", "🍚Noodles & Rice", "🍚Massa & Arroz", [
+    new CustomDish(1427, "Arroz XIAOXIONG®", "XIAOXIONG®米饭", "Rice XIAOXIONG®", "Arroz XIAOXIONG®"),
+    new CustomDish(41, "Arroz Salteado", "炒饭", "Shrimp fried rice", "Arroz Salteado"),
+    new CustomDish(2006, "Chow Mein Massa Fresca(Vegetariano)", "素炒新鲜面条", "Stir-fried fresh noodles(Vegetarian)", "Massa Fresca"),
+    new CustomDish(2018, "Chow Mein Massa de Arroz(Vegetariano)", "素炒米粉", "Stir-fried rice noodles(Vegetarian)", "Massa de Arroz"),
+    new CustomDish(2035, "Chow Mein Noodle Rolls(Vegetariano)", "素炒面卷", "Stir-fried noodles rolls(Vegetarian)", "Noodle Rolls"),
+    new CustomDish(2022, "Chow Mein Massa Udon(Vegetariano)", "素炒乌冬面", "Stir-fried udon noodles(Vegetarian)", "Massa Udon"),
+    new CustomDish(2030, "Chow Mein Massa Pho(Vegetariano)", "素炒河粉", "Stir-fried pho noodles(Vegetarian)", "Massa Pho")
+  ],1, 1),
+  new CustomDishType(4, "upgrade", "🦐炒面配料", "🦐Ingredients", "🦐Ingredientes", [
+    new CustomDish(60, "Três Delícias", "地三鲜", "3 Delights", "Três Delícias", 2.8),
+    new CustomDish(61, "Frango Panado", "炸鸡排", "Fried chicken cutlet", "Frango Panado", 3.0),
+    new CustomDish(62, "Carne de Vaca", "牛肉", "Beef", "Carne de Vaca", 3.5)
+  ], 3, 0)
+]
+
+const xiaoxiongLunchMenuDescription = [
     {
         title_zh: "搭配您的午间套餐",
         title_en: "Create Your Combo",
@@ -294,10 +441,9 @@ const xiaoxiongRamenDescription = [
     }
 ]
 
-const xiaoxiongRamen = new CustomDishTemplate(3, xiaoxiaongRamenTypes, "XIAOXIONG® RAMEN", 6.90, "XIAOXIONG® RAMEN", 0, 0, xiaoxiongRamenDescription, {})
+const xiaoxiongLunch = new CustomDishTemplate(5, xiaoxiongLunchTypes, "Menu Almoço", 9.90, "Menu Almoço", 0, 0, xiaoxiongLunchMenuDescription)
 
-
-const values = [mysteryBox, bibiumbap, nineSquareGrid]
+const values = [mysteryBox, bibiumbap, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch]
 
 module.exports = {
     mysteryBox,

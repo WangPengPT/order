@@ -85,7 +85,7 @@ class CenterSocket {
 
     static connect_socket() {
 
-        console.log(socket.connected)
+        //console.log(socket.connected)
 
         if (!socket.connected) {
             console.log('call connect to center server');

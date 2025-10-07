@@ -46,9 +46,8 @@ class MenuRepository {
         }
     }
 
-    async update(dish, session = null) {
+    async update(dish, id, session = null) {
         try {
-            const id = dish.id
             const oldDish = await this.get(id, session)
             const newDish = {
                 ...oldDish,
