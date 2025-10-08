@@ -43,6 +43,18 @@ class CustomDishSocket{
         }
     } 
 
+    async restoreCustomDishData(callback) {
+        logger.info("初始化自定菜数据")
+        const result = await this.customDishService.restoreCustomDishData()
+        if (result.success) {
+            await this.menuService.reorganizeAndSaveMenuTab_menu()
+            logger.info(`初始化自定菜数据成功`)
+        } else {
+            logger.info(`初始化自定菜数据失败`)
+        }
+        callback(result)
+    }
+
     async registerHandlers(socket) {
         socket.emit("custom_dish_data", await this.customDishService.getAllEnableTemplates())
 
@@ -53,6 +65,8 @@ class CustomDishSocket{
         socket.on('custom_dish_like', async (value,cb) => { await this.updateLike(value, cb, true) })
 
         socket.on('custom_dish_unlike', async (value,cb) => { await this.updateLike(value, cb, false) })
+
+        socket.on('manager_restore_custom_dish_data', async (cb) => { await this.restoreCustomDishData(cb)})
 
     }
 

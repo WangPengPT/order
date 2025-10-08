@@ -264,7 +264,7 @@ const xiaoxiaongRamenTypes = [
       new CustomDish(13, "Vegan", "素汤", "Vegan", "Vegan")
     ],
     1,
-    1
+    0
   ),
 
   // 4️⃣ 类型：面条 / Massa / Noodles
@@ -309,16 +309,16 @@ const xiaoxiaongRamenTypes = [
     "🥢Extra",
     "🥢Extra",
     [
-      new CustomDish(33, "Char siu", "叉烧", "Char Siu", "Char siu", 2.8),
-      new CustomDish(35, "Carne refogada🌶️", "辣炒肉末 🌶️", "Spicy minced pork 🌶️", "Carne refogada 🌶️", 3.5),
-      new CustomDish(34, "Porco Dongpo", "东坡肉", "Dongpo pork", "Porco Dongpo", 3.2),
-      new CustomDish(36, "Frango panado", "日式炸鸡排", "Katsu chicken", "Frango panado", 2.8),
-      new CustomDish(43, "Pato frito", "香酥鸭", "Fried duck", "Pato frito", 3.8),
-      new CustomDish(37, "Perna de pato", "鸭腿", "Duck leg", "Perna de pato", 4.5),
-      new CustomDish(44, "Camarão alho picado", "蒜蓉虾", "Garlic shrimp", "Camarão alho picado", 3.8),
-      new CustomDish(67, "Gambas Panadas", "炸虾", "Fried prawns", "Gambas panadas", 3.5),
-      new CustomDish(38, "Tofu grelhado", "烤豆腐", "Grilled tofu", "Tofu grelhado", 1.8),
-      new CustomDish(41, "Ovo semi-cozido", "溏心蛋", "Soft-boiled egg", "Ovo semi-cozido", 1.2)
+      new CustomDish(33, "Char siu", "叉烧 +2.80€", "Char Siu +2.80€", "Char siu +2.80€", 2.8),
+      new CustomDish(35, "Carne refogada🌶️", "辣炒肉末 🌶️ +3.50€", "Spicy minced pork 🌶️ +3.50€", "Carne refogada 🌶️ +3.50€", 3.5),
+      new CustomDish(34, "Porco Dongpo", "东坡肉 +3.20€", "Dongpo pork +3.20€", "Porco Dongpo +3.20€", 3.2),
+      new CustomDish(36, "Frango panado", "日式炸鸡排 +2.80€", "Katsu chicken +2.80€", "Frango panado +2.80€", 2.8),
+      new CustomDish(43, "Pato frito", "香酥鸭 +3.80€", "Fried duck +3.80€", "Pato frito +3.80€", 3.8),
+      new CustomDish(37, "Perna de pato", "鸭腿 +4.50€", "Duck leg +4.50€", "Perna de pato +4.50€", 4.5),
+      new CustomDish(44, "Camarão alho picado", "蒜蓉虾 +3.80€", "Garlic shrimp +3.80€", "Camarão alho picado +3.80€", 3.8),
+      new CustomDish(67, "Gambas Panadas", "炸虾 +3.50€", "Fried prawns +3.50€", "Gambas panadas +3.50€", 3.5),
+      new CustomDish(38, "Tofu grelhado", "烤豆腐 +1.80€", "Grilled tofu +1.80€", "Tofu grelhado +1.80€", 1.8),
+      new CustomDish(41, "Ovo semi-cozido", "溏心蛋 +1.20€", "Soft-boiled egg +1.20€", "Ovo semi-cozido +1.20€", 1.2)
     ],
     10,
     0
@@ -363,7 +363,7 @@ const xiaoxiongRamenDescription = [
             }
         ],
         image: {
-            src: "",
+            src: "/images/xiaoxiong_ramen.jpg",
             enable: true
         }
     }
@@ -406,9 +406,9 @@ const xiaoxiongLunchTypes = [
     new CustomDish(2030, "Chow Mein Massa Pho(Vegetariano)", "素炒河粉", "Stir-fried pho noodles(Vegetarian)", "Massa Pho")
   ],1, 1),
   new CustomDishType(4, "upgrade", "🦐炒面配料", "🦐Ingredients", "🦐Ingredientes", [
-    new CustomDish(60, "Três Delícias", "地三鲜", "3 Delights", "Três Delícias", 2.8),
-    new CustomDish(61, "Frango Panado", "炸鸡排", "Fried chicken cutlet", "Frango Panado", 3.0),
-    new CustomDish(62, "Carne de Vaca", "牛肉", "Beef", "Carne de Vaca", 3.5)
+    new CustomDish(60, "Três Delícias", "地三鲜 +2.80€", "3 Delights +2.80€", "Três Delícias +2.80€", 2.8),
+    new CustomDish(61, "Frango Panado", "炸鸡排 +3.00€", "Fried chicken cutlet +3.00€", "Frango Panado +3.00€", 3.0),
+    new CustomDish(62, "Carne de Vaca", "牛肉 +3.50€", "Beef +3.50€", "Carne de Vaca +3.50€", 3.5)
   ], 3, 0)
 ]
 

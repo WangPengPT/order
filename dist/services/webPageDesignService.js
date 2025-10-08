@@ -337,7 +337,7 @@ class WebPageDesignService {
             if (!Page.getTypes().includes(type)) throw new Error("Invalid type page")
             const page = await this.webPageRepository.getPageById(id)
             if (!page) throw new Error("Not found the page")
-            if (Page.Type.DINE_IN) {
+            if (type === Page.Type.DINE_IN) {
                 appState.currentPageID = pageID
             } else {
                 appState.currentTakeWayPageID = pageID

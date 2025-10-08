@@ -208,6 +208,38 @@ class CustomDishService {
         }
     }
 
+    async restoreCustomDishData() {
+        try {
+            return await DB.withTransaction(async (session) => {
+                await this.customDishRepository.cleanData(session)
+                const templatesCount = await this.customDishRepository.templatesLength(session)
+                if (templatesCount === 0) {
+                    logger.info("开始创建")
+                    for (const template of templateData.values) {
+                        await this.customDishRepository.saveTemplate(template, session)
+                    }
+                    const allTemplates = await this.customDishRepository.getAllTemplates(session)
+                    return {
+                        success: true,
+                        data: allTemplates
+                    }
+                } else {
+                    logger.info("数据库不是空")
+                    const allTemplates = await this.customDishRepository.getAllTemplates(session)
+                    return {
+                        success: false,
+                        data: allTemplates
+                    }
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
 }
 
 module.exports = {
