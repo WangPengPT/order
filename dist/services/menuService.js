@@ -1,7 +1,7 @@
 const db = require('../filedb');
 const CustomDishRepository = require('../repositories/customDishRepository.js');
 const { appState } = require('../state.js');
-const { syncCustomDishes, syncLocalWithMenuAndCustom } = require('../utils/mergeFilteredExact.js');
+const { syncCustomDishes, syncLocalWithMenuAndCustom, syncTabsWhitoutCustom } = require('../utils/mergeFilteredExact.js');
 const MenuRepository = require('../repositories/menuRepository.js');
 const DB = require('../db.js');
 const MenuOrderingRepository = require('../repositories/menuOrderingRepository.js');
@@ -104,6 +104,48 @@ class MenuService {
 
   }
 
+  async initMenuOrdering() {
+    await DB.withTransaction(async (session) => {
+      //all
+      const allTabs = await this.menuOrderingRepository.get(session)
+      if (allTabs == null) {
+        this.reorganizeMenuTab_custom(session)
+      }
+      const dineInTabs = await this.menuOrderingRepository.getDineIn(session)
+      if (dineInTabs == null) {
+        const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
+        const dineInMenu = await this.menuRespository.getDineInMenu(session) || []
+        const menuDish = await this.buildMenuOrdering(session, dineInMenu)
+        const tabs = syncCustomDishes([], customDish, menuDish)
+        await this.menuOrderingRepository.saveDineIn(tabs, session)
+      }
+
+      const takeawayTabs = await this.menuOrderingRepository.getTakeaway(session)
+      if (takeawayTabs == null) {
+        const takeawayMenu = await this.menuRespository.getTakeaway(session) || []
+        const menuDish = await this.buildMenuOrdering(session, takeawayMenu)
+        await this.menuOrderingRepository.saveTakeaway(menuDish, session)
+      }
+    })
+  }
+
+  async updateDineInOrdering(session = null) {
+    const dineInTabs = await this.menuOrderingRepository.getDineIn(session)
+    const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
+    const dineInMenu = await this.menuRespository.getDineInMenu(session) || []
+    const menuDish = await this.buildMenuOrdering(session, dineInMenu)
+    const tabs = syncCustomDishes(dineInTabs, customDish, menuDish)
+    await this.menuOrderingRepository.saveDineIn(tabs, session)
+  }
+
+  async updateTakeawayOrdering(session = null) {
+    const takeawayTabs = await this.menuOrderingRepository.getTakeaway(session)
+    const takeawayMenu = await this.menuRespository.getTakeaway(session) || []
+    const menuDish = await this.buildMenuOrdering(session, takeawayMenu)
+    const tabs = syncTabsWhitoutCustom(takeawayTabs, menuDish)
+    await this.menuOrderingRepository.saveTakeaway(tabs, session)
+  }
+
   /**
    * 本地和自定义菜
    * @param {db session} session 
@@ -154,6 +196,12 @@ class MenuService {
     return "";
   }
 
+  /**
+   * 基于菜单创建分类排序
+   * @param {db session} session 
+   * @param {Array} menu 
+   * @returns 
+   */
   async buildMenuOrdering(session = null,menu) {
 
     if (!menu) {
@@ -229,6 +277,25 @@ class MenuService {
     return ret;
   }
 
+  async getDineInMenuAndTabs() {
+    const menu = await this.menuRespository.getDineInMenu()
+    const tabs = await this.menuOrderingRepository.getDineIn()
+    return {
+      menu: menu,
+      tabs: tabs
+    }
+  }
+
+  async getTakeawayMenuAndTabs() {
+    const menu = await this.menuRespository.getTakeaway()
+    const tabs = await this.menuOrderingRepository.getTakeaway()
+    return {
+      menu: menu,
+      tabs: tabs
+    }
+  }
+
+
   async updateMenu(data, update_all, takeaway) {
 
     if (typeof(takeaway) == 'string') {
@@ -274,6 +341,8 @@ class MenuService {
         const tt = await this.buildMenuOrdering()
         this.saveMenuOrdering(tt)
         await this.reorganizeMenuTab_custom()
+        await this.updateDineInOrdering()
+        await this.updateTakeawayOrdering()
       }
       else {
         console.log("updateMenu...");
@@ -327,6 +396,8 @@ class MenuService {
         await centerSocket.update_menu_data()
       }
       await this.reorganizeAndSaveMenuTab_menu()
+      await this.updateDineInOrdering()
+      await this.updateTakeawayOrdering()
     } catch (error) {
       console.warn("Error: ", error)
     }
@@ -427,6 +498,8 @@ class MenuService {
 
       if (result.acknowledged && result.deletedCount > 0) {
           await this.reorganizeAndSaveMenuTab_menu(session)
+          await this.updateDineInOrdering(session)
+          await this.updateTakeawayOrdering(session)
           console.log("✅ 删除成功");
           return {
             success: true,
@@ -526,6 +599,8 @@ class MenuService {
         if (!id) return null
         await this.menuRespository.update(dish, id,session)
         await this.reorganizeAndSaveMenuTab_menu(session)
+        await this.updateDineInOrdering(session)
+        await this.updateTakeawayOrdering(session)
       })
     } catch (error) {
       console.log("error: ", error.message)

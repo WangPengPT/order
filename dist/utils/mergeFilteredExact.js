@@ -12,6 +12,74 @@ function ensureMainInSubDishes(dish) {
   return dish;
 }
 
+function syncTabsWhitoutCustom(currentTab, menuTab) {
+  const result = JSON.parse(JSON.stringify(currentTab || []));
+
+  for (const menuCategory of menuTab) {
+    let localCategory = result.find(c => c.name === menuCategory.name);
+
+    if (!localCategory) {
+      // 当前没有该分类，直接添加整个分类
+      result.push({
+        name: menuCategory.name,
+        dishes: menuCategory.dishes.map(d =>
+          ensureMainInSubDishes({
+            ...d,
+            subDishes: Array.isArray(d.subDishes)
+              ? JSON.parse(JSON.stringify(d.subDishes))
+              : []
+          })
+        )
+      });
+      continue;
+    }
+
+    // 当前已有该分类 → 对比菜品
+    // 1️⃣ 移除 local 中不存在于 menu 的菜
+    localCategory.dishes = localCategory.dishes.filter(d =>
+      menuCategory.dishes.some(md => md.id === d.id)
+    );
+
+    // 2️⃣ 遍历 menu 菜，补齐缺的或更新 subDishes
+    for (const menuDish of menuCategory.dishes) {
+      let localDish = localCategory.dishes.find(d => d.id === menuDish.id);
+
+      if (!localDish) {
+        // 新菜，直接添加
+        localCategory.dishes.push(
+          ensureMainInSubDishes({
+            ...menuDish,
+            subDishes: Array.isArray(menuDish.subDishes)
+              ? JSON.parse(JSON.stringify(menuDish.subDishes))
+              : []
+          })
+        );
+      } else {
+        // 已存在，更新 subDishes
+        localDish.subDishes = (localDish.subDishes || []).filter(sd =>
+          (menuDish.subDishes || []).includes(sd)
+        );
+
+        // 补齐缺失 subDish
+        for (const menuSub of menuDish.subDishes || []) {
+          if (!localDish.subDishes.includes(menuSub)) {
+            localDish.subDishes.push(menuSub);
+          }
+        }
+
+        ensureMainInSubDishes(localDish);
+      }
+    }
+  }
+
+  // 3️⃣ 移除 local 中不存在于 menu 的分类
+  const finalResult = result.filter(r =>
+    menuTab.some(m => m.name === r.name)
+  );
+
+  return finalResult;
+}
+
 function syncLocalWithMenuAndCustom(local, menuDishes, customDishes) {
   let result = JSON.parse(JSON.stringify(local));
 
@@ -90,7 +158,17 @@ function syncLocalWithMenuAndCustom(local, menuDishes, customDishes) {
 }
 
 function syncCustomDishes(currentTab, customDishes, menuTab) {
+  // 深拷贝，避免修改原数组
   let result = JSON.parse(JSON.stringify(currentTab));
+
+  // ✅ 如果 currentTab 为空，则用 menuTab 加上 customDishes
+  if (!result || result.length === 0) {
+    const merged = [
+      ...menuTab.map(c => ({ name: c.name, dishes: c.dishes || [] })),
+      ...customDishes.map(name => ({ name, dishes: [] }))
+    ];
+    return merged;
+  }
 
   // 移除多余 customDishes
   result = result.filter(category =>
@@ -116,7 +194,9 @@ function syncCustomDishes(currentTab, customDishes, menuTab) {
   return result;
 }
 
+
 module.exports = {
   syncLocalWithMenuAndCustom,
-  syncCustomDishes
+  syncCustomDishes,
+  syncTabsWhitoutCustom
 };

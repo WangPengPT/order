@@ -15,7 +15,7 @@ class MenuRepository {
                 value: data
             }, session);
         } catch (err) {
-            logger.error(`repo:❌ 保存 dish 失败: ${err}`);
+            logger.error(`repo:❌ 保存菜品失败: ${err}`);
             throw err;
         }
     }
@@ -26,7 +26,7 @@ class MenuRepository {
                 await this.save(dish, session)
             }
         } catch (error) {
-            logger.error(`repo:❌ 保存 menu 失败: ${error}`);
+            logger.error(`repo:❌ 保存菜单失败: ${error}`);
             throw error;
         }
     }
@@ -35,13 +35,13 @@ class MenuRepository {
         try {
             const result = await DB.get(this.tableName, id, session);
             if (!result) {
-                logger.warn(`repo: ⚠ 未能找到 Menu 数据 [id=${id}]`);
+                logger.warn(`repo: ⚠ 未能找到菜品数据 [id=${id}]`);
                 return null;
             }
             const data = result.value
             return data
         } catch (err) {
-            logger.error(`repo:❌ 保存 menu 失败: ${err}`);
+            logger.error(`repo:❌ 获取菜品失败: ${err}`);
             throw err;
         }
     }
@@ -54,9 +54,9 @@ class MenuRepository {
                 ...dish
             }
             await DB.setValue(this.tableName, id, newDish, session)
-            logger.info(`repo: ✅ menu 更新成功 [id=${id}]`);
+            logger.info(`repo: ✅ 菜品更新成功 [id=${id}]`);
         } catch (error) {
-            logger.error(`repo:❌ 保存 menu 失败: ${error}`);
+            logger.error(`repo:❌ 更新菜品失败: ${error}`);
             throw error;
         }
     }
@@ -72,10 +72,43 @@ class MenuRepository {
             }
             return menu
         } catch (error) {
-            logger.error(`repo:❌ 保存 menu 失败: ${error}`);
+            logger.error(`repo:❌ 获取 menu 失败: ${error}`);
             throw error;
         }
     }
+
+    async getDineInMenu(session = null) {
+        try {
+            const menu = []
+            const dishes = await DB.getAllDineInMenu(this.tableName, session)
+            if (dishes.length == 0) return []
+            for (let dish of dishes) {
+                if (!dish.value) continue
+                menu.push(dish.value)
+            }
+            return menu
+        } catch (error) {
+            logger.error(`repo:❌ 获取堂食菜单失败: ${error}`);
+            throw error;
+        }
+    }
+
+    async getTakeaway(session = null) {
+        try {
+            const menu = []
+            const dishes = await DB.getAllTakeawayMenu(this.tableName, session)
+            if (dishes.length == 0) return []
+            for (let dish of dishes) {
+                if (!dish.value) continue
+                menu.push(dish.value)
+            }
+            return menu
+        } catch (error) {
+            logger.error(`repo:❌ 保存外卖菜单失败: ${error}`);
+            throw error;
+        }
+    }
+
 
     async deleteDish(id, session = null) {
         try {
@@ -90,7 +123,7 @@ class MenuRepository {
         try {
             return await DB.deleteMenuDishByHandle(this.tableName, handle, session)
         } catch (error) {
-            logger.error(`repo:❌ 获取菜品失败: ${error}`);
+            logger.error(`repo:❌ 删除菜品失败: ${error}`);
             throw error;
         }
     }

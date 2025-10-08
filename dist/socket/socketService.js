@@ -67,6 +67,7 @@ class SocketServices {
     await this.userSocket.userService.InitOrLoadUserData()
     await this.customDish.customDishService.initializeCustomDish()
     await this.menuService.loadMenu()
+    await this.menuService.initMenuOrdering()
   }
 
   initSocket() {
@@ -450,16 +451,13 @@ class SocketServices {
       s.emit("takeaway_menu_data", data.menu, data.menuOrdering);
     }
     else {
-      const newMenu = this.filterMenu(menu,false)
-      const newMenuOrdering = await this.menuService.buildMenuOrdering(null,newMenu)
-
-      // console.log(newMenu,newMenuOrdering)
-      s.emit("takeaway_menu_data", newMenu, newMenuOrdering);
+      const menuAndTabs = await this.menuService.getTakeawayMenuAndTabs()
+      
+      s.emit("takeaway_menu_data", menuAndTabs.menu, menuAndTabs.tabs);
     }
 
-    const newMenu = this.filterMenu(menu,true)
-    const newMenuOrdering = await this.menuService.buildMenuOrdering(null,newMenu)
-    s.emit("dinner_menu_data", newMenu, newMenuOrdering);
+    const menuAndTabs = await this.menuService.getDineInMenuAndTabs()
+    s.emit("dinner_menu_data", menuAndTabs.menu, menuAndTabs.tabs);
 
   }
 
