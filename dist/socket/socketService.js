@@ -453,7 +453,7 @@ class SocketServices {
       const newMenu = this.filterMenu(menu,false)
       const newMenuOrdering = await this.menuService.buildMenuOrdering(null,newMenu)
 
-      console.log(newMenu,newMenuOrdering)
+      // console.log(newMenu,newMenuOrdering)
       s.emit("takeaway_menu_data", newMenu, newMenuOrdering);
     }
 
@@ -465,9 +465,9 @@ class SocketServices {
 
   filterMenu(menu,dinner) {
     let ret = menu.filter( (item) => {
-      if (item.orderType == "TAKEAWAY" || item.orderType.value == "TAKEAWAY") {
+      if (item.orderType == "TAKEAWAY" ) {
         return !dinner;
-      } else if (item.orderType == "DINEIN" || item.orderType.value == "DINEIN") {
+      } else if (item.orderType == "DINEIN") {
         return dinner;
       }
       else {
