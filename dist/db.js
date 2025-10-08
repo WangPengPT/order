@@ -149,7 +149,10 @@ class DB {
     const collection = db.collection(table);
 
     const filter = {
-        "value.orderType": { $in: ["TAKEAWAY", "DINEIN&TAKEAWAY"] }
+        $or: [
+            { "value.orderType": { $exists: false } }, // 没有这个字段
+            {"value.orderType": { $in: ["TAKEAWAY", "DINEIN&TAKEAWAY"] } }
+        ]
     };
 
     const users = await collection.find(filter, { session }).toArray();

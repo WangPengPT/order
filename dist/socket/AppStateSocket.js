@@ -140,6 +140,8 @@ class AppStateSocket {
     async defaultMenuOrdering() {
         logger.info("重新排序菜品")
         await this.menuService.reorganizeAndSaveMenuTab_menu()
+        await this.menuService.updateDineInOrdering()
+        await this.menuService.updateTakeawayOrdering()
     }
 
     async registerHandlers(socket) {

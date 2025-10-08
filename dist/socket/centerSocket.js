@@ -115,8 +115,10 @@ class CenterSocket {
             key = key.substring(4)
             if (update_data) {
 
-                let menu = await menuService.getMenu()
-                let menuOrdering = await menuService.getMenuOrdering()
+                const menuAndTabs = await menuService.getTakeawayMenuAndTabs()
+
+                let menu = menuAndTabs.menu
+                let menuOrdering =  menuAndTabs.tabs
 
                 if (menu && menuOrdering) {
 
@@ -125,7 +127,7 @@ class CenterSocket {
                         menuOrdering
                     }
 
-                    console.log("update menu data!");
+                    //console.log("update menu data!", menuData);
 
                     socket.emit('message', "g_set_menu", {key, menuData})
                     update_data = false
@@ -145,7 +147,7 @@ class CenterSocket {
     static getRestaurant() {
         let name = "sc_sushi"
 
-        //name = "org_sushi"
+        // name = "org_sushi"
 
         if (process.env.SAVE_ADDR) {
             name = extractAfterSlash(process.env.SAVE_ADDR)

@@ -461,20 +461,6 @@ class SocketServices {
 
   }
 
-  filterMenu(menu,dinner) {
-    let ret = menu.filter( (item) => {
-      if (item.orderType == "TAKEAWAY" ) {
-        return !dinner;
-      } else if (item.orderType == "DINEIN") {
-        return dinner;
-      }
-      else {
-        return true;
-      }
-    });
-    //console.log(ret);
-    return ret;
-  }
 }
 
 module.exports = {

@@ -93,6 +93,24 @@ class MenuRepository {
         }
     }
 
+    getDiscountPrice(discount, price) {
+        if (!discount || discount == 0) {
+            return price
+        }
+
+        let ret = price * (100 - discount);
+        ret = Math.round(ret) / 100;
+
+        return ret;
+    }
+
+    update_price_from_delivery(value) {
+        value.price = value.deliveryPrice;
+        value.discount = value.deliveryDiscount;
+        if (value.discount == 0) value.discount = undefined;
+        value.dis_price =  this.getDiscountPrice(value.discount,value.price)
+    }
+
     async getTakeaway(session = null) {
         try {
             const menu = []
@@ -100,7 +118,12 @@ class MenuRepository {
             if (dishes.length == 0) return []
             for (let dish of dishes) {
                 if (!dish.value) continue
-                menu.push(dish.value)
+
+                const value = dish.value;
+
+                this.update_price_from_delivery(value)
+
+                menu.push(value)
             }
             return menu
         } catch (error) {

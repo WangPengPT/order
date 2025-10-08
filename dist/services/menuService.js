@@ -286,12 +286,68 @@ class MenuService {
     }
   }
 
+  filterMenuByDiscount(menu) {
+    let ret = menu.filter( (item) => {
+      return item.discount && item.discount > 0;
+    });
+    return ret;
+  }
+
+  makeTab(menu,name) {
+    const handleToMain = {}  // { handle: mainDish }
+    const handleToSubs = {}  // { handle: [subDish, ...] }
+
+    for (const item of menu) {
+      if (!item.handle) continue
+      if (item.category && item.category !== "") {
+        handleToMain[item.handle] = item
+        handleToSubs[item.handle] ??= []  // 确保有数组
+      } else {
+        handleToSubs[item.handle] ??= []
+        handleToSubs[item.handle].push(item)
+      }
+    }
+
+    // 按 category 分组
+    const ret = {
+      name: name,
+      dishes: [],
+    }
+
+    for (const [handle, main] of Object.entries(handleToMain)) {
+      if (handleToSubs[handle].length >= 1) {
+        handleToSubs[handle].push({id: main.id})
+      }
+      const subs = handleToSubs[handle] || []
+
+      ret.dishes.push({
+        id: main.id,
+        subDishes: subs.map(it => it.id)
+      })
+    }
+
+    return ret;
+  }
+
   async getTakeawayMenuAndTabs() {
     const menu = await this.menuRespository.getTakeaway()
     const tabs = await this.menuOrderingRepository.getTakeaway()
+
+    let discountTab = undefined
+    const discountMenu = this.filterMenuByDiscount(menu)
+    if (discountMenu.length > 0) {
+      discountTab = this.makeTab(discountMenu,"Descontos")
+    }
+
+    let newTabs = tabs
+
+    if (discountTab) {
+      newTabs = [discountTab,...tabs]
+    }
+
     return {
       menu: menu,
-      tabs: tabs
+      tabs: newTabs
     }
   }
 
