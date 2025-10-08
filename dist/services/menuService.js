@@ -220,6 +220,15 @@ class MenuService {
     return menu
   }
 
+  getDiscount(price, base_price) {
+
+    let ret = 1 - price / base_price;
+
+    ret = Math.round(ret * 100);
+
+    return ret;
+  }
+
   async updateMenu(data, update_all, takeaway) {
 
     if (typeof(takeaway) == 'string') {
@@ -235,7 +244,22 @@ class MenuService {
         if (takeaway) {
           console.log("is takeway")
           orgData.orderType = "TAKEAWAY"
-          orgData.deliveryPrice = orgData.price
+          //orgData.deliveryPrice = orgData.price
+
+          const base_price = orgData.base_price
+          console.log(base_price)
+          if (base_price && base_price != "") {
+
+            orgData.dis_price = orgData.price
+            orgData.price = orgData.base_price
+
+            orgData.discount = this.getDiscount(orgData.dis_price, base_price)
+
+            orgData.deliveryPrice = orgData.price
+            orgData.deliveryDiscount = orgData.discount
+
+            console.log(orgData)
+          }
         }
       }
 

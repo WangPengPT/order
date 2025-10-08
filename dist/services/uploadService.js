@@ -44,6 +44,7 @@ function makeDishData(data) {
     tags: data['Tags'],
     x: x,
     price: data['Variant Price'],
+    base_price: data['Variant Compare At Price'],
   };
   return ret;
 }
