@@ -104,10 +104,6 @@ class MenuService {
 
   }
 
-  /**
-   * 本地和自定义菜
-   * @param {db session} session 
-   */
   async reorganizeAndSaveMenuTab_menu(session = null) {
     console.log("reorganizeAndSaveMenuTab_menu")
     const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
@@ -118,10 +114,6 @@ class MenuService {
     console.log("reorganizeAndSaveMenuTab_menu finish")
   }
 
-  /**
-   * 菜单和特殊菜融合
-   * @param {db session} session 
-   */
   async reorganizeMenuTab_custom(session = null) {
     const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
     const localTabs = await this.menuOrderingRepository.get(session)
