@@ -127,6 +127,7 @@ class AppState {
 
     getPickupData(){
         const result = {}
+        this.checkBeginEndInterval(this.pickupData)
         for(const key in this.pickupData){
             result[key] = this.pickupData[key]
         }
@@ -135,10 +136,17 @@ class AppState {
 
     getReserverData(){
         const result = {}
+        this.checkBeginEndInterval(this.reserverData)
         for(const key in this.reserverData){
             result[key] = this.reserverData[key]
         }
         return result
+    }
+
+    checkBeginEndInterval(data){
+        if(!data.beginEndInterval || data.beginEndInterval.length<=0){
+            data.beginEndInterval = this.initBeginEndInterval()
+        }
     }
 
     getWeekPrice(){
