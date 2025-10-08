@@ -118,7 +118,7 @@ class DB {
         );
     }
     static async cleanTable(table, session = null) {
-        await db.collection(table).deleteMany({}, { session })
+        return await db.collection(table).deleteMany({}, { session })
     }
 
     static async getByDateRange(table, startDate, endDate, session = null) {

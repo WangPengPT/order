@@ -2,6 +2,14 @@ const CustomDish = require('../model/customDish')
 const CustomDishTemplate = require('../model/customDishTemplate')
 const CustomDishType = require('../model/customDishType')
 
+const ids = {
+    sushi_aleatoria : 1,
+    pock_bowl: 2,
+    nine_square: 3,
+    bibimbap: 4,
+    xiaoxiong_ramen: 5,
+    xiaoxiong_menu_lunch: 6,
+}
 
 const mysteryBoxTypes = [
     new CustomDishType(1, "types", "鱼", "Fish", "Peixe", [
@@ -69,9 +77,9 @@ const mysteryBoxDescriptions = [
     }
 ]
 
-const mysteryBox = new CustomDishTemplate(1, mysteryBoxTypes, "Sushi Aleatória®", 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, { quantity: true, quantitySetp: 5, maxQuantity: 50, extraInfo: "De que é que gosta? ®" })
+const mysteryBox = new CustomDishTemplate(ids.sushi_aleatoria, mysteryBoxTypes, "Sushi Aleatória®", 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, { quantity: true, quantitySetp: 5, maxQuantity: 50, extraInfo: "De que é que gosta? ®" })
 
-const bibiumbapTypes = [
+const pokebowlTypes = [
     new CustomDishType(1, "base", "底部", "Base", "Base", [
         new CustomDish(1, "Arroz de Sushi", "寿司米饭", "Sushi Rice", "Arroz de Sushi"),
         new CustomDish(2, "Arroz Branco", "白米饭", "White Rice", "Arroz Branco"),
@@ -117,7 +125,7 @@ const bibiumbapTypes = [
     ], 1, 0),
 ]
 
-const bibiumbapDescription = [
+const pokebowlDescription = [
     {
         title_zh: "什么是 Poke Bowl？",
         title_en: "What is Poke Bowl?",
@@ -169,7 +177,7 @@ const bibiumbapDescription = [
     }
 ]
 
-const bibiumbap = new CustomDishTemplate(2, bibiumbapTypes, "Poke Bowl", 0, "Poke Bowl", 0, 0, bibiumbapDescription)
+const pokebowl = new CustomDishTemplate(ids.pock_bowl, pokebowlTypes, "Poke Bowl", 0, "Poke Bowl", 0, 0, pokebowlDescription)
 
 const ninesquareGridTypes = [
     new CustomDishType(1, "carne", "肉", "Meat", "Carne", [
@@ -207,7 +215,7 @@ const nineSquareGridDescription = [
     },
 ]
 
-const nineSquareGrid = new CustomDishTemplate(3, ninesquareGridTypes, "MY BOX", 32, "MY BOX", 0, 0, nineSquareGridDescription, { dishQuantity: 3 })
+const nineSquareGrid = new CustomDishTemplate(ids.nine_square, ninesquareGridTypes, "MY BOX", 32, "MY BOX", 0, 0, nineSquareGridDescription, { dishQuantity: 3 })
 
 const xiaoxiaongRamenTypes = [
   // 1️⃣ 类型：风格 / Tipo / Style
@@ -256,7 +264,7 @@ const xiaoxiaongRamenTypes = [
       new CustomDish(13, "Vegan", "素汤", "Vegan", "Vegan")
     ],
     1,
-    1
+    0
   ),
 
   // 4️⃣ 类型：面条 / Massa / Noodles
@@ -301,16 +309,16 @@ const xiaoxiaongRamenTypes = [
     "🥢Extra",
     "🥢Extra",
     [
-      new CustomDish(33, "Char siu", "叉烧", "Char Siu", "Char siu", 2.8),
-      new CustomDish(35, "Carne refogada🌶️", "辣炒肉末 🌶️", "Spicy minced pork 🌶️", "Carne refogada 🌶️", 3.5),
-      new CustomDish(34, "Porco Dongpo", "东坡肉", "Dongpo pork", "Porco Dongpo", 3.2),
-      new CustomDish(36, "Frango panado", "日式炸鸡排", "Katsu chicken", "Frango panado", 2.8),
-      new CustomDish(43, "Pato frito", "香酥鸭", "Fried duck", "Pato frito", 3.8),
-      new CustomDish(37, "Perna de pato", "鸭腿", "Duck leg", "Perna de pato", 4.5),
-      new CustomDish(44, "Camarão alho picado", "蒜蓉虾", "Garlic shrimp", "Camarão alho picado", 3.8),
-      new CustomDish(67, "Gambas Panadas", "炸虾", "Fried prawns", "Gambas panadas", 3.5),
-      new CustomDish(38, "Tofu grelhado", "烤豆腐", "Grilled tofu", "Tofu grelhado", 1.8),
-      new CustomDish(41, "Ovo semi-cozido", "溏心蛋", "Soft-boiled egg", "Ovo semi-cozido", 1.2)
+      new CustomDish(33, "Char siu", "叉烧 +2.80€", "Char Siu +2.80€", "Char siu +2.80€", 2.8),
+      new CustomDish(35, "Carne refogada🌶️", "辣炒肉末 🌶️ +3.50€", "Spicy minced pork 🌶️ +3.50€", "Carne refogada 🌶️ +3.50€", 3.5),
+      new CustomDish(34, "Porco Dongpo", "东坡肉 +3.20€", "Dongpo pork +3.20€", "Porco Dongpo +3.20€", 3.2),
+      new CustomDish(36, "Frango panado", "日式炸鸡排 +2.80€", "Katsu chicken +2.80€", "Frango panado +2.80€", 2.8),
+      new CustomDish(43, "Pato frito", "香酥鸭 +3.80€", "Fried duck +3.80€", "Pato frito +3.80€", 3.8),
+      new CustomDish(37, "Perna de pato", "鸭腿 +4.50€", "Duck leg +4.50€", "Perna de pato +4.50€", 4.5),
+      new CustomDish(44, "Camarão alho picado", "蒜蓉虾 +3.80€", "Garlic shrimp +3.80€", "Camarão alho picado +3.80€", 3.8),
+      new CustomDish(67, "Gambas Panadas", "炸虾 +3.50€", "Fried prawns +3.50€", "Gambas panadas +3.50€", 3.5),
+      new CustomDish(38, "Tofu grelhado", "烤豆腐 +1.80€", "Grilled tofu +1.80€", "Tofu grelhado +1.80€", 1.8),
+      new CustomDish(41, "Ovo semi-cozido", "溏心蛋 +1.20€", "Soft-boiled egg +1.20€", "Ovo semi-cozido +1.20€", 1.2)
     ],
     10,
     0
@@ -355,13 +363,13 @@ const xiaoxiongRamenDescription = [
             }
         ],
         image: {
-            src: "",
+            src: "/images/xiaoxiong_ramen.jpg",
             enable: true
         }
     }
 ]
 
-const xiaoxiongRamen = new CustomDishTemplate(4, xiaoxiaongRamenTypes, "XIAOXIONG® RAMEN", 6.90, "XIAOXIONG® RAMEN", 0, 0, xiaoxiongRamenDescription, {
+const xiaoxiongRamen = new CustomDishTemplate(ids.xiaoxiong_ramen, xiaoxiaongRamenTypes, "XIAOXIONG® RAMEN", 6.90, "XIAOXIONG® RAMEN", 0, 0, xiaoxiongRamenDescription, {
     included_extra_information_en: "By default, the following are already included: Bamboo, Chinese black fungus, Bean sprouts, Pakchoi cabbage",
     included_extra_information_zh: "默认包含：竹笋、中国黑木耳、豆芽、白菜（小白菜）",
     included_extra_information_pt: "Por padrão já está incluído: Bambu, Fungo preto Chinês, Brotos de soja, Couve Pakchoi",
@@ -398,9 +406,9 @@ const xiaoxiongLunchTypes = [
     new CustomDish(2030, "Chow Mein Massa Pho(Vegetariano)", "素炒河粉", "Stir-fried pho noodles(Vegetarian)", "Massa Pho")
   ],1, 1),
   new CustomDishType(4, "upgrade", "🦐炒面配料", "🦐Ingredients", "🦐Ingredientes", [
-    new CustomDish(60, "Três Delícias", "地三鲜", "3 Delights", "Três Delícias", 2.8),
-    new CustomDish(61, "Frango Panado", "炸鸡排", "Fried chicken cutlet", "Frango Panado", 3.0),
-    new CustomDish(62, "Carne de Vaca", "牛肉", "Beef", "Carne de Vaca", 3.5)
+    new CustomDish(60, "Três Delícias", "地三鲜 +2.80€", "3 Delights +2.80€", "Três Delícias +2.80€", 2.8),
+    new CustomDish(61, "Frango Panado", "炸鸡排 +3.00€", "Fried chicken cutlet +3.00€", "Frango Panado +3.00€", 3.0),
+    new CustomDish(62, "Carne de Vaca", "牛肉 +3.50€", "Beef +3.50€", "Carne de Vaca +3.50€", 3.5)
   ], 3, 0)
 ]
 
@@ -441,13 +449,14 @@ const xiaoxiongLunchMenuDescription = [
     }
 ]
 
-const xiaoxiongLunch = new CustomDishTemplate(5, xiaoxiongLunchTypes, "Menu Almoço", 9.90, "Menu Almoço", 0, 0, xiaoxiongLunchMenuDescription)
+const xiaoxiongLunch = new CustomDishTemplate(ids.xiaoxiong_menu_lunch, xiaoxiongLunchTypes, "Menu Almoço", 9.90, "Menu Almoço", 0, 0, xiaoxiongLunchMenuDescription)
 
-const values = [mysteryBox, bibiumbap, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch]
+const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch]
 
 module.exports = {
+    ids,
     mysteryBox,
-    bibiumbap,
+    pokebowl,
     nineSquareGrid,
     values
 }

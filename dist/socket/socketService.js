@@ -331,8 +331,9 @@ class SocketServices {
             appState.dishTags[id] = item.tags;
           }
           // Broadcast updated item and full menu
-          this.io.emit("menu_item_changed", item);
-          this.io.emit("menu_data", await this.menuService.getMenu(), await this.menuService.getMenuOrdering());
+          //this.io.emit("menu_item_changed", item);
+          //this.io.emit("menu_data", await this.menuService.getMenu(), await this.menuService.getMenuOrdering());
+          await this.send_menu(this.io)
 
           logger.info(`Dish updated and broadcasted: ${item.name || item.handle}`);
         } catch (err) {
@@ -436,7 +437,45 @@ class SocketServices {
       location: appState.pickupData.latitudeAndLongitude,
     });
 
-    socket.emit("menu_data", await this.menuService.getMenu(), await this.menuService.getMenuOrdering());
+    await this.send_menu(socket)
+  }
+
+  async send_menu(s) {
+    const menu = await this.menuService.getMenu()
+    const menuOrdering = await this.menuService.getMenuOrdering()
+    s.emit("menu_data", menu, menuOrdering);
+
+    let data = centerSocket.get_menu_data()
+    if (data) {
+      s.emit("takeaway_menu_data", data.menu, data.menuOrdering);
+    }
+    else {
+      const newMenu = this.filterMenu(menu,false)
+      const newMenuOrdering = await this.menuService.buildMenuOrdering(null,newMenu)
+
+      console.log(newMenu,newMenuOrdering)
+      s.emit("takeaway_menu_data", newMenu, newMenuOrdering);
+    }
+
+    const newMenu = this.filterMenu(menu,true)
+    const newMenuOrdering = await this.menuService.buildMenuOrdering(null,newMenu)
+    s.emit("dinner_menu_data", newMenu, newMenuOrdering);
+
+  }
+
+  filterMenu(menu,dinner) {
+    let ret = menu.filter( (item) => {
+      if (item.orderType == "TAKEAWAY" || item.orderType.value == "TAKEAWAY") {
+        return !dinner;
+      } else if (item.orderType == "DINEIN" || item.orderType.value == "DINEIN") {
+        return dinner;
+      }
+      else {
+        return true;
+      }
+    });
+    //console.log(ret);
+    return ret;
   }
 }
 

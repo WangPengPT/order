@@ -1,9 +1,11 @@
 const CustomDishRepository = require("../repositories/customDishRepository");
 const templateData = require('../utils/customDishTemplateData.js')
+const {ids} = require('../utils/customDishTemplateData.js')
 const DB = require('../db.js');
 const { logger } = require("../utils/logger.js");
 const CustomDishTemplate = require("../model/customDishTemplate.js");
 const { filter } = require("compression");
+const {appState} = require("../state");
 
 class CustomDishService {
     constructor(customDishRepository = new CustomDishRepository()) {
@@ -145,6 +147,7 @@ class CustomDishService {
     async getAllEnableTemplates() {
         try {
             const result = await this.customDishRepository.getAllEnableTemplates()
+            findRamenAndChangePrice(result)
             return {
                 success: true,
                 data: result
@@ -154,6 +157,23 @@ class CustomDishService {
             return {
                 success: false,
                 data: error.message
+            }
+        }
+
+        function findRamenAndChangePrice(array){
+            const ramen = array.find( item =>  item.id == ids.xiaoxiong_ramen )
+
+            if(ramen && appState.settings.useFandays && todayIsFandays(ramen.options.fandaysDate)){
+                ramen.initialPrice = ramen.options.fandaysPrice
+            }
+
+            function todayIsFandays(fandaysDate){
+                let date = new Date();
+                // 使用里斯本的时区（欧洲/里斯本）格式化日期
+                let lisbonDateString = date.toLocaleString("en-US", { timeZone: "Europe/Lisbon" });
+                // 再从格式化后的字符串中提取日期部分
+                let lisbonDay = new Date(lisbonDateString).getDate();
+                return fandaysDate.includes(lisbonDay)
             }
         }
     }
@@ -177,6 +197,39 @@ class CustomDishService {
                 return {
                     success: true,
                     data: json
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    async restoreCustomDishData() {
+        try {
+            return await DB.withTransaction(async (session) => {
+                await this.customDishRepository.cleanData(session)
+                const templatesCount = await this.customDishRepository.templatesLength(session)
+                if (templatesCount === 0) {
+                    logger.info("开始创建")
+                    for (const template of templateData.values) {
+                        await this.customDishRepository.saveTemplate(template, session)
+                    }
+                    const allTemplates = await this.customDishRepository.getAllTemplates(session)
+                    return {
+                        success: true,
+                        data: allTemplates
+                    }
+                } else {
+                    logger.info("数据库不是空")
+                    const allTemplates = await this.customDishRepository.getAllTemplates(session)
+                    return {
+                        success: false,
+                        data: allTemplates
+                    }
                 }
             })
         } catch (error) {

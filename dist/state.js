@@ -23,7 +23,7 @@ class AppState {
             delivery: false,
             reserver: false,
             isFestiveDay: false,
-            peoplePrice: false,
+            useFandays: false,
             useChildrenDiscount: false,
             dividerTime: 17,
         }

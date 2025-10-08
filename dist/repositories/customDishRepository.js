@@ -96,6 +96,11 @@ class CustomDishRepository {
         }
         await this.update(customDish, session)
     }
+
+    async cleanData(session = null) {
+        logger.info("初始化自定义菜数据")
+        await DB.cleanTable(this.tableName, session)   
+    }
 }
 
 
