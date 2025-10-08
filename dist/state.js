@@ -127,7 +127,6 @@ class AppState {
 
     getPickupData(){
         const result = {}
-        this.checkData(this.pickupData)
         for(const key in this.pickupData){
             result[key] = this.pickupData[key]
         }
@@ -137,23 +136,20 @@ class AppState {
     getReserverData(){
         const result = {}
 
-        this.checkData(this.reserverData)
+        this.abc()
         for(const key in this.reserverData){
             result[key] = this.reserverData[key]
         }
         return result
     }
 
-    checkData(data){
-        if(data == null) {
-            data = {
+    abc(){
+            this.reserverData = {
                 timeInterval: 15, // 每隔15分钟取一次餐
                 beginEndInterval: {}, // 默认从12点到15点，19点到23点
             }
-        }
-        if(!data.beginEndInterval || data.beginEndInterval.length<=0){
-            data.beginEndInterval = this.initBeginEndInterval()
-        }
+
+            this.reserverData.beginEndInterval = this.initBeginEndInterval()
     }
 
     getWeekPrice(){
