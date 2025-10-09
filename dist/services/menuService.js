@@ -172,6 +172,19 @@ class MenuService {
     await this.saveMenuOrdering(tabs, session)
   }
 
+  /**
+   * 菜单和特殊菜融合
+   * @param {db session} session 
+   */
+  async reorganizeDineMenuTab_custom(session = null) {
+    const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
+    const localTabs = await this.menuOrderingRepository.getDineIn(session)
+    const menu = await this.menuRespository.getDineInMenu()
+    const menuDish = await this.buildMenuOrdering(session, menu)
+    const tabs = syncCustomDishes(localTabs, customDish, menuDish)
+    await this.menuOrderingRepository.saveDineIn(tabs, session)
+  }
+
 
   getDishCategory(item) {
     if (item.category) return item.category;

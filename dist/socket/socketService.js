@@ -25,7 +25,7 @@ class SocketServices {
     tableSocket = new TableSocket(io),
     webPageDesignSocket = new WebPageDesignSocket(io),
     userSocket = new UserSocket(io),
-    customDish = new CustomDishSocket(),
+    customDish = new CustomDishSocket(io),
     dataAnalizeSocket = new DataAnalizeSocket(io),
     dictinarySocket = new DictinarySocket(io)
   ) {
@@ -345,6 +345,8 @@ class SocketServices {
           await this.send_menu(this.io)
 
           logger.info(`Dish updated and broadcasted: ${item.name || item.handle}`);
+
+          await centerSocket.update_menu_data()
         } catch (err) {
           logger.error("Failed to update dish in MongoDB:", err);
           socket.emit("menu_error", "Failed to update dish");

@@ -116,6 +116,31 @@ class DictinaryService {
                         text_zh: "随机盲盒寿司",
                         text_en: "Random Sushi",
                         text_pt: "Sushi Aleatória®"
+                    },
+                    "Descontos": {
+                        text_zh: "折扣",
+                        text_en: "Discounts",
+                        text_pt: "Descontos"
+                    },
+                    "Caixa grande": {
+                        text_zh: "大盒",
+                        text_en: "Large Box",
+                        text_pt: "Caixa grande"
+                    },
+                    "Caixa media": {
+                        text_zh: "中盒",
+                        text_en: "Medium Box",
+                        text_pt: "Caixa media"
+                    },
+                    "Caixa pequena": {
+                        text_zh: "小盒",
+                        text_en: "Small Box",
+                        text_pt: "Caixa pequena"
+                    },
+                    "Salada": {
+                        text_zh: "酱料",
+                        text_en: "Salad",
+                        text_pt: "Salada"
                     }
                 };
                 await this.dictionaryRespository.save(resultData, session)
