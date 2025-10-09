@@ -15,6 +15,7 @@ const { CustomDishSocket } = require('./customDishSocket.js');
 const VIPUserManager = require("../services/vipUserManager.js")
 const centerSocket = require('./centerSocket.js');
 const { DataAnalizeSocket } = require('./dataAnalizeSocket.js');
+const DictinarySocket = require('./dictinarySocket.js');
 
 class SocketServices {
   constructor(io ,
@@ -25,7 +26,8 @@ class SocketServices {
     webPageDesignSocket = new WebPageDesignSocket(io),
     userSocket = new UserSocket(io),
     customDish = new CustomDishSocket(),
-    dataAnalizeSocket = new DataAnalizeSocket(io)
+    dataAnalizeSocket = new DataAnalizeSocket(io),
+    dictinarySocket = new DictinarySocket(io)
   ) {
 
     this.io = io
@@ -37,6 +39,7 @@ class SocketServices {
     this.userSocket = userSocket
     this.customDish = customDish
     this.dataAnalizeSocket = dataAnalizeSocket
+    this.dictinarySocket = dictinarySocket
   }
 
   emit(...datas) {
@@ -68,6 +71,7 @@ class SocketServices {
     await this.customDish.customDishService.initializeCustomDish()
     await this.menuService.loadMenu()
     await this.menuService.initMenuOrdering()
+    await this.dictinarySocket.dictinaryService.init()
   }
 
   initSocket() {
@@ -109,6 +113,8 @@ class SocketServices {
       await this.customDish.registerHandlers(socket)
 
       this.dataAnalizeSocket.registerHandlers(socket)
+
+      await this.dictinarySocket.registerHandlers(socket)
 
       socket.on("manager_get_menu", async (_, callback) => {
         const data = {}

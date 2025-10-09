@@ -329,21 +329,34 @@ class MenuService {
     return ret;
   }
 
+
+  hasTab(tabs,key)  {
+    for (const tabsKey in tabs) {
+      if (tabs[tabsKey].name == key) return true;
+    }
+    return false;
+  }
+
   async getTakeawayMenuAndTabs() {
     const menu = await this.menuRespository.getTakeaway()
     const tabs = await this.menuOrderingRepository.getTakeaway()
 
-    let discountTab = undefined
-    const discountMenu = this.filterMenuByDiscount(menu)
-    if (discountMenu.length > 0) {
-      discountTab = this.makeTab(discountMenu, "Descontos")
-    }
+
 
     let newTabs = tabs
 
-    if (discountTab) {
-      newTabs = [discountTab, ...tabs]
+
+    if (!this.hasTab(tabs,"Descontos")) {
+      let discountTab = undefined
+      const discountMenu = this.filterMenuByDiscount(menu)
+      if (discountMenu.length > 0) {
+        discountTab = this.makeTab(discountMenu, "Descontos")
+      }
+      if (discountTab) {
+        newTabs = [discountTab, ...tabs]
+      }
     }
+
 
     return {
       menu: menu,
@@ -382,6 +395,9 @@ class MenuService {
             orgData.deliveryDiscount = orgData.discount
 
             console.log(orgData)
+          }
+          else {
+            orgData.deliveryPrice = orgData.price
           }
         }
       }
