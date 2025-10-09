@@ -113,7 +113,9 @@ class SocketServices {
       socket.on("manager_get_menu", async (_, callback) => {
         const data = {}
         data.menu = await this.menuService.getMenu()
-        data.menuTab = await this.menuService.getMenuOrdering()
+        //data.menuTab = await this.menuService.getMenuOrdering()
+        data.dineTab = (await this.menuService.getDineInMenuAndTabs()).tabs
+        data.takeTab = (await this.menuService.getTakeawayMenuAndTabs()).tabs
         callback({
           success: true,
           data: data
