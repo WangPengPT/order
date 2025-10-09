@@ -295,12 +295,12 @@ class SocketServices {
         }
       });
 
-      socket.on('manager_updateMenuIndex', async (newMenuSorted, callback) => {
+      socket.on('manager_updateMenuIndex', async (newMenuSorted, type, callback) => {
         logger.info("更新菜品与分类顺序")
         if (!newMenuSorted) return;
         if (newMenuSorted.length == 0) return;
 
-        const result = await this.menuService.updateMenuSorted(newMenuSorted)
+        const result = await this.menuService.updateDineOrTakeMenuSorted(newMenuSorted, type)
         if (result.success) {
           callback(result)
           logger.info("更新菜品与分类顺序成功")
@@ -445,6 +445,10 @@ class SocketServices {
     const menu = await this.menuService.getMenu()
     const menuOrdering = await this.menuService.getMenuOrdering()
     s.emit("menu_data", menu, menuOrdering);
+
+    const m1 = await this.menuService.getDineInMenuAndTabs()
+    const m2 = await this.menuService.getTakeawayMenuAndTabs()
+    s.emit("manager_menu_data", menu, m1.tabs, m2.tabs)
 
     let data = centerSocket.get_menu_data()
     if (data) {

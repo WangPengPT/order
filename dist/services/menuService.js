@@ -26,7 +26,7 @@ class MenuService {
         await this.saveMenuOrdering(mm)
         await this.reorganizeMenuTab_custom()
       }
-      
+
       return await DB.withTransaction(async (session) => {
         const menu = await this.menuRespository.getMenu(session);
         const category = {};
@@ -66,7 +66,7 @@ class MenuService {
         appState.menu = menu;
 
         const localTabs = await this.getMenuOrdering(session)
-        appState.orderMenuTab = localTabs.map(it =>it.name)
+        appState.orderMenuTab = localTabs.map(it => it.name)
 
         const types = [];
 
@@ -92,9 +92,9 @@ class MenuService {
             orderTabs.push(tab);
           }
         }
-      tabs = await this.menuOrderingRepository.get(session)
-      // 每次load 都查看local 来判断自定义添加到哪里
-      appState.orderMenuTab = tabs.map(it => it.name)
+        tabs = await this.menuOrderingRepository.get(session)
+        // 每次load 都查看local 来判断自定义添加到哪里
+        appState.orderMenuTab = tabs.map(it => it.name)
       })
 
 
@@ -202,10 +202,10 @@ class MenuService {
    * @param {Array} menu 
    * @returns 
    */
-  async buildMenuOrdering(session = null,menu) {
+  async buildMenuOrdering(session = null, menu) {
 
     if (!menu) {
-       menu = (await this.menuRespository.getMenu(session))
+      menu = (await this.menuRespository.getMenu(session))
     }
 
     // 两个 map：handle -> main / handle -> sub
@@ -228,7 +228,7 @@ class MenuService {
 
     for (const [handle, main] of Object.entries(handleToMain)) {
       if (handleToSubs[handle].length >= 1) {
-        handleToSubs[handle].push({id: main.id})
+        handleToSubs[handle].push({ id: main.id })
       }
       const subs = handleToSubs[handle] || []
       const category = main.category
@@ -240,13 +240,13 @@ class MenuService {
     }
 
     // 转换成数组形式
-  const menuOrdering = Object.entries(categoryMap)
-    .filter(([category]) => category !== "Undefined")
-    .map(([category, dishes]) => ({
-      name: category,
-      dishes
-    }))
-  return menuOrdering
+    const menuOrdering = Object.entries(categoryMap)
+      .filter(([category]) => category !== "Undefined")
+      .map(([category, dishes]) => ({
+        name: category,
+        dishes
+      }))
+    return menuOrdering
   }
 
 
@@ -263,7 +263,7 @@ class MenuService {
   // 获取菜单
   async getMenu() {
     logger.info("获取菜单")
-    const menu = await this.menuRespository.getMenu() 
+    const menu = await this.menuRespository.getMenu()
     appState.menu = menu;
     return menu
   }
@@ -287,13 +287,13 @@ class MenuService {
   }
 
   filterMenuByDiscount(menu) {
-    let ret = menu.filter( (item) => {
+    let ret = menu.filter((item) => {
       return item.discount && item.discount > 0;
     });
     return ret;
   }
 
-  makeTab(menu,name) {
+  makeTab(menu, name) {
     const handleToMain = {}  // { handle: mainDish }
     const handleToSubs = {}  // { handle: [subDish, ...] }
 
@@ -316,7 +316,7 @@ class MenuService {
 
     for (const [handle, main] of Object.entries(handleToMain)) {
       if (handleToSubs[handle].length >= 1) {
-        handleToSubs[handle].push({id: main.id})
+        handleToSubs[handle].push({ id: main.id })
       }
       const subs = handleToSubs[handle] || []
 
@@ -336,13 +336,13 @@ class MenuService {
     let discountTab = undefined
     const discountMenu = this.filterMenuByDiscount(menu)
     if (discountMenu.length > 0) {
-      discountTab = this.makeTab(discountMenu,"Descontos")
+      discountTab = this.makeTab(discountMenu, "Descontos")
     }
 
     let newTabs = tabs
 
     if (discountTab) {
-      newTabs = [discountTab,...tabs]
+      newTabs = [discountTab, ...tabs]
     }
 
     return {
@@ -354,7 +354,7 @@ class MenuService {
 
   async updateMenu(data, update_all, takeaway) {
 
-    if (typeof(takeaway) == 'string') {
+    if (typeof (takeaway) == 'string') {
       takeaway = (takeaway === 'true')
     }
 
@@ -541,18 +541,18 @@ class MenuService {
     try {
 
       return await DB.withTransaction(async (session) => {
-      const dish = await this.menuRespository.get(id, session)
-      console.log("dish::::", dish, "id:  _:", id, "handle:_;", dish.handle)
-      let result;
-      //MainDish
-      if (!dish) throw new Error("Not found the dish")
-      if (dish.category !== '') {
-        result = await this.menuRespository.deleteMenuDishByHandle(dish.handle, session)
-      } else {
-        result = await this.menuRespository.deleteDish(dish.id)
-      }
+        const dish = await this.menuRespository.get(id, session)
+        console.log("dish::::", dish, "id:  _:", id, "handle:_;", dish.handle)
+        let result;
+        //MainDish
+        if (!dish) throw new Error("Not found the dish")
+        if (dish.category !== '') {
+          result = await this.menuRespository.deleteMenuDishByHandle(dish.handle, session)
+        } else {
+          result = await this.menuRespository.deleteDish(dish.id)
+        }
 
-      if (result.acknowledged && result.deletedCount > 0) {
+        if (result.acknowledged && result.deletedCount > 0) {
           await this.reorganizeAndSaveMenuTab_menu(session)
           await this.updateDineInOrdering(session)
           await this.updateTakeawayOrdering(session)
@@ -585,32 +585,32 @@ class MenuService {
   hardValidateMenuTabStructure(newMenuSorted) {
     if (!Array.isArray(newMenuSorted)) return false; // 顶层必须是数组
 
-  return newMenuSorted.every(category => {
-    // category 必须是对象
-    if (!category || typeof category !== 'object') return false;
+    return newMenuSorted.every(category => {
+      // category 必须是对象
+      if (!category || typeof category !== 'object') return false;
 
-    // 必须有 name 且是字符串
-    if (typeof category.name !== 'string') return false;
+      // 必须有 name 且是字符串
+      if (typeof category.name !== 'string') return false;
 
-    // 必须有 dishes 且是数组
-    if (!Array.isArray(category.dishes)) return false;
+      // 必须有 dishes 且是数组
+      if (!Array.isArray(category.dishes)) return false;
 
-    // 验证每个 dish
-    const dishesValid = category.dishes.every(dish => {
-      if (!dish || typeof dish !== 'object') return false;
+      // 验证每个 dish
+      const dishesValid = category.dishes.every(dish => {
+        if (!dish || typeof dish !== 'object') return false;
 
-      // 必须有 id 且是字符串
-      if (typeof dish.id !== 'string') return false;
+        // 必须有 id 且是字符串
+        if (typeof dish.id !== 'string') return false;
 
-      // 必须有 subDishes 且是数组
-      if (!Array.isArray(dish.subDishes)) return false;
+        // 必须有 subDishes 且是数组
+        if (!Array.isArray(dish.subDishes)) return false;
 
-      // subDishes 数组每一项必须是字符串
-      return dish.subDishes.every(subId => typeof subId === 'string');
+        // subDishes 数组每一项必须是字符串
+        return dish.subDishes.every(subId => typeof subId === 'string');
+      });
+
+      return dishesValid;
     });
-
-    return dishesValid;
-  });
   }
 
   menuTabCheck(newMenuSorted) {
@@ -620,13 +620,14 @@ class MenuService {
   async updateMenuSorted(newMenuSorted) {
     try {
       return await DB.withTransaction(async (session) => {
-        if (this.menuTabCheck(newMenuSorted)){
-        await this.menuOrderingRepository.save(newMenuSorted, session)
-        const res = await this.menuOrderingRepository.get(session)
-        appState.orderMenuTab = res.map(it => it.name);
-        return {
-          success: true
-        }}else {
+        if (this.menuTabCheck(newMenuSorted)) {
+          await this.menuOrderingRepository.save(newMenuSorted, session)
+          const res = await this.menuOrderingRepository.get(session)
+          appState.orderMenuTab = res.map(it => it.name);
+          return {
+            success: true
+          }
+        } else {
           throw new Error("Invalid Menu tab structure")
         }
       })
@@ -639,6 +640,41 @@ class MenuService {
     }
 
   }
+
+  async updateDineOrTakeMenuSorted(newMenuSorted, type) {
+    try {
+      return await DB.withTransaction(async (session) => {
+        if (this.menuTabCheck(newMenuSorted)) {
+          const types = ["DINEIN", "TAKEAWAY"]
+          if (!types.includes(type)) throw new Error("Invalid type input")
+          if (type === "DINEIN") {
+            await this.menuOrderingRepository.saveDineIn(newMenuSorted, session)
+            const res = await this.menuOrderingRepository.getDineIn(session)
+            appState.orderMenuTab = res.map(it => it.name);
+            return {
+              success: true
+            }
+          } else {
+            await this.menuOrderingRepository.saveTakeaway(newMenuSorted, session)
+            const res = await this.menuOrderingRepository.getTakeaway(session)
+            return {
+              success: true
+            }
+          }
+        } else {
+          throw new Error("Invalid Menu tab structure")
+        }
+      })
+
+    } catch (error) {
+      console.log("error: ", error.message)
+      return {
+        success: false
+      }
+    }
+
+  }
+
   async getMenuAndTab() {
     return { success: true, data: { menu: await this.menuRespository.getMenu(), menuTab: await this.menuOrderingRepository.get() } };
   }
@@ -653,7 +689,7 @@ class MenuService {
     try {
       return await DB.withTransaction(async (session) => {
         if (!id) return null
-        await this.menuRespository.update(dish, id,session)
+        await this.menuRespository.update(dish, id, session)
         await this.reorganizeAndSaveMenuTab_menu(session)
         await this.updateDineInOrdering(session)
         await this.updateTakeawayOrdering(session)
@@ -664,7 +700,7 @@ class MenuService {
         success: false
       }
     }
-    
+
   }
 
 }
