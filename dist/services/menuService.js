@@ -1,7 +1,7 @@
 const db = require('../filedb');
 const CustomDishRepository = require('../repositories/customDishRepository.js');
 const { appState } = require('../state.js');
-const { syncCustomDishes, syncLocalWithMenuAndCustom, syncTabsWhitoutCustom } = require('../utils/mergeFilteredExact.js');
+const { mergeTabs } = require('../utils/mergeFilteredExact.js');
 const MenuRepository = require('../repositories/menuRepository.js');
 const DB = require('../db.js');
 const MenuOrderingRepository = require('../repositories/menuOrderingRepository.js');
@@ -104,6 +104,79 @@ class MenuService {
 
   }
 
+  /**
+   * 通用封装函数 - 根据类型重建 tabs 并保存
+   * @param {'ALL' | 'DINEIN' | 'TAKEAWAY'} type
+   * @param {Object} session - MongoDB session
+   */
+  async _rebuildTabsAndSave(type = 'ALL', session = null) {
+    const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name);
+
+    let localTabs, menu, menuDish;
+
+    switch (type) {
+      case 'DINEIN':
+        localTabs = await this.menuOrderingRepository.getDineIn(session);
+        menu = await this.menuRespository.getDineInMenu(session);
+        menuDish = await this.buildMenuOrdering(session, menu);
+        break;
+
+      case 'TAKEAWAY':
+        localTabs = await this.menuOrderingRepository.getTakeaway(session);
+        menu = await this.menuRespository.getTakeaway(session);
+        menuDish = await this.buildMenuOrdering(session, menu);
+        break;
+
+      default:
+        localTabs = await this.menuOrderingRepository.get(session);
+        menuDish = await this.buildMenuOrdering(session);
+        break;
+    }
+
+    // 调用 mergeTabs 统一融合逻辑
+    const tabs = mergeTabs(localTabs, customDish, menuDish);
+
+    // 保存不同类型
+    switch (type) {
+      case 'DINEIN':
+        await this.menuOrderingRepository.saveDineIn(tabs, session);
+        break;
+      case 'TAKEAWAY':
+        await this.menuOrderingRepository.saveTakeaway(tabs, session);
+        break;
+      default:
+        await this.saveMenuOrdering(tabs, session);
+        break;
+    }
+
+    return tabs;
+  }
+
+  // ✅ 以下函数简化为一行调用
+
+  async updateDineInOrdering(session = null) {
+    return this._rebuildTabsAndSave('DINEIN', session);
+  }
+
+  async updateTakeawayOrdering(session = null) {
+    return this._rebuildTabsAndSave('TAKEAWAY', session);
+  }
+
+  async reorganizeAndSaveMenuTab_menu(session = null) {
+    console.log("reorganizeAndSaveMenuTab_menu");
+    const res = await this._rebuildTabsAndSave('ALL', session);
+    console.log("reorganizeAndSaveMenuTab_menu finish");
+    return res;
+  }
+
+  async reorganizeMenuTab_custom(session = null) {
+    return this._rebuildTabsAndSave('ALL', session);
+  }
+
+  async reorganizeDineMenuTab_custom(session = null) {
+    return this._rebuildTabsAndSave('DINEIN', session);
+  }
+
   async initMenuOrdering() {
     await DB.withTransaction(async (session) => {
       //all
@@ -116,7 +189,7 @@ class MenuService {
         const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
         const dineInMenu = await this.menuRespository.getDineInMenu(session) || []
         const menuDish = await this.buildMenuOrdering(session, dineInMenu)
-        const tabs = syncCustomDishes([], customDish, menuDish)
+        const tabs = mergeTabs([], customDish, menuDish)
         await this.menuOrderingRepository.saveDineIn(tabs, session)
       }
 
@@ -128,63 +201,6 @@ class MenuService {
       }
     })
   }
-
-  async updateDineInOrdering(session = null) {
-    const dineInTabs = await this.menuOrderingRepository.getDineIn(session)
-    const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
-    const dineInMenu = await this.menuRespository.getDineInMenu(session) || []
-    const menuDish = await this.buildMenuOrdering(session, dineInMenu)
-    const tabs = syncCustomDishes(dineInTabs, customDish, menuDish)
-    await this.menuOrderingRepository.saveDineIn(tabs, session)
-  }
-
-  async updateTakeawayOrdering(session = null) {
-    const takeawayTabs = await this.menuOrderingRepository.getTakeaway(session)
-    const takeawayMenu = await this.menuRespository.getTakeaway(session) || []
-    const menuDish = await this.buildMenuOrdering(session, takeawayMenu)
-    const tabs = syncTabsWhitoutCustom(takeawayTabs, menuDish)
-    await this.menuOrderingRepository.saveTakeaway(tabs, session)
-  }
-
-  /**
-   * 本地和自定义菜
-   * @param {db session} session 
-   */
-  async reorganizeAndSaveMenuTab_menu(session = null) {
-    console.log("reorganizeAndSaveMenuTab_menu")
-    const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
-    const localTabs = await this.menuOrderingRepository.get(session)
-    const menuDish = await this.buildMenuOrdering(session)
-    const tabs = await syncLocalWithMenuAndCustom(localTabs, menuDish, customDish)
-    await this.saveMenuOrdering(tabs, session)
-    console.log("reorganizeAndSaveMenuTab_menu finish")
-  }
-
-  /**
-   * 菜单和特殊菜融合
-   * @param {db session} session 
-   */
-  async reorganizeMenuTab_custom(session = null) {
-    const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
-    const localTabs = await this.menuOrderingRepository.get(session)
-    const menuDish = await this.buildMenuOrdering(session)
-    const tabs = syncCustomDishes(localTabs, customDish, menuDish)
-    await this.saveMenuOrdering(tabs, session)
-  }
-
-  /**
-   * 菜单和特殊菜融合
-   * @param {db session} session 
-   */
-  async reorganizeDineMenuTab_custom(session = null) {
-    const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
-    const localTabs = await this.menuOrderingRepository.getDineIn(session)
-    const menu = await this.menuRespository.getDineInMenu()
-    const menuDish = await this.buildMenuOrdering(session, menu)
-    const tabs = syncCustomDishes(localTabs, customDish, menuDish)
-    await this.menuOrderingRepository.saveDineIn(tabs, session)
-  }
-
 
   getDishCategory(item) {
     if (item.category) return item.category;
