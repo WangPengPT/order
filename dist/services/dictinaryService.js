@@ -141,6 +141,11 @@ class DictinaryService {
                         text_zh: "酱料",
                         text_en: "Salad",
                         text_pt: "Salada"
+                    },
+                    "Cozinha": {
+                        text_zh: "厨房",
+                        text_en: "Kitchen",
+                        text_pt: "Cozinha"
                     }
                 };
                 await this.dictionaryRespository.save(resultData, session)
