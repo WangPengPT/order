@@ -145,6 +145,9 @@ function clientCmd(id,cmd) {
     const table = appState.tables.getTableById(id)
 
     if (table == null) throw new Error("Not found the table")
+    if (table.status !== TableStatus.SEATED) {
+            throw new Error(`Mesa ${id} não tem permissão`)
+        }
 
     const result = table.clientCmd(cmd);
 
