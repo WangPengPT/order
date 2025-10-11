@@ -2,26 +2,17 @@ function mergeTabs(currentTab, customDishes, menuTab) {
   const safeClone = v => JSON.parse(JSON.stringify(v || []));
   let result = safeClone(currentTab);
 
-  // 🧩 helper: 保证主菜在自己的子项中出现
-function ensureMainInSubDishes(dish) {
-  if (!Array.isArray(dish.subDishes)) dish.subDishes = [];
+  function ensureMainInSubDishes(dish) {
+    if (!Array.isArray(dish.subDishes)) dish.subDishes = [];
 
-  // 过滤掉重复的主菜 id，只保留其他子菜
-  const otherSubs = dish.subDishes.filter(id => id !== dish.id);
+    const otherSubs = dish.subDishes.filter(id => id !== dish.id);
+    if (otherSubs.length === 0) return dish; // 没有子菜，不添加主菜id
 
-  if (otherSubs.length === 0) {
-    // 如果没有其他子菜，subDishes 保持原样（空或只有主菜本身）
+    dish.subDishes = [dish.id, ...otherSubs];
     return dish;
   }
 
-  // 如果有其他子菜，先添加主菜 id，再添加其他子菜
-  dish.subDishes = [dish.id, ...otherSubs];
-
-  return dish;
-}
-
-
-  // === 情况 1：currentTab 不存在 → customDishes + menuTab ===
+  // === 情况 1：currentTab 不存在 ===
   if (!currentTab || currentTab.length === 0) {
     return [
       ...(menuTab || []).map(c => ({
@@ -32,7 +23,7 @@ function ensureMainInSubDishes(dish) {
     ];
   }
 
-  // === 情况 2：customDishes 不存在 → currentTab + menuTab ===
+  // === 情况 2：customDishes 不存在 ===
   if (!customDishes || customDishes.length === 0) {
     const merged = [];
 
@@ -40,8 +31,7 @@ function ensureMainInSubDishes(dish) {
       const menuCategory = (menuTab || []).find(m => m.name === currentCategory.name);
       if (!menuCategory) continue;
 
-      // 保留 currentTab 的菜品排序，同时同步 menuTab 菜品
-      currentCategory.dishes = currentCategory.dishes.filter(d =>
+      currentCategory.dishes = (currentCategory.dishes || []).filter(d =>
         (menuCategory.dishes || []).some(md => md.id === d.id)
       );
 
@@ -63,7 +53,6 @@ function ensureMainInSubDishes(dish) {
       merged.push(currentCategory);
     }
 
-    // menuTab 有 currentTab 没有的分类 → 追加
     for (const menuCategory of menuTab || []) {
       if (!merged.find(c => c.name === menuCategory.name)) {
         merged.push({
@@ -76,26 +65,30 @@ function ensureMainInSubDishes(dish) {
     return merged;
   }
 
-  // === 情况 3：menuTab 不存在 → 返回 customDishes ===
+  // === 情况 3：menuTab 不存在 ===
   if (!menuTab || menuTab.length === 0) {
     return (customDishes || []).map(name => ({ name, dishes: [] }));
   }
 
-  // === 情况 4：都有 → currentTab + menuTab + customDishes ===
+  // === 情况 4：都有 ===
   const merged = [];
+  const customSet = new Set(customDishes || []);
+  const menuMap = new Map((menuTab || []).map(c => [c.name, c]));
 
-  // 以 currentTab 顺序为主
+  // 遍历 currentTab（保持顺序）
   for (const currentCategory of result) {
-    const menuCategory = menuTab.find(m => m.name === currentCategory.name);
+    const menuCategory = menuMap.get(currentCategory.name);
 
     if (!menuCategory) {
-      // menuTab 没有 → 保留 currentCategory
-      merged.push(currentCategory);
-      continue;
+      // 当前分类在 menuTab 中不存在：如果不是 customDishes → 清理（不保留）
+      if (customSet.has(currentCategory.name)) {
+        merged.push(currentCategory);
+      }
+      continue; // 非 custom 的旧分类清除
     }
 
-    // 保留 currentTab 的菜品，同时同步 menuTab 菜品
-    currentCategory.dishes = currentCategory.dishes.filter(d =>
+    // 分类存在于 menuTab：合并菜品
+    currentCategory.dishes = (currentCategory.dishes || []).filter(d =>
       (menuCategory.dishes || []).some(md => md.id === d.id)
     );
 
@@ -117,7 +110,7 @@ function ensureMainInSubDishes(dish) {
     merged.push(currentCategory);
   }
 
-  // menuTab 有 currentTab 没有的分类 → 追加
+  // menuTab 有而 currentTab 没有的分类 → 追加
   for (const menuCategory of menuTab) {
     if (!merged.find(c => c.name === menuCategory.name)) {
       merged.push({
@@ -127,7 +120,7 @@ function ensureMainInSubDishes(dish) {
     }
   }
 
-  // 最后追加 customDishes
+  // customDishes 中还不存在的分类 → 追加空分类
   for (const customName of customDishes || []) {
     if (!merged.find(c => c.name === customName)) {
       merged.push({ name: customName, dishes: [] });

@@ -215,7 +215,7 @@ const takeaway_model = {
             const total = (item.price*item.quantity).toFixed(2)
             const sku = item.sku.toString().replaceAll('-','')
             price_total += Number(total)
-            add_to_print_takeaway_data(BOLD_HAD+ "=>" + item.quantity + "-@" +sku+" "+item.name);
+            add_to_print_takeaway_data(BOLD_HAD+ "=>" + item.quantity + "-@("+sku+") "+item.name);
             add_to_print_takeaway_data(BOLD_HAD+" "+item.price+" * "+item.quantity+" = "+total);
             if(item.properties?.length > 0){
                 for(let i=0; i<item.properties?.length; i++){

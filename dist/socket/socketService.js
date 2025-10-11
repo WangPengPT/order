@@ -195,7 +195,7 @@ class SocketServices {
       tableService.refreshTablePassword(socket)
 
       // 处理订单提交
-      socket.on("submit_order", (orderData) => {
+      socket.on("submit_order", (orderData, callback) => {
         if (appState.settings.checkIP && (!appState.checkLocalIP(socket))) {
           logger.info(`订单提交失败`)
           logger.info(`失败原因: invalid ip`)
@@ -233,7 +233,7 @@ class SocketServices {
           logger.info(`失败原因: ${order.data}`)
           socket.emit('error', order.data)
         }
-
+        callback(order)
       });
 
       // 管理端打印外卖订单
