@@ -365,6 +365,26 @@ class SocketServices {
         }
       });
 
+      socket.on("rate_dish_takeaway", async (id, like, rate) => {
+
+        let result = undefined
+        if ( centerSocket.get_menu_data() != null )
+        {
+          result = await centerSocket.saveDishRating(id, like, rate);
+        }
+        else {
+          result = await this.menuService.saveDishRating(id, like, rate);
+        }
+
+        if (result) {
+          this.io.emit("rating_changed", result.data.id, result.data.likes, result.data.rates);
+          logger.info(`客服端评分成功, id-${id}`)
+        } else {
+          logger.info(`客服端评分失败, id-${id}`)
+          logger.info(`失败原因: ${result.data}`)
+        }
+      });
+
       // 返回 年、月，发送其年月对应的菜单评价数据
       socket.on('manager_get_month_rates', (value, callback) => {
         logger.info(`管理端获取${value.year}年${value.month}月的菜单评价`)

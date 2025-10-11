@@ -1,6 +1,8 @@
 
 const { io } = require("socket.io-client");
 
+const DB = require('../db.js');
+
 const http = require('http');
 const https = require('https');
 const {appState} = require("../state");
@@ -135,10 +137,14 @@ class CenterSocket {
 
             }
         } else if (key != "") {
-            socket.emit('message', "g_get_menu", key, (menu) => {
+            socket.emit('message', "g_get_menu", key, async (menu) => {
                 if (menu) {
                     //console.log("get menu data!");
                     menuData = menu
+
+                    for (let i = 0; i < menuData.menu.length; i++) {
+                        await this.loadDishRatingDB(menuData.menu[i]);
+                    }
                 }
             })
         }
@@ -200,6 +206,59 @@ class CenterSocket {
         socket.emit('update_reserve_data', {key:key, value:value}, callback)
     }
 
+
+    static async saveDishRating(id, like, rate) {
+        try {
+            const item = menuData.menu.find(m => m.id === id);
+
+            if (!item) throw new Error("invalid item id: ", id);
+
+            if (![-1, 0, 1].includes(like)) throw new Error("invalid like value: ", like);
+
+            if (![-1, 0, 1].includes(rate)) throw new Error("invalid rate value: ", rate);
+
+            if (!item.rates) {
+                item.likes = 0;
+                item.rates = 0;
+            }
+            item.likes += like;
+            item.rates += rate;
+
+            await this.saveDishRatingDB(item)
+
+            return {
+                success: true,
+                data: {
+                    id: id,
+                    likes: item.likes,
+                    rates: item.rates
+                }
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    static async saveDishRatingDB(item) {
+
+        const data = {
+            id: item.id,
+            rates: item.rates,
+            likes: item.likes
+        }
+        await DB.set("TakeawayDishRating", data)
+    }
+
+    static async loadDishRatingDB(item) {
+        const data = await DB.get("TakeawayDishRating", item.id)
+        if (data) {
+            item.rates = data.rates
+            item.likes = data.likes
+        }
+    }
 }
 
 module.exports = CenterSocket
