@@ -17,7 +17,7 @@ module.exports = {
       ADDR: "https://v.xiaoxiong.pt:8000",
       TABLE_NUMBER: [[1,50]],
       SAVE_ADDR: "save/bbq_demo",
-	  TEST_ENVIRONMENT: false,
+	  TEST_ENVIRONMENT: true,
       JWT_SECRET: "my_jwt_secret_key"
     }
   }]
