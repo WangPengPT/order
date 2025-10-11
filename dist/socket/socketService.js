@@ -440,6 +440,10 @@ class SocketServices {
         })
       })
 
+      socket.on("get_menu", async () => {
+        await this.send_menu(socket)
+      })
+
       await this.send_init_info(socket)
 
     })

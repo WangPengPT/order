@@ -142,8 +142,10 @@ class CenterSocket {
                     //console.log("get menu data!");
                     menuData = menu
 
-                    for (let i = 0; i < menuData.menu.length; i++) {
-                        await this.loadDishRatingDB(menuData.menu[i]);
+                    if (menuData.menu) {
+                        for (let i = 0; i < menuData.menu.length; i++) {
+                            await this.loadDishRatingDB(menuData.menu[i]);
+                        }
                     }
                 }
             })
