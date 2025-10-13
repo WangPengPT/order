@@ -120,6 +120,32 @@ function updateOrderStatus(order) {
     }
 }
 
+
+
+function hasUniCode(tableId, uniCode) {
+
+    if (!uniCode)  return false;
+
+    const table = appState.getTableById(tableId)
+
+    // if (table.uniCodes) {
+    //     for (const key in table.uniCodes) {
+    //         console.log(key, table.uniCodes[key])
+    //     }
+    // }
+
+
+    if (!table.uniCodes) table.uniCodes = {}
+
+    if (table.uniCodes[uniCode]) {
+        return true;
+    }
+
+    table.uniCodes[uniCode] = true;
+    return false;
+}
+
+
 module.exports = {
     addOrder,
     sendOrder,
@@ -127,4 +153,5 @@ module.exports = {
     deleteOrderAndTableDishes,
     deleteSushiBoxInTable,
     updateOrderStatus,
+    hasUniCode,
 };

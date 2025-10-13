@@ -37,8 +37,10 @@ class TableSocket {
     cleanTable(id, callback) {
         logger.info(`管理清除改桌子 桌号 - ${id}`)
         const result = tableService.cleanTable(id);
+        const table = tableService.getTableById(id)
         if (result.success) {
             logger.info(`管理清除改桌子成功`)
+            this.io.emit(`client_table${id}`, table.data)
         } else {
             logger.info(`管理清除改桌子失败`)
             logger.info(`失败原因: ${result.data}`)
@@ -62,7 +64,7 @@ class TableSocket {
         // 给客户端发送桌子信息
         const table = tableService.getTableById(tableData.id)
         if (table.success) {
-            this.io.emit('client_table', table)
+            this.io.emit(`client_table${tableData.id}`, table)
         }
     }
 

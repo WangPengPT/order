@@ -103,6 +103,7 @@ class Table {
 
   // 清理桌子，清空订单、人数和状态
   clearTable() {
+    this.uniCodes = {}
     this.status = TableStatus.FREE;
     this.peopleType = new PeopleType({ adults: 0, children: 0 })
     this.order = []
