@@ -409,7 +409,7 @@ const xiaoxiongLunchTypes = [
     new CustomDish(60, "Três Delícias", "地三鲜 +2.80€", "3 Delights +2.80€", "Três Delícias +2.80€", 2.8),
     new CustomDish(61, "Frango Panado", "炸鸡排 +3.00€", "Fried chicken cutlet +3.00€", "Frango Panado +3.00€", 3.0),
     new CustomDish(62, "Carne de Vaca", "牛肉 +3.50€", "Beef +3.50€", "Carne de Vaca +3.50€", 3.5)
-  ], 3, 0)
+  ], 1, 0)
 ]
 
 const xiaoxiongLunchMenuDescription = [
