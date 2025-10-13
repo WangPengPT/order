@@ -29,9 +29,9 @@ class WebPageRepository {
     }
 
     async savePages(pages, session = null) {
-        pages.forEach(async (page) => {
+        for (const page of pages) {
             await this.savePage(page, session)
-        })
+        }
     }
 
     async updatePage(page, session = null) {

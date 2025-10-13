@@ -151,6 +151,56 @@ class DictinaryService {
                         text_zh: "酱料",
                         text_en: "Sauce",
                         text_pt: "Molho"
+                    },
+                    "XIAOXIONG® RAMEN": {
+                        text_zh: "XIAOXIONG® RAMEN",
+                        text_en: "XIAOXIONG® RAMEN",
+                        text_pt: "XIAOXIONG® RAMEN"
+                    },
+                    "Menu Almoço": {
+                        text_zh: "中午套餐",
+                        text_en: "Lunch Menu",
+                        text_pt: "Menu Almoço"
+                    },
+                    "Entrada": {
+                        text_zh: "前菜",
+                        text_en: "Starter",
+                        text_pt: "Entrada"
+                    },
+                    "Dim sum": {
+                        text_zh: "点心",
+                        text_en: "Dim Sum",
+                        text_pt: "Dim Sum"
+                    },
+                    "Prato": {
+                        text_zh: "主菜",
+                        text_en: "Main Dish",
+                        text_pt: "Prato"
+                    },
+                    "Arroz Primavera": {
+                        text_zh: "炒饭",
+                        text_en: "Fried Rice",
+                        text_pt: "Arroz Primavera"
+                    },
+                    "Caçarola": {
+                        text_zh: "砂锅菜",
+                        text_en: "Casserole",
+                        text_pt: "Caçarola"
+                    },
+                    "Sizzler": {
+                        text_zh: "铁板烧",
+                        text_en: "Sizzler",
+                        text_pt: "Sizzler"
+                    },
+                    "Sobremesas": {
+                        text_zh: "甜品",
+                        text_en: "Desserts",
+                        text_pt: "Sobremesas"
+                    },
+                    "Chow Mein": {
+                        text_zh: "炒面",
+                        text_en: "Chow Mein",
+                        text_pt: "Chow Mein"
                     }
                 };
                 await this.dictionaryRespository.save(resultData, session)
