@@ -110,6 +110,9 @@ function removeTable(id) {
 function cleanTable(id) {
   try {
     // 更新服务器状态
+
+      logger.info(`清除桌子-${id}`)
+
     const table = appState.tables.getTableById(id)
 
     if (table == null) throw new Error("Not found the table")

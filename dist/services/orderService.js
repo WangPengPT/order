@@ -10,11 +10,11 @@ function addOrder(orderData) {
             data: orderJson
         }
     } catch (error) {
-        console.warn("Error: ", error)
+        console.warn("Error: ", error.message)
         return {
             success: false,
             data: error.message
-        }     
+        }
     }
 }
 

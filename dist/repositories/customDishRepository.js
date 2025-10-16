@@ -1,6 +1,8 @@
 const DB = require('../db');
 const CustomDishTemplate = require('../model/customDishTemplate.js')
+const { ids } = require('../utils/customDishTemplateData.js')
 const { logger } = require('../utils/logger.js');
+const {get_portugal_time_period} = require("../utils/dateTime");
 
 class CustomDishRepository {
     constructor(tableName = "custom_dish") {
@@ -18,7 +20,14 @@ class CustomDishRepository {
         result.forEach(template => {
             const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
             if (customDishTemplate.enable) {
-                templates.push(customDishTemplate)
+                if (customDishTemplate.id === ids.xiaoxiong_menu_lunch) {
+                    const currentPeriod = get_portugal_time_period()
+                    if (currentPeriod > 'lunch') {
+                        templates.push(customDishTemplate)
+                    }
+                } else {
+                    templates.push(customDishTemplate)
+                }
             }
         })
         return templates
