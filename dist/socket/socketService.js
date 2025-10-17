@@ -249,11 +249,16 @@ class SocketServices {
                     callback(order)
                 } catch (e) {
                     logger.warn(`订单提交错误`)
-                    logger.warn(e.message)
-                    callback({
-                        success: false,
-                        data: e.message
-                    })
+                    logger.warn(`订单提交错误原因: ${e.message}`)
+
+                    if (typeof callback === 'function') {
+                        callback({
+                            success: false,
+                            data: e.message
+                        })
+                    } else {
+                        logger.warn('⚠️ callback 不是一个函数，未执行回调')
+                    }
                 }
 
             });

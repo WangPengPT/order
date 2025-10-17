@@ -6,10 +6,14 @@ const { logger } = require("../utils/logger.js");
 const CustomDishTemplate = require("../model/customDishTemplate.js");
 const { filter } = require("compression");
 const {appState} = require("../state");
+const {MenuService} = require("./menuService");
+const MenuOrderingRepository = require("../repositories/menuOrderingRepository");
 
 class CustomDishService {
-    constructor(customDishRepository = new CustomDishRepository()) {
+    constructor(customDishRepository = new CustomDishRepository(), menuService = new MenuService(), menuOrdering = new MenuOrderingRepository()) {
         this.customDishRepository = customDishRepository
+        this.menuService = menuService;
+        this.menuOrderingRepository = new MenuOrderingRepository();
     }
 
     async initializeCustomDish() {
@@ -146,8 +150,15 @@ class CustomDishService {
 
     async getAllEnableTemplates() {
         try {
-            const result = await this.customDishRepository.getAllEnableTemplates()
+            let result = await this.customDishRepository.getAllEnableTemplates()
             findRamenAndChangePrice(result)
+            //特殊情况
+            const hasLunch = result.find(it => it.id === ids.xiaoxiong_menu_lunch)
+            const currentOrdering = await this.menuOrderingRepository.getDineIn()
+            if (currentOrdering.find(it => it.name === "Menu Almoço") !== hasLunch) {
+                await this.menuService.reorganizeDineMenuTab_custom()
+            }
+
             return {
                 success: true,
                 data: result
@@ -168,11 +179,11 @@ class CustomDishService {
             }
 
             function todayIsFandays(fandaysDate){
-                let date = new Date();
+                const date = new Date();
                 // 使用里斯本的时区（欧洲/里斯本）格式化日期
-                let lisbonDateString = date.toLocaleString("en-US", { timeZone: "Europe/Lisbon" });
+                const lisbonDateString = date.toLocaleString("en-US", { timeZone: "Europe/Lisbon" });
                 // 再从格式化后的字符串中提取日期部分
-                let lisbonDay = new Date(lisbonDateString).getDate();
+                const lisbonDay = new Date(lisbonDateString).getDate();
                 return fandaysDate.includes(lisbonDay)
             }
         }

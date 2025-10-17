@@ -449,7 +449,11 @@ const xiaoxiongLunchMenuDescription = [
     }
 ]
 
-const xiaoxiongLunch = new CustomDishTemplate(ids.xiaoxiong_menu_lunch, xiaoxiongLunchTypes, "Menu Almoço", 9.90, "Menu Almoço", 0, 0, xiaoxiongLunchMenuDescription)
+const xiaoxiongLunch = new CustomDishTemplate(ids.xiaoxiong_menu_lunch, xiaoxiongLunchTypes, "Menu Almoço", 9.90, "Menu Almoço", 0, 0, xiaoxiongLunchMenuDescription,{
+    menuLunchBeginTime: 11,
+    menuLunchEndtTime: 16,
+    menuLunchDays: [1,2,3,4,5], //0-星期日，1-星期一，...，5-星期五，6-星期六
+})
 
 const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch]
 

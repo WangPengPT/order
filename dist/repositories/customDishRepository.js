@@ -22,7 +22,7 @@ class CustomDishRepository {
             if (customDishTemplate.enable) {
                 if (customDishTemplate.id === ids.xiaoxiong_menu_lunch) {
                     const currentPeriod = get_portugal_time_period()
-                    if (currentPeriod > 'lunch') {
+                    if (currentPeriod === 'lunch') {
                         templates.push(customDishTemplate)
                     }
                 } else {
