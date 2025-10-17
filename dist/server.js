@@ -124,7 +124,6 @@ async function main() {
     server.listen(PORT, '0.0.0.0', () => {
         logger.info(`🟢 服务器已启动，监听端口 ${PORT}`);
     });
-
     runCleanInterval();
     // runFandaysInterval();
     writeOrders();
