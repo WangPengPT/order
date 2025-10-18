@@ -23,16 +23,15 @@ function get_portugal_date_without_day() {
     return DateTime.now().setZone("Europe/Lisbon").toFormat("yyyy-MM");
 }
 
-function get_portugal_time_period() {
-    const hour = DateTime.now().setZone('Europe/Lisbon').hour;
+function is_portugal_lunch_time() {
+    const now = DateTime.now().setZone('Europe/Lisbon');
+    const hour = now.hour;
+    const weekday = now.weekday; // 1 = Monday, 7 = Sunday
 
-    if (hour >= 11 && hour <= 15) {
-        return "lunch";
-    } else if (hour >= 18 && hour <= 24) {
-        return "dinner";
-    } else {
-        return "other";
-    }
+    const isWeekday = weekday >= 1 && weekday <= 5;
+    const isLunchTime = hour >= 11 && hour <= 15;
+
+    return isWeekday && isLunchTime;
 }
 
 module.exports = {
@@ -41,5 +40,5 @@ module.exports = {
     get_portugal_timeDate,
     get_portugal_date,
     get_portugal_date_without_day,
-    get_portugal_time_period
+    is_portugal_lunch_time
 };

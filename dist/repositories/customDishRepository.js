@@ -2,13 +2,12 @@ const DB = require('../db');
 const CustomDishTemplate = require('../model/customDishTemplate.js')
 const { ids } = require('../utils/customDishTemplateData.js')
 const { logger } = require('../utils/logger.js');
-const {get_portugal_time_period} = require("../utils/dateTime");
+const {is_portugal_lunch_time} = require("../utils/dateTime");
 
 class CustomDishRepository {
     constructor(tableName = "custom_dish") {
         this.tableName = tableName
     }
-
     async getAllEnableTemplates(session = null) {
         const result = await DB.getAll(this.tableName, session)
         if (!result) {
@@ -21,8 +20,7 @@ class CustomDishRepository {
             const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
             if (customDishTemplate.enable) {
                 if (customDishTemplate.id === ids.xiaoxiong_menu_lunch) {
-                    const currentPeriod = get_portugal_time_period()
-                    if (currentPeriod === 'lunch') {
+                    if (is_portugal_lunch_time()) {
                         templates.push(customDishTemplate)
                     }
                 } else {

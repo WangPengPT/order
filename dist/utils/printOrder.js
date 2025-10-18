@@ -42,19 +42,20 @@ function print_takeaway_order(order,printModelIndex){
         logger.info(`打印外卖订单 订单号 - ${order.name}`)
         for (const key in printers) {
             const printer = printers[key];
-            logger.info("打印机 : "+printer.data)
-            logger.info("打印机 takeaway : "+printer.data.print_takeaway)
-            logger.info("打印机 takeaway type: "+ (typeof printer.data.print_takeaway))
 
             if (!printer) continue;
             if (!printer.data) continue;
             if (printer.data.print_takeaway != 'true') continue;
 
+            // logger.info("打印机 : "+printer.data)
+            // logger.info("打印机 takeaway : "+printer.data.print_takeaway)
+            // logger.info("打印机 takeaway type: "+ (typeof printer.data.print_takeaway))
+
             let hasData = (order.line_items.length > 0);
-            console.log("hasData: "+hasData)
+            // console.log("hasData: "+hasData)
 
             if (hasData) {
-                logger.info(`订单打印成功 订单号 - ${order.id}`);
+                logger.info(`外卖订单打印成功 订单号 - ${order.id}`);
                 logger.info( "print takeaway...", order);
                 const data = print_takeaway_model(order, printModelIndex,printer)
                 printer.socket.emit("print", data)
