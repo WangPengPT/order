@@ -157,6 +157,8 @@ class CustomDishService {
             const currentOrdering = await this.menuOrderingRepository.getDineIn()
             if (currentOrdering.find(it => it.name === "Menu Almoço") !== hasLunch) {
                 await this.menuService.reorganizeDineMenuTab_custom()
+                await this.menuService.reorganizeAndSaveMenuTab_menu()
+                await this.menuService.reorganizeTakeMenuTab_custom()
             }
 
             return {
