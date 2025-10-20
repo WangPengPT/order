@@ -2,12 +2,26 @@ function mergeTabs(currentTab, customDishes, menuTab) {
     const safeClone = v => JSON.parse(JSON.stringify(v || []));
     let result = safeClone(currentTab);
 
-    function ensureMainInSubDishes(dish) {
+    function ensureMainInSubDishes(dish, menuDish) {
         if (!Array.isArray(dish.subDishes)) dish.subDishes = [];
 
-        // 主菜 id 不存在则添加，顺序不变
+        // 融合 menu 的子菜，保持 current 子菜顺序
+        if (menuDish && Array.isArray(menuDish.subDishes)) {
+            for (const subId of menuDish.subDishes) {
+                if (!dish.subDishes.includes(subId)) {
+                    dish.subDishes.push(subId); // 补充 menu 的新子菜
+                }
+            }
+        }
+
+        // 确保主菜 id 在 subDishes 中
         if (!dish.subDishes.includes(dish.id)) {
             dish.subDishes.push(dish.id);
+        }
+
+        // 清理：如果 subDishes 仅包含主菜自己 → 清空
+        if (dish.subDishes.length === 1 && dish.subDishes[0] === dish.id) {
+            dish.subDishes = [];
         }
 
         return dish;
@@ -43,14 +57,7 @@ function mergeTabs(currentTab, customDishes, menuTab) {
                     // 当前没有 → 直接新增整个菜单菜
                     currentCategory.dishes.push(safeClone(menuDish));
                 } else {
-                    // 当前已有 → 融合 menu 的新子菜，保持 current 子菜顺序
-                    localDish.subDishes = localDish.subDishes || [];
-                    for (const subId of menuDish.subDishes || []) {
-                        if (!localDish.subDishes.includes(subId)) {
-                            localDish.subDishes.push(subId); // 补充 menu 的新子菜
-                        }
-                    }
-                    ensureMainInSubDishes(localDish); // 确保主菜 id 存在
+                    ensureMainInSubDishes(localDish, menuDish); // 确保主菜 id 存在
                 }
             }
 
@@ -101,14 +108,7 @@ function mergeTabs(currentTab, customDishes, menuTab) {
                 // 当前没有 → 直接新增整个菜单菜
                 currentCategory.dishes.push(safeClone(menuDish));
             } else {
-                // 当前已有 → 融合 menu 的新子菜，保持 current 子菜顺序
-                localDish.subDishes = localDish.subDishes || [];
-                for (const subId of menuDish.subDishes || []) {
-                    if (!localDish.subDishes.includes(subId)) {
-                        localDish.subDishes.push(subId); // 补充 menu 的新子菜
-                    }
-                }
-                ensureMainInSubDishes(localDish); // 确保主菜 id 存在
+                ensureMainInSubDishes(localDish, menuDish); // 确保主菜 id 存在
             }
         }
 
