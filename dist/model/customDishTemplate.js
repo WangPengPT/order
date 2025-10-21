@@ -1,7 +1,17 @@
 const CustomDishType = require('./customDishType.js')
 
 class CustomDishTemplate {
-    constructor(id, types = [], name, initialPrice = 0, category, like = 0, rate = 0, descriptions = [], options = {quantity: false}, enable = false, ordeQuantity = 0) {
+    constructor(id, types = [],
+                name,
+                initialPrice = 0,
+                category,
+                like = 0,
+                rate = 0,
+                descriptions = [],
+                options = {quantity: false},
+                enable = false,
+                ordeQuantity = 0,
+                sellType = CustomDishTemplate.SellType.ALL) {
         this.id = id
         this.types = types  // list of CustomDishType
         this.name = name
@@ -13,14 +23,21 @@ class CustomDishTemplate {
         this.options = options
         this.enable = enable
         this.ordeQuantity = ordeQuantity
+        this.sellType = sellType
         this.recordProps(this)
     }
+
+    static SellType = Object.freeze({
+        DINE_IN: "DINEIN",
+        TAKEAWAY: "TAKEAWAY",
+        ALL: "DINEIN&TAKEAWAY",
+    });
 
     recordProps(target, except = []) {
         const keys = Object.keys(target)
         target._dataKeys = keys.filter(k => !k.startsWith('_') && !except.includes(k))
     }
-    
+
     getNextId() {
         if (this.types.length === 0) return 1
         const maxId = Math.max(...this.types.map(t => t.id || 0))

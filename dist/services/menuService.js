@@ -110,25 +110,26 @@ class MenuService {
      * @param {Object} session - MongoDB session
      */
     async _rebuildTabsAndSave(type = 'ALL', session = null) {
-        const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name);
-
-        let localTabs, menu, menuDish;
+        let localTabs, menu, menuDish, customDish;
 
         switch (type) {
             case 'DINEIN':
                 localTabs = await this.menuOrderingRepository.getDineIn(session);
                 menu = await this.menuRespository.getDineInMenu(session);
                 menuDish = await this.buildMenuOrdering(session, menu);
+                customDish = (await this.customeDishRepository.getDineEnableTemplates(session)).map(it => it.name);
                 break;
 
             case 'TAKEAWAY':
                 localTabs = await this.menuOrderingRepository.getTakeaway(session);
                 menu = await this.menuRespository.getTakeaway(session);
                 menuDish = await this.buildMenuOrdering(session, menu);
+                customDish = (await this.customeDishRepository.getTakeEnableTemplates(session)).map(it => it.name);
                 break;
 
             default:
                 localTabs = await this.menuOrderingRepository.get(session);
+                customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name);
                 menuDish = await this.buildMenuOrdering(session);
                 break;
         }
