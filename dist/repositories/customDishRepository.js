@@ -31,61 +31,6 @@ class CustomDishRepository {
         return templates
     }
 
-    /**
-     *
-     * @param {'ALL' | 'DINEIN' | 'TAKEAWAY'} type
-     * @param session
-     * @returns {Promise<void>}
-     */
-    async getAllTemplatesWithFilters(type = 'ALL', session = null) {
-        let filter;
-        switch (type) {
-            case 'DINEIN':
-                filter = {
-                    $or: [
-                        {"value.sellType": {$exists: false}}, // 没有这个字段
-                        {"value.sellType": {$in: ["DINEIN", "DINEIN&TAKEAWAY"]}} // 等于这两个值
-                    ]
-                };
-                break
-            case 'TAKEAWAY':
-                filter = {
-                    $or: [
-                        {"value.sellType": {$exists: false}}, // 没有这个字段
-                        {"value.sellType": {$in: ["TAKEAWAY", "DINEIN&TAKEAWAY"]}} // 等于这两个值
-                    ]
-                };
-                break;
-
-            default:
-                filter = {}
-                break;
-        }
-        return await DB.getAllWithFilter(this.tableName, filter, session)
-    }
-
-    async getDineEnableTemplates(session = null) {
-        const all = await this.getAllTemplatesWithFilters("DINEIN", session)
-        if (!all) return null
-        const templates = []
-        for (const template of all) {
-            const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
-            templates.push(customDishTemplate)
-        }
-        return templates
-    }
-
-    async getTakeEnableTemplates(session = null) {
-        const all = await this.getAllTemplatesWithFilters("TAKEAWAY", session)
-        if (!all) return null
-        const templates = []
-        for (const template of all) {
-            const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
-            templates.push(customDishTemplate)
-        }
-        return templates
-    }
-
     async getAllTemplates(session = null) {
         const result = await DB.getAll(this.tableName, session)
         if (!result) {

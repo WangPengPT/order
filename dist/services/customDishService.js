@@ -148,25 +148,9 @@ class CustomDishService {
         }
     }
 
-    /**
-     *
-     * @param {'ALL' | 'DINEIN' | 'TAKEAWAY'} type
-     */
-    async getAllEnableTemplates(type = "ALL") {
+    async getAllEnableTemplates() {
         try {
-            let result;
-            switch (type) {
-                case 'DINEIN':
-                    result = await this.customDishRepository.getDineEnableTemplates()
-                    break
-                case 'TAKEAWAY':
-                    result = await this.customDishRepository.getTakeEnableTemplates()
-                    break
-                default:
-                    result = await this.customDishRepository.getAllEnableTemplates()
-                    break
-            }
-
+            let result = await this.customDishRepository.getAllEnableTemplates()
             findRamenAndChangePrice(result)
             //特殊情况
             const hasLunch = result.find(it => it.id === ids.xiaoxiong_menu_lunch)

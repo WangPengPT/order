@@ -39,7 +39,7 @@ function makeDishData(data) {
     name: data['Title'],
     subname: data['Option1 Value'],
     note: note,
-    category: data['SellType'],
+    category: data['Type'],
     image: data['Image Src'],
     tags: data['Tags'],
     x: x,

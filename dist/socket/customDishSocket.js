@@ -40,7 +40,7 @@ class CustomDishSocket{
 
             const menuAndTabs = await this.menuService.getDineInMenuAndTabs()
             this.io.emit("dinner_menu_data", menuAndTabs.menu, menuAndTabs.tabs)
-            this.io.emit("serverSend_customDish_Client", await this.customDishService.getAllEnableTemplates("DINEIN"))
+            this.io.emit("custom_dish_data", await this.customDishService.getAllEnableTemplates())
             callback(result)
         } else {
             logger.info("更改自定义菜开关失败")
@@ -60,7 +60,7 @@ class CustomDishSocket{
     }
 
     async registerHandlers(socket) {
-        socket.emit("serverSend_customDish_Client", await this.customDishService.getAllEnableTemplates("DINEIN"))
+        socket.emit("custom_dish_data", await this.customDishService.getAllEnableTemplates())
 
         socket.emit("manager_get_all_customDishes", await this.customDishService.getAllTemplates())
 
