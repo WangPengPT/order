@@ -110,25 +110,26 @@ class MenuService {
      * @param {Object} session - MongoDB session
      */
     async _rebuildTabsAndSave(type = 'ALL', session = null) {
-        const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name);
-
-        let localTabs, menu, menuDish;
+        let localTabs, menu, menuDish, customDish;
 
         switch (type) {
             case 'DINEIN':
                 localTabs = await this.menuOrderingRepository.getDineIn(session);
                 menu = await this.menuRespository.getDineInMenu(session);
                 menuDish = await this.buildMenuOrdering(session, menu);
+                customDish = (await this.customeDishRepository.getDineEnableTemplates(session)).map(it => it.name);
                 break;
 
             case 'TAKEAWAY':
                 localTabs = await this.menuOrderingRepository.getTakeaway(session);
                 menu = await this.menuRespository.getTakeaway(session);
                 menuDish = await this.buildMenuOrdering(session, menu);
+                customDish = (await this.customeDishRepository.getTakeEnableTemplates(session)).map(it => it.name);
                 break;
 
             default:
                 localTabs = await this.menuOrderingRepository.get(session);
+                customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name);
                 menuDish = await this.buildMenuOrdering(session);
                 break;
         }
@@ -158,10 +159,7 @@ class MenuService {
     }
 
     async reorganizeAndSaveMenuTab_menu(session = null) {
-        console.log("reorganizeAndSaveMenuTab_menu");
-        const res = await this._rebuildTabsAndSave('ALL', session);
-        console.log("reorganizeAndSaveMenuTab_menu finish");
-        return res;
+        return await this._rebuildTabsAndSave('ALL', session);
     }
 
     async reorganizeDineMenuTab_custom(session = null) {
@@ -223,11 +221,9 @@ class MenuService {
      * @returns
      */
     async buildMenuOrdering(session = null, menu) {
-
         if (!menu) {
             menu = (await this.menuRespository.getMenu(session))
         }
-
         // 两个 map：handle -> main / handle -> sub
         const handleToMain = {}  // { handle: mainDish }
         const handleToSubs = {}  // { handle: [subDish, ...] }

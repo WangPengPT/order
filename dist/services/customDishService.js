@@ -8,6 +8,8 @@ const { filter } = require("compression");
 const {appState} = require("../state");
 const {MenuService} = require("./menuService");
 const MenuOrderingRepository = require("../repositories/menuOrderingRepository");
+const newState = require("../model/customDish");
+const result = require("../model/customDishTemplate");
 
 class CustomDishService {
     constructor(customDishRepository = new CustomDishRepository(), menuService = new MenuService(), menuOrdering = new MenuOrderingRepository()) {
@@ -148,9 +150,25 @@ class CustomDishService {
         }
     }
 
-    async getAllEnableTemplates() {
+    /**
+     *
+     * @param {'ALL' | 'DINEIN' | 'TAKEAWAY'} type
+     */
+    async getAllEnableTemplates(type = "ALL") {
         try {
-            let result = await this.customDishRepository.getAllEnableTemplates()
+            let result;
+            switch (type) {
+                case 'DINEIN':
+                    result = await this.customDishRepository.getDineEnableTemplates()
+                    break
+                case 'TAKEAWAY':
+                    result = await this.customDishRepository.getTakeEnableTemplates()
+                    break
+                default:
+                    result = await this.customDishRepository.getAllEnableTemplates()
+                    break
+            }
+
             findRamenAndChangePrice(result)
             //特殊情况
             const hasLunch = result.find(it => it.id === ids.xiaoxiong_menu_lunch)
@@ -210,6 +228,34 @@ class CustomDishService {
                 return {
                     success: true,
                     data: json
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    async updateTemplateSellType(id, value) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                if (!CustomDishTemplate.SellType.values().includes(value)) {
+                    throw new Error("Invalid sell type input")
+                }
+                const template = await this.customDishRepository.get(id, session)
+                template.sellType = value
+                await this.customDishRepository.update(template, session)
+
+                const resultTemplate = await this.customDishRepository.get(id, session)
+                if (resultTemplate.sellType  !== value) {
+                    throw new Error("Failed update template sellType")
+                }
+                return {
+                    success: true,
+                    data: resultTemplate.sellType,
                 }
             })
         } catch (error) {

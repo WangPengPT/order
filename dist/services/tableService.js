@@ -17,6 +17,8 @@ function addNewTable(tableData) {
     // 添加桌子
     appState.tables.addTable(tableData)
 
+    appState.tables.sortById()
+
     const res = appState.tables.getTableById(tableData.id)
     return { success: true, data: res.toJSON() };
   } catch (err) {

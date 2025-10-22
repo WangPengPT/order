@@ -27,14 +27,14 @@ class TableManager {
     return this.tables.delete(id)
   }
 
-updateTableWithoutOrder(updatedTableData) {
-  const table = this.tables.get(updatedTableData.id);
-  if (!table) {
-    throw new Error(`桌号${updatedTableData.id}不存在！`);
+  updateTableWithoutOrder(updatedTableData) {
+    const table = this.tables.get(updatedTableData.id);
+    if (!table) {
+      throw new Error(`桌号${updatedTableData.id}不存在！`);
+    }
+    const res = table.updateTableWithoutOrder(updatedTableData)
+    return res
   }
-  const res = table.updateTableWithoutOrder(updatedTableData)
-  return res
-}
 
   clearAll() {
 
@@ -42,6 +42,12 @@ updateTableWithoutOrder(updatedTableData) {
       table.clearTable();
     });
 
+  }
+
+  sortById(){
+    let tables = Array.from([...this.tables])
+    tables = tables.sort((a, b) => a[0] - b[0])
+    this.tables = new Map(tables)
   }
 
  toJSON() {

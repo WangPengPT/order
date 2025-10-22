@@ -1,13 +1,14 @@
 const DB = require('../db');
 const CustomDishTemplate = require('../model/customDishTemplate.js')
-const { ids } = require('../utils/customDishTemplateData.js')
-const { logger } = require('../utils/logger.js');
+const {ids} = require('../utils/customDishTemplateData.js')
+const {logger} = require('../utils/logger.js');
 const {is_portugal_lunch_time} = require("../utils/dateTime");
 
 class CustomDishRepository {
     constructor(tableName = "custom_dish") {
         this.tableName = tableName
     }
+
     async getAllEnableTemplates(session = null) {
         const result = await DB.getAll(this.tableName, session)
         if (!result) {
@@ -28,6 +29,65 @@ class CustomDishRepository {
                 }
             }
         })
+        return templates
+    }
+
+    /**
+     *
+     * @param {'ALL' | 'DINEIN' | 'TAKEAWAY'} type
+     * @param session
+     * @returns {Promise<void>}
+     */
+    async getAllTemplatesWithFilters(type = 'ALL', session = null) {
+        let filter;
+        switch (type) {
+            case 'DINEIN':
+                filter = {
+                    $or: [
+                        {"value.sellType": {$exists: false}}, // 没有这个字段
+                        {"value.sellType": {$in: ["DINEIN", "DINEIN&TAKEAWAY"]}} // 等于这两个值
+                    ]
+                };
+                break
+            case 'TAKEAWAY':
+                filter = {
+                    $or: [
+                        {"value.sellType": {$exists: false}}, // 没有这个字段
+                        {"value.sellType": {$in: ["TAKEAWAY", "DINEIN&TAKEAWAY"]}} // 等于这两个值
+                    ]
+                };
+                break;
+
+            default:
+                filter = {}
+                break;
+        }
+        return await DB.getAllWithFilter(this.tableName, filter, session)
+    }
+
+    async getDineEnableTemplates(session = null) {
+        const all = await this.getAllTemplatesWithFilters("DINEIN", session)
+        if (!all) return null
+        const templates = []
+        for (const template of all) {
+            const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
+            if (customDishTemplate.enable) {
+                templates.push(customDishTemplate)
+            }
+        }
+        return templates
+    }
+
+    async getTakeEnableTemplates(session = null) {
+        const all = await this.getAllTemplatesWithFilters("TAKEAWAY", session)
+        if (!all) return null
+        const templates = []
+        for (const template of all) {
+            const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
+            if (customDishTemplate.enable) {
+                templates.push(customDishTemplate)
+            }
+        }
         return templates
     }
 
@@ -58,7 +118,7 @@ class CustomDishRepository {
     async saveTemplate(template = new CustomDishTemplate(), session = null) {
         try {
             const json = typeof template.toJSON === 'function' ? template.toJSON() : template
-            await DB.set(this.tableName, { id: template.id, value: json }, session)
+            await DB.set(this.tableName, {id: template.id, value: json}, session)
             return template.id
         } catch (error) {
             console.error("❌ 保存 Custom Dish 失败:", error);
@@ -106,7 +166,7 @@ class CustomDishRepository {
 
     async cleanData(session = null) {
         logger.info("初始化自定义菜数据")
-        await DB.cleanTable(this.tableName, session)   
+        await DB.cleanTable(this.tableName, session)
     }
 }
 

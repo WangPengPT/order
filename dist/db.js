@@ -1,8 +1,7 @@
-
-const { MongoClient } = require('mongodb');
+const {MongoClient} = require('mongodb');
 const uri = 'mongodb://localhost:27017';
 const client = new MongoClient(uri);
-const { ObjectId } = require('mongodb');
+const {ObjectId} = require('mongodb');
 
 let db = undefined
 
@@ -49,7 +48,7 @@ class DB {
     static async get(table, id, defValue, session = null) {
 
         const collection = db.collection(table);
-        const users = await collection.find({ id: id }, { session }).toArray();
+        const users = await collection.find({id: id}, {session}).toArray();
 
         if (users && users[0]) return users[0]
 
@@ -59,33 +58,32 @@ class DB {
     static async set(table, value, session = null) {
         const collection = db.collection(table);
         if (value.id) {
-            await collection.updateOne({ id: value.id }, { $set: value }, { upsert: true, session });
-        }
-        else {
-            await collection.insertOne(value, { session });
+            await collection.updateOne({id: value.id}, {$set: value}, {upsert: true, session});
+        } else {
+            await collection.insertOne(value, {session});
         }
     }
 
     static async del(table, id, session = null) {
         const collection = db.collection(table);
-        return await collection.deleteOne({ id: id }, { session });
+        return await collection.deleteOne({id: id}, {session});
     }
 
 
     static async getAll(table, session = null) {
         const collection = db.collection(table);
-        const users = await collection.find({}, { session }).toArray();
+        const users = await collection.find({}, {session}).toArray();
         return users
     }
 
     static async setValue(table, key, value, session = null) {
         const collection = db.collection(table);
-        await collection.updateOne({ id: key }, { $set: { id: value.id, value: value } }, { upsert: true, session });
+        await collection.updateOne({id: key}, {$set: {id: value.id, value: value}}, {upsert: true, session});
     }
 
     static async getValue(key, defValue, session = null) {
         const collection = db.collection("key_value");
-        const users = await collection.find({ id: key }, { session }).toArray();
+        const users = await collection.find({id: key}, {session}).toArray();
 
         if (users && users[0]) return users[0].value
 
@@ -95,7 +93,7 @@ class DB {
     static async find(table, q, session = null) {
 
         const collection = db.collection(table);
-        const datas = await collection.find(q, { session }).toArray();
+        const datas = await collection.find(q, {session}).toArray();
 
         if (datas) return datas
 
@@ -105,58 +103,64 @@ class DB {
     static async findOne(table, q, session = null) {
 
         const collection = db.collection(table);
-        const data = await collection.findOne(q, { session });
+        const data = await collection.findOne(q, {session});
         return data
     }
 
     static async updateById(table, id, updatedData, session = null) {
         const collection = db.collection(table);
         return await collection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: updatedData },
-            { session }
+            {_id: new ObjectId(id)},
+            {$set: updatedData},
+            {session}
         );
     }
+
     static async cleanTable(table, session = null) {
-        return await db.collection(table).deleteMany({}, { session })
+        return await db.collection(table).deleteMany({}, {session})
     }
 
     static async getByDateRange(table, startDate, endDate, session = null) {
         const collection = db.collection(table);
 
         const filter = {
-            id: { $gte: startDate, $lte: endDate }
+            id: {$gte: startDate, $lte: endDate}
         };
 
-        return await collection.find(filter, { session }).toArray();
+        return await collection.find(filter, {session}).toArray();
     }
 
     static async getAllDineInMenu(table, session = null) {
-    const collection = db.collection(table);
+        const collection = db.collection(table);
 
-    const filter = {
-        $or: [
-            { "value.orderType": { $exists: false } }, // 没有这个字段
-            { "value.orderType": { $in: ["DINEIN", "DINEIN&TAKEAWAY"] } } // 等于这两个值
-        ]
-    };
+        const filter = {
+            $or: [
+                {"value.orderType": {$exists: false}}, // 没有这个字段
+                {"value.orderType": {$in: ["DINEIN", "DINEIN&TAKEAWAY"]}} // 等于这两个值
+            ]
+        };
 
-    const users = await collection.find(filter, { session }).toArray();
-    return users;
+        const users = await collection.find(filter, {session}).toArray();
+        return users;
+    }
+
+    static async getAllWithFilter(table, filter, session = null) {
+        const collection = db.collection(table);
+        return await collection.find(filter, {session}).toArray();
     }
 
     static async getAllTakeawayMenu(table, session = null) {
-    const collection = db.collection(table);
+        const collection = db.collection(table);
 
-    const filter = {
-        $or: [
-            { "value.orderType": { $exists: false } }, // 没有这个字段
-            {"value.orderType": { $in: ["TAKEAWAY", "DINEIN&TAKEAWAY"] } }
-        ]
-    };
+        const filter = {
+            $or: [
+                {"value.orderType": {$exists: false}}, // 没有这个字段
+                {"value.orderType": {$in: ["TAKEAWAY", "DINEIN&TAKEAWAY"]}}
+            ]
+        };
 
-    const users = await collection.find(filter, { session }).toArray();
-    return users;
+        const users = await collection.find(filter, {session}).toArray();
+        return users;
     }
 
 
@@ -167,32 +171,32 @@ class DB {
         const pipeline = [
             {
                 $match: {
-                    id: { $gte: startDate, $lte: endDate }
+                    id: {$gte: startDate, $lte: endDate}
                 }
             },
-            { $unwind: "$value" },
-            { $unwind: "$value.items" },
+            {$unwind: "$value"},
+            {$unwind: "$value.items"},
             {
                 $group: {
                     _id: "$value.items.dishid",
-                    name: { $first: "$value.items.name" },
-                    price: { $first: "$value.items.price" },
-                    deliveryPrice: { $first: "$value.items.deliveryPrice" },
-                    quantity: { $sum: "$value.items.quantity" }
-                    
+                    name: {$first: "$value.items.name"},
+                    price: {$first: "$value.items.price"},
+                    deliveryPrice: {$first: "$value.items.deliveryPrice"},
+                    quantity: {$sum: "$value.items.quantity"}
+
                 }
             },
-            { $sort: { quantity: -1, _id: 1 } }
+            {$sort: {quantity: -1, _id: 1}}
         ];
 
-        return await collection.aggregate(pipeline, { session }).toArray();
+        return await collection.aggregate(pipeline, {session}).toArray();
     }
 
     static async deleteMenuDishByHandle(table, handle, session = null) {
         const collection = db.collection(table);
         const result = await collection.deleteMany(
-            { "value.handle": handle },
-            { session }
+            {"value.handle": handle},
+            {session}
         );
         return result; // 返回删除结果 { acknowledged, deletedCount }
     }
