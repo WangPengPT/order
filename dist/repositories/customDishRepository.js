@@ -68,26 +68,28 @@ class CustomDishRepository {
     async getDineEnableTemplates(session = null) {
         const all = await this.getAllTemplatesWithFilters("DINEIN", session)
         if (!all) return null
+
         const templates = []
         for (const template of all) {
             const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
-            if (customDishTemplate.enable) {
-                templates.push(customDishTemplate)
-            }
+            const filteredTemplate = this.filterEnabledTemplate(customDishTemplate)
+            if (filteredTemplate) templates.push(filteredTemplate)
         }
+
         return templates
     }
 
     async getTakeEnableTemplates(session = null) {
         const all = await this.getAllTemplatesWithFilters("TAKEAWAY", session)
         if (!all) return null
+
         const templates = []
         for (const template of all) {
             const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
-            if (customDishTemplate.enable) {
-                templates.push(customDishTemplate)
-            }
+            const filteredTemplate = this.filterEnabledTemplate(customDishTemplate)
+            if (filteredTemplate) templates.push(filteredTemplate)
         }
+
         return templates
     }
 
@@ -95,14 +97,15 @@ class CustomDishRepository {
         const result = await DB.getAll(this.tableName, session)
         if (!result) {
             logger.info(`repo: ⚠ 未能找到 Custom Dish 数据`);
-            return null;
+            return null
         }
-        if (!Array.isArray(result)) throw new Error("Loaded page isn't array")
+
         const templates = []
-        result.forEach(template => {
+        for (const template of result) {
             const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
             templates.push(customDishTemplate)
-        })
+        }
+
         return templates
     }
 
@@ -167,6 +170,24 @@ class CustomDishRepository {
     async cleanData(session = null) {
         logger.info("初始化自定义菜数据")
         await DB.cleanTable(this.tableName, session)
+    }
+
+    filterEnabledTemplate(template) {
+        if (!template || !template.enable) return null
+
+        // 深拷贝，避免改动原对象
+        const filteredTemplate = structuredClone(template)
+
+        // 过滤启用的 types
+        filteredTemplate.types = filteredTemplate.types
+            .filter(type => type.enable)
+            .map(type => {
+                const filteredType = { ...type }
+                filteredType.dishes = type.dishes.filter(dish => dish.enable)
+                return filteredType
+            })
+
+        return filteredTemplate
     }
 }
 

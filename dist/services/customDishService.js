@@ -299,6 +299,26 @@ class CustomDishService {
             }
         }
     }
+
+    async updateTemplateData(value) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                const template = CustomDishTemplate.fromJSON(value)
+                await this.customDishRepository.update(template, session)
+                const newTemplate = await this.customDishRepository.get(template.id, session)
+                return {
+                    success: true,
+                    data: newTemplate.toJSON()
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
 }
 
 module.exports = {

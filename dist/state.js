@@ -18,6 +18,13 @@ class AppState {
             takeaway: 0,
         }
 
+        this.permissionsControl = {
+            order: true,
+            delivery: true,
+            reserver: true,
+            vip: true,
+        }
+
         this.settings = {
             checkIP: false,
             delivery: false,
@@ -88,6 +95,10 @@ class AppState {
     }
 
     // 所有 Get 函数
+    getPermissionsControl(){
+        return this.permissionsControl
+    }
+
     getPriceData(){
         const result = {
             weekPrice: this.weekPrice.getAllPrices(),
@@ -361,6 +372,13 @@ class AppState {
                     return tableManager;
                 }
                 return new TableManager([]);
+            },
+            permissionsControl: (value) => {
+                if (!value) return this.permissionsControl;
+                for (const k of Object.keys(value)) {
+                    this.permissionsControl[k] = value[k];
+                }
+                return this.permissionsControl;
             },
             settings: (value) => {
                 if (!value) return this.settings;

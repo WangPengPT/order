@@ -6,6 +6,7 @@ const DB = require('../db.js');
 const http = require('http');
 const https = require('https');
 const {appState} = require("../state");
+const {logger} = require("../utils/logger");
 
 
 
@@ -21,6 +22,7 @@ let restaurantInfo = {}
 let menuData
 let update_data = false;
 let menuService
+
 
 class CenterSocket {
 
@@ -67,6 +69,18 @@ class CenterSocket {
 
         socket.on('connect', async () => {
             console.log('connect to center server');
+
+            socket.emit('message', 'g_get_config',
+                {id:name, port: process.env.PORT || 8080, url: process.env.ADDR,},
+                (cb)=>{
+                    if(cb.success){
+                        logger.info('Center Server get config successfully: '+cb.data);
+                    }else{
+                        logger.error('Center Server get config failed: '+cb.data);
+                    }
+                }
+            )
+
             await this.update_menu_data();
         });
 
@@ -153,7 +167,7 @@ class CenterSocket {
     }
 
     static getRestaurant() {
-        let name = "sc_sushi"
+        let name = "local"
 
         // name = "org_sushi"
 
