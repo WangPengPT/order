@@ -81,7 +81,7 @@ class MenuRepository {
         try {
             const menu = []
             const dishes = await DB.getAllDineInMenu(this.tableName, session)
-            if (dishes.length == 0) return []
+            if (dishes.length === 0) return []
             for (let dish of dishes) {
                 if (!dish.value) continue
                 menu.push(dish.value)

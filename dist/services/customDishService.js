@@ -171,12 +171,13 @@ class CustomDishService {
 
             findRamenAndChangePrice(result)
             //特殊情况
-            const hasLunch = result.find(it => it.id === ids.xiaoxiong_menu_lunch)
+            const hasLunch = !!result.find(it => it.id === ids.xiaoxiong_menu_lunch)
             const currentOrdering = await this.menuOrderingRepository.getDineIn()
-            if (currentOrdering.find(it => it.name === "Menu Almoço") !== hasLunch) {
+            const orderingHasLunch = !!currentOrdering.find(it => it.name === "Menu Almoço")
+            if (orderingHasLunch !== hasLunch) {
                 await this.menuService.reorganizeDineMenuTab_custom()
-                await this.menuService.reorganizeAndSaveMenuTab_menu()
-                await this.menuService.reorganizeTakeMenuTab_custom()
+                // await this.menuService.reorganizeAndSaveMenuTab_menu()
+                // await this.menuService.reorganizeTakeMenuTab_custom()
             }
 
             return {

@@ -3,7 +3,7 @@ const CustomDishTemplate = require('../model/customDishTemplate')
 const CustomDishType = require('../model/customDishType')
 
 const ids = {
-    sushi_aleatoria : 1,
+    sushi_aleatoria: 1,
     pock_bowl: 2,
     nine_square: 3,
     bibimbap: 4,

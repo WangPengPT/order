@@ -20,14 +20,8 @@ class CustomDishRepository {
         result.forEach(template => {
             const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
             if (customDishTemplate.enable) {
-                if (customDishTemplate.id === ids.xiaoxiong_menu_lunch) {
-                    if (is_portugal_lunch_time()) {
-                        templates.push(customDishTemplate)
-                    }
-                } else {
                     templates.push(customDishTemplate)
                 }
-            }
         })
         return templates
     }
@@ -73,7 +67,16 @@ class CustomDishRepository {
         for (const template of all) {
             const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
             const filteredTemplate = this.filterEnabledTemplate(customDishTemplate)
-            if (filteredTemplate) templates.push(filteredTemplate)
+
+            if (filteredTemplate) {
+                if (filteredTemplate.id === ids.xiaoxiong_menu_lunch) {
+                    if (is_portugal_lunch_time()) {
+                        templates.push(customDishTemplate)
+                    }
+                } else {
+                    templates.push(filteredTemplate)
+                }
+            }
         }
 
         return templates

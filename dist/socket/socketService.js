@@ -453,13 +453,13 @@ class SocketServices {
                 centerSocket.get_center_datas(socket, "reserves", "reserve_list")
             })
 
-            socket.on("update_reserve_data", (value, callback) => {
+            socket.on("manager_cancelReserve", (value, callback) => {
                 centerSocket.updateReserveData(value, (cb) => {
                     if (cb.success) {
-                        logger.info(`更新订台数据成功, value:${value}`)
+                        logger.info(`申请取消订台成功, id:${cb.data.name}`)
                         callback(cb)
                     } else {
-                        logger.info(`更新订台数据失败, Error: ${cb.data}`)
+                        logger.info(`申请取消订台失败, Error: ${cb.data}`)
                         callback(cb)
                     }
                 })

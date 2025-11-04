@@ -93,6 +93,20 @@ class CenterSocket {
             appState.socket_io.emit("new_reserves", [data])
         });
 
+        socket.on("set_server_"+name, (data) => {
+            console.log('set_server_'+name,data);
+
+            if(data.permissionsControl){
+                appState.updatePermissionsControl(data.permissionsControl)
+                appState.socket_io.emit("permissions_control", data.permissionsControl)
+            }
+            if(data.customDishesControl){
+                appState.updateCustomDishesControl(data.customDishesControl)
+                appState.socket_io.emit("manager_get_custom_dish_control", data.customDishesControl)
+            }
+
+        })
+
 
         this.connect_socket();
 
@@ -218,8 +232,8 @@ class CenterSocket {
         });
     }
 
-    static updateReserveData(key, value, callback){
-        socket.emit('update_reserve_data', {key:key, value:value}, callback)
+    static updateReserveData(value, callback){
+        socket.emit('message', 'g_update_reserve_data', value, callback)
     }
 
 

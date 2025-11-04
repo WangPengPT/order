@@ -168,6 +168,7 @@ class AppStateSocket {
         socket.emit("reserver_data", this.appStateService.appStateRepository.appState.getReserverData())
         socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
         socket.emit("permissions_control", this.appStateService.appStateRepository.appState.getPermissionsControl())
+        socket.emit("manager_get_custom_dish_control", this.appStateService.appStateRepository.appState.customDishesControl)
     }
 
 }
