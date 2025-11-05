@@ -494,7 +494,7 @@ class SocketServices {
             pageDir: db.pageDir,
             shopType: appState.shopType,
             restaurant: centerSocket.getRestaurant(),
-            location: appState.pickupData.latitudeAndLongitude,
+            location: appState.shopInfo.latitudeAndLongitude,
         });
 
         await this.send_menu(socket)

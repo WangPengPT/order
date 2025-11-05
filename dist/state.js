@@ -3,6 +3,7 @@ const {TableManager} = require('./model/tableManager.js')
 const {TableStatus} = require('./model/TableStatus.js')
 const {Table} = require('./model/table.js')
 const WeekPrice = require("./model/WeekPrice");
+const {logger} = require("./utils/logger");
 
 class AppState {
     constructor() {
@@ -23,6 +24,7 @@ class AppState {
             delivery: true,
             reserver: true,
             vip: true,
+            fandays: true,
         }
 
         this.customDishesControl = {
@@ -36,6 +38,7 @@ class AppState {
 
         this.settings = {
             checkIP: false,
+            order: true,
             delivery: false,
             reserver: false,
             isFestiveDay: false,
@@ -44,13 +47,23 @@ class AppState {
             dividerTime: 17,
         }
 
-        this.pickupData = {
+        this.shopInfo = {
             restaurantName:"Default Restaurant Name",
+            phoneNumber: "",
+            location: {
+                street: "",
+                city: "",
+                region: "",
+                country: "",
+                postcode: "",
+            },
             latitudeAndLongitude:{
                 latitude: undefined,
                 longitude: undefined,
             },
-            pickupLocation: '',
+        }
+
+        this.pickupData = {
             timeInterval: 15, // 每隔15分钟取一次餐
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
         }
@@ -75,6 +88,7 @@ class AppState {
         this.reserverData.beginEndInterval = this.initBeginEndInterval()
 
         this.recordProps(this, ['menu', 'orderMenuTab'])
+
     }
 
     // 所有 init 函数
@@ -207,6 +221,11 @@ class AppState {
     updateSettings(key, value) {
         this.settings[key] = value
         console.log("update settings: ", key,this.settings[key])
+    }
+
+    updateShopInfo(key, value){
+        this.shopInfo[key] = value
+        console.log("update shop_info:", key, this.shopInfo[key])
     }
 
     updatePickupDate(key, value){
@@ -413,6 +432,13 @@ class AppState {
                 }
                 return this.settings;
             },
+            shopInfo: (value) => {
+                if (!value) return this.shopInfo;
+                for (const k of Object.keys(value)) {
+                    this.shopInfo[k] = value[k];
+                }
+                return this.shopInfo;
+            },
             pickupData: (value) => {
                 if (!value) return this.pickupData;
                 for (const k of Object.keys(value)) {
@@ -527,8 +553,37 @@ class AppState {
                 }
             }
         }
+        trans(instance)
 
         return instance
+
+        function trans(instance){
+            if(instance.pickupData) {
+                if(instance.pickupData.restaurantName){
+                    instance.shopInfo.restaurantName = instance.pickupData.restaurantName
+                    logger.info(" 商店名字转移成功")
+                }
+                if(instance.pickupData.pickupLocation){
+                    instance.shopInfo.location.street = instance.pickupData.pickupLocation
+                    logger.info(" 商店地址转移成功")
+                }
+                if(instance.pickupData.latitudeAndLongitude){
+                    if(instance.pickupData.latitudeAndLongitude.longitude){
+                        instance.shopInfo.latitudeAndLongitude.latitude = instance.pickupData.latitudeAndLongitude.longitude
+                        logger.info(" 商店经度转移成功")
+                    }
+                    if(instance.pickupData.latitudeAndLongitude.latitude){
+                        instance.shopInfo.latitudeAndLongitude.longitude = instance.pickupData.latitudeAndLongitude.latitude
+                        logger.info(" 商店纬度转移成功")
+                    }
+                }
+                if(instance.pickupData.beginEndInterval && instance.pickupData.timeInterval){
+                    instance.pickupData = {timeInterval: instance.pickupData.timeInterval, beginEndInterval: instance.pickupData.beginEndInterval}
+                    logger.info("新pickupData keys: "+Object.keys(instance.pickupData))
+                }
+
+            }
+        }
     }
 
     localIps = []

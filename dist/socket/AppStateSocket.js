@@ -16,8 +16,20 @@ class AppStateSocket {
             logger.info(`管理端更新设置数据${value.key}成功`)
             this.io.emit("client_send_settings", {key: value.key, value: result.data})
         }else{
-            logger.info(`管理端更${value.key}失败`)
-            logger.info(`失败原因: ${result.data}`)
+            logger.error(`管理端更新${value.key}失败`)
+            logger.error(`失败原因: ${result.data}`)
+        }
+        callback(result)
+    }
+
+    updateShopInfo(value, callback){
+        logger.info(`更新商店信息${value.key}:${value.value}`)
+        const result = this.appStateService.updateShopInfo(value.key, value.value)
+        if(result.success){
+            logger.info(`管理端更新商店信息${value.key}成功`)
+        }else{
+            logger.error(`管理端更新${value.key}失败`)
+            logger.error(`失败原因: ${result.data}`)
         }
         callback(result)
     }
@@ -29,7 +41,7 @@ class AppStateSocket {
             logger.info(`管理端更新取餐数据${value.key}成功`)
             this.io.emit("client_send_pickupDate", {key: value.key, value: result.data})
         }else{
-            logger.info(`管理端更${value.key}失败`)
+            logger.info(`管理端更新${value.key}失败`)
             logger.info(`失败原因: ${result.data}`)
         }
         callback(result)
@@ -124,6 +136,9 @@ class AppStateSocket {
             case "settings":
                 this.updateSettings(value, callback)
                 break
+            case "shop_info":
+                this.updateShopInfo(value,callback)
+                break
             case "childrenPricePercentage":
             case "weekPrice":
             case "childrenWeekPrice":
@@ -163,6 +178,7 @@ class AppStateSocket {
         socket.on("manager_refresh_table", (value, cb) => { cb(this.appStateService.getAllTables()) })
 
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
+        socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo)
         socket.emit("price_data", this.appStateService.appStateRepository.appState.getPriceData())
         socket.emit("pickup_data", this.appStateService.appStateRepository.appState.getPickupData())
         socket.emit("reserver_data", this.appStateService.appStateRepository.appState.getReserverData())

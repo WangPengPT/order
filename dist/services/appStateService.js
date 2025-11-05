@@ -51,6 +51,29 @@ class AppStateService {
         }
     }
 
+    updateShopInfo(key, value){
+        try {
+            appState.updateShopInfo(key, value)
+            if(equals(appState.shopInfo[key], value)) return { success: true, data: value }
+            else throw new Error(key + "更新失败")
+        } catch (error) {
+            return { success: false, data: error.message }
+        }
+
+        function equals(value1, value2) {
+            if(typeof value1 == 'object') {
+                for(const index in value1){
+                    if( !equals(value1[index], value2[index])){
+                        return false
+                    }
+                }
+                return true
+            }else{
+                return value1 == value2
+            }
+        }
+    }
+
     updatePickupDate(key, value) {
         try {
             appState.updatePickupDate(key, value)
