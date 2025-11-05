@@ -577,10 +577,10 @@ class AppState {
                         logger.info(" 商店纬度转移成功")
                     }
                 }
-                if(instance.pickupData.beginEndInterval && instance.pickupData.timeInterval){
-                    instance.pickupData = {timeInterval: instance.pickupData.timeInterval, beginEndInterval: instance.pickupData.beginEndInterval}
-                    logger.info("新pickupData keys: "+Object.keys(instance.pickupData))
-                }
+                // if(instance.pickupData.beginEndInterval && instance.pickupData.timeInterval){
+                //     instance.pickupData = {timeInterval: instance.pickupData.timeInterval, beginEndInterval: instance.pickupData.beginEndInterval}
+                //     logger.info("新pickupData keys: "+Object.keys(instance.pickupData))
+                // }
 
             }
         }
