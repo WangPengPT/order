@@ -81,6 +81,9 @@ const dataAnalizeService = new DataAnalizeService()
 // 路由只保留上传接口
 app.post('/upload', upload.any(), uploadController.handleUpload);
 app.post('/upload_image', upload.single('image'), uploadController.handleUploadImage);
+
+app.post('/upload_background', upload.single('image'), uploadController.handleUploadBackgroundImage);
+
 app.post('/api/upload_welcomeImage',
     upload.fields([
         {name: 'logo', maxCount: 1},

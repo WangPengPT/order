@@ -235,7 +235,7 @@ class WebPageDesignService {
                 const page = await this.webPageRepository.getPageById(pageId, session)
                 if (!page) new Error("Not found the page")
                 page.updateWelcomeImges(imagesPath)
-                this.webPageRepository.updatePage(page, session)
+                await this.webPageRepository.updatePage(page, session)
                 return {
                     success: true,
                     data: page.data
@@ -262,10 +262,39 @@ class WebPageDesignService {
                 const oldLogoPath = page.data.logoPath
                 if (oldLogoPath) {
                     //删除之前的
-                    db.deleteOldLogo(oldLogoPath)
+                    db.removePageImage(page.imagesPath, oldLogoPath)
                 }
                 page.updateWelcomeLogo(imagePath)
-                this.webPageRepository.updatePage(page, session)
+                await this.webPageRepository.updatePage(page, session)
+                return {
+                    success: true,
+                    data: page.data
+                }
+            })
+        } catch (error) {
+            console.log("Unexpected Error", error.message)
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    async uploadedBackgroundImage(id, imagePath) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                const pageId = Number(id)
+                const page = await this.webPageRepository.getPageById(pageId, session)
+                if (!page) new Error("Not found the page")
+                //检测是否有现有背景
+                //删除之前的
+                const oldPath = page.data.background.image
+                if (oldPath && oldPath !== "") {
+                    //删除之前的
+                    db.removePageImage(page.imagesPath, oldPath)
+                }
+                page.updateBackground(imagePath)
+                await this.webPageRepository.updatePage(page, session)
                 return {
                     success: true,
                     data: page.data

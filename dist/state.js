@@ -61,6 +61,7 @@ class AppState {
                 latitude: undefined,
                 longitude: undefined,
             },
+            logoPath: "",
         }
 
         this.pickupData = {

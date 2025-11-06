@@ -75,6 +75,15 @@ class CenterSocket {
                 (cb)=>{
                     if(cb.success){
                         logger.info('Center Server get config successfully: '+cb.data);
+                        let permissionsControl_text = 'Have Not Data'
+                        if(cb.permissionsControl){
+                            permissionsControl_text = ''
+                            appState.permissionsControl = cb.permissionsControl
+                            for(const key in cb.permissionsControl){
+                                permissionsControl_text += ("\n" + key + ":" + cb.permissionsControl[key] );
+                            }
+                        }
+                        logger.info('Get Permissions Control ' + permissionsControl_text);
                     }else{
                         logger.error('Center Server get config failed: '+cb.data);
                     }
