@@ -1,9 +1,11 @@
 const welcomeTemplate = {
     logoPath: "",
-    background: {
-        image: "",
-        enable: true
-    },
+    backgrounds: [
+        {
+            image: "",
+            enable: true
+        }
+    ],
     titles: [{
         title: {
             text_zh: "",
