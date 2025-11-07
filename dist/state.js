@@ -67,10 +67,13 @@ class AppState {
         this.pickupData = {
             timeInterval: 15, // 每隔15分钟取一次餐
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
+            excludeDates: [],
         }
         this.reserverData = {
             timeInterval: 15, // 每隔15分钟取一次餐
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
+            excludeDates: [],
+            excludeDiscountDates: [],
         }
         this.currentPageID = 1
         this.currentTakeWayPageID = 1
