@@ -59,6 +59,10 @@ class Page {
     this.data.logoPath = path
   }
 
+  updateBackground(path) {
+      this.data.background.image = path;
+  }
+
   static fromJSON(obj) {
     if (typeof obj !== 'object' || obj === null) {
       throw new Error("Invalid Page object for fromJSON");
