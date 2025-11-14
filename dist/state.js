@@ -67,12 +67,20 @@ class AppState {
         this.pickupData = {
             timeInterval: 15, // 每隔15分钟取一次餐
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
-            excludeDates: [],
+            excludeDates: {
+                week:[],
+                month:[],
+                dates:[],
+            },
         }
         this.reserverData = {
             timeInterval: 15, // 每隔15分钟取一次餐
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
-            excludeDates: [],
+            excludeDates: {
+                week:[],
+                month:[],
+                dates:[],
+            },
             excludeDiscountDates: [],
         }
         this.currentPageID = 1
@@ -94,6 +102,7 @@ class AppState {
         this.recordProps(this, ['menu', 'orderMenuTab'])
 
     }
+
 
     // 所有 init 函数
     initTables() {
@@ -558,35 +567,33 @@ class AppState {
             }
         }
         trans(instance)
+        resetExcludeDates(instance)
 
         return instance
 
         function trans(instance){
             if(instance.pickupData) {
-                if(instance.pickupData.restaurantName){
-                    instance.shopInfo.restaurantName = instance.pickupData.restaurantName
-                    logger.info(" 商店名字转移成功")
+                if(instance.pickupData.beginEndInterval && instance.pickupData.timeInterval){
+                    instance.pickupData = {timeInterval: instance.pickupData.timeInterval, beginEndInterval: instance.pickupData.beginEndInterval}
+                    logger.info("新pickupData keys: "+Object.keys(instance.pickupData))
                 }
-                if(instance.pickupData.pickupLocation){
-                    instance.shopInfo.location.street = instance.pickupData.pickupLocation
-                    logger.info(" 商店地址转移成功")
-                }
-                if(instance.pickupData.latitudeAndLongitude){
-                    if(instance.pickupData.latitudeAndLongitude.longitude){
-                        instance.shopInfo.latitudeAndLongitude.latitude = instance.pickupData.latitudeAndLongitude.longitude
-                        logger.info(" 商店经度转移成功")
-                    }
-                    if(instance.pickupData.latitudeAndLongitude.latitude){
-                        instance.shopInfo.latitudeAndLongitude.longitude = instance.pickupData.latitudeAndLongitude.latitude
-                        logger.info(" 商店纬度转移成功")
-                    }
-                }
-                // if(instance.pickupData.beginEndInterval && instance.pickupData.timeInterval){
-                //     instance.pickupData = {timeInterval: instance.pickupData.timeInterval, beginEndInterval: instance.pickupData.beginEndInterval}
-                //     logger.info("新pickupData keys: "+Object.keys(instance.pickupData))
-                // }
-
             }
+        }
+
+        function resetExcludeDates(instance){
+
+            instance.pickupData.excludeDates = {
+                week:[],
+                month:[],
+                dates:[],
+            }
+
+            instance.reserverData.excludeDates = {
+                week:[],
+                month:[],
+                dates:[],
+            }
+
         }
     }
 
