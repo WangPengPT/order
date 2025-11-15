@@ -566,8 +566,6 @@ class AppState {
                 }
             }
         }
-        trans(instance)
-        resetExcludeDates(instance)
 
         return instance
 
