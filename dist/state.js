@@ -567,6 +567,8 @@ class AppState {
             }
         }
 
+        resetExcludeDates(instance)
+
         return instance
 
         function trans(instance){
