@@ -567,7 +567,7 @@ class AppState {
             }
         }
 
-        resetExcludeDates(instance)
+        // resetExcludeDates(instance)
 
         return instance
 
