@@ -70,7 +70,7 @@ const order_model = {
 
                 const dishid = "(" + item.dishid.toString() + ")";
 
-                add_to_print_order_data(BOLD_HAD + "=>" + item.quantity + "-@" + dishid + " " + name);
+                add_to_print_order_data(BOLD_HAD + "=>" + item.quantity + "-@" + dishid + " " + item.name);
                 if (item.dishNote) {
                     add_to_print_order_data("(note: " + item.dishNote + " )");
                 }
@@ -147,7 +147,7 @@ const order_model = {
                 }
                 const dishid = "(" + item.dishid.toString() + ")";
 
-                add_to_print_order_data(BOLD_HAD + '#:' + dishid + " x " + item.quantity + " " + name);
+                add_to_print_order_data(BOLD_HAD + '#:' + dishid + " x " + item.quantity + " " + item.name);
                 if (item.dishNote) {
                     add_to_print_order_data("(note: " + item.dishNote + " )");
                 }
