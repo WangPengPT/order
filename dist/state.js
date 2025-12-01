@@ -162,12 +162,12 @@ class AppState {
     }
 
     getAdultCurrentPrice(){
-        return this.weekPrice.getCurrentPrice()
+        return this.weekPrice.getCurrentPrice(this.settings.isFestiveDay)
     }
 
     getChildrenCurrentPrice(){
         const childrenPrice = this.settings.useChildrenDiscount?
-            (this.getAdultCurrentPrice() * this.childrenPricePercentage / 100 ) : this.childrenWeekPrice.getCurrentPrice()
+            (this.getAdultCurrentPrice() * this.childrenPricePercentage / 100 ) : this.childrenWeekPrice.getCurrentPrice(this.settings.isFestiveDay)
         // console.log("getChildrenCurrentPrice:",childrenPrice)
         return childrenPrice
     }
@@ -499,7 +499,7 @@ class AppState {
 
         return {
             total: (tableOrdersAmount + tablePeoplesAmount).toFixed(2),
-            adultPrice: {quantity: adultQty,price: adultPrice},
+            adultPrice: {quantity: adultQty, price: adultPrice},
             childrenPrice: {quantity: childrenQty,price: childrenPrice}
         }
     }

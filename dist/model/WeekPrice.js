@@ -30,7 +30,10 @@ class WeekPrice {
         return result
     }
 
-    getCurrentPrice(){
+    getCurrentPrice(isSpecialDay=false){
+        if(isSpecialDay){
+            return this.getDayPrice(7)[this.getLunchOrDinner()]
+        }
         const now = new Date()
         return this.getDayPrice(now.getDay())[this.getLunchOrDinner()]
     }
