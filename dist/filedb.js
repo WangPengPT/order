@@ -102,159 +102,39 @@ function fileExists(filename) {
     return fs.existsSync(fullPath);
 }
 
-// function hasPageFile(filename) {
-//     const fullPath = path.join(pageDir, filename);
-//     return fs.existsSync(fullPath);
-// }
-
 if (!fs.existsSync(dirFolder)) {
     fs.mkdirSync(dirFolder, {recursive: true});
 }
 
-// if (!fs.existsSync(pageDir)) {
-//     fs.mkdirSync(pageDir, {recursive: true});
-// }
-
-// function hasPageFiles() {
-//     try {
-//         const files = fs.readdirSync(pageDir);
-//         // 过滤出 .json 文件
-//         const jsonFiles = files.filter(file => file.endsWith('.json'));
-//         return jsonFiles.length > 0;
-//     } catch (err) {
-//         console.error('Error reading directory:', err.message);
-//         return false;
-//     }
-// }
-
-// function hasSomeFile(dir) {
-//     return fs.existsSync(dir);
-// }
-
-// function loadPage(filename) {
-//     try {
-//         const filePath = path.join(__dirname, pageDir, filename);
-//         const data = fs.readFileSync(filePath, 'utf8');
-//         const jsonData = JSON.parse(data);
-//         return jsonData
-//     } catch (err) {
-//         console.log("bd load error: ", err.message)
-//     }
-// }
-
-// function loadPages() {
-//     try {
-//         const res = [];
-//         const dirPath = path.join(__dirname, pageDir);
-//         const files = fs.readdirSync(dirPath);
-//         files.forEach(file => {
-//             if (file.endsWith('.json')) {
-//                 const filePath = path.join(dirPath, file);
-//                 const data = fs.readFileSync(filePath, 'utf8');
-//                 const jsonData = JSON.parse(data);
-//                 res.push(jsonData);
-//             }
-//         });
-//         return res;
-//     } catch (err) {
-//         console.log("loadPages error: ", err.message);
-//         return [];
-//     }
-// }
-
 function getPageImages(imagesPath) {
     try {
-        // 读取目录，返回文件和文件夹的名称数组
-        const paths = pageDir.split('/')
+        // 生成目录路径
+        const paths = pageDir.split('/').filter(Boolean);
         const publicDir = path.join(process.cwd(), ...paths, imagesPath);
-        console.log("public: ", publicDir)
-        const hasFiles = fs.existsSync(publicDir);
-        if (!hasFiles) {
-            logger.error(`没有找到: ${publicDir}`)
-            return []
-        }
-        const files = fs.readdirSync(publicDir, {withFileTypes: true})
+        console.log("public: ", publicDir);
 
-        // 只筛选出文件（排除文件夹）
+        // 如果目录不存在，就创建（支持递归）
+        if (!fs.existsSync(publicDir)) {
+            fs.mkdirSync(publicDir, { recursive: true });
+            logger.warn(`已自动创建目录: ${publicDir}`);
+            return [];  // 新建目录没有文件，返回空数组
+        }
+
+        // 读取目录中的文件和子目录
+        const files = fs.readdirSync(publicDir, { withFileTypes: true });
+
+        // 只返回文件名称
         const fileNames = files
             .filter(dirent => dirent.isFile())
-            .map(dirent => dirent.name)
+            .map(dirent => dirent.name);
 
-        return fileNames
+        return fileNames;
     } catch (error) {
-        logger.error(`IMAGE目录空白: ${publicDir}`)
-        return []
+        logger.error(`读取 IMAGE 目录失败: ${error.message}`);
+        return [];
     }
 }
 
-// function getWelcomeLogoFile(logoPath) {
-//     try {
-//         // 读取目录，返回文件和文件夹的名称数组
-//         const publicDir = formatedPublicUploadsDir(logoPath)
-//         const hasFile = fs.existsSync(publicDir);
-//         if (!hasFile) {
-//             logger.error(`没有找到: ${publicDir}`)
-//             return ''
-//         }
-//         const files = fs.readdirSync(publicDir, {withFileTypes: true})
-
-//         // 只筛选出文件（排除文件夹）
-//         const fileNames = files
-//             .filter(dirent => dirent.isFile())
-//             .map(dirent => dirent.name)
-//         if (fileNames.length > 1) throw new Error("Out of file quantity")
-//         return getImagePath(logoPath, fileNames[0])
-//     } catch (error) {
-//         return ""
-//     }
-// }
-
-// function deleteWelcomeImages(foldername,filenames) {
-//     filenames.forEach(filename => {
-//         const filePath = path.join(process.cwd(), 'public', 'uploads', foldername, filename)
-//         fs.unlink(filePath, (err) => {
-//             if (err) {
-//                 if (err.code === 'ENOENT') {
-//                     console.warn(`文件不存在: ${filePath}`)
-//                 } else {
-//                     console.error(`删除文件错误: ${filePath}`, err)
-//                 }
-//             } else {
-//                 console.log(`成功删除文件: ${filePath}`)
-//             }
-//         })
-//     })
-// }
-
-// function deleteOldLogo(logoPath) {
-//     try {
-//         console.log("删除logo")
-//         const filePath = path.join(__dirname, 'public', logoPath)
-//         fs.unlink(filePath, (err) => {
-//             if (err) {
-//                 if (err.code === 'ENOENT') {
-//                     console.warn(`文件不存在: ${filePath}`)
-//                 } else {
-//                     console.error(`删除文件错误: ${filePath}`, err)
-//                 }
-//             } else {
-//                 console.log(`成功删除文件: ${filePath}`)
-//             }
-//         })
-//     } catch (error) {
-//         console.log(`成功删除文件: ${filePath}`)
-//     }
-// }
-
-// function savePage(value, filename) {
-//     try {
-//         var saveStr = JSON.stringify(value, null, 2);
-//         const filePath = path.join(__dirname, pageDir, filename);
-//         fs.writeFileSync(filePath, saveStr, 'utf8');
-//     } catch (err) {
-//         console.log("bd save error: ", err.message)
-//     }
-// }
 
 function removePageImage(imagesPath, filename) {
     const paths = pageDir.split('/')
@@ -270,20 +150,6 @@ function removePageImage(imagesPath, filename) {
         console.warn(`文件不存在：${publicDir}`);
     }
 }
-
-// function removePageData(dataFilename) {
-//     const filePath = path.join(__dirname, pageDir, dataFilename);
-//     if (fs.existsSync(filePath)) {
-//         try {
-//             fs.rmSync(filePath, {recursive: true, force: true});
-//             console.log(`成功删除文件夹：${filePath}`);
-//         } catch (err) {
-//             console.error(`删除文件夹失败：${filePath}`, err);
-//         }
-//     } else {
-//         console.warn(`文件夹不存在：${filePath}`);
-//     }
-// }
 
 function saveMonthRates(key,value) {
 
@@ -312,11 +178,11 @@ function loadMonthRates(key, defaultValue) {
     }
 }
 
-function getPageImages(imagesPath) {
-    const paths = pageDir.split('/').filter(it => it !== '')
-    const pageImageFolder = path.join(process.cwd(), ...paths, imagesPath);
-    return fs.readdirSync(pageImageFolder);
-}
+// function getPageImages(imagesPath) {
+//     const paths = pageDir.split('/').filter(it => it !== '')
+//     const pageImageFolder = path.join(process.cwd(), ...paths, imagesPath);
+//     return fs.readdirSync(pageImageFolder);
+// }
 
 function getPageImage(imagesPath, name) {
     if (!name) return
@@ -361,7 +227,6 @@ module.exports = {
     dirFolder,
     pageDir,
     removePageImage,
-    getPageImages,
     getPageImage,
     getImageAbsolutPath,
     importPageImages
