@@ -69,6 +69,57 @@ exports.processCSV = (file,all,takeaway) => {
   });
 };
 
+exports.processNewCSV = (file, all, takeaway) => {
+    logger.info("Processing NEW CSV:", all, takeaway);
+
+    return new Promise((resolve, reject) => {
+        const results = [];
+
+        fs.createReadStream(file.path)
+            .pipe(csv())  // 这里会把一行 CSV → 一个 object
+            .on('data', (data) => {
+                // data 就已经是你的对象了：
+                // { id: '1', name: 'xxx', x: '[2,8]', ... }
+
+                // 修复 x 字段（因为从 CSV 读出来是字符串）
+                if (typeof data.x === "string") {
+                    try {
+                        data.x = JSON.parse(data.x); // 字符串 → 数组
+                    } catch (e) {
+                        data.x = [];
+                    }
+                }
+
+                // 字段转换成你系统需要的格式
+                const dish = {
+                    id: data.id,
+                    handle: data.handle,
+                    name: data.name,
+                    subname: data.subname,
+                    note: data.note,
+                    category: data.category,
+                    image: data.image,
+                    tags: data.tags,
+                    x: data.x,
+                    price: data.price,
+                    base_price: data.base_price || "0",
+                    org_id: data.org_id,
+                    name_en: data.name_en,
+                    name_cn: data.name_cn,
+                    note_en: data.note_en,
+                    note_cn: data.note_cn
+                };
+
+                results.push(dish);
+            })
+            .on('end', () => {
+                menuService.updateMenu(results, all, takeaway);
+                fs.unlinkSync(file.path);
+                resolve(results);
+            })
+            .on('error', reject);
+    });
+};
 
 exports.processJSON = (file, all,takeaway) => {
   return new Promise((resolve, reject) => {

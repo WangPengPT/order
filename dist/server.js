@@ -81,17 +81,23 @@ const dataAnalizeService = new DataAnalizeService()
 // 路由只保留上传接口
 app.post('/upload', upload.any(), uploadController.handleUpload);
 app.post('/upload_image', upload.single('image'), uploadController.handleUploadImage);
-app.post('/api/upload_welcomeImage',
-    upload.fields([
-        {name: 'logo', maxCount: 1},
-        {name: 'titleImages'},
-        {name: 'informationImages'}]),
-    uploadController.handleUploadWelcomeImage
+
+app.post('/api/upload_background', upload.array('images'), uploadController.handleUploadBackgroundImages);
+
+app.post('/api/upload_titleImages',
+    upload.array('titleImages'), // 多张
+    (req, res) => uploadController.handleUploadTitleImages(req, res)
 );
-app.post('/upload_logo', upload.single('image'),
-    (req, res) => {
+
+app.post('/api/upload_informationImages',
+    upload.array('informationImages'), // 多张
+    (req, res) => uploadController.handleUploadInformationImages(req, res)
+);
+
+app.post('/api/upload_logo',
+    upload.single('image'),
+    (req, res) =>
         uploadController.handleUploadWelcomeLogo(req, res)
-    }
 );
 
 app.get('/api/exportDatas', authMiddleware, datasController.exportDatas)
