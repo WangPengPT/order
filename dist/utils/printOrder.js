@@ -26,7 +26,7 @@ function print_order(order, printModelIndex) {
         if (hasData) {
             logger.info(`订单打印成功 订单号 - ${order.id}`);
             const datas = print_order_model(order, printModelIndex, printer)
-            console.log("order datas length:",datas.length)
+            logger.info(`订单详细：${String(datas)}`)
             datas.forEach((item) => {
                 printer.socket.emit("print", item);
             })
