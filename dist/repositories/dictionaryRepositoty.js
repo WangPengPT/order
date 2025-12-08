@@ -61,7 +61,7 @@ class DictionaryRepository {
     async hasData(session = null) {
         try {
             const result = await DB.find(this.tableName, {}, session);
-            return !!result
+            return result.length !== 0
         } catch (error) {
             logger.error(`repo:❌ 检测字典数据失败: ${err}`);
             throw err;
