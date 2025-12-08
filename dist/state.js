@@ -62,6 +62,7 @@ class AppState {
                 longitude: undefined,
             },
             logoPath: "",
+            instagramUrl: "",
         }
 
         this.pickupData = {

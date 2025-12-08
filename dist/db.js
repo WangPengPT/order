@@ -81,6 +81,12 @@ class DB {
         await collection.updateOne({id: key}, {$set: {id: value.id, value: value}}, {upsert: true, session});
     }
 
+    static async setValueByCleanId(table, key, value, session = null) {
+        const collection = db.collection(table);
+        await collection.updateOne({id: key}, {$set: {value: value}}, {upsert: true, session});
+    }
+
+
     static async getValue(key, defValue, session = null) {
         const collection = db.collection("key_value");
         const users = await collection.find({id: key}, {session}).toArray();

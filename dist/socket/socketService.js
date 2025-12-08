@@ -15,7 +15,7 @@ const {CustomDishSocket} = require('./customDishSocket.js');
 const VIPUserManager = require("../services/vipUserManager.js")
 const centerSocket = require('./centerSocket.js');
 const {DataAnalizeSocket} = require('./dataAnalizeSocket.js');
-const DictinarySocket = require('./dictinarySocket.js');
+const DictinarySocket = require('./dictionarySocket.js');
 
 class SocketServices {
     constructor(io,
@@ -71,7 +71,7 @@ class SocketServices {
         await this.customDish.customDishService.initializeCustomDish()
         await this.menuService.loadMenu()
         await this.menuService.initMenuOrdering()
-        await this.dictinarySocket.dictinaryService.init()
+        await this.dictinarySocket.dictionaryService.initialize()
     }
 
     initSocket() {
