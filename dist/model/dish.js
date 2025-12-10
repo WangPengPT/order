@@ -1,5 +1,5 @@
 class Dish {
-  constructor({ dishid, name, price, deliveryPrice, quantity, notes, orderIds, dishNote, orderType, discount, deliveryDiscount, category}) {
+  constructor({ dishid, name, price, deliveryPrice, quantity, notes, orderIds, dishNote, orderType, discount, deliveryDiscount, category, activitys}) {
     this.dishid = dishid
     this.name = name
     this.price = parseFloat(price) || 0
@@ -12,6 +12,7 @@ class Dish {
     this.discount = discount || 0
     this.deliveryDiscount = deliveryDiscount || 0
     this.category = category || undefined
+    this.activitys = activitys || ''
   }
 
   toJSON() {
