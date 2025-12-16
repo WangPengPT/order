@@ -39,7 +39,20 @@ class AppStateSocket {
         const result = this.appStateService.updatePickupDate(value.key, value.value)
         if(result.success){
             logger.info(`管理端更新取餐数据${value.key}成功`)
-            this.io.emit("client_send_pickupDate", {key: value.key, value: result.data})
+            this.io.emit("client_send_pickupData", {key: value.key, value: result.data})
+        }else{
+            logger.info(`管理端更新${value.key}失败`)
+            logger.info(`失败原因: ${result.data}`)
+        }
+        callback(result)
+    }
+
+    updateHomeDeliveryDate(value, callback){
+        logger.info(`更新配送数据${value.key}:${value.value}`)
+        const result = this.appStateService.updateHomeDeliveryDate(value.key, value.value)
+        if(result.success){
+            logger.info(`管理端更新配送数据${value.key}成功`)
+            this.io.emit("client_send_homeDeliveryData", {key: value.key, value: result.data})
         }else{
             logger.info(`管理端更新${value.key}失败`)
             logger.info(`失败原因: ${result.data}`)
@@ -52,7 +65,7 @@ class AppStateSocket {
         const result = this.appStateService.updateReserverDate(value.key, value.value)
         if(result.success){
             logger.info(`管理端更新订台数据${value.key}成功`)
-            this.io.emit("client_send_reserverDate", {key: value.key, value: result.data})
+            this.io.emit("client_send_reserverData", {key: value.key, value: result.data})
         }else{
             logger.info(`管理端更${value.key}失败`)
             logger.info(`失败原因: ${result.data}`)
@@ -115,6 +128,9 @@ class AppStateSocket {
                 case 'delivery':
                     result = {success: true, data: this.appStateService.appStateRepository.appState.getPickupData()}
                     break
+                case 'homeDelivery':
+                    result = {success: true, data: this.appStateService.appStateRepository.appState.getHomeDeliveryData()}
+                    break
                 case 'reserver':
                     result = {success: true, data:this.appStateService.appStateRepository.appState.getReserverData()}
                     break
@@ -146,6 +162,9 @@ class AppStateSocket {
                 break
             case "pickup_data":
                 this.updatePickupDate(value, callback)
+                break
+            case "homeDelivery_data":
+                this.updateHomeDeliveryDate(value, callback)
                 break
             case "reserver_data":
                 this.updateReserverDate(value, callback)
@@ -181,6 +200,7 @@ class AppStateSocket {
         socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo)
         socket.emit("price_data", this.appStateService.appStateRepository.appState.getPriceData())
         socket.emit("pickup_data", this.appStateService.appStateRepository.appState.getPickupData())
+        socket.emit("homeDelivery_data", this.appStateService.appStateRepository.appState.getHomeDeliveryData())
         socket.emit("reserver_data", this.appStateService.appStateRepository.appState.getReserverData())
         socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
         socket.emit("permissions_control", this.appStateService.appStateRepository.appState.getPermissionsControl())

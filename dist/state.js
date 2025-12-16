@@ -44,6 +44,7 @@ class AppState {
             isFestiveDay: false,
             useFandays: false,
             useChildrenDiscount: false,
+            homeDelivery: false,
             dividerTime: 17,
         }
 
@@ -74,6 +75,15 @@ class AppState {
                 dates:[],
             },
         }
+        this.homeDeliveryData = {
+            timeInterval: 15,
+            beginEndInterval: {},
+            excludeDates: {
+                week:[],
+                month:[],
+                dates:[],
+            }
+        }
         this.reserverData = {
             timeInterval: 15, // 每隔15分钟取一次餐
             beginEndInterval: {}, // 默认从12点到15点，19点到23点
@@ -99,6 +109,7 @@ class AppState {
         this.initTables()
         this.pickupData.beginEndInterval = this.initBeginEndInterval()
         this.reserverData.beginEndInterval = this.initBeginEndInterval()
+        this.homeDeliveryData.beginEndInterval = this.initBeginEndInterval()
 
         this.recordProps(this, ['menu', 'orderMenuTab'])
 
@@ -181,6 +192,14 @@ class AppState {
         return result
     }
 
+    getHomeDeliveryData(){
+        const result = {}
+        for(const key in this.homeDeliveryData){
+            result[key] = this.homeDeliveryData[key]
+        }
+        return result
+    }
+
     getReserverData(){
         const result = {}
         for(const key in this.reserverData){
@@ -245,6 +264,11 @@ class AppState {
     updatePickupDate(key, value){
         this.pickupData[key] = value
         console.log("update pickupDate: ", key,this.pickupData[key])
+    }
+
+    updateHomeDeliveryDate(key, value){
+        this.homeDeliveryData[key] = value
+        console.log("update homeDeliveryData: ", key,this.homeDeliveryData[key])
     }
 
     updateReserverDate(key, value){
@@ -459,6 +483,20 @@ class AppState {
                     this.pickupData[k] = value[k];
                 }
                 return this.pickupData;
+            },
+            homeDeliveryData: (value) => {
+                if (!value) return this.homeDeliveryData;
+                for (const k of Object.keys(value)) {
+                    this.homeDeliveryData[k] = value[k];
+                }
+                return this.homeDeliveryData;
+            },
+            reserverData: (value) => {
+                if (!value) return this.reserverData;
+                for (const k of Object.keys(value)) {
+                    this.reserverData[k] = value[k];
+                }
+                return this.reserverData;
             },
             weekPrice: (value) => {
                 if (!value) return this.weekPrice;
