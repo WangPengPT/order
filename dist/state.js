@@ -76,7 +76,7 @@ class AppState {
             },
         }
         this.homeDeliveryData = {
-            timeInterval: 15,
+            timeInterval: 30,
             beginEndInterval: {},
             excludeDates: {
                 week:[],
