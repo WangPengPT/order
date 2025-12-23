@@ -21,6 +21,8 @@ const {DataAnalizeService} = require("./services/dataAnalizeService.js");
 const {AppState, appState} = require("./state.js");
 const DatasController = require("./controllers/DatasController.js");
 
+const holiday = require('./utils/holiday.js')
+
 const app = express();
 app.use(cors());
 app.use(compression());
@@ -178,14 +180,17 @@ let needClean = true;
 function runCleanInterval() {
     setTimeout(() => {
         const now = new Date();
-        if (now.getHours() == 1) {
+        if (now.getHours() == 6) {
             if (needClean) {
                 appState.clearAll();
+                holiday.updateToday(appState);
             }
             needClean = false;
         } else {
             needClean = true;
         }
+
+
 
         runCleanInterval();
     }, 1000 * 600 * 6);
@@ -245,3 +250,5 @@ process.on('unhandledRejection', async (reason) => {
     logger.error('❌ 未处理的 Promise 拒绝:', reason);
     await OnQuit();
 });
+
+holiday.updateToday(appState);
