@@ -17,7 +17,7 @@ const order_model = {
         const result = []
         print_order_data = ''
         add_to_print_order_data("order id: " + order.id)
-        add_to_print_order_data(BOLD_HAD + "table: " + order.table)
+        add_to_print_order_data(BOLD_HAD + "table:  " + order.table)
         add_to_print_order_data("time: " + format_portugal_datetime(order.timestamp))
         add_to_print_order_data(divider)
 
@@ -103,7 +103,7 @@ const order_model = {
         const result = []
         print_order_data = ''
         add_to_print_order_data("order id: " + order.id)
-        add_to_print_order_data(BOLD_HAD + "table: " + order.table)
+        add_to_print_order_data(BOLD_HAD + "table:  " + order.table)
         add_to_print_order_data("time: " + format_portugal_datetime(order.timestamp))
         add_to_print_order_data(divider)
 
