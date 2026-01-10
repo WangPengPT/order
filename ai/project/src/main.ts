@@ -6,20 +6,20 @@ import { createServer } from 'http';
 import {MemoryStore} from "./core/memory/MemoryStore";
 import {Knowledge} from "./knowledge/Knowledge";
 import {createApiRouter} from "./api/api.center";
-import {MongoDB} from "./dataDase/MongoDB";
 import {AgentDB} from "./dataDase/AgentConfigDB";
 import {AgentConfig} from "./core/agent/agentConfig";
 import {ConversationManager} from "./core/conversation/ConversationManager";
+import {MongoDatabase} from "./dataDase/MongoDatabase";
 
 // 全局实例
-let mongoDB: MongoDB;
+let mongoDB: MongoDatabase;
 let agentDB: AgentDB;
 let agentConfig: AgentConfig;
 let conversationManager: ConversationManager;
 
 // 初始化数据库
 async function initDatabase() {
-    mongoDB = new MongoDB();
+    mongoDB = new MongoDatabase();
     await mongoDB.connect();
     agentDB = new AgentDB(mongoDB);
 

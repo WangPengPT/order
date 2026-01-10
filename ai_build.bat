@@ -1,6 +1,6 @@
 @echo off
-rmdir /s /q ai 2>nul
-mkdir ai
+rmdir /s /q ai/project 2>nul
+mkdir ai/project
 
 set "script_dir=%~dp0"
 set SRC_PATH=%script_dir%..\orderDemo\langChain_aiAssistant

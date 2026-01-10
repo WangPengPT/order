@@ -1,12 +1,12 @@
 import { Collection, ObjectId } from 'mongodb';
-import { MongoDB } from './MongoDB';
+import { MongoDatabase } from './MongoDatabase';
 import { AgentState } from "../core/agent/agent.type";
 
 export class AgentDB {
     private collection: Collection;
     private readonly DEFAULT_ID = 'default_agent';
 
-    constructor(private mongoDB: MongoDB) {
+    constructor(private mongoDB: MongoDatabase) {
         this.collection = mongoDB.getDatabase().collection('agent_configs');
     }
 
