@@ -80,7 +80,8 @@ ${this.formatInline("必须包含", sp.requiredElements)}
                 ]
             },
             model: {
-                name: "gpt-5-nano"
+                name: "gpt-5-nano",
+                baseURL: "https://api.openai.com/v1"
             }
         };
     }

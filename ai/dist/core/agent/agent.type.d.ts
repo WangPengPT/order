@@ -12,5 +12,6 @@ export interface SystemPrompt {
 }
 export interface AgentModel {
     name: string;
+    baseURL: string;
 }
 //# sourceMappingURL=agent.type.d.ts.map

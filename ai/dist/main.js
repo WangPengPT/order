@@ -27,7 +27,6 @@ async function initDatabase() {
     agentDB = new AgentConfigDB_1.AgentDB(mongoDB);
     console.log('✅ 数据库初始化完成');
 }
-process.env.OPENAI_API_KEY = env_1.env.apiKey;
 const app = (0, express_1.default)();
 const server = (0, http_1.createServer)(app);
 app.use(express_1.default.json());
@@ -47,7 +46,7 @@ async function initApp() {
         await initDatabase();
         const agentStateData = await agentDB.getDefaultAgentState() ?? agentConfig_1.AgentConfig.defaultConfig();
         agentConfig = new agentConfig_1.AgentConfig(agentStateData, agentDB);
-        conversationManager = new ConversationManager_1.ConversationManager(new MemoryStore_1.MemoryStore(), new openAi_client_1.OpenAiClient(), new Knowledge_1.Knowledge(), agentConfig);
+        conversationManager = new ConversationManager_1.ConversationManager(new MemoryStore_1.MemoryStore(), new openAi_client_1.OpenAiClient(agentConfig.model), new Knowledge_1.Knowledge(), agentConfig);
         app.use("/api", (0, api_center_1.createApiRouter)(agentConfig, conversationManager));
     }
     catch (error) {

@@ -2,14 +2,32 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OpenAiClient = void 0;
 const langchain_1 = require("langchain");
+const env_1 = require("../../config/env");
+const openai_1 = require("@langchain/openai");
 class OpenAiClient {
     modelName;
+    baseURL;
     model;
-    constructor(modelName = "gpt-5-nano") {
-        this.modelName = modelName;
+    constructor(agentModel = { name: "gpt-5-nano", baseURL: "https://api.openai.com/v1" }) {
+        this.modelName = agentModel.name;
+        this.baseURL = agentModel.baseURL;
     }
     async init() {
-        this.model = await (0, langchain_1.initChatModel)(this.modelName);
+        let apikey;
+        if (this.modelName.toLowerCase().includes("deepseek")) {
+            apikey = env_1.env.deepseekApikey;
+        }
+        else {
+            apikey = env_1.env.apiKey;
+        }
+        process.env.OPENAI_API_KEY = apikey;
+        this.model = new openai_1.ChatOpenAI({
+            model: this.modelName,
+            temperature: 1,
+            configuration: {
+                baseURL: this.baseURL,
+            }
+        });
     }
     //==============Public
     async generate(messages, options = {}) {
