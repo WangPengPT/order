@@ -7,7 +7,7 @@ export class MongoDatabase {
 
     constructor(
         private connectionString: string = env.mongoDbUrl || 'mongodb://localhost:27017',
-        private dbName: string = 'ai_agents'
+        private dbName: string = env.mongoDbName || "ai_agents"
     ) {}
 
     // 连接数据库
