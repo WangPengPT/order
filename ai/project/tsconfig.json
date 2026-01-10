@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    // 模块系统
+    "module": "commonjs",
+    "target": "ES2022",
+
+    // 模块解析     // 必须添加
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    // 类型定义
+    "types": ["node"],
+
+    // 关闭冲突选项
+    "verbatimModuleSyntax": false,  // 必须关闭！
+
+    // Other Outputs
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Recommended Options
+    "strict": true,
+    "jsx": "react-jsx",
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+
+    // 输出目录
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
