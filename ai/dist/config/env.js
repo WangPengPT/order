@@ -5,25 +5,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.env = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
-// 先尝试加载 .env
-dotenv_1.default.config({ path: '.env' });
-// 如果是开发环境（npm run dev）再加载 .env
-if (process.env.NODE_ENV === 'development') {
-    dotenv_1.default.config({
-        path: '.env',
-        override: true // 开发环境的配置覆盖生产配置
-    });
+// 只在本地开发且没有PM2环境变量时加载 .env 文件
+// PM2启动时会注入环境变量，此时不需要读取 .env 文件
+if (!process.env.PM2_HOME && process.env.NODE_ENV !== 'production') {
+    dotenv_1.default.config({ path: '.env' });
 }
 function required(key) {
-    if (!process.env[key]) {
+    const value = process.env[key];
+    if (!value) {
         console.warn(`❌ Missing env: ${key}`);
         return "";
     }
-    return process.env[key];
+    return value;
 }
 exports.env = {
     nodeEnv: process.env.NODE_ENV || "development",
     isDev: process.env.NODE_ENV === "development",
+    isProduction: process.env.NODE_ENV === "production",
+    isPm2: !!process.env.PM2_HOME, // 判断是否是PM2环境
+    // 环境变量
     apiKey: required("API_KEY"),
     deepseekApikey: required("DEEPSEEK_API_KEY"),
     port: required("PORT"),
