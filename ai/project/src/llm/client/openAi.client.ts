@@ -26,6 +26,7 @@ export class OpenAiClient implements LLMClient {
         process.env.OPENAI_API_KEY = apikey
         this.model = new ChatOpenAI({
             model: this.modelName,
+            streaming: true,
             temperature: 1,
             configuration: {
                 baseURL: this.baseURL,
