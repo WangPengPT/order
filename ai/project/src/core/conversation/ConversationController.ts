@@ -19,8 +19,7 @@ export class ConversationController {
 
     async* handleUserInput(input: string) {
 
-        const kbContext = await this.knowledge.query(input, 5)
-
+        const kbContext = await this.knowledge.query(input, 20)
         // 1️⃣ 写入用户输入
         this.memory.push('user', input)
 
