@@ -51,6 +51,7 @@ class AppState {
         this.shopInfo = {
             restaurantName:"Default Restaurant Name",
             phoneNumber: "",
+            email:"",
             location: {
                 street: "",
                 city: "",

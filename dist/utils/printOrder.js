@@ -2,8 +2,14 @@ const {menuService} = require('../services/menuService');
 const { print_order_model, print_takeaway_model } = require('./printModels.js');
 const { logger } = require('./logger.js')
 const dataTime = require('./dateTime.js')
+const net = require('net');
 
 const printers = [];
+
+
+function isIP(str) {
+    return net.isIP(str) !== 0;
+}
 
 function print_order(order, printModelIndex) {
     logger.info(`打印订单 订单号 - ${order.id}`)
@@ -19,7 +25,7 @@ function print_order(order, printModelIndex) {
             let type = menuService.getDishCategory(item);
             if (printer.data.menu.includes(type)) {
                 hasData = true;
-                break;  
+                break;
             }
         }
 
@@ -27,14 +33,51 @@ function print_order(order, printModelIndex) {
             logger.info(`订单打印成功 订单号 - ${order.id}`);
             const datas = print_order_model(order, printModelIndex, printer)
             logger.info(`订单详细：${String(datas)}`)
-            datas.forEach((item) => {
-                printer.socket.emit("print", item);
-            })
-        }
-        else {
+
+
+            if (isIP(printer.data.curPrinter))
+            {
+                datas.forEach((item) => {
+                    serializedPaint(printer.socket,item);
+                })
+            }
+            else
+            {
+                datas.forEach((item) => {
+                    printer.socket.emit("print", item);
+                })
+            }
+
+        } else {
             logger.info(`订单打印失败 订单号 - ${order.id}`)
         }
     }
+}
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// 用于记录上一个任务的状态
+let queue = Promise.resolve();
+
+async function serializedPaint(socket, item) {
+    // 1. 将当前任务挂载到队列末尾
+    queue = queue.then(async () => {
+        try {
+            console.log("print task start...")
+
+            socket.emit("print", item);
+
+            // 2. 执行真正的异步逻辑
+            await delay(1000);
+
+            console.log("print task end.")
+        } catch (error) {
+            console.error(`任务出错:`, error);
+        }
+    });
+
+    // 返回当前排队的结果（可选）
+    return queue;
 }
 
 function print_takeaway_order(order,printModelIndex){
