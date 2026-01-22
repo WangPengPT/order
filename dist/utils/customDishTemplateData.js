@@ -442,7 +442,7 @@ const xiaoxiongLunchMenuDescription = [
             description_zh: "5. 加入购物车",
         }],
         image: {
-            src: "",
+            src: "/images/menu_almoco.jpg",
             enable: true
         }
     }
