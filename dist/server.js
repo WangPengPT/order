@@ -139,6 +139,7 @@ async function main() {
     // appStateService.saveDailyOrders();
 }
 
+// 旧客户端重定向 ------------------------------------------------------
 app.get('/table', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
@@ -147,11 +148,36 @@ app.get('/paymentPage', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
 
+app.get('/reservePage', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
+// 新客户端重定向 ------------------------------------------------------
+app.get('/menu', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
 app.get('/takeReserve', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
 
-app.get('/reservePage', (req, res) => {
+app.get('/takeaway', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
+app.get('/takeaway/checkout', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
+app.get('/reserver', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
+app.get('/profile', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
 

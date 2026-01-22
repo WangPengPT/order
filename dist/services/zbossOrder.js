@@ -1,115 +1,115 @@
 const axios = require('axios');
+const crypto = require('crypto');
 
-// --- 配置区域 (请参照 PDF 文档替换以下值) ---
-const CONFIG = {
-    // API 基础地址 (通常是 https://api.zonesoft.org/v3 或类似)
-    BASE_URL: 'https://api.zonesoft.org/v3',
+class ZoneSoftOrderManager {
+    constructor(config) {
+        this.clientId = config.clientId;
+        this.appKey = config.appKey;
+        this.appSecret = config.appSecret;
+        this.storeId = config.storeId; // 门店 ID 必须明确
+        this.baseUrl = 'https://api.zonesoft.org/v3';
+    }
 
-    // 您的凭证 (从 ZS BMS 后台获取)
-    APP_ID: 'your_app_id_here',
-    APP_SECRET: 'your_app_secret_here',
+    /**
+     * 统一上传方法
+     * @param {Object} orderData 简化后的业务订单
+     */
+    async uploadOrder({ customerId, items, serie }) {
+        // 如果没有传入 serie，尝试自动获取该门店可用的第一个 FT 系列
+        const targetSerie = serie || await this._getAutoSerie();
 
-    // 您的店铺/终端 ID
-    STORE_ID: '12345'
-};
-
-/**
- * 核心函数：发送结账数据到 ZoneSoft
- * @param {Object} myOrderData - 您点餐系统的原始订单数据
- */
-async function sendCheckoutToZoneSoft(myOrderData) {
-
-    // 1. 数据转换：将您的数据结构映射为 ZoneSoft 要求的 JSON 格式
-    // 注意：具体字段名需对照文档 "Create Document" 或 "Create Sale" 章节
-    const zsPayload = {
-        store_id: CONFIG.STORE_ID,
-        type: 'invoice', // 或 'receipt'
-        date: new Date().toISOString(), // 交易时间
-        external_ref: myOrderData.orderId, // 关联您的订单号，方便对账
-
-        // 菜品明细 (Lines)
-        lines: myOrderData.items.map(item => ({
-            description: item.name,
-            quantity: item.qty,
-            unit_price: item.price, // 注意单位，通常是浮点数或分
-            total_price: item.qty * item.price,
-
-            // 重要：Tax ID 必须与 ZoneSoft 后台设置的税率 ID 对应 (如 1=23%, 2=13% 等)
-            tax_id: mapTaxRateToId(item.taxRate)
-        })),
-
-        // 支付明细 (Payments) - 如果是“传输结账”，必须包含此项
-        payments: [{
-            type: 'cash', // 或 'card', 'online'
-            amount: myOrderData.totalAmount
-        }]
-    };
-
-    try {
-        // 2. 构造请求头 (Headers)
-        // 注意：某些 ZSAPI 版本需要基于 Body 计算 HMAC 签名，请检查文档鉴权部分
-        const headers = {
-            'Content-Type': 'application/json',
-            'ZS-APP-ID': CONFIG.APP_ID,
-            'ZS-APP-SECRET': CONFIG.APP_SECRET
-            // 如果文档要求 Bearer Token，则使用: 'Authorization': `Bearer ${token}`
+        const payload = {
+            invoicedocument: {
+                doc: "FT",
+                serie: targetSerie,
+                numero: 0,
+                data: new Date().toISOString().split('T')[0],
+                cliente: customerId || 0, // 0 通常代表最终消费者
+                sales: items.map(item => ({
+                    artigo: item.sku,
+                    quantidade: item.qty,
+                    preco_unitario: item.price,
+                    taxa_iva: item.tax || 23
+                }))
+            }
         };
 
-        console.log('正在发送数据到 ZoneSoft:', JSON.stringify(zsPayload, null, 2));
+        return this._execute('Invoicedocuments/saveInstance', payload);
+    }
 
-        // 3. 发送 POST 请求
-        const response = await axios.post(`${CONFIG.BASE_URL}/sales`, zsPayload, { headers });
+    // 内部私有方法：自动获取该门店的序列号
+    async _getAutoSerie() {
+        const res = await this._execute('Numdocseries/getInstances', { numdocseries: {} });
+        const list = res.Content?.numdocseries || [];
+        // 找到该门店(loja)下匹配 FT 类型的序列
+        const found = list.find(s => s.doc === "FT" && s.loja == this.storeId);
+        if (!found) throw new Error(`门店 ${this.storeId} 未配置 FT 序列`);
+        return found.serie;
+    }
 
-        console.log('✅ 传输成功! ZoneSoft 单据 ID:', response.data.id);
+    // 通用的请求执行器
+    async _execute(path, data) {
+        const body = JSON.stringify(data);
+        const signature = crypto.createHmac('sha256', this.appSecret).update(body).digest('hex');
+
+        const response = await axios.post(`${this.baseUrl}/${path}`, body, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-ZS-CLIENT-ID': this.clientId,
+                'X-ZS-APP-KEY': this.appKey,
+                'X-ZS-SIGNATURE': signature,
+                'X-ZS-STORE-ID': this.storeId // 关键：在这里告诉 API 操作哪个门店
+            }
+        });
         return response.data;
-
-    } catch (error) {
-        console.error('❌ 传输失败:');
-        if (error.response) {
-            // 服务器返回了错误状态码
-            console.error('状态码:', error.response.status);
-            console.error('错误详情:', JSON.stringify(error.response.data, null, 2));
-        } else {
-            console.error(error.message);
-        }
     }
 }
-
-// --- 辅助函数：税率映射 ---
-function mapTaxRateToId(rate) {
-    // 示例逻辑：根据税率返回 ZoneSoft 的 Tax ID
-    if (rate === 0.23) return 1;
-    if (rate === 0.13) return 2;
-    return 1; // 默认税率 ID
-}
-
-
-// 执行
-// format
-// --- 模拟调用 ---
-// 假设这是您点餐系统里的一个订单对象
-// const mySystemOrder = {
-//     orderId: 'ORDER-9988',
-//     totalAmount: 25.50,
-//     items: [
-//         { name: '牛肉汉堡', qty: 2, price: 10.00, taxRate: 0.23 },
-//         { name: '可口可乐', qty: 1, price: 5.50, taxRate: 0.23 }
-//     ]
-// };
-//sendCheckoutToZoneSoft(order)
-
 
 class ZBossOrder {
 
-    setKey(app_id, app_key, store_id) {
-        CONFIG.APP_ID = app_id
-        CONFIG.APP_SECRET = app_key
-        CONFIG.STORE_ID = store_id
+    setKey(clientId, appKey, appSecret, storeId) {
+        const config = {
+            clientId,
+            appKey,
+            appSecret,
+            storeId
+        }
+        this.zsApi = new ZoneSoftOrderManager(config);
     }
 
     sendCheckout(order) {
-        sendCheckoutToZoneSoft(order)
+
+        if (!this.zsApi) return;
+
+        const data  = this.makeZBossData(order)
+
+        console.log(data)
+
+        this.zsApi.uploadOrder(data)
+            .then(res => console.log("订单已签署上传:", res))
+            .catch(err => console.error(err));
     }
+
+    makeZBossData(order){
+
+        const items = []
+
+        for (let i = 0; i < order.items.length; i++) {
+            let item = order.items[i];
+
+            items.push({
+              id: item.id,
+              qty: item.count,
+              price: item.price
+            })
+        }
+
+        return {
+            customerId: 1,
+            items: items
+        }
+    }
+
 }
 
 const  orderSystem = new ZBossOrder()
