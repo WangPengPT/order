@@ -196,6 +196,10 @@ class AppStateSocket {
 
         socket.on("manager_refresh_table", (value, cb) => { cb(this.appStateService.getAllTables()) })
 
+        socket.on("get_shop_info", () => { socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo) })
+
+
+
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
         socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo)
         socket.emit("price_data", this.appStateService.appStateRepository.appState.getPriceData())
