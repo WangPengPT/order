@@ -65,6 +65,7 @@ class AppState {
             },
             logoPath: "",
             instagramUrl: "",
+            orderCoolingTime: 0,
         }
 
         this.pickupData = {

@@ -18,6 +18,7 @@ function print_order(order, printModelIndex) {
 
         if (!printer) continue;
         if (!printer.data) continue;
+        if (!printer.data.menu) continue;
 
         let hasData = false;
         for (let i = 0; i < order.items.length; i++) {

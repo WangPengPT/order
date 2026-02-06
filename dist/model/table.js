@@ -3,7 +3,7 @@ const { PeopleType } = require("./people.js")
 const { TableStatus } = require("./TableStatus.js")
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note }) {
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, lastOrderTime = 0 }) {
     this.id = id;
     this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType);
 
@@ -21,6 +21,7 @@ class Table {
     this.msg_pay = msg_pay || false;
     this.msg_call = msg_call || false;
     this.nif_note = nif_note || {nif:undefined, note:undefined}
+    this.lastOrderTime = lastOrderTime
 
     this.recordProps(this)
   }

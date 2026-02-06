@@ -50,6 +50,45 @@ class UserService {
         }
     }
 
+    async resetPassword(phoneNumber) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                const hasUser = await this.usersRepository.getUserById(phoneNumber, session)
+                if (!hasUser) throw new Error("This user not exists")
+                const changedUser = await hasUser.changePassword(phoneNumber, ADMIN_PASSWORD)
+                await this.usersRepository.save(changedUser, session)
+                const newUser = await this.usersRepository.getUserById(phoneNumber, session)
+                if (!newUser) throw new Error("Faild create new User")
+                if (newUser.password !== changedUser.password) throw new Error("Password changed failed")
+                return {
+                    success: true,
+                }
+            })
+        } catch (error) {
+            return { success: false, data: error.message }
+        }
+    }
+
+    async changePassword(phoneNumber, newPassword) {
+        try {
+            return await DB.withTransaction(async (session) => {
+                const hasUser = await this.usersRepository.getUserById(phoneNumber, session)
+                if (!hasUser) throw new Error("This user not exists")
+                const changedUser = await hasUser.changePassword(phoneNumber, newPassword)
+                await this.usersRepository.save(changedUser, session)
+                const newUser = await this.usersRepository.getUserById(phoneNumber, session)
+                if (!newUser) throw new Error("Faild create new User")
+                if (newUser.password !== changedUser.password) throw new Error("Password changed faild")
+                return {
+                    success: true,
+                }
+            })
+        } catch (error) {
+            console.warn("Error: ", error);
+            return { success: false, data: error.message }
+        }
+    }
+
     async saveUsers(users) {
         try {
             return await DB.withTransaction(async (session) => {

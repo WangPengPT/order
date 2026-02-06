@@ -205,7 +205,12 @@ class SocketServices {
                     if (appState.settings.checkIP && (!appState.checkLocalIP(socket))) {
                         logger.info(`订单提交失败`)
                         logger.info(`失败原因: invalid ip`)
-                        socket.emit('error', "please connected wifi.")
+                        const msg = "please connected wifi."
+                        socket.emit('error', msg)
+                        callback({
+                            success: false,
+                            data: msg
+                        });
                         return;
                     }
 
@@ -216,10 +221,48 @@ class SocketServices {
                         return;
                     }
 
-                    logger.info(`订单提交`)
+                    // Check cooling time
+                    const coolingTime = appState.shopInfo.orderCoolingTime || 0;
+                    console.log(`[CoolingCheck] Configured coolingTime: ${coolingTime}`);
+                    if (coolingTime > 0) {
+                        const table = appState.tables.getTableById(orderData.table);
+                        if (table) {
+                            const now = Date.now();
+                            const lastOrderTime = table.lastOrderTime || 0;
+                            console.log(`[CoolingCheck] Table: ${table.id}, LastOrderTime: ${lastOrderTime}, Now: ${now}`);
+                            
+                            // lastOrderTime is timestamp (ms)
+                            // coolingTime is in seconds
+                            const elapsedSeconds = (now - lastOrderTime) / 1000;
+                            console.log(`[CoolingCheck] ElapsedSeconds: ${elapsedSeconds}`);
+                            
+                            if (elapsedSeconds < coolingTime) {
+                                const remaining = Math.ceil(coolingTime - elapsedSeconds);
+                                logger.info(`订单提交失败: 冷却时间未到 (剩余 ${remaining} 秒)`)
+                                const msg = `COOLING_LIMIT:${coolingTime}:${remaining}`
+                                socket.emit('error', msg);
+                                callback({
+                                    success: false,
+                                    data: msg
+                                });
+                                return;
+                            }
+                        }
+                    }
+
+                    logger.info(`订单提交 来源ip: ${socket.handshake.address}`)
 
                     const order = orderService.addOrder(orderData)
                     if (order.success) {
+
+                        // Update lastOrderTime
+                        const tableForUpdate = appState.tables.getTableById(orderData.table);
+                        if (tableForUpdate) {
+                            tableForUpdate.lastOrderTime = Date.now();
+                            logger.info(`[CoolingUpdate] Table ${tableForUpdate.id} lastOrderTime updated to ${tableForUpdate.lastOrderTime}`)
+                        } else {
+                            logger.warn(`[CoolingUpdate] Failed to find table ${orderData.table} to update lastOrderTime`)
+                        }
 
                         logger.info(`订单提交成功 订单号 - ${order.data.id}`)
                         logger.info(formatOrderLog(orderData))

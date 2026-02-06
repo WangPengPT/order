@@ -23,6 +23,28 @@ class UserSocket {
         callback(result)
     }
 
+    async changePassword(phoneNumber, newPass, callback) {
+        logger.info("用户修改密码：", phoneNumber, newPass)
+        const result = await this.userService.changePassword(phoneNumber, newPass)
+        if (result.success) {
+            logger.info("密码更新成功")
+        } else {
+            logger.info("密码更新失败")
+        }
+        callback(result)
+    }
+
+    async resetPassword(phoneNumber, callback) {
+        logger.info("重置密码")
+        const result = await this.userService.resetPassword(phoneNumber)
+        if (result.success) {
+            logger.info("密码更新成功")
+        } else {
+            logger.info("密码更新失败")
+        }
+        callback(result)
+    }
+
     async createUser(value, callback) {
         logger.info("创建新的用户")
         const result = await this.userService.register(value.phoneNumber, value.password)
@@ -39,6 +61,10 @@ class UserSocket {
         socket.on('manager_login', async (value, callback) => { await this.login(value, callback) })
 
         socket.on("manager_createNewUser", async (value, callback) => { await this.createUser(value, callback) })
+
+        socket.on("manager_changePassword", async (value, callback) => { await this.changePassword(value.phoneNumber, value.newPass, callback) })
+
+        socket.on("manager_resetPassword", async (value, callback) => { await this.resetPassword(value, callback) })
     }
 }
 

@@ -7,7 +7,7 @@ const divider = "-----------------------------------"
 
 function print_order_model(order,printModelIndex,printer){
     const BOLD_HAD = (printer.data.tags && printer.data.tags.includes("\b")) ? '\b' : '';
-    const menu = printer.data.menu;
+    const menu = printer.data.menu || [];
     const every_one = (printer.data.every_one == "true");
     return order_model[printModelIndex](order,BOLD_HAD,menu,every_one)
 }

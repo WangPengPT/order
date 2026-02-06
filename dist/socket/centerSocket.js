@@ -7,6 +7,7 @@ const http = require('http');
 const https = require('https');
 const {appState} = require("../state");
 const {logger} = require("../utils/logger");
+const { UserService } = require("../services/userService");
 
 
 
@@ -115,6 +116,14 @@ class CenterSocket {
             }
 
         })
+
+        socket.on("manager_resetPassword", async (value, callback) => {
+             logger.info("Center Server request reset password");
+             const userService = new UserService();
+             const result = await userService.resetPassword(value);
+             if (callback) callback(result);
+        });
+
 
 
         this.connect_socket();

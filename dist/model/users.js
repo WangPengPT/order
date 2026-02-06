@@ -23,6 +23,11 @@ class User {
         return new User({ phoneNumber, password: hash });
     }
 
+    async changePassword(phoneNumber, plainPassword) {
+        const hash = await bcrypt.hash(plainPassword, SALT_ROUDS); // 10 是 salt rounds
+        return new User({phoneNumber, password: hash});
+    }
+
     generateToken() {
         const token = jwt.sign(
         { userId: this.phoneNumber },          // payload 载荷
