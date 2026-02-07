@@ -65,6 +65,7 @@ class AppState {
             },
             logoPath: "",
             instagramUrl: "",
+            tableCoolingTime: 0,
             orderCoolingTime: 0,
         }
 
