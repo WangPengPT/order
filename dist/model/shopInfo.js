@@ -15,8 +15,10 @@ class ShopInfo {
 
         this.logoPath = logoPath
 
+        this.showBusinessHoursInfo = true
         this.businessHours = businessHours
 
+        this.showPriceInfo = true
         this.adultPrice = new PriceInfo(PriceInfo.type_adult)
         this.childPrice = new PriceInfo(PriceInfo.type_child)
 

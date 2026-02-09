@@ -69,6 +69,9 @@ class TakeawayInfo extends Info {
 
         this.firstImageBigModel = false
 
+        this.showBusinessHoursInfo = true
+        this.showPriceInfo = true
+
 
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
@@ -103,6 +106,9 @@ class QROrderInfo extends Info {
 
         this.clientCoolingTime = 0
         this.tableCoolingTime = 0
+
+        this.showBusinessHoursInfo = true
+        this.showPriceInfo = true
 
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
