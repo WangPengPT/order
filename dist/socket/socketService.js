@@ -284,6 +284,9 @@ class SocketServices {
                             this.sendMsg2TableClient(this.io, table)
                         }
 
+                        // 保存数据到磁盘
+                        db.saveAppStateData(appState)
+
                     } else {
                         logger.info(`订单提交失败`)
                         logger.info(`失败原因: ${order.data}`)

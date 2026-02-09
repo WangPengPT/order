@@ -2,6 +2,7 @@ const { logger } = require('../utils/logger.js')
 const tableService = require('../services/tableService.js');
 const appStateService = require("../services/appStateService.js")
 const { appState } = require('../state.js');
+const db = require('../filedb.js');
 
 class TableSocket {
     constructor(io) {
@@ -13,6 +14,7 @@ class TableSocket {
         const result = tableService.addNewTable(tableData);
         if (result.success) {
             logger.info(`管理端添加桌子成功`)
+            db.saveAppStateData(appState)
         } else {
             logger.info(`管理端添加桌子失败`)
             logger.info(`失败原因: ${result.message}`)
@@ -26,6 +28,7 @@ class TableSocket {
         const result = tableService.removeTable(id);
         if (result.success) {
             logger.info(`管理端删除桌子成功`)
+            db.saveAppStateData(appState)
         } else {
             logger.info(`管理端删除桌子失败`)
             logger.info(`失败原因: ${result.data}`)
@@ -41,6 +44,8 @@ class TableSocket {
         if (result.success) {
             logger.info(`管理清除改桌子成功`)
             this.io.emit(`client_table${id}`, table.data)
+            db.saveAppStateData(appState)
+            logger.info(`桌子状态已保存到磁盘`)
         } else {
             logger.info(`管理清除改桌子失败`)
             logger.info(`失败原因: ${result.data}`)
@@ -55,6 +60,7 @@ class TableSocket {
 
         if (result.success) {
             logger.info(`管理端修改桌子成功`)
+            db.saveAppStateData(appState)
         } else {
             logger.info(`管理端修改桌子失败`)
             logger.info(`失败原因: ${result.data}`)
@@ -83,6 +89,7 @@ class TableSocket {
         const result = tableService.clientCmd(id,cmd)
         if(result.success) {
             this.io.emit('client_cmd', id, result.data)
+            db.saveAppStateData(appState)
         }
         callback(result)
     }
@@ -90,6 +97,7 @@ class TableSocket {
     managerClickCMD(id, cmd){
         logger.info(`桌号: ${id} 管理确认: ${cmd} `)
         tableService.clickMsg(id,cmd)
+        db.saveAppStateData(appState)
     }
 
     registerHandlers(socket) {
