@@ -13,7 +13,6 @@ cd %SRC_PATH%
 xcopy .\server %DST_PATH% /E /Y /I
 
 cd ..
-cd ..
 cd ordersystemmanager
 call npm install
 call npm run build
