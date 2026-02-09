@@ -74,7 +74,6 @@ class UploadController {
         let endPos = name.lastIndexOf(".");
         name = name.substring(0, pos) + name.substring(endPos);
 
-
         const fullPublicPath = path.join(publicDir, name)
 
         // 将文件从临时目录复制到公开目录

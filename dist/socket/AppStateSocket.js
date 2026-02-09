@@ -22,11 +22,12 @@ class AppStateSocket {
         callback(result)
     }
 
-    updateShopInfo(value, callback){
-        logger.info(`更新商店信息${value.key}:${value.value}`)
-        const result = this.appStateService.updateShopInfo(value.key, value.value)
+    updateInfo(type,value, callback){
+        logger.info(`更新${type}信息${value.key}:${value.value}`)
+        const result = this.appStateService.updateInfo(type, value.key, value.value)
         if(result.success){
-            logger.info(`管理端更新商店信息${value.key}成功`)
+            logger.info(`管理端更新${type}信息${value.key}成功`)
+            this.io.emit("client_send_"+type,{key: value.key, value: result.data})
         }else{
             logger.error(`管理端更新${value.key}失败`)
             logger.error(`失败原因: ${result.data}`)
@@ -113,6 +114,9 @@ class AppStateSocket {
                 case "menu":
                     result = await this.menuService.getMenuAndTab()
                     break
+                case "current_price":
+                    result = this.appStateService.appStateRepository.appState.getCurrentPrice(value.time,value.type)
+                    break
                 case "weekPrice":
                     result = this.appStateService.appStateRepository.appState.getWeekPrice()
                     break
@@ -148,33 +152,45 @@ class AppStateSocket {
 
     // 管理端更新数据
     managerUpdateData(key, value, callback){
-        switch (key){
-            case "settings":
-                this.updateSettings(value, callback)
-                break
-            case "shop_info":
-                this.updateShopInfo(value,callback)
-                break
-            case "childrenPricePercentage":
-            case "weekPrice":
-            case "childrenWeekPrice":
-                this.updatePriceData(key, value, callback)
-                break
-            case "pickup_data":
-                this.updatePickupDate(value, callback)
-                break
-            case "homeDelivery_data":
-                this.updateHomeDeliveryDate(value, callback)
-                break
-            case "reserver_data":
-                this.updateReserverDate(value, callback)
-                break
-            case "updatePrintModel":
-                this.updatePrintModel(value, callback)
-                break
-            default:
-                callback({success: false, data: "Not Found Update Key"})
+        try{
+            logger.info("Manager update "+key+" data => key:" + value.key + " value: " + value.value )
+            switch (key){
+                case "settings":
+                    this.updateSettings(value, callback)
+                    break
+                case "shop_info":
+                case "qrorder_info":
+                case "takeaway_info":
+                case "delivery_info":
+                case "reserver_info":
+                    this.updateInfo(key,value, callback)
+                    break
+                case "childrenPricePercentage":
+                case "weekPrice":
+                case "childrenWeekPrice":
+                    this.updatePriceData(key, value, callback)
+                    break
+                case "pickup_data":
+                    this.updatePickupDate(value, callback)
+                    break
+                case "homeDelivery_data":
+                    this.updateHomeDeliveryDate(value, callback)
+                    break
+                case "reserver_data":
+                    this.updateReserverDate(value, callback)
+                    break
+                case "updatePrintModel":
+                    this.updatePrintModel(value, callback)
+                    break
+                default:
+                    callback({success: false, data: "Not Found Update Key"})
+            }
+
+        }catch ( e ){
+            logger.warn("管理端更新信息失败，意料之外的错误")
+            logger.warn(e.message)
         }
+
     }
 
     async defaultMenuOrdering() {
@@ -198,17 +214,19 @@ class AppStateSocket {
 
         socket.on("get_shop_info", () => { socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo) })
 
-
-
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
-        socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo)
-        socket.emit("price_data", this.appStateService.appStateRepository.appState.getPriceData())
-        socket.emit("pickup_data", this.appStateService.appStateRepository.appState.getPickupData())
-        socket.emit("homeDelivery_data", this.appStateService.appStateRepository.appState.getHomeDeliveryData())
-        socket.emit("reserver_data", this.appStateService.appStateRepository.appState.getReserverData())
         socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
-        socket.emit("permissions_control", this.appStateService.appStateRepository.appState.getPermissionsControl())
         socket.emit("manager_get_custom_dish_control", this.appStateService.appStateRepository.appState.customDishesControl)
+
+        // API: send information to manager/client
+        socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo)
+        socket.emit("qrorder_info", this.appStateService.appStateRepository.appState.qrOrderInfo)
+        socket.emit("takeaway_info", this.appStateService.appStateRepository.appState.takeawayInfo)
+        socket.emit("delivery_info", this.appStateService.appStateRepository.appState.deliveryInfo)
+        socket.emit("reserver_info", this.appStateService.appStateRepository.appState.reserverInfo)
+
+        // API: send center server's permissions control
+        socket.emit("permissions_control", this.appStateService.appStateRepository.appState.getPermissionsControl())
     }
 
 }

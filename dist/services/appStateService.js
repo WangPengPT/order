@@ -51,11 +51,30 @@ class AppStateService {
         }
     }
 
-    updateShopInfo(key, value){
+    updateInfo(type, key, value){
         try {
-            appState.updateShopInfo(key, value)
-            if(equals(appState.shopInfo[key], value)) return { success: true, data: value }
-            else throw new Error(key + "更新失败")
+            let result
+            switch (type) {
+                case "shop_info":
+                    result = appState.updateShopInfo(key, value)
+                    break
+                case "takeaway_info":
+                    result = appState.updateTakeawayInfo(key, value)
+                    break
+                case "delivery_info":
+                    result = appState.updateDeliveryInfo(key, value)
+                    break
+                case "reserver_info":
+                    result = appState.updateReserverInfo(key, value)
+                    break
+                case "qrorder_info":
+                    result = appState.updateQrOrderInfo(key, value)
+                    break
+                default:
+                    result = { success: false, data: "Not Found Info Type:"+type }
+            }
+            if(result.success) return result
+            else throw new Error(result.data)
         } catch (error) {
             return { success: false, data: error.message }
         }

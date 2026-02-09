@@ -222,7 +222,7 @@ class SocketServices {
                     }
 
                     // Check cooling time
-                    const coolingTime = appState.shopInfo.tableCoolingTime || 0;
+                    const coolingTime = appState.qrOrderInfo.tableCoolingTime || 0;
                     console.log(`[CoolingCheck] Configured coolingTime: ${coolingTime}`);
                     if (coolingTime > 0) {
                         const table = appState.tables.getTableById(orderData.table);
@@ -283,9 +283,6 @@ class SocketServices {
                         if (table.success) {
                             this.sendMsg2TableClient(this.io, table)
                         }
-
-                        // 保存数据到磁盘
-                        db.saveAppStateData(appState)
 
                     } else {
                         logger.info(`订单提交失败`)
@@ -538,7 +535,6 @@ class SocketServices {
             ENABLE_ROAST_DUCK: ENABLE_ROAST_DUCK,
             TEST_ENVIRONMENT: process.env.TEST_ENVIRONMENT,
             pageDir: db.pageDir,
-            shopType: appState.shopType,
             restaurant: centerSocket.getRestaurant(),
             location: appState.shopInfo.latitudeAndLongitude,
         });

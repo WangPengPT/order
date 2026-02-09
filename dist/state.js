@@ -2,7 +2,10 @@ const {Order} = require('./model/order.js')
 const {TableManager} = require('./model/tableManager.js')
 const {TableStatus} = require('./model/TableStatus.js')
 const {Table} = require('./model/table.js')
-const WeekPrice = require("./model/WeekPrice");
+const {ShopInfo,PriceInfo} = require('./model/shopInfo.js')
+const {TakeawayInfo, DeliveryInfo, ReserverInfo, QROrderInfo} = require('./model/Info.js')
+const {Settings} = require('./model/settings.js')
+const WeekPrice = require("./model/WeekPrice.js");
 const {logger} = require("./utils/logger");
 
 class AppState {
@@ -36,38 +39,26 @@ class AppState {
             6: {enabled: true, name: 'Menu Almoço'},
         }
 
-        this.settings = {
-            checkIP: false,
-            order: true,
-            delivery: false,
-            reserver: false,
-            isFestiveDay: false,
-            useFandays: false,
-            useChildrenDiscount: false,
-            homeDelivery: false,
-            dividerTime: 17,
-        }
+        // this.settings = {
+        //     checkIP: false,
+        //     order: true,
+        //     delivery: false,
+        //     reserver: false,
+        //     isFestiveDay: false,
+        //     useFandays: false,
+        //     useChildrenDiscount: false,
+        //     homeDelivery: false,
+        //     dividerTime: 17,
+        // }
 
-        this.shopInfo = {
-            restaurantName:"Default Restaurant Name",
-            phoneNumber: "",
-            email:"",
-            location: {
-                street: "",
-                city: "",
-                region: "",
-                country: "",
-                postcode: "",
-            },
-            latitudeAndLongitude:{
-                latitude: undefined,
-                longitude: undefined,
-            },
-            logoPath: "",
-            instagramUrl: "",
-            tableCoolingTime: 1,
-            orderCoolingTime: 1,
-        }
+        this.settings = new Settings({})
+
+        this.shopInfo = new ShopInfo({})
+
+        this.qrOrderInfo = new QROrderInfo({})
+        this.takeawayInfo = new TakeawayInfo()
+        this.deliveryInfo = new DeliveryInfo()
+        this.reserverInfo = new ReserverInfo()
 
         this.pickupData = {
             timeInterval: 15, // 每隔15分钟取一次餐
@@ -99,15 +90,6 @@ class AppState {
         }
         this.currentPageID = 1
         this.currentTakeWayPageID = 1
-
-        this.shopType = {
-            dineIn: process.env.DINE_IN? (process.env.DINE_IN=="true") : true,
-            takeAway: process.env.TAKE_AWAY? (process.env.TAKE_AWAY=="true") : true,
-        }
-
-        this.childrenPricePercentage = 50
-        this.weekPrice = new WeekPrice(this.settings.dividerTime)
-        this.childrenWeekPrice = new WeekPrice(this.settings.dividerTime)
 
         this.initTables()
         this.pickupData.beginEndInterval = this.initBeginEndInterval()
@@ -148,6 +130,25 @@ class AppState {
     // 所有 Get 函数
     getPermissionsControl(){
         return this.permissionsControl
+    }
+
+    getCurrentPrice(time,type){
+        if(type){
+            const price = this.shopInfo.getCurrentPrice(type,time,this.settings.useChildrenDiscount)
+            if(price){
+                return { success:true, data:price }
+            }
+            return {success: false, data: 'Not Found Price'}
+        }else{
+            const data = {
+                adult: this.shopInfo.getCurrentPrice(PriceInfo.type_adult,time),
+                child: this.shopInfo.getCurrentPrice(PriceInfo.type_child,time,this.settings.useChildrenDiscount)
+            }
+            if(data.adult && data.child){
+                return { success:true, data:data }
+            }
+            return { success: false, data: data }
+        }
     }
 
     getPriceData(){
@@ -255,13 +256,44 @@ class AppState {
     }
 
     updateSettings(key, value) {
-        this.settings[key] = value
-        console.log("update settings: ", key,this.settings[key])
+        console.log("update settings: ", key)
+        const result = this.settings.update(key, value)
+        console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
     }
 
     updateShopInfo(key, value){
-        this.shopInfo[key] = value
-        console.log("update shop_info:", key, this.shopInfo[key])
+        console.log("update shop_info:", key)
+        const result = this.shopInfo.update(key, value)
+        console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
+        return result
+    }
+
+    updateQrOrderInfo(key, value){
+        console.log("update qrorder_info:", key)
+        const result = this.qrOrderInfo.update(key, value)
+        console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
+        return result
+    }
+
+    updateTakeawayInfo(key, value){
+        console.log("update takeaway_info:", key)
+        const result = this.takeawayInfo.update(key, value)
+        console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
+        return result
+    }
+
+    updateDeliveryInfo(key, value){
+        console.log("update delivery_info:", key)
+        const result = this.deliveryInfo.update(key, value)
+        console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
+        return result
+    }
+
+    updateReserverInfo(key, value){
+        console.log("update reserver_info:", key)
+        const result = this.reserverInfo.update(key, value)
+        console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
+        return result
     }
 
     updatePickupDate(key, value){
@@ -480,6 +512,34 @@ class AppState {
                 }
                 return this.shopInfo;
             },
+            qrOrderInfo: (value) => {
+                if (!value) return this.qrOrderInfo;
+                for (const k of Object.keys(value)) {
+                    this.qrOrderInfo[k] = value[k];
+                }
+                return this.qrOrderInfo;
+            },
+            takeawayInfo: (value) => {
+                if (!value) return this.takeawayInfo;
+                for (const k of Object.keys(value)) {
+                    this.takeawayInfo[k] = value[k];
+                }
+                return this.takeawayInfo;
+            },
+            deliveryInfo: (value) => {
+                if (!value) return this.deliveryInfo;
+                for (const k of Object.keys(value)) {
+                    this.deliveryInfo[k] = value[k];
+                }
+                return this.deliveryInfo;
+            },
+            reserverInfo: (value) => {
+                if (!value) return this.reserverInfo;
+                for (const k of Object.keys(value)) {
+                    this.reserverInfo[k] = value[k];
+                }
+                return this.reserverInfo;
+            },
             pickupData: (value) => {
                 if (!value) return this.pickupData;
                 for (const k of Object.keys(value)) {
@@ -609,34 +669,7 @@ class AppState {
             }
         }
 
-        // resetExcludeDates(instance)
-
         return instance
-
-        function trans(instance){
-            if(instance.pickupData) {
-                if(instance.pickupData.beginEndInterval && instance.pickupData.timeInterval){
-                    instance.pickupData = {timeInterval: instance.pickupData.timeInterval, beginEndInterval: instance.pickupData.beginEndInterval}
-                    logger.info("新pickupData keys: "+Object.keys(instance.pickupData))
-                }
-            }
-        }
-
-        function resetExcludeDates(instance){
-
-            instance.pickupData.excludeDates = {
-                week:[],
-                month:[],
-                dates:[],
-            }
-
-            instance.reserverData.excludeDates = {
-                week:[],
-                month:[],
-                dates:[],
-            }
-
-        }
     }
 
     localIps = []

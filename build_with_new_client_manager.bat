@@ -12,13 +12,14 @@ set DST_PATH=%script_dir%\dist
 cd %SRC_PATH%
 xcopy .\server %DST_PATH% /E /Y /I
 
-cd managerPrime
+cd ..
+cd ..
+cd ordersystemmanager
 call npm install
 call npm run build
 ren .\dist\index.html manager.html
 xcopy .\dist %DST_PATH%\public /E /Y /I
 
-cd ..
 cd ..
 cd ordersystemclient
 call npm install
