@@ -39,62 +39,16 @@ class AppState {
             6: {enabled: true, name: 'Menu Almoço'},
         }
 
-        // this.settings = {
-        //     checkIP: false,
-        //     order: true,
-        //     delivery: false,
-        //     reserver: false,
-        //     isFestiveDay: false,
-        //     useFandays: false,
-        //     useChildrenDiscount: false,
-        //     homeDelivery: false,
-        //     dividerTime: 17,
-        // }
-
         this.settings = new Settings({})
 
-        this.shopInfo = new ShopInfo({})
+        this.shopInfo = new ShopInfo()
 
-        this.qrOrderInfo = new QROrderInfo({})
+        this.qrOrderInfo = new QROrderInfo()
         this.takeawayInfo = new TakeawayInfo()
         this.deliveryInfo = new DeliveryInfo()
         this.reserverInfo = new ReserverInfo()
 
-        this.pickupData = {
-            timeInterval: 15, // 每隔15分钟取一次餐
-            beginEndInterval: {}, // 默认从12点到15点，19点到23点
-            excludeDates: {
-                week:[],
-                month:[],
-                dates:[],
-            },
-        }
-        this.homeDeliveryData = {
-            timeInterval: 30,
-            beginEndInterval: {},
-            excludeDates: {
-                week:[],
-                month:[],
-                dates:[],
-            }
-        }
-        this.reserverData = {
-            timeInterval: 15, // 每隔15分钟取一次餐
-            beginEndInterval: {}, // 默认从12点到15点，19点到23点
-            excludeDates: {
-                week:[],
-                month:[],
-                dates:[],
-            },
-            excludeDiscountDates: [],
-        }
-        this.currentPageID = 1
-        this.currentTakeWayPageID = 1
-
         this.initTables()
-        this.pickupData.beginEndInterval = this.initBeginEndInterval()
-        this.reserverData.beginEndInterval = this.initBeginEndInterval()
-        this.homeDeliveryData.beginEndInterval = this.initBeginEndInterval()
 
         this.recordProps(this, ['menu', 'orderMenuTab'])
 
@@ -132,17 +86,17 @@ class AppState {
         return this.permissionsControl
     }
 
-    getCurrentPrice(time,type){
+    getCurrentPrice(type,time=Date.now()){
         if(type){
-            const price = this.shopInfo.getCurrentPrice(type,time,this.settings.useChildrenDiscount)
+            const price = this.shopInfo.getCurrentPrice(type,time,this.settings.isFestiveDay,this.settings.useChildrenDiscount)
             if(price){
                 return { success:true, data:price }
             }
             return {success: false, data: 'Not Found Price'}
         }else{
             const data = {
-                adult: this.shopInfo.getCurrentPrice(PriceInfo.type_adult,time),
-                child: this.shopInfo.getCurrentPrice(PriceInfo.type_child,time,this.settings.useChildrenDiscount)
+                adult: this.shopInfo.getCurrentPrice(PriceInfo.type_adult,time,this.settings.isFestiveDay),
+                child: this.shopInfo.getCurrentPrice(PriceInfo.type_child,time,this.settings.isFestiveDay,this.settings.useChildrenDiscount)
             }
             if(data.adult && data.child){
                 return { success:true, data:data }
@@ -165,7 +119,7 @@ class AppState {
         const data = []
         const peopleType = this.tables.getTableById(tableId).peopleType
         for(const key in peopleType){
-            const price = key.toLowerCase().includes("adult") ? this.getAdultCurrentPrice() : this.getChildrenCurrentPrice()
+            const price = key.toLowerCase().includes("adult") ? this.getCurrentPrice(PriceInfo.type_adult) : this.getCurrentPrice(PriceInfo.type_child)
             data.push({
                 peopleType: key,
                 price: price,
@@ -175,33 +129,6 @@ class AppState {
         }
         if(Object.keys(data).length >= 0) success = true
         return { success:success, data:data }
-    }
-
-    getAdultCurrentPrice(){
-        return this.weekPrice.getCurrentPrice(this.settings.isFestiveDay)
-    }
-
-    getChildrenCurrentPrice(){
-        const childrenPrice = this.settings.useChildrenDiscount?
-            (this.getAdultCurrentPrice() * this.childrenPricePercentage / 100 ) : this.childrenWeekPrice.getCurrentPrice(this.settings.isFestiveDay)
-        // console.log("getChildrenCurrentPrice:",childrenPrice)
-        return childrenPrice
-    }
-
-    getPickupData(){
-        const result = {}
-        for(const key in this.pickupData){
-            result[key] = this.pickupData[key]
-        }
-        return result
-    }
-
-    getHomeDeliveryData(){
-        const result = {}
-        for(const key in this.homeDeliveryData){
-            result[key] = this.homeDeliveryData[key]
-        }
-        return result
     }
 
     getReserverData(){
@@ -340,7 +267,7 @@ class AppState {
 
     getTableById(tableId) {
         if (!tableId) return undefined;
-        if (typeof variable === 'string') {
+        if (typeof tableId === 'string') {
             const id = tableId.replace('#', '')
             return this.tables.getTableById(id)
         } else {
@@ -507,9 +434,7 @@ class AppState {
             },
             shopInfo: (value) => {
                 if (!value) return this.shopInfo;
-                for (const k of Object.keys(value)) {
-                    this.shopInfo[k] = value[k];
-                }
+                this.shopInfo = ShopInfo.fromJSON(value)
                 return this.shopInfo;
             },
             qrOrderInfo: (value) => {
@@ -561,20 +486,6 @@ class AppState {
                 }
                 return this.reserverData;
             },
-            weekPrice: (value) => {
-                if (!value) return this.weekPrice;
-                for (const k of Object.keys(value)) {
-                    this.weekPrice[k] = value[k];
-                }
-                return this.weekPrice;
-            },
-            childrenWeekPrice: (value) => {
-                if (!value) return this.childrenWeekPrice;
-                for (const k of Object.keys(value)) {
-                    this.childrenWeekPrice[k] = value[k];
-                }
-                return this.childrenWeekPrice;
-            }
         };
 
         for (const key of this._dataKeys) {
@@ -587,13 +498,13 @@ class AppState {
         }
     }
 
-    getTableTotalAmout(tableId) {
+    getTableTotalAmount(tableId) {
         const table = this.tables.getTableById(tableId)
         if (table == null) throw new Error('Not found the table')
         const tableOrdersAmount = parseFloat(table.getTableOrdersTotalAmount())
 
-        const adultPrice = this.getAdultCurrentPrice()
-        const childrenPrice = this.getChildrenCurrentPrice()
+        const adultPrice = this.getCurrentPrice(PriceInfo.type_adult)
+        const childrenPrice = this.getCurrentPrice(PriceInfo.type_child)
         const tablePeoplesAmount = parseFloat(table.getTablePeopleTotalAmount(adultPrice, childrenPrice))
 
         const adultQty = table.peopleType.adults
@@ -673,7 +584,7 @@ class AppState {
     }
 
     localIps = []
-
+    blacklistIps = []
 
     getClientIP(socket) {
         const headers = socket.handshake.headers;
@@ -697,6 +608,25 @@ class AppState {
         }
 
         return true
+    }
+
+    checkBlacklistIP(socket) {
+        if (this.blacklistIps && this.blacklistIps.length > 0) {
+            const ip = this.getClientIP(socket)
+            return this.blacklistIps.includes(ip)
+        }
+        return false
+    }
+
+    addBlacklistIP(ip) {
+        if (!this.blacklistIps) this.blacklistIps = []
+        if (this.blacklistIps.includes(ip)) return;
+        this.blacklistIps.push(ip)
+    }
+
+    removeBlacklistIP(ip) {
+        if (!this.blacklistIps) return;
+        this.blacklistIps = this.blacklistIps.filter(item => item !== ip);
     }
 }
 

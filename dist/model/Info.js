@@ -8,11 +8,18 @@ class Info {
     constructor(type) {
         this.type = type
 
-        this.hoursInfo = undefined
+        this.hoursInfo = undefined // 营业时间
 
-        this.timeInterval = 15
+        this.timeInterval = 15 // 时间间隔
 
-        this.excludeDates = {week:[], month:[], dates:[],}
+        this.excludeDates = {week:[], month:[], dates:[],} // 排除时间
+
+        this.firstImageBigModel = false // 大图模式
+
+        this.showBusinessHoursInfo = true // 显示/隐藏营业时间卡片
+        this.showPriceInfo = true // 显示/隐藏价格卡片
+
+        this.homePageImages = {mobile:[], pad:[], computer:[]} // 背景图片
 
     }
 
@@ -67,11 +74,7 @@ class TakeawayInfo extends Info {
     constructor() {
         super(Info.takeaway_type);
 
-        this.firstImageBigModel = false
-
-        this.showBusinessHoursInfo = true
-        this.showPriceInfo = true
-
+        this.pay_type = {pay_in_shop:true, mb_way: true}
 
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
@@ -82,6 +85,7 @@ class DeliveryInfo extends Info {
     constructor() {
         super(Info.delivery_type);
 
+        this.pay_type = {pay_with_money:true, pay_with_card:true, mb_way: true}
 
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
@@ -102,13 +106,8 @@ class QROrderInfo extends Info {
     constructor() {
         super(Info.qrorder_type);
 
-        this.firstImageBigModel = false
-
-        this.clientCoolingTime = 0
-        this.tableCoolingTime = 0
-
-        this.showBusinessHoursInfo = true
-        this.showPriceInfo = true
+        this.clientCoolingTime = 0 // 用户上传订单冷却时间
+        this.tableCoolingTime = 0 // 桌子冷却时间
 
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)

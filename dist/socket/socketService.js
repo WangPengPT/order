@@ -160,7 +160,7 @@ class SocketServices {
             // 客户端获取总消费 // add signal
             socket.on("client_tableTotalAmount", (tableId, cb) => {
                 //logger.info(`管理端亲求桌号 ${tableId} 总消费`)
-                const result = this.appStateSocket.appStateService.getTableTotalAmout(tableId)
+                const result = this.appStateSocket.appStateService.getTableTotalAmount(tableId)
                 cb(result)
             })
 

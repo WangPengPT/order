@@ -252,7 +252,7 @@ class AppStateService {
     getCurrentPrice() {
         try {
             const appState = this.appStateRepository.appState
-            const price = appState.weekPrice.getCurrentPrice()
+            const price = appState.getCurrentPrice()
             const res = {
                 success: true,
                 data: price
@@ -294,33 +294,10 @@ class AppStateService {
         }
     }
 
-    updateWeekPrice(key, price) {
-        try {
-            console.log("updateWeekPrice", key, price);
-            const newPrices = this.appStateRepository.appState.updateWeekPrice(key, price);
-            console.log("newPrices",newPrices)
-            return { success: true, data: newPrices };
-        } catch (error) {
-            console.warn("Error: ", error);
-            return { success: false, data: error.message };
-        }
-    }
-
-    updataChildrenPricePercentage(percentage) {
-        try {
-            const newPercentage = this.appStateRepository.appState.updateChildrenPricePercentage(percentage)
-            return { success: true, data: newPercentage };
-        } catch (error) {
-            console.error("Error: ", error);
-            return { success: false, data: error.message };
-        }
-
-    }
-
-    getTableTotalAmout(tableId) {
+    getTableTotalAmount(tableId) {
         try {
             if (!tableId) throw new Error("Non Input Value");
-            const prices = this.appStateRepository.appState.getTableTotalAmout(tableId);
+            const prices = this.appStateRepository.appState.getTableTotalAmount(tableId);
             return { success: true, data: prices };
         } catch (error) {
             console.warn("Error: ", error);
