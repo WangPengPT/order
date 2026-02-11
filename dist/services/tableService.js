@@ -2,6 +2,7 @@ const { appState } = require('../state.js');
 const { tablesPassword } = require('../model/tableManager.js')
 const { logger } = require('../utils/logger.js')
 const { TableStatus } = require('../model/TableStatus.js')
+const db = require('../filedb.js');
 
 function addNewTable(tableData) {
   try {
@@ -32,8 +33,20 @@ function tableLogin(io) {
   io.on("client_login", (value, cb) => {
     try {
       const id = value.table
-      const table = tablesPassword.tables.get(id)
-      const res = table.checkPassword(value.password)
+      const tablePass = tablesPassword.tables.get(id)
+      if (!tablePass) {
+        throw new Error("Table not found in password system")
+      }
+      const res = tablePass.checkPassword(value.password)
+      
+      if (res) {
+         const table = appState.tables.getTableById(id)
+         if (table && table.status === TableStatus.FREE) {
+            table.status = TableStatus.SEATED
+            db.saveAppStateData(appState)
+            io.emit(`client_table${id}`, table.toJSON())
+         }
+      }
       cb(res)
     } catch (error) {
       console.warn("Error: ", error.message)
@@ -119,6 +132,19 @@ function cleanTable(id) {
 
     if (table == null) throw new Error("Not found the table")
     table.clearTable()
+
+    // Log check for ghost orders
+    if (table.order.length > 0) {
+      logger.error(`[GhostOrderCheck] Table ${id} clearTable failed! Orders remain: ${table.order.length}`)
+    } else {
+      logger.info(`[GhostOrderCheck] Table ${id} cleared successfully.`)
+    }
+    
+    // Check global orders map (just for debugging/verification)
+    const globalOrders = appState.getOrdersByTableID(id);
+    if (globalOrders && globalOrders.length > 0) {
+       logger.warn(`[GhostOrderCheck] Table ${id} cleared, but appState.orders still has ${globalOrders.length} records (Historical/Ghost?)`)
+    }
 
     const cleanedTable = appState.tables.getTableById(id)
     // console.log(cleanedTable)

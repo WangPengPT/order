@@ -184,7 +184,7 @@ class SocketServices {
             })
 
             socket.on("manager_update_checkIP", (value, callback) => {
-                appState.checkIP = value;
+                appState.settings.checkIP = value;
                 const result = {
                     success: true,
                     data: value
@@ -192,6 +192,23 @@ class SocketServices {
                 logger.info(`manager_update_checkIP return: ${result}`)
                 callback(result)
             })
+
+            // IP Blacklist Management
+            socket.on("manager_add_blacklist_ip", (ip, callback) => {
+                appState.addBlacklistIP(ip);
+                logger.info(`Added IP to blacklist: ${ip}`);
+                callback({ success: true, data: appState.blacklistIps });
+            });
+
+            socket.on("manager_remove_blacklist_ip", (ip, callback) => {
+                appState.removeBlacklistIP(ip);
+                logger.info(`Removed IP from blacklist: ${ip}`);
+                callback({ success: true, data: appState.blacklistIps });
+            });
+
+            socket.on("manager_get_blacklist_ips", (callback) => {
+                callback({ success: true, data: appState.blacklistIps || [] });
+            });
 
             // 管理端更改密码
             tableService.updateTablePassword(socket)
@@ -202,6 +219,19 @@ class SocketServices {
             // 处理订单提交
             socket.on("submit_order", (orderData, callback) => {
                 try {
+                    // Check Blacklist IP
+                    if (appState.checkBlacklistIP(socket)) {
+                        logger.info(`订单提交失败`)
+                        logger.info(`失败原因: IP in blacklist`)
+                        const msg = "Your IP is blocked."
+                        socket.emit('error', msg)
+                        callback({
+                            success: false,
+                            data: msg
+                        });
+                        return;
+                    }
+
                     if (appState.settings.checkIP && (!appState.checkLocalIP(socket))) {
                         logger.info(`订单提交失败`)
                         logger.info(`失败原因: invalid ip`)
@@ -283,6 +313,9 @@ class SocketServices {
                         if (table.success) {
                             this.sendMsg2TableClient(this.io, table)
                         }
+
+                        // 保存数据到磁盘
+                        db.saveAppStateData(appState)
 
                     } else {
                         logger.info(`订单提交失败`)

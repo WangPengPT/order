@@ -13,7 +13,7 @@ const {UploadController} = require('./controllers/uploadController.js');
 const {SocketServices} = require('./socket/socketService.js');
 const {upload, memoryUpload} = require('./middlewares/uploadMiddleware.js');
 const {logger} = require('./utils/logger.js')
-const {webPageDesignService} = require("./services/webPageDesignService.js");
+// const {webPageDesignService} = require("./services/webPageDesignService.js");
 const DB = require("./db.js");
 const centerSocket = require('./socket/centerSocket.js');
 const {menuService} = require("./services/menuService.js");
@@ -86,6 +86,8 @@ app.post('/upload_image', upload.single('image'), uploadController.handleUploadI
 
 app.post('/api/upload_background', upload.array('images'), uploadController.handleUploadBackgroundImages);
 
+/* 不使用 welcome page 函数
+
 app.post('/api/upload_titleImages',
     upload.array('titleImages'), // 多张
     (req, res) => uploadController.handleUploadTitleImages(req, res)
@@ -101,6 +103,7 @@ app.post('/api/upload_logo',
     (req, res) =>
         uploadController.handleUploadWelcomeLogo(req, res)
 );
+*/
 
 app.get('/api/exportDatas', authMiddleware, datasController.exportDatas)
 
@@ -187,7 +190,7 @@ async function OnQuit() {
     try {
         logger.info("\n🛑 收到终止信号，正在保存数据...");
         await socketService.close();
-        webPageDesignService.savePages();
+        // webPageDesignService.savePages();
         logger.info("✅ 数据保存完毕，安全退出。");
     } catch (err) {
         logger.error("⚠️ 保存数据时出错:", err);

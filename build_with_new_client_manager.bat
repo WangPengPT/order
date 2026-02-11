@@ -1,7 +1,7 @@
 rem package, update used git
 rem server will auto update.
 
-rm dist -rf
+rmdir /s /q dist
  
 set "script_dir=%~dp0"
 echo %script_dir%

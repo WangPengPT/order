@@ -146,8 +146,8 @@ class WebPageDesignSocket {
 
         socket.on("manager_apply_welcomePage", async (id, type, callback) => await this.applayPage(id, type, callback))
 
-        socket.emit("client_current_welcome_page", await this.getCurrentWelcomePage())
-        socket.emit("client_current_welcome_takeaway_page", await this.getCurrentTakeWelcomePage())
+        // socket.emit("client_current_welcome_page", await this.getCurrentWelcomePage())
+        // socket.emit("client_current_welcome_takeaway_page", await this.getCurrentTakeWelcomePage())
 
     }
 }
