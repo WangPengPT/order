@@ -143,6 +143,7 @@ class AppStateSocket {
 
         socket.on("get_shop_info", () => { socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo) })
 
+        // console.log("settings data:",this.appStateService.appStateRepository.appState.settings)
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
         socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
         socket.emit("manager_get_custom_dish_control", this.appStateService.appStateRepository.appState.customDishesControl)
