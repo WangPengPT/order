@@ -15,9 +15,9 @@ class DictionaryRepository {
             }
             const data = result.value
             return data
-        } catch (err) {
-            logger.error(`repo:❌ 获取字典文字失败: ${err}`);
-            throw err;
+        } catch (error) {
+            logger.error(`repo:❌ 获取字典文字失败: ${error}`);
+            throw error;
         }
     }
 
@@ -25,8 +25,8 @@ class DictionaryRepository {
         try {
             await DB.setValueByCleanId(this.tableName, id, data, session)
         } catch (error) {
-            logger.error(`repo:❌ 更新字典文字失败: ${err}`);
-            throw err;
+            logger.error(`repo:❌ 更新字典文字失败: ${error}`);
+            throw error;
         }
     }
 
@@ -63,8 +63,8 @@ class DictionaryRepository {
             const result = await DB.find(this.tableName, {}, session);
             return result.length !== 0
         } catch (error) {
-            logger.error(`repo:❌ 检测字典数据失败: ${err}`);
-            throw err;
+            logger.error(`repo:❌ 检测字典数据失败: ${error}`);
+            throw error;
         }
     }
 

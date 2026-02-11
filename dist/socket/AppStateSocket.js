@@ -35,63 +35,6 @@ class AppStateSocket {
         callback(result)
     }
 
-    updatePickupDate(value, callback){
-        logger.info(`更新取餐数据${value.key}:${value.value}`)
-        const result = this.appStateService.updatePickupDate(value.key, value.value)
-        if(result.success){
-            logger.info(`管理端更新取餐数据${value.key}成功`)
-            this.io.emit("client_send_pickupData", {key: value.key, value: result.data})
-        }else{
-            logger.info(`管理端更新${value.key}失败`)
-            logger.info(`失败原因: ${result.data}`)
-        }
-        callback(result)
-    }
-
-    updateHomeDeliveryDate(value, callback){
-        logger.info(`更新配送数据${value.key}:${value.value}`)
-        const result = this.appStateService.updateHomeDeliveryDate(value.key, value.value)
-        if(result.success){
-            logger.info(`管理端更新配送数据${value.key}成功`)
-            this.io.emit("client_send_homeDeliveryData", {key: value.key, value: result.data})
-        }else{
-            logger.info(`管理端更新${value.key}失败`)
-            logger.info(`失败原因: ${result.data}`)
-        }
-        callback(result)
-    }
-
-    updateReserverDate(value, callback){
-        logger.info(`更新订台数据${value.key}:${value.value}`)
-        const result = this.appStateService.updateReserverDate(value.key, value.value)
-        if(result.success){
-            logger.info(`管理端更新订台数据${value.key}成功`)
-            this.io.emit("client_send_reserverData", {key: value.key, value: result.data})
-        }else{
-            logger.info(`管理端更${value.key}失败`)
-            logger.info(`失败原因: ${result.data}`)
-        }
-        callback(result)
-    }
-
-
-    updatePriceData(key, value, callback) {
-        logger.info(`管理端更改价格`)
-        let res
-        if(key == 'childrenPricePercentage'){
-            res = this.appStateService.updataChildrenPricePercentage(value)
-        }else{
-            res = this.appStateService.updateWeekPrice(key,value)
-        }
-        if (res.success) {
-            logger.info(`管理端更改价格成功`)
-        } else {
-            logger.info(`管理端更改价格失败`)
-            logger.info(`失败原因: ${res.data}`)
-        }
-        callback(res)
-    }
-
     updatePrintModel(value, callback){
         logger.info(`管理端更改打印模板`)
         const result = this.appStateService.updatePrintModel(value.key, value.value)
@@ -164,20 +107,6 @@ class AppStateSocket {
                 case "delivery_info":
                 case "reserver_info":
                     this.updateInfo(key,value, callback)
-                    break
-                case "childrenPricePercentage":
-                case "weekPrice":
-                case "childrenWeekPrice":
-                    this.updatePriceData(key, value, callback)
-                    break
-                case "pickup_data":
-                    this.updatePickupDate(value, callback)
-                    break
-                case "homeDelivery_data":
-                    this.updateHomeDeliveryDate(value, callback)
-                    break
-                case "reserver_data":
-                    this.updateReserverDate(value, callback)
                     break
                 case "updatePrintModel":
                     this.updatePrintModel(value, callback)

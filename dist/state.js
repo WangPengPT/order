@@ -5,7 +5,6 @@ const {Table} = require('./model/table.js')
 const {ShopInfo,PriceInfo} = require('./model/shopInfo.js')
 const {TakeawayInfo, DeliveryInfo, ReserverInfo, QROrderInfo} = require('./model/Info.js')
 const {Settings} = require('./model/settings.js')
-const WeekPrice = require("./model/WeekPrice.js");
 const {logger} = require("./utils/logger");
 
 class AppState {
@@ -105,15 +104,6 @@ class AppState {
         }
     }
 
-    getPriceData(){
-        const result = {
-            weekPrice: this.weekPrice.getAllPrices(),
-            childrenWeekPrice: this.childrenWeekPrice.getAllPrices(),
-            childrenPricePercentage: this.childrenPricePercentage,
-        }
-        return result
-    }
-
     getPeopleCurrentPriceData(tableId){
         let success = false
         const data = []
@@ -129,30 +119,6 @@ class AppState {
         }
         if(Object.keys(data).length >= 0) success = true
         return { success:success, data:data }
-    }
-
-    getReserverData(){
-        const result = {}
-        for(const key in this.reserverData){
-            result[key] = this.reserverData[key]
-        }
-        return result
-    }
-
-    getWeekPrice(){
-        let success = false
-        if(this.weekPrice){
-            success = true
-        }
-        return {success: success, data: this.weekPrice}
-    }
-
-    getChildrenWeekPrice(){
-        let success = false
-        if(this.childrenWeekPrice){
-            success = true
-        }
-        return {success: success, data: this.childrenWeekPrice}
     }
 
     getChildrenPricePercentage(){
@@ -221,34 +187,6 @@ class AppState {
         const result = this.reserverInfo.update(key, value)
         console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
         return result
-    }
-
-    updatePickupDate(key, value){
-        this.pickupData[key] = value
-        console.log("update pickupDate: ", key,this.pickupData[key])
-    }
-
-    updateHomeDeliveryDate(key, value){
-        this.homeDeliveryData[key] = value
-        console.log("update homeDeliveryData: ", key,this.homeDeliveryData[key])
-    }
-
-    updateReserverDate(key, value){
-        this.reserverData[key] = value
-        console.log("update reserverData: ", key,this.reserverData[key])
-    }
-
-    updateChildrenPricePercentage(percentage){
-        this.childrenPricePercentage = percentage
-        return this.childrenPricePercentage
-    }
-
-    updateWeekPrice(key,value){
-        if(key == 'childrenWeekPrice'){
-            return this.childrenWeekPrice.setAllPrices(value)
-        }else{
-            return this.weekPrice.setAllPrices(value)
-        }
     }
 
     updatePrintModel(key, value){
@@ -464,27 +402,6 @@ class AppState {
                     this.reserverInfo[k] = value[k];
                 }
                 return this.reserverInfo;
-            },
-            pickupData: (value) => {
-                if (!value) return this.pickupData;
-                for (const k of Object.keys(value)) {
-                    this.pickupData[k] = value[k];
-                }
-                return this.pickupData;
-            },
-            homeDeliveryData: (value) => {
-                if (!value) return this.homeDeliveryData;
-                for (const k of Object.keys(value)) {
-                    this.homeDeliveryData[k] = value[k];
-                }
-                return this.homeDeliveryData;
-            },
-            reserverData: (value) => {
-                if (!value) return this.reserverData;
-                for (const k of Object.keys(value)) {
-                    this.reserverData[k] = value[k];
-                }
-                return this.reserverData;
             },
         };
 

@@ -24,7 +24,7 @@ function print_order(order, printModelIndex) {
         for (let i = 0; i < order.items.length; i++) {
             let item = order.items[i];
             let type = menuService.getDishCategory(item);
-            if (printer.data.menu.includes(type)) {
+            if (printer.data.menu?.includes(type)) {
                 hasData = true;
                 break;
             }

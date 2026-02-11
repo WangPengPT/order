@@ -1,9 +1,10 @@
 const { Dish } = require("./dish.js")
 const { PeopleType } = require("./people.js")
 const { TableStatus } = require("./TableStatus.js")
+const { v4: uuidv4 } = require('uuid');
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, lastOrderTime = 0 }) {
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, lastOrderTime = 0, token, users }) {
     this.id = id;
     this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType);
 
@@ -22,8 +23,58 @@ class Table {
     this.msg_call = msg_call || false;
     this.nif_note = nif_note || {nif:undefined, note:undefined}
     this.lastOrderTime = lastOrderTime
+    
+    this.token = token || uuidv4();
+    this.users = users || []; 
 
     this.recordProps(this)
+  }
+
+  generateToken() {
+    this.token = uuidv4();
+    return this.token;
+  }
+
+  resetUsers() {
+    this.users = [];
+  }
+
+  addUser(socketId, name, userId) {
+    const existingIndex = this.users.findIndex(u => u.userId === userId);
+    if (existingIndex !== -1) {
+        this.users[existingIndex].name = name;
+        this.users[existingIndex].socketId = socketId;
+        this.users[existingIndex].joinedAt = Date.now();
+    } else {
+        this.users.push({ socketId, name, userId, authorized: false, joinedAt: Date.now() });
+    }
+  }
+
+  authorizeUser(userId) {
+    const user = this.users.find(u => u.userId === userId);
+    if (user) {
+      user.authorized = true;
+      return true;
+    }
+    return false;
+  }
+
+  revokeUser(userId) {
+    const user = this.users.find(u => u.userId === userId);
+    if (user) {
+      user.authorized = false;
+      return true;
+    }
+    return false;
+  }
+
+  isUserAuthorized(userId) {
+    const user = this.users.find(u => u.userId === userId);
+    return user ? user.authorized : false;
+  }
+  
+  authorizeAll() {
+      this.users.forEach(u => u.authorized = true);
   }
 
   get people() {
@@ -41,13 +92,23 @@ class Table {
 
   // 增加点菜
   addOrderItem(dishData, orderId) {
-    const existing = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name && i.price === dishData.price)
+    const existing = this.order.find(i => 
+      i.dishid === dishData.dishid && 
+      i.name === dishData.name && 
+      i.price === dishData.price &&
+      i.userName === dishData.userName // 区分不同人点的同一道菜
+    )
     if (existing) {
       existing.quantity += dishData.quantity
       existing.orderIds.push(orderId)
     } else {
       this.order.push(new Dish(dishData))
-      const ord = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name && i.price === dishData.price)
+      const ord = this.order.find(i => 
+        i.dishid === dishData.dishid && 
+        i.name === dishData.name && 
+        i.price === dishData.price &&
+        i.userName === dishData.userName
+      )
       ord.orderIds.push(orderId)
     }
   }
@@ -110,6 +171,9 @@ class Table {
     this.order = []
     this.msg_pay = false
     if(this.nif_note) this.nif_note = {nif:undefined, note:undefined}
+
+    this.generateToken();
+    this.resetUsers();
   }
 
   clientCmd(data) {

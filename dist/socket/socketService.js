@@ -17,9 +17,13 @@ const centerSocket = require('./centerSocket.js');
 const {DataAnalizeSocket} = require('./dataAnalizeSocket.js');
 const DictinarySocket = require('./dictionarySocket.js');
 
+/**
+ * SocketServices 类
+ * 负责初始化 Socket.io、管理子 Socket 模块、处理全局 Socket 事件及数据持久化
+ */
 class SocketServices {
     constructor(io,
-                menuService = new MenuService(this.customDish.customDishService.customDishRepository),
+                menuService = new MenuService(),
                 appStateSocket = new AppStateSocket(io),
                 orderSocket = new OrderSocket(io),
                 tableSocket = new TableSocket(io),
@@ -30,40 +34,74 @@ class SocketServices {
                 dictinarySocket = new DictinarySocket(io)
     ) {
 
-        this.io = io
-        this.menuService = menuService
-        this.appStateSocket = appStateSocket
-        this.orderSocket = orderSocket
-        this.tableSocket = tableSocket
-        this.webPageDesignSocket = webPageDesignSocket
-        this.userSocket = userSocket
-        this.customDish = customDish
-        this.dataAnalizeSocket = dataAnalizeSocket
-        this.dictinarySocket = dictinarySocket
+        this.io = io                                    // Socket.io 实例
+        this.menuService = menuService                  // 菜单服务
+        this.appStateSocket = appStateSocket            // 应用状态 Socket 模块
+        this.orderSocket = orderSocket                  // 订单 Socket 模块
+        this.tableSocket = tableSocket                  // 桌位 Socket 模块
+        this.webPageDesignSocket = webPageDesignSocket  // 页面设计 Socket 模块
+        this.userSocket = userSocket                    // 用户 Socket 模块
+        this.customDish = customDish                    // 自定义菜品 Socket 模块
+        this.dataAnalizeSocket = dataAnalizeSocket      // 数据分析 Socket 模块
+        this.dictinarySocket = dictinarySocket          // 字典/多语言 Socket 模块
     }
 
+    /**
+     * 全局广播消息
+     * @param  {...any} datas 消息内容
+     */
     emit(...datas) {
-        appState.socket_io.emit(...datas);
+        if (appState.socket_io) {
+            appState.socket_io.emit(...datas);
+        } else {
+            logger.warn("尝试在初始化前通过 socket_io 发送消息");
+        }
     }
 
+    /**
+     * 保存菜单分类标签
+     */
     saveOrderMenuTab(data) {
         this.menuService.saveOrderMenuTab(data);
     }
 
+    /**
+     * 保存菜单数据
+     * @param {Object} data 菜单数据
+     * @param {Boolean} update_all 是否更新全部
+     */
     async saveOrderMenu(data, update_all) {
         await this.menuService.updateMenu(data, update_all);
     }
 
+    /**
+     * 向特定桌位的客户端发送更新消息
+     * @param {Object} io Socket.io 实例
+     * @param {Object} table 桌位数据
+     */
     sendMsg2TableClient(io, table) {
+        if (!table || !table.data || table.data.id === undefined) {
+            logger.error(`sendMsg2TableClient 失败: 无效的 table 数据 ${JSON.stringify(table)}`)
+            return;
+        }
+        // 频道名称格式: client_table + 桌号ID
         const chanel = 'client_table' + table.data.id
         io.emit(chanel, table)
     }
 
+    /**
+     * 关闭服务时的清理操作
+     * 保存应用状态和菜单数据
+     */
     async close() {
         await this.appStateSocket.appStateService.saveAppState()
         this.menuService.save()
     }
 
+    /**
+     * 初始化各模块数据
+     * 从持久化存储（文件/数据库）中加载初始状态
+     */
     async initializeDatas() {
         await this.webPageDesignSocket.webPageDesignService.initialize()
         await this.appStateSocket.appStateService.loadAppState()
@@ -74,16 +112,21 @@ class SocketServices {
         await this.dictinarySocket.dictionaryService.initialize()
     }
 
+    /**
+     * 初始化 Socket 监听器
+     * 注册连接事件及各子模块的处理器
+     */
     initSocket() {
         this.appStateSocket.appStateService.appStateRepository.appState.socket_io = this.io
 
+        // 设置二维码地址和基础地址（如果未定义）
         process.env.QR_ADDR = process.env.QR_ADDR || `http://localhost:5173?table=`;
         process.env.ADDR = process.env.ADDR || `http://localhost:5173`;
 
 
         this.io.on("connection", async (socket) => {
 
-            // printer 别在这前面写异步
+            // 注册打印机连接
             socket.on('add_printer', (value) => {
                 const id = socket.id;
                 value = JSON.parse(value);
@@ -93,6 +136,7 @@ class SocketServices {
                 appState.addLocalIP(socket)
             });
 
+            // 初始化会员用户 Socket 逻辑
             VIPUserManager.initSocket(socket)
 
             const ip = socket.handshake.address;
@@ -100,27 +144,22 @@ class SocketServices {
             logger.info(`客户端连接: ${socket.id}`);
             logger.info(`来源 IP: ${ip}`)
 
-            this.tableSocket.registerHandlers(socket)
+            // --- 注册各模块的 Socket 事件处理器 ---
 
-            this.orderSocket.registerHandlers(socket)
-
+            this.tableSocket.registerHandlers(socket)       // 桌位相关 (扫码、授权)
+            this.orderSocket.registerHandlers(socket)       // 订单相关 (下单、结账)
             await this.webPageDesignSocket.registerHandlers(socket)
-
             await this.appStateSocket.registerHandlers(socket)
-
-            this.userSocket.registerHandlers(socket)
-
+            this.userSocket.registerHandlers(socket)        // 用户相关 (登录、注册)
             await this.customDish.registerHandlers(socket)
-
             this.dataAnalizeSocket.registerHandlers(socket)
-
             await this.dictinarySocket.registerHandlers(socket)
 
+            // 管理端获取菜单数据
             socket.on("manager_get_menu", async (_, callback) => {
                 try {
                     const data = {}
                     data.menu = await this.menuService.getMenu()
-                    //data.menuTab = await this.menuService.getMenuOrdering()
                     data.dineTab = (await this.menuService.getDineInMenuAndTabs()).tabs
                     data.takeTab = (await this.menuService.getTakeawayMenuAndTabs()).tabs
                     callback({
@@ -133,9 +172,9 @@ class SocketServices {
                         success: false
                     })
                 }
-
             })
 
+            // 客户端（外卖模式）获取菜单数据
             socket.on("get_takeaway_menu_data", async () => {
                 let menu
                 let menuOrdering
@@ -143,27 +182,23 @@ class SocketServices {
                 let data = centerSocket.get_menu_data()
 
                 if (data) {
-                    console.log("get is_takeaway menu data ok!");
                     menu = data.menu;
                     menuOrdering = data.menuOrdering
                 } else {
                     menu = await this.menuService.getMenu()
                     menuOrdering = await this.menuService.getMenuOrdering()
                 }
-                console.log("send takeaway menu...");
                 socket.emit("takeaway_menu_data", menu, menuOrdering);
             });
 
-            // 餐桌密码验证
-            //tableService.tableLogin(socket)
-
-            // 客户端获取总消费 // add signal
+            // 获取桌位当前总消费金额
             socket.on("client_tableTotalAmount", (tableId, cb) => {
                 //logger.info(`管理端亲求桌号 ${tableId} 总消费`)
                 const result = this.appStateSocket.appStateService.getTableTotalAmount(tableId)
                 cb(result)
             })
 
+            // 管理端删除盲盒/特定订单项
             socket.on("manager_delete_order", ({order: ordername, tableId: tableId}, cb) => {
                 logger.info(`管理端请求删除盲盒, 桌号-${tableId}`)
                 const result = orderService.deleteSushiBoxInTable(ordername, tableId)
@@ -173,16 +208,13 @@ class SocketServices {
                     logger.info(`管理端请求删除盲盒失败, 桌号-${tableId}`)
                     logger.info(`失败原因: ${result.data}`)
                 }
-                // 更新客户端桌子信息
-                // io.emit('client_table', () => {
-                //   //logger.info(`发送给客户端桌子信息, 桌号-${tableId}`)
-                //   return tableService.getTableById(tableId)
-                // })
+                // 同步更新客户端桌位状态
                 this.sendMsg2TableClient(this.io, tableService.getTableById(tableId))
 
                 cb(result)
             })
 
+            // 更新管理端 IP 检查设置
             socket.on("manager_update_checkIP", (value, callback) => {
                 appState.settings.checkIP = value;
                 const result = {
@@ -190,6 +222,13 @@ class SocketServices {
                     data: value
                 }
                 logger.info(`manager_update_checkIP return: ${result}`)
+                callback(result)
+            })
+
+            socket.on("manager_update_qrcodeInfo", (value, callback) => {
+                appState.settings.qrcodeInfo = value;
+                const result = { success: true, data: value }
+                logger.info(`manager_update_qrcodeInfo return: ${value}`)
                 callback(result)
             })
 
@@ -242,6 +281,23 @@ class SocketServices {
                             data: msg
                         });
                         return;
+                    }
+
+                    // Check qrcodeInfo Authorization
+                    if (appState.qrcodeInfo.tableAuth) {
+                        const table = appState.tables.getTableById(orderData.table);
+                        if (!table) {
+                             callback({ success: false, data: "Table not found" });
+                             return;
+                        }
+                        // orderData.token should be passed
+                        if (!orderData.token || orderData.token !== table.token) {
+                            logger.info(`订单提交失败: Unauthorized (Token mismatch)`)
+                            const msg = "Unauthorized: Please scan QR code again or ask for authorization."
+                            socket.emit('error', msg)
+                            callback({ success: false, data: msg });
+                            return;
+                        }
                     }
 
                     if (orderService.hasUniCode(orderData.table, orderData.uniCode)) {

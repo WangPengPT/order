@@ -2,15 +2,17 @@ const { Dish } = require('./dish.js') // 确保导入 Dish 类
 const dataTime = require('../utils/dateTime.js')
 
 class Order {
-  constructor({ id, people, table, items = [], key, status, timestamp, name, note }) {
+  constructor({ id, people, table, items = [], key, status, timestamp, name, userName, note }) {
     this.id = id
     this.people = people || 1
     this.table = table
-    this.items = items.map(item => new Dish({ ...item, orderId: this.id }))
+    const orderUserName = userName || null;
+    this.items = items.map(item => new Dish({ ...item, orderId: this.id, userName: orderUserName || item.userName || null }))
     this.key = key || table?.replace('#', '') || ''
     this.status = status || "new"
     this.timestamp = timestamp || dataTime.get_portugal_timestemp()
     this.name = name;
+    this.userName = userName || null; // 添加用户姓名 (nullable)，默认为 null
     this.note = note;
   }
   addDish(dishData) {
@@ -32,6 +34,7 @@ class Order {
       status: this.status,
       timestamp: this.timestamp,
       name: this.name,
+      userName: this.userName, // 添加用户姓名 (nullable)
       note: this.note,
     }
   }

@@ -49,6 +49,31 @@ class DatasController {
     }
   }
 
+  exportMenu = async (req, res) => {
+    try {
+      const { menu } = this.appStateRepository.appState || {}
+
+      if (!menu) {
+        return res.status(400).json({
+          message: "数据不完整，无法导出",
+        })
+      }
+
+      res.attachment("menu.json")
+      res.json(menu)
+
+    } catch (err) {
+      console.error(err)
+
+      if (!res.headersSent) {
+        res.status(500).json({
+          message: "导出失败",
+        })
+      }
+    }
+  }
+
+
   importAppState = async (req, res) => {
     if (!req.file) return res.status(400).json({ message: '没有上传文件' })
 
