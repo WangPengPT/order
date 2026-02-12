@@ -1,5 +1,5 @@
 class Dish {
-  constructor({ dishid, name, price, deliveryPrice, quantity, notes, orderIds, dishNote, orderType, discount, deliveryDiscount, category, activitys, userName}) {
+  constructor({ dishid, name, price, deliveryPrice, quantity, notes, orderIds, dishNote, orderType, discount, deliveryDiscount, category, activitys}) {
     this.dishid = dishid
     this.name = name
     this.price = parseFloat(price) || 0
@@ -13,7 +13,6 @@ class Dish {
     this.deliveryDiscount = deliveryDiscount || 0
     this.category = category || undefined
     this.activitys = activitys || ''
-    this.userName = userName || null; // 添加点菜人姓名，默认为 null
   }
 
   toJSON() {
@@ -29,8 +28,7 @@ class Dish {
       orderType: this.orderType,
       discount: this.discount,
       deliveryDiscount: this.deliveryDiscount,
-      category: this.category,
-      userName: this.userName // 添加点菜人姓名
+      category: this.category
     }
   }
 

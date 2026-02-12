@@ -17,7 +17,7 @@ class CustomDishTemplate {
         this.types = types
         this.name = name
         this.initialPrice = initialPrice
-        this.initialDeliveryPrice = initialDeliveryPrice
+        this.initialDeliveryPrice = initialDeliveryPrice || initialPrice
         this.category = category || name
         this.like = like
         this.rate = rate

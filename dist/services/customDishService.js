@@ -197,8 +197,6 @@ class CustomDishService {
 
             if(ramen && appState.settings.useFandays && todayIsFandays(ramen.options.fandaysDate)){
                 ramen.initialPrice = ramen.options.fandaysPrice
-                // 外卖模式不参与 Fandays 折扣价，除非另有规定
-                // ramen.initialDeliveryPrice = ramen.options.fandaysPrice
             }
 
             function todayIsFandays(fandaysDate){
