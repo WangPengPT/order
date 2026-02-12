@@ -1,0 +1,24 @@
+{
+  "ignore": [
+    "public/*",
+    "webPages/*",
+    "**/node_modules/**",
+    "*.test.js",
+    "logs/*",
+    "tmp/*"
+  ],
+  "watch": [
+    "controllers/",
+    "middlewares/",
+    "model/",
+    "repositories/",
+    "services/",
+    "socket/",
+    "utils/",
+    "db.js",
+    "filedb.js",
+    "server.js",
+    "state.js"
+  ],
+  "ext": "js,json"
+}

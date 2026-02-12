@@ -77,6 +77,32 @@ class MenuRepository {
         }
     }
 
+    async getMenuByhandle(handle, session = null) {
+        try {
+            const result = await DB.find(this.tableName, {"value.handle": handle}, session)
+            if (result && result.length > 0) {
+                return result.map(item => item.value)
+            }
+            return []
+        } catch (error) {
+            logger.error(`repo:❌ 通过 handle 获取菜单失败: ${error}`);
+            throw error;
+        }
+    }
+
+    async getMenuByid(id, session = null) {
+        try {
+            const result = await DB.find(this.tableName, {"value.id": id}, session)
+            if (result && result.length > 0) {
+                return result.map(item => item.value)
+            }
+            return []
+        } catch (error) {
+            logger.error(`repo:❌ 通过 id 获取菜单失败: ${error}`);
+            throw error;
+        }
+    }
+
     async getDineInMenu(session = null) {
         try {
             const menu = []

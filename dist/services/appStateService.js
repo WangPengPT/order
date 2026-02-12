@@ -51,58 +51,35 @@ class AppStateService {
         }
     }
 
-    updateShopInfo(key, value){
+    updateInfo(type,key, value){
         try {
-            appState.updateShopInfo(key, value)
-            if(equals(appState.shopInfo[key], value)) return { success: true, data: value }
-            else throw new Error(key + "更新失败")
-        } catch (error) {
-            return { success: false, data: error.message }
-        }
-
-        function equals(value1, value2) {
-            if(typeof value1 == 'object') {
-                for(const index in value1){
-                    if( !equals(value1[index], value2[index])){
-                        return false
-                    }
-                }
-                return true
-            }else{
-                return value1 == value2
+            let result
+            switch (type) {
+                case "shop_info":
+                    result = appState.updateShopInfo(key,value)
+                    break
+                case "qrorder_info":
+                    result = appState.updateQrOrderInfo(key,value)
+                    break
+                case "takeaway_info":
+                    result = appState.updateTakeawayInfo(key,value)
+                    break
+                case "delivery_info":
+                    result = appState.updateDeliveryInfo(key,value)
+                    break
+                case "reserver_info":
+                    result = appState.updateReserverInfo(key,value)
+                    break
+                default:
+                    result = {success: false, data: "Not Found Update type: "+type}
             }
-        }
-    }
-
-    updatePickupDate(key, value) {
-        try {
-            appState.updatePickupDate(key, value)
-            if (this.equals(appState.pickupData[key],value)) return { success: true, data: value }
-            else throw new Error(key + "更新失败")
+            return result
         } catch (error) {
             return { success: false, data: error.message }
         }
+
     }
 
-    updateHomeDeliveryDate(key, value) {
-        try {
-            appState.updateHomeDeliveryDate(key, value)
-            if (this.equals(appState.homeDeliveryData[key],value)) return { success: true, data: value }
-            else throw new Error(key + "更新失败")
-        } catch (error) {
-            return { success: false, data: error.message }
-        }
-    }
-
-    updateReserverDate(key, value) {
-        try {
-            appState.updateReserverDate(key, value)
-            if (this.equals(appState.reserverData[key],value)) return { success: true, data: value }
-            else throw new Error(key + "更新失败")
-        } catch (error) {
-            return { success: false, data: error.message }
-        }
-    }
 
     equals(value1,value2){
         if(typeof value1 =='object'){

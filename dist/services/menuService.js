@@ -605,10 +605,6 @@ class MenuService {
         }
     }
 
-    softMenuTabVerify(newMenuSorted) {
-
-    }
-
     hardValidateMenuTabStructure(newMenuSorted) {
         if (!Array.isArray(newMenuSorted)) return false; // 顶层必须是数组
 
@@ -720,6 +716,19 @@ class MenuService {
             return await DB.withTransaction(async (session) => {
                 if (!id) return null
                 await this.menuRespository.update(dish, id, session)
+
+                // 如果修改的是主菜的 tags，同步更新其子菜
+                if (dish.tags !== undefined) {
+                    const dishes = await this.menuRespository.getMenuByhandle(dish.handle, session);
+                    if (dishes && dishes.length > 0) {
+                        for (const d of dishes) {
+                            if (d.id !== id) { // 排除当前已经更新过的菜
+                                await this.menuRespository.update({ tags: dish.tags }, d.id, session);
+                            }
+                        }
+                    }
+                }
+
                 await this.reorganizeAndSaveMenuTab_menu(session)
                 await this.reorganizeDineMenuTab_custom(session)
                 await this.reorganizeTakeMenuTab_custom(session)
@@ -730,7 +739,11 @@ class MenuService {
                 success: false
             }
         }
+    }
 
+    async isMainDish(id) {
+        const dish = await this.menuRespository.getMenuByid(id)
+        return dish && dish.name !== "" && dish.category
     }
 
 }
