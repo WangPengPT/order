@@ -77,7 +77,7 @@ const mysteryBoxDescriptions = [
     }
 ]
 
-const mysteryBox = new CustomDishTemplate(ids.sushi_aleatoria, mysteryBoxTypes, "Sushi Aleatória®", 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, { quantity: true, quantitySetp: 5, maxQuantity: 50, extraInfo: "De que é que gosta? ®" })
+const mysteryBox = new CustomDishTemplate(ids.sushi_aleatoria, mysteryBoxTypes, "Sushi Aleatória®", 0, 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, { quantity: true, quantitySetp: 5, maxQuantity: 50, extraInfo: "De que é que gosta? ®" })
 
 const pokebowlTypes = [
     new CustomDishType(1, "base", "底部", "Base", "Base", [
@@ -176,7 +176,7 @@ const pokebowlDescription = [
     }
 ]
 
-const pokebowl = new CustomDishTemplate(ids.pock_bowl, pokebowlTypes, "Poke Bowl", 0, "Poke Bowl", 0, 0, pokebowlDescription)
+const pokebowl = new CustomDishTemplate(ids.pock_bowl, pokebowlTypes, "Poke Bowl", 0, 0, "Poke Bowl", 0, 0, pokebowlDescription)
 
 const ninesquareGridTypes = [
     new CustomDishType(1, "carne", "肉", "Meat", "Carne", [
@@ -214,9 +214,9 @@ const nineSquareGridDescription = [
     },
 ]
 
-const nineSquareGrid = new CustomDishTemplate(ids.nine_square, ninesquareGridTypes, "MY BOX", 32, "MY BOX", 0, 0, nineSquareGridDescription, { dishQuantity: 3 })
+const nineSquareGrid = new CustomDishTemplate(ids.nine_square, ninesquareGridTypes, "MY BOX", 32, 32, "MY BOX", 0, 0, nineSquareGridDescription, { dishQuantity: 3 })
 
-const xiaoxiaongRamenTypes = [
+const bibimbapTypes = [
   // 1️⃣ 类型：风格 / Tipo / Style
   new CustomDishType(
     1,
@@ -368,12 +368,15 @@ const xiaoxiongRamenDescription = [
     }
 ]
 
-const xiaoxiongRamen = new CustomDishTemplate(ids.xiaoxiong_ramen, xiaoxiaongRamenTypes, "XIAOXIONG® RAMEN", 6.90, "XIAOXIONG® RAMEN", 0, 0, xiaoxiongRamenDescription, {
+const xiaoxiongRamen = new CustomDishTemplate(ids.xiaoxiong_ramen, bibimbapTypes, "XIAOXIONG® RAMEN", 6.90, 6.90, "XIAOXIONG® RAMEN", 0, 0, xiaoxiongRamenDescription, {
     included_extra_information_en: "By default, the following are already included: Bamboo, Chinese black fungus, Bean sprouts, Pakchoi cabbage",
     included_extra_information_zh: "默认包含：竹笋、中国黑木耳、豆芽、白菜（小白菜）",
     included_extra_information_pt: "Por padrão já está incluído: Bambu, Fungo preto Chinês, Brotos de soja, Couve Pakchoi",
     fandaysDate: [11, 12, 25, 26],
-    fandaysPrice: 2.9
+    fandaysPrice: 2.9,
+    quantity: true,
+    quantitySetp: 1,
+    maxQuantity: 10,
 })
 
 const xiaoxiongLunchTypes = [
@@ -448,10 +451,13 @@ const xiaoxiongLunchMenuDescription = [
     }
 ]
 
-const xiaoxiongLunch = new CustomDishTemplate(ids.xiaoxiong_menu_lunch, xiaoxiongLunchTypes, "Menu Almoço", 9.90, "Menu Almoço", 0, 0, xiaoxiongLunchMenuDescription,{
+const xiaoxiongLunch = new CustomDishTemplate(ids.xiaoxiong_menu_lunch, xiaoxiongLunchTypes, "Menu Almoço", 9.90, 9.90, "Menu Almoço", 0, 0, xiaoxiongLunchMenuDescription,{
     menuLunchBeginTime: 11,
     menuLunchEndtTime: 16,
     menuLunchDays: [1,2,3,4,5], //0-星期日，1-星期一，...，5-星期五，6-星期六
+    quantity: true,
+    quantitySetp: 1,
+    maxQuantity: 10,
 })
 
 const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch]

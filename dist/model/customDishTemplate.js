@@ -4,6 +4,7 @@ class CustomDishTemplate {
     constructor(id, types = [],
                 name,
                 initialPrice = 0,
+                initialDeliveryPrice = 0,
                 category,
                 like = 0,
                 rate = 0,
@@ -16,6 +17,7 @@ class CustomDishTemplate {
         this.types = types
         this.name = name
         this.initialPrice = initialPrice
+        this.initialDeliveryPrice = initialDeliveryPrice
         this.category = category || name
         this.like = like
         this.rate = rate

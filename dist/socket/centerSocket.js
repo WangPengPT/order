@@ -188,7 +188,7 @@ class CenterSocket {
                     //console.log("get menu data!");
                     menuData = menu
 
-                    if (menuData.menu) {
+                    if (menuData && menuData.menu && Array.isArray(menuData.menu)) {
                         for (let i = 0; i < menuData.menu.length; i++) {
                             await this.loadDishRatingDB(menuData.menu[i]);
                         }
@@ -257,9 +257,10 @@ class CenterSocket {
 
     static async saveDishRating(id, like, rate) {
         try {
+            if (!menuData || !menuData.menu) throw new Error("menuData is not initialized");
             const item = menuData.menu.find(m => m.id === id);
 
-            if (!item) throw new Error("invalid item id: ", id);
+            if (!item) throw new Error("invalid item id: " + id);
 
             if (![-1, 0, 1].includes(like)) throw new Error("invalid like value: ", like);
 

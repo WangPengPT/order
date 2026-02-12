@@ -104,8 +104,6 @@ app.post('/api/upload_logo',
 
 app.get('/api/exportDatas', authMiddleware, datasController.exportDatas)
 
-app.get('/api/exportMenu', authMiddleware, datasController.exportMenu)
-
 app.get('/api/exportPage/:id', authMiddleware, datasController.exportPage)
 
 app.post('/api/import/page', memoryUpload.single('page'), datasController.importPage)

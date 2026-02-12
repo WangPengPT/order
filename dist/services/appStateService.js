@@ -6,14 +6,30 @@ const { logger } = require('../utils/logger.js');
 const AppStateRepository = require('../repositories/appStateRepository.js');
 const OrderQuantityRepository = require('../repositories/dailyOrderRepository.js');
 const CustomDishRepository = require('../repositories/customDishRepository.js');
+const MonthlyRateRepository = require('../repositories/monthlyRateRepository.js');
+const MenuRepository = require('../repositories/menuRepository.js');
 
+/**
+ * 应用状态服务模块
+ * 负责全局设置、店铺信息、取餐/配送/订台规则、桌位状态以及订单统计数据的加载与持久化
+ */
 class AppStateService {
-    constructor(appStateRepository = new AppStateRepository(appState), orderQuantityRepository = new OrderQuantityRepository(), customDishRepository = new CustomDishRepository()) {
+    constructor(appStateRepository = new AppStateRepository(appState),
+        orderQuantityRepository = new OrderQuantityRepository(),
+        customDishRepository = new CustomDishRepository(),
+        monthlyRateRepository = new MonthlyRateRepository(),
+        menuRepository = new MenuRepository()) {
         this.appStateRepository = appStateRepository;
         this.orderQuantityRepository = orderQuantityRepository
         this.customDishRepository = customDishRepository
+        this.monthlyRateRepository = monthlyRateRepository
+        this.menuRepository = menuRepository
     }
 
+    /**
+     * 加载应用状态数据
+     * 从持久化存储中读取配置，如果不存在则初始化默认配置
+     */
     async loadAppState() {
         try {
             const data = await this.appStateRepository.load()
@@ -34,97 +50,127 @@ class AppStateService {
                 })
                 this.appStateRepository.appState.settings.customDishes = customDishes
             }
-
-            // tablesPassword.init(appState.tables);
         } catch (error) {
-            console.warn("错误: ", error);
+            console.warn("加载应用状态失败: ", error);
         }
     }
 
+    /**
+     * 更新系统设置
+     * @param {string} key 设置键名
+     * @param {any} value 设置值
+     */
     updateSettings(key, value) {
         try {
             appState.updateSettings(key, value)
-            if (appState.settings[key] === value) return { success: true, data: value }
+            if (appState.settings[key] === value) {
+                // 更新后立即异步保存，不阻塞当前返回
+                this.saveAppState().catch(err => console.error("保存设置失败:", err));
+                return { success: true, data: value }
+            }
             else throw new Error(key + "更新失败")
         } catch (error) {
             return { success: false, data: error.message }
         }
     }
 
-    updateShopInfo(key, value){
+    /**
+     * 更新店铺基本信息
+     */
+    updateShopInfo(key, value) {
         try {
             appState.updateShopInfo(key, value)
-            if(equals(appState.shopInfo[key], value)) return { success: true, data: value }
+            if (this.equals(appState.shopInfo[key], value)) {
+                this.saveAppState().catch(err => console.error("保存店铺信息失败:", err));
+                return { success: true, data: value }
+            }
             else throw new Error(key + "更新失败")
         } catch (error) {
             return { success: false, data: error.message }
         }
-
-        function equals(value1, value2) {
-            if(typeof value1 == 'object') {
-                for(const index in value1){
-                    if( !equals(value1[index], value2[index])){
-                        return false
-                    }
-                }
-                return true
-            }else{
-                return value1 == value2
-            }
-        }
     }
 
+    /**
+     * 更新取餐相关设置
+     */
     updatePickupDate(key, value) {
         try {
             appState.updatePickupDate(key, value)
-            if (this.equals(appState.pickupData[key],value)) return { success: true, data: value }
+            if (this.equals(appState.pickupData[key], value)) {
+                this.saveAppState().catch(err => console.error("保存取餐设置失败:", err));
+                return { success: true, data: value }
+            }
             else throw new Error(key + "更新失败")
         } catch (error) {
             return { success: false, data: error.message }
         }
     }
 
+    /**
+     * 更新外送配送设置
+     */
     updateHomeDeliveryDate(key, value) {
         try {
             appState.updateHomeDeliveryDate(key, value)
-            if (this.equals(appState.homeDeliveryData[key],value)) return { success: true, data: value }
+            if (this.equals(appState.homeDeliveryData[key], value)) {
+                this.saveAppState().catch(err => console.error("保存配送设置失败:", err));
+                return { success: true, data: value }
+            }
             else throw new Error(key + "更新失败")
         } catch (error) {
             return { success: false, data: error.message }
         }
     }
 
+    /**
+     * 更新订台预订设置
+     */
     updateReserverDate(key, value) {
         try {
             appState.updateReserverDate(key, value)
-            if (this.equals(appState.reserverData[key],value)) return { success: true, data: value }
+            if (this.equals(appState.reserverData[key], value)) {
+                this.saveAppState().catch(err => console.error("保存订台设置失败:", err));
+                return { success: true, data: value }
+            }
             else throw new Error(key + "更新失败")
         } catch (error) {
             return { success: false, data: error.message }
         }
     }
 
-    equals(value1,value2){
-        if(typeof value1 =='object'){
-            for(const key in value1){
-                if(value1[key] != value2[key]) return false
+    /**
+     * 辅助方法：比较两个值是否相等（支持对象深度比较）
+     */
+    equals(value1, value2) {
+        if (typeof value1 == 'object' && value1 !== null && value2 !== null) {
+            for (const key in value1) {
+                if (!this.equals(value1[key], value2[key])) return false
             }
             return true
-        }else{
+        } else {
             return value1 == value2
         }
     }
 
-    updatePrintModel(key,value){
-        try{
+    /**
+     * 更新打印模板配置
+     */
+    updatePrintModel(key, value) {
+        try {
             appState.updatePrintModel(key, value)
-            if (appState.printModel[key] == value) return { success: true, data: value }
+            if (appState.printModel[key] == value) {
+                this.saveAppState().catch(err => console.error("保存打印模板失败:", err));
+                return { success: true, data: value }
+            }
             else throw new Error(key + "更新失败")
-        }catch (error){
+        } catch (error) {
             return { success: false, data: error.message }
         }
     }
 
+    /**
+     * 获取所有桌位信息
+     */
     getAllTables() {
         try {
             const tables = this.appStateRepository.appState.tables;
@@ -133,7 +179,7 @@ class AppStateService {
                 data: tables.toJSON()
             };
         } catch (error) {
-            console.warn("Error: ", error);
+            console.warn("获取桌位信息失败: ", error);
             return {
                 success: false,
                 data: error.message
@@ -141,15 +187,21 @@ class AppStateService {
         }
     }
 
+    /**
+     * 保存应用状态及菜单数据到磁盘
+     */
     async saveAppState() {
         try {
             await this.appStateRepository.save()
             db.saveData("menu", this.appStateRepository.appState.menu);
         } catch (error) {
-            console.warn("Error: ", error);
+            console.warn("保存应用状态失败: ", error);
         }
     }
 
+    /**
+     * 保存每日销售统计数据
+     */
     async saveDailyOrders() {
         const getNumberDays = (year, month) => {
             if (month < 1 || month > 12) return 0;
@@ -185,18 +237,24 @@ class AppStateService {
             const data = { year, month, day, data: dailyOrders };
             await this.orderQuantityRepository.save(data);
         } catch (error) {
-            console.warn("Error: ", error);
+            console.warn("保存每日订单统计失败: ", error);
         }
     }
 
+    /**
+     * 清空每日销售统计计数
+     */
     clearDailyOrders() {
         try {
             this.appStateRepository.appState.menu.forEach(item => { item.dailyOrders = 0; });
         } catch (error) {
-            console.warn("Error: ", error);
+            console.warn("清空每日订单统计失败: ", error);
         }
     }
 
+    /**
+     * 保存每月销售统计数据
+     */
     async saveMonthlyOrders() {
         try {
             const monthlyOrders = [];
@@ -226,159 +284,183 @@ class AppStateService {
         try {
             this.appStateRepository.appState.menu.forEach(item => { item.monthlyOrders = 0; });
         } catch (error) {
-            console.warn("Error: ", error);
+            console.warn("保存每月订单统计失败: ", error);
         }
     }
 
+    /**
+     * 获取指定桌位的当前计费价格（基于人数/时段）
+     */
+    getTableTotalAmout(tableId) {
+        try {
+            const table = this.appStateRepository.appState.getTableById(tableId)
+            if (!table) throw new Error("未找到桌位")
+            const res = getCurentPeoplePrice(table.peopleType)
+            return {
+                success: true,
+                data: res
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    /**
+     * 获取当前成人价格
+     */
     getCurrentPrice() {
         try {
-            const appState = this.appStateRepository.appState
-            const price = appState.weekPrice.getCurrentPrice()
-            const res = {
-                success: true,
-                data: price
-            }
-            return res
+            return this.appStateRepository.appState.getAdultCurrentPrice()
         } catch (error) {
-            console.warn("Error: ", error)
+            console.warn("获取当前价格失败: ", error);
+            return 0
+        }
+    }
+
+    /**
+     * 更新周价格配置（成人）
+     */
+    updateWeekPrice(key, value) {
+        try {
+            this.appStateRepository.appState.updateWeekPrice(key, value)
+            return {
+                success: true,
+                data: value
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    /**
+     * 更新儿童价格比例
+     */
+    updataChildrenPricePercentage(value) {
+        try {
+            this.appStateRepository.appState.updateChildrenPricePercentage(value)
+            return {
+                success: true,
+                data: value
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    /**
+     * 获取指定年月的菜单评价
+     */
+    async getMonthRatesWithDate(year, month) {
+        try {
+            const date = `${year}-${String(month).padStart(2, '0')}`
+            const res = await this.monthlyRateRepository.getMonthlyRatesByDate(date, date)
+            return {
+                success: true,
+                data: res
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    /**
+     * 获取指定日期的订单销量
+     */
+    async getOrderQuantityWithDate(value) {
+        try {
+            const date = `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+            const res = await this.orderQuantityRepository.load(date)
+            return {
+                success: true,
+                data: res
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error.message
+            }
+        }
+    }
+
+    /**
+     * 保存上月菜单评分数据
+     */
+    async saveMonthRates() {
+        try {
+            logger.info("开始保存上月菜单评分数据")
+            return await DB.withTransaction(async (session) => {
+                const today = new Date();
+                let year = today.getFullYear();
+                let month = today.getMonth();
+
+                if (month === 0) {
+                    month = 11;
+                    year -= 1;
+                } else {
+                    month -= 1;
+                }
+
+                const lastMonth = String(month + 1).padStart(2, '0');
+                const lastMonthStr = `${year}-${lastMonth}`;
+
+                const menu = await this.menuRepository.getMenu(session);
+                const lastMonthRate = await this.monthlyRateRepository.getMonthlyRatesByDate(lastMonthStr, lastMonthStr, session);
+
+                let result = []
+                if (lastMonthRate && lastMonthRate.length > 0) {
+                    const lastRateMap = new Map(lastMonthRate[0].value.map(d => [d.id, d]));
+                    result = menu.map(dish => {
+                        const last = lastRateMap.get(dish.id);
+                        const rates = (dish.rates ?? 0) - (last?.rates ?? 0);
+                        const likes = (dish.likes ?? 0) - (last?.likes ?? 0);
+                        return { ...dish, rates, likes };
+                    }).filter(d => (d.rates ?? 0) !== 0 || (d.likes ?? 0) !== 0);
+                } else {
+                    result = menu.filter(d => (d.rates ?? 0) !== 0 || (d.likes ?? 0) !== 0);
+                }
+
+                if (result.length > 0) {
+                    await this.monthlyRateRepository.save(result, session, lastMonthStr)
+                }
+
+                return { success: true }
+            })
+        } catch (error) {
+            logger.error(`保存上月菜单评分失败: ${error.message}`)
             return { success: false, data: error.message }
         }
     }
 
-    async saveYearlyOrders() {
+    /**
+     * 清空菜单评分数据
+     */
+    async clearnMonthRates() {
         try {
-            const yearlyOrders = [];
-            this.appStateRepository.appState.menu.forEach(item => {
-                if (item.category !== "") {
-                    yearlyOrders.push({
-                        id: item.id,
-                        category: item.category,
-                        handle: item.handle,
-                        name: item.name === "" ? item.subname : item.name,
-                        yearlyOrders: item.yearlyOrders | 0
-                    });
+            logger.info("清空菜单评分数据")
+            await DB.withTransaction(async (session) => {
+                const menu = await this.menuRepository.getMenu(session);
+                for (const dish of menu) {
+                    dish.rates = 0;
+                    dish.likes = 0;
+                    await this.menuRepository.update(dish, session);
                 }
-            });
-            const now = new Date();
-            const data = { year: now.getFullYear() - 1, month: 0, day: 0, data: yearlyOrders };
-            await this.orderQuantityRepository.save(data);
-        } catch (error) {
-            console.warn("Error: ", error);
-        }
-    }
-
-    clearYearlyOrders() {
-        try {
-            this.appStateRepository.appState.menu.forEach(item => { item.yearlyOrders = 0; });
-        } catch (error) {
-            console.warn("Error: ", error);
-        }
-    }
-
-    updateWeekPrice(key, price) {
-        try {
-            console.log("updateWeekPrice", key, price);
-            const newPrices = this.appStateRepository.appState.updateWeekPrice(key, price);
-            console.log("newPrices",newPrices)
-            return { success: true, data: newPrices };
-        } catch (error) {
-            console.warn("Error: ", error);
-            return { success: false, data: error.message };
-        }
-    }
-
-    updataChildrenPricePercentage(percentage) {
-        try {
-            const newPercentage = this.appStateRepository.appState.updateChildrenPricePercentage(percentage)
-            return { success: true, data: newPercentage };
-        } catch (error) {
-            console.error("Error: ", error);
-            return { success: false, data: error.message };
-        }
-
-    }
-
-    getTableTotalAmout(tableId) {
-        try {
-            if (!tableId) throw new Error("Non Input Value");
-            const prices = this.appStateRepository.appState.getTableTotalAmout(tableId);
-            return { success: true, data: prices };
-        } catch (error) {
-            console.warn("Error: ", error);
-            return { success: false, data: error.message };
-        }
-    }
-
-    saveMonthRates() {
-        try {
-            const monthRates = [];
-            this.appStateRepository.appState.specialDishes.forEach(item => {
-                monthRates.push({
-                    id: item.id,
-                    category: item.category,
-                    handle: item.category,
-                    name: item.category,
-                    monthRates: item.monthRates ? item.monthRates : { likes: 0, rates: 0 },
-                });
             })
-            this.appStateRepository.appState.menu.forEach(item => {
-                if (item.category !== "") {
-                    monthRates.push({
-                        id: item.id,
-                        category: item.category,
-                        handle: item.handle,
-                        name: item.name === "" ? item.subname : item.name,
-                        monthRate: item.monthRates ? item.monthRates : { likes: 0, rates: 0 }
-                    });
-                }
-            });
-            const now = new Date();
-            const month = now.getMonth() === 0 ? 12 : now.getMonth();
-            const year = month === 12 ? now.getFullYear() - 1 : now.getFullYear();
-            db.saveMonthRates(`monthrates_${year}_${month}`, monthRates);
+            return { success: true }
         } catch (error) {
-            console.warn("Error: ", error);
-        }
-    }
-
-    clearnMonthRates() {
-        try {
-            this.appStateRepository.appState.menu.forEach(item => {
-                if (item.monthRate) {
-                    item.monthRate.likes = 0;
-                    item.monthRate.rates = 0;
-                }
-            });
-        } catch (error) {
-            console.warn("Error: ", error);
-        }
-    }
-
-    getMonthRatesWithDate(year, month) {
-        try {
-            const result = db.loadMonthRates(`monthrates_${year}_${month}`, "file not found");
-            if (result === "file not found") {
-                return { success: false, data: result };
-            } else {
-                return { success: true, data: result };
-            }
-        } catch (error) {
-            console.warn("Error: ", error);
-            return { success: false, data: error.message };
-        }
-    }
-
-    async getOrderQuantityWithDate(date) {
-        try {
-            const result = await this.orderQuantityRepository.load(date);
-            if (!result) {
-                return { success: false, data: result };
-            } else {
-                return { success: true, data: result };
-            }
-        } catch (error) {
-            console.warn("Error: ", error);
-            return { success: false, data: error.message };
+            logger.error(`清空菜单评分失败: ${error.message}`)
+            return { success: false, data: error.message }
         }
     }
 }

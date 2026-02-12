@@ -108,7 +108,6 @@ class QROrderInfo extends Info {
 
         this.clientCoolingTime = 0 // 用户上传订单冷却时间
         this.tableCoolingTime = 0 // 桌子冷却时间
-        this.tableAuth = false
 
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)

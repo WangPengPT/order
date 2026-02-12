@@ -81,6 +81,10 @@ class SocketServices {
      */
     sendMsg2TableClient(io, table) {
         if (!table || !table.data || table.data.id === undefined) {
+            // 如果是因为桌位不存在导致的错误，不再打印 Error 日志，避免初始化时的干扰
+            if (table && table.message === "无效的输入参数") {
+                return;
+            }
             logger.error(`sendMsg2TableClient 失败: 无效的 table 数据 ${JSON.stringify(table)}`)
             return;
         }
@@ -145,7 +149,7 @@ class SocketServices {
             logger.info(`来源 IP: ${ip}`)
 
             // --- 注册各模块的 Socket 事件处理器 ---
-
+            
             this.tableSocket.registerHandlers(socket)       // 桌位相关 (扫码、授权)
             this.orderSocket.registerHandlers(socket)       // 订单相关 (下单、结账)
             await this.webPageDesignSocket.registerHandlers(socket)
@@ -193,8 +197,7 @@ class SocketServices {
 
             // 获取桌位当前总消费金额
             socket.on("client_tableTotalAmount", (tableId, cb) => {
-                //logger.info(`管理端亲求桌号 ${tableId} 总消费`)
-                const result = this.appStateSocket.appStateService.getTableTotalAmount(tableId)
+                const result = this.appStateSocket.appStateService.getTableTotalAmout(tableId)
                 cb(result)
             })
 
@@ -284,7 +287,7 @@ class SocketServices {
                     }
 
                     // Check qrcodeInfo Authorization
-                    if (appState.qrcodeInfo.tableAuth) {
+                    if (appState.settings.qrcodeInfo) {
                         const table = appState.tables.getTableById(orderData.table);
                         if (!table) {
                              callback({ success: false, data: "Table not found" });
@@ -308,7 +311,7 @@ class SocketServices {
                     }
 
                     // Check cooling time
-                    const coolingTime = appState.qrOrderInfo.tableCoolingTime || 0;
+                    const coolingTime = appState.shopInfo.tableCoolingTime || 0;
                     console.log(`[CoolingCheck] Configured coolingTime: ${coolingTime}`);
                     if (coolingTime > 0) {
                         const table = appState.tables.getTableById(orderData.table);
@@ -487,10 +490,19 @@ class SocketServices {
 
                     console.log("item:", item)
                     // Update MongoDB
-                    await this.menuService.updatedMenuById(item, id)
+                    if (this.menuService.updateMenuById) {
+                        await this.menuService.updateMenuById(item, id)
+                    } else if (this.menuService.updatedMenuById) {
+                        await this.menuService.updatedMenuById(item, id)
+                    } else {
+                        throw new Error("menuService update method not found")
+                    }
 
-                    // Refresh appState.menu from DB
-                    appState.menu = await this.menuService.getMenu()
+                    // 重新载入菜单数据以更新内存中的 dishCategory, dishTags 等映射
+                    await this.menuService.loadMenu()
+
+                    // Refresh appState.menu from DB (loadMenu 已经更新了 appState.menu)
+                    // appState.menu = await this.menuService.getMenu()
 
                     appState.orderMenuTab = (await this.menuService.getMenuOrdering()).map(it => it.name)
 
@@ -624,6 +636,7 @@ class SocketServices {
             ENABLE_ROAST_DUCK: ENABLE_ROAST_DUCK,
             TEST_ENVIRONMENT: process.env.TEST_ENVIRONMENT,
             pageDir: db.pageDir,
+            shopType: appState.shopType,
             restaurant: centerSocket.getRestaurant(),
             location: appState.shopInfo.latitudeAndLongitude,
         });
