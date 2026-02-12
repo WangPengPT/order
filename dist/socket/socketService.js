@@ -252,7 +252,7 @@ class SocketServices {
                     }
 
                     // Check cooling time
-                    const coolingTime = appState.shopInfo.tableCoolingTime || 0;
+                    const coolingTime = appState.qrOrderInfo.tableCoolingTime || 0;
                     console.log(`[CoolingCheck] Configured coolingTime: ${coolingTime}`);
                     if (coolingTime > 0) {
                         const table = appState.tables.getTableById(orderData.table);
