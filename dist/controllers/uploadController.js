@@ -17,8 +17,9 @@ if (!fs.existsSync(publicDir)) {
 }
 
 class UploadController {
-    constructor(webPageDesignService = new WebPageDesignService()) {
-        this.webPageDesignService = webPageDesignService
+    // constructor(webPageDesignService = new WebPageDesignService()) {
+    constructor() {
+        // this.webPageDesignService = webPageDesignService
     }
 
     getFileExtension(filename) {

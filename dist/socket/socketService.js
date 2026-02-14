@@ -8,7 +8,6 @@ const {printers} = require('../utils/printOrder.js');
 const {logger, formatOrderLog} = require('../utils/logger.js')
 const {TableSocket} = require('./tableSocket.js')
 const {OrderSocket} = require('./orderSocket.js')
-const {WebPageDesignSocket} = require('./webPageDesignSocket.js');
 const {AppStateSocket} = require('./AppStateSocket.js');
 const {UserSocket} = require('./userSocket.js');
 const {CustomDishSocket} = require('./customDishSocket.js');
@@ -23,7 +22,6 @@ class SocketServices {
                 appStateSocket = new AppStateSocket(io),
                 orderSocket = new OrderSocket(io),
                 tableSocket = new TableSocket(io),
-                webPageDesignSocket = new WebPageDesignSocket(io),
                 userSocket = new UserSocket(io),
                 customDish = new CustomDishSocket(io),
                 dataAnalizeSocket = new DataAnalizeSocket(io),
@@ -35,7 +33,6 @@ class SocketServices {
         this.appStateSocket = appStateSocket
         this.orderSocket = orderSocket
         this.tableSocket = tableSocket
-        this.webPageDesignSocket = webPageDesignSocket
         this.userSocket = userSocket
         this.customDish = customDish
         this.dataAnalizeSocket = dataAnalizeSocket
@@ -65,7 +62,6 @@ class SocketServices {
     }
 
     async initializeDatas() {
-        await this.webPageDesignSocket.webPageDesignService.initialize()
         await this.appStateSocket.appStateService.loadAppState()
         await this.userSocket.userService.InitOrLoadUserData()
         await this.customDish.customDishService.initializeCustomDish()
@@ -103,8 +99,6 @@ class SocketServices {
             this.tableSocket.registerHandlers(socket)
 
             this.orderSocket.registerHandlers(socket)
-
-            await this.webPageDesignSocket.registerHandlers(socket)
 
             await this.appStateSocket.registerHandlers(socket)
 
@@ -297,7 +291,7 @@ class SocketServices {
                         logger.info(`订单提交成功 订单号 - ${order.data.id}`)
                         logger.info(formatOrderLog(orderData))
 
-                        print_order(order.data, appState.printModel.order);
+                        print_order(order.data, appState.printInfo);
 
                         this.io.emit("new_order", order.data);
                         logger.info("📢 已广播新订单:", order.data);
@@ -342,7 +336,7 @@ class SocketServices {
             // 管理端打印外卖订单
             socket.on("manager_takeaway_order", (orderData) => {
                 console.log("takeaway order", orderData)
-                print_takeaway_order(orderData, appState.printModel.takeaway);
+                print_takeaway_order(orderData, appState.printInfo.printModel.takeaway);
             })
 
             // 返回table id ，发送桌子信息，目前价格

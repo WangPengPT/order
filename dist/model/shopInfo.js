@@ -4,6 +4,8 @@ const {logger} = require("../utils/logger");
 class ShopInfo {
 
     constructor () {
+        this.type = 'shop_info'
+
         this.restaurantName = "Default Restaurant Name"
         this.restaurantDescription = undefined
         this.restaurantNIF = undefined

@@ -77,13 +77,14 @@ const io = new Server(server, {
 
 const socketService = new SocketServices(io, menuService)
 const datasController = new DatasController(socketService.appStateSocket.appStateService.appStateRepository, socketService.userSocket.userService)
-const uploadController = new UploadController(socketService.webPageDesignSocket.webPageDesignService)
+const uploadController = new UploadController()
 const dataAnalizeService = new DataAnalizeService()
 
 // 路由只保留上传接口
 app.post('/upload', upload.any(), uploadController.handleUpload);
 app.post('/upload_image', upload.single('image'), uploadController.handleUploadImage);
 
+/* 不再使用自定义页面
 app.post('/api/upload_background', upload.array('images'), uploadController.handleUploadBackgroundImages);
 
 app.post('/api/upload_titleImages',
@@ -101,7 +102,7 @@ app.post('/api/upload_logo',
     (req, res) =>
         uploadController.handleUploadWelcomeLogo(req, res)
 );
-
+*/
 app.get('/api/exportDatas', authMiddleware, datasController.exportDatas)
 
 app.get('/api/exportPage/:id', authMiddleware, datasController.exportPage)

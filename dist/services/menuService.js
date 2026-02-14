@@ -194,24 +194,27 @@ class MenuService {
     getDishCategory(item) {
         if (item.category) return item.category;
 
+        let ret = ""
+
+
         const id = item.dishid;
+        let data = appState.menu.find(data => data.id == id);
 
-        let tag = appState.dishTags[id];
-        if (tag && tag != "") return tag;
-
-        let ret = appState.dishCategory[id];
-        if (ret) return ret;
-
-        const data = appState.menu.find(data => data.id == id);
         if (data) {
-            if (data.tags && data.tags != "") {
-                return data.tags
-            } else {
-                return data.category;
+            const handle = data.handle;
+            data = appState.menu.find(data => data.handle == handle && data.category && data.category != "");
+
+            if (data) {
+                if (data.tags && data.tags != "") {
+                    ret = data.tags;
+                }
+                else {
+                    ret = data.category;
+                }
             }
         }
 
-        return "";
+        return ret;
     }
 
     /**

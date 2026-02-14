@@ -11,8 +11,9 @@ function isIP(str) {
     return net.isIP(str) !== 0;
 }
 
-function print_order(order, printModelIndex) {
+function print_order(order, printInfo) {
     logger.info(`打印订单 订单号 - ${order.id}`)
+    console.log("收到的order数据",order);
     for (const key in printers) {
         const printer = printers[key];
 
@@ -23,6 +24,7 @@ function print_order(order, printModelIndex) {
         let hasData = false;
         for (let i = 0; i < order.items.length; i++) {
             let item = order.items[i];
+            console.log(item)
             let type = menuService.getDishCategory(item);
             if (printer.data.menu?.includes(type)) {
                 hasData = true;
@@ -32,7 +34,16 @@ function print_order(order, printModelIndex) {
 
         if (hasData) {
             logger.info(`订单打印成功 订单号 - ${order.id}`);
-            const datas = print_order_model(order, printModelIndex, printer)
+
+            const printModelIndex = printInfo?.printModel?.order || 0
+            const printBoldModel = printInfo?.printBoldModel || true
+            const printId = printInfo?.printId || true
+
+            console.log("printModelIndex=",printModelIndex)
+            console.log("printBoldModel=",printBoldModel)
+            console.log("printId=",printId)
+
+            const datas = print_order_model(order, printModelIndex, printBoldModel, printId, printer)
             logger.info(`订单详细：${String(datas)}`)
 
 

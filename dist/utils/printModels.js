@@ -1,182 +1,110 @@
 const dataTime = require('./dateTime.js')
 const {menuService} = require('../services/menuService');
+const {logger} = require("./logger");
 
 const divider = "-----------------------------------"
 
 // 点餐-----------------------------------------------------------------------------------------------------------------
 
-function print_order_model(order,printModelIndex,printer){
-    const BOLD_HAD = (printer.data.tags && printer.data.tags.includes("\b")) ? '\b' : '';
+function print_order_model(order, printModelIndex, printBoldModel, printId, printer){
+    const BOLD_HAD = (printer.data.tags && printer.data.tags.includes("\b") && printBoldModel) ? '\b' : '';
     const menu = printer.data.menu || [];
     const every_one = (printer.data.every_one == "true");
-    return order_model[printModelIndex](order,BOLD_HAD,menu,every_one)
+    return creat_order_print_data(menu, order, BOLD_HAD, printModelIndex, printId, every_one)
 }
 
-const order_model = {
-    0: (order,BOLD_HAD,menu,every_one)=>{
-        const result = []
-        print_order_data = ''
-        add_to_print_order_data("order id: " + order.id)
-        add_to_print_order_data(BOLD_HAD + "table:  " + order.table)
-        add_to_print_order_data("time: " + format_portugal_datetime(order.timestamp))
+function creat_order_print_data (menu, order, BOLD_HAD, printModelIndex, printId, every_one) {
+    const result = []
+    print_order_data = ''
+
+    // 创建打印头部
+    add_to_print_order_data("order id: " + order.id)
+    add_to_print_order_data(BOLD_HAD + "table:  " + order.table)
+    add_to_print_order_data("time: " + format_portugal_datetime(order.timestamp))
+    add_to_print_order_data(divider)
+
+    // 按需求打印名字和备注
+    let needLine = false;
+    if (order.name && order.name != "") {
+        needLine = true;
+        add_to_print_order_data("name: " + order.name);
+    }
+    if (order.note && order.note != "") {
+        needLine = true;
+        add_to_print_order_data("note: " + order.note);
+    }
+    if (needLine) {
         add_to_print_order_data(divider)
+    }
 
-        let needLine = false;
-        if (order.name && order.name != "") {
-            needLine = true;
-            add_to_print_order_data("name: " + order.name);
+    // 保存头部长度
+    const head_length = print_order_data.length;
+
+    // 创建菜品打印数据
+    for (let i = 0; i < order.items.length; i++) {
+        let item = order.items[i];
+        let type = menuService.getDishCategory(item);
+
+        if (!menu.includes(type)) continue;
+
+        // 打印菜品名字 如果有子选项名 加上子选项名
+        let name = item.name
+        if(item.subname && item.subname !== "" && item.subname !== "Default Title" && item.subname !== "undefined" ){
+            name = name + " - " + item.subname
         }
 
-        if (order.note && order.note != "") {
-            needLine = true;
-            add_to_print_order_data("note: " + order.note);
-        }
+        // 根据需求打印ID
+        const id = printId? item.dishid:undefined
 
-        if (needLine) {
-            add_to_print_order_data(divider)
-        }
+        // 确保数量正常
+        const quantity = item?.quantity ? (item.quantity>0 ? item.quantity : 1) : 1
 
-        const head_length = print_order_data.length;
+        // 根据打印模板添加菜品数据
+        const dish_print_data = creat_order_dish_print_data_with_printModel(printModelIndex, BOLD_HAD, id, name, quantity)
+        add_to_print_order_data( dish_print_data )
 
-        for (let i = 0; i < order.items.length; i++) {
-            let item = order.items[i];
-            let type = menuService.getDishCategory(item);
-
-            if (!menu.includes(type)) continue;
-
-            const dish = menuService.findDish(item.dishid);
-
-            if (dish) {
-                let name = dish.subname;
-                if (name == undefined || name == "Default Title" || name == "undefined") {
-                    name = item.name;
-                } else {
-                    name = item.name + "-" + name;
-                }
-
-                if (item.notes) {
-                    for (let j = 0; j < item.notes.length; j++) {
-                        add_to_print_order_data("\t" + item.notes[j]);
-                    }
-                }
-                // let dishid = ''
-                // if(item.dishid.toString().includes('-')){
-                //     const aux = item.dishid.toString().split('-')
-                //     dishid = aux[0]
-                //     if(aux.length > 0) dishid += String.fromCharCode(64+Number(aux[1]))
-                // }else{
-                //     dishid = item.dishid.toString()
-                // }
-
-                const dishid = "(" + item.dishid.toString() + ")";
-
-                add_to_print_order_data(BOLD_HAD + "=>" + item.quantity + "-@" + dishid + " " + item.name);
-                if (item.dishNote) {
-                    add_to_print_order_data("(note: " + item.dishNote + " )");
-                }
-            }
-            else {
-                add_to_print_order_data( "=>"+ item.quantity + "-@" + item.name );
-                for (let j = 0; j < item.notes.length; j++) {
-                    add_to_print_order_data("  " + item.notes[j]);
-                }
-                if (item.dishNote) {
-                    add_to_print_order_data("(note: " + item.dishNote + " )");
-                }
-            }
-
-            if (every_one) {
-                result.push(print_order_data);
-                console.log("print data:\n" + print_order_data);
-
-                print_order_data = print_order_data.substring(0, head_length);
+        // 如果是自定义菜 加上自定义菜的选项
+        if (item.notes) {
+            for (let j = 0; j < item.notes.length; j++) {
+                add_to_print_order_data("\t" + item.notes[j]);
             }
         }
 
-        if (!every_one) {
+        // 如果有菜品备注时，打印菜品备注
+        if (item.dishNote) {
+            add_to_print_order_data("(note: " + item.dishNote + " )");
+        }
+
+
+        if (every_one) {
             result.push(print_order_data);
             console.log("print data:\n" + print_order_data);
+
+            print_order_data = print_order_data.substring(0, head_length);
         }
-        return result
-    },
-    1: (order,BOLD_HAD,menu,every_one)=>{
-        const result = []
-        print_order_data = ''
-        add_to_print_order_data("order id: " + order.id)
-        add_to_print_order_data(BOLD_HAD + "table:  " + order.table)
-        add_to_print_order_data("time: " + format_portugal_datetime(order.timestamp))
-        add_to_print_order_data(divider)
+    }
 
-        let needLine = false;
-        if (order.name && order.name != "") {
-            needLine = true;
-            add_to_print_order_data("name: " + order.name);
-        }
+    if (!every_one) {
+        result.push(print_order_data);
+        console.log("print data:\n" + print_order_data);
+    }
+    return result
 
-        if (order.note && order.note != "") {
-            needLine = true;
-            add_to_print_order_data("note: " + order.note);
-        }
+}
 
-        if (needLine) {
-            add_to_print_order_data(divider)
-        }
-
-        const head_length = print_order_data.length;
-
-        for (let i = 0; i < order.items.length; i++) {
-            let item = order.items[i];
-            let type = menuService.getDishCategory(item);
-
-            if (!menu.includes(type)) continue;
-
-            const dish = menuService.findDish(item.dishid);
-
-            if (dish) {
-                let name = dish.subname;
-                if (name == undefined || name == "Default Title" || name == "undefined") {
-                    name = item.name;
-                } else {
-                    name = item.name + "-" + name;
-                }
-
-                if (item.notes) {
-                    for (let j = 0; j < item.notes.length; j++) {
-                        add_to_print_order_data("\t" + item.notes[j]);
-                    }
-                }
-                const dishid = "(" + item.dishid.toString() + ")";
-
-                add_to_print_order_data(BOLD_HAD + '#:' + dishid + " x " + item.quantity + " " + item.name);
-                if (item.dishNote) {
-                    add_to_print_order_data("(note: " + item.dishNote + " )");
-                }
-            }
-            else {
-                add_to_print_order_data( item.name + " x " +  item.quantity );
-                for (let j = 0; j < item.notes.length; j++) {
-                    add_to_print_order_data("\t " + item.notes[j]);
-                }
-                if (item.dishNote) {
-                    add_to_print_order_data("(note: " + item.dishNote + " )");
-                }
-            }
-
-            if (every_one) {
-                result.push(print_order_data);
-                console.log("print data:\n" + print_order_data);
-
-                print_order_data = print_order_data.substring(0, head_length);
-            }
-        }
-
-        if (!every_one) {
-            result.push(print_order_data);
-            console.log("print data:\n" + print_order_data);
-        }
-
-        return result
-    },
+function creat_order_dish_print_data_with_printModel (printModelIndex,BOLD_HAD,id,name,quantity){
+    let printData = ''
+    switch (printModelIndex) {
+        case 0:
+            printData += BOLD_HAD + "=>" + quantity + "-@" + (id? ("(" + id + ") "):" ") + name
+            break
+        case 1:
+            printData += BOLD_HAD + "#:" + id + " " + name + " * " + quantity
+            break
+        default:
+            logger.error("Dont Exist Order Print Model Index: "+printModelIndex)
+    }
+    return printData
 }
 
 let print_order_data = ''
@@ -193,77 +121,77 @@ function add_to_print_order_data(line,newLine = true){
 
 function print_takeaway_model(order,printModelIndex,printer){
     const BOLD_HAD = (printer.data.tags && printer.data.tags.includes("\b")) ? '\b' : '';
-    return takeaway_model[printModelIndex](order,BOLD_HAD)
+    return creat_takeaway_print_data(order, BOLD_HAD, printModelIndex)
 }
 
-const takeaway_model = {
-    0: (order,BOLD_HAD)=>{
-        print_takeaway_data = ''
-        let price_total = 0
-        add_to_print_takeaway_data(BOLD_HAD+"Takeaway: " + order.name);
-        add_to_print_takeaway_data("Customer Name:" + order.customer.name);
+function creat_takeaway_print_data(order,BOLD_HAD, printModelIndex){
+    print_takeaway_data = ''
+    let price_total = 0
 
-        add_to_print_takeaway_data(divider)
+    // 创建外卖打印头部
+    add_to_print_takeaway_data(BOLD_HAD+"Takeaway: " + order.name);
+    add_to_print_takeaway_data("Customer Name:" + order.customer.name);
 
-        add_to_print_takeaway_data(BOLD_HAD+"Pick up data: " + order.pickupDate)
-        add_to_print_takeaway_data(BOLD_HAD+"Pick up time: " + order.pickupTime)
+    add_to_print_takeaway_data(divider)
 
-        add_to_print_takeaway_data(divider)
+    add_to_print_takeaway_data(BOLD_HAD+"Pick up data: " + order.pickupDate)
+    add_to_print_takeaway_data(BOLD_HAD+"Pick up time: " + order.pickupTime)
 
-        for(let i=0; i<order.line_items.length; i++) {
-            const item = order.line_items[i]
-            const total = (item.price*item.quantity).toFixed(2)
-            const sku = item.sku? item.sku.toString().replaceAll('-','') : -1
-            price_total += Number(total)
-            add_to_print_takeaway_data(BOLD_HAD+ "=>" + item.quantity + "-@("+sku+") "+item.name);
-            add_to_print_takeaway_data(BOLD_HAD+" "+item.price+" * "+item.quantity+" = "+total);
-            if(item.properties?.length > 0){
-                for(let i=0; i<item.properties?.length; i++){
-                    add_to_print_takeaway_data(BOLD_HAD + "\t " + item.properties[i]);
-                }
+    add_to_print_takeaway_data(divider)
+
+    // 创建外卖菜品打印数据
+    for(let i=0; i<order.line_items.length; i++) {
+        const item = order.line_items[i]
+
+        const total = (item.price*item.quantity).toFixed(2)
+
+        price_total += Number(total)
+
+        // 菜品数据
+        const sku = item.sku? item.sku.toString().replaceAll('-','') : -1
+        const name = item.name
+        const quantity = item.quantity
+        const price = item.price
+
+        // 根据打印模板添加外卖菜品数据
+        const takeaway_dish_print_data = creat_takeaway_dish_print_data_with_printModel(printModelIndex, BOLD_HAD, sku, name, quantity, price, total)
+        add_to_print_takeaway_data(takeaway_dish_print_data)
+
+        // 如果是自定义菜 加上自定义菜的选项
+        if(item.properties?.length > 0){
+            for(let i=0; i<item.properties?.length; i++){
+                add_to_print_takeaway_data(BOLD_HAD + "\t " + item.properties[i]);
             }
         }
+    }
 
-        add_to_print_takeaway_data(divider)
-        add_to_print_takeaway_data(BOLD_HAD+"Total: "+price_total.toFixed(2)+" Euro");
+    add_to_print_takeaway_data(divider)
+    add_to_print_takeaway_data(BOLD_HAD+"Total: "+price_total.toFixed(2)+" Euro");
 
-        console.log("print takeaway data:\n",print_takeaway_data)
-        return print_takeaway_data
-    },
-    1: (order,BOLD_HAD)=>{
-        print_takeaway_data = ''
-        let price_total = 0
-        add_to_print_takeaway_data(BOLD_HAD+"Takeaway: " + order.name);
-        add_to_print_takeaway_data("Customer Name:" + order.customer.name);
+    console.log("print takeaway data:\n",print_takeaway_data)
+    return print_takeaway_data
 
-        add_to_print_takeaway_data(divider)
-
-        add_to_print_takeaway_data(BOLD_HAD+"Pick up data: " + order.pickupDate)
-        add_to_print_takeaway_data(BOLD_HAD+"Pick up time: " + order.pickupTime)
-
-        add_to_print_takeaway_data(divider)
-
-        for(let i=0; i<order.line_items.length; i++) {
-            const item = order.line_items[i]
-            const total = (item.price*item.quantity).toFixed(2)
-            const sku = item.sku? item.sku.toString().replaceAll('-','') : -1
-            price_total += Number(total)
-            add_to_print_takeaway_data(BOLD_HAD + "#:" + sku + " " + item.name + " * " + item.quantity);
-            add_to_print_takeaway_data(BOLD_HAD + " " + item.price + " * " + item.quantity + " = " + total);
-            if(item.properties?.length > 0){
-                for(let i=0; i<item.properties?.length; i++){
-                    add_to_print_takeaway_data(BOLD_HAD + "\t " + item.properties[i]);
-                }
-            }
-        }
-
-        add_to_print_takeaway_data(divider)
-        add_to_print_takeaway_data(BOLD_HAD+"Total: "+price_total.toFixed(2)+" Euro");
-
-        console.log("print takeaway data:\n",print_takeaway_data)
-        return print_takeaway_data
-    },
 }
+
+function creat_takeaway_dish_print_data_with_printModel(printModelIndex, BOLD_HAD, id, name, quantity, price, total){
+    let print_data = ''
+    switch (printModelIndex) {
+        case 0:
+            print_data += BOLD_HAD+ "=>" + quantity + "-@("+id+") "+name
+            print_data += '\n'
+            print_data += BOLD_HAD+" "+price+" * "+quantity+" = "+total
+            break
+        case 1:
+            print_data +=  BOLD_HAD + "#:" + id + " " + name + " * " + quantity
+            print_data +=  '\n'
+            print_data +=  BOLD_HAD + " " + price + " * " + quantity + " = " + total
+            break
+        default:
+            logger.error("Dont Exist Takeaway Print Model Index: "+printModelIndex)
+    }
+    return print_data
+}
+
 
 let print_takeaway_data = ''
 function add_to_print_takeaway_data(line,newLine = true){

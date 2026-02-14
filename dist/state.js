@@ -4,6 +4,7 @@ const {TableStatus} = require('./model/TableStatus.js')
 const {Table} = require('./model/table.js')
 const {ShopInfo,PriceInfo} = require('./model/shopInfo.js')
 const {TakeawayInfo, DeliveryInfo, ReserverInfo, QROrderInfo} = require('./model/Info.js')
+const {PrintInfo} = require('./model/printInfo.js')
 const {Settings} = require('./model/settings.js')
 const {logger} = require("./utils/logger");
 
@@ -15,11 +16,6 @@ class AppState {
         this.tables = []
         this.printers = []
         this.maxOrderId = 0
-
-        this.printModel = {
-            order: 0,
-            takeaway: 0,
-        }
 
         this.permissionsControl = {
             order: true,
@@ -38,7 +34,7 @@ class AppState {
             6: {enabled: true, name: 'Menu Almoço'},
         }
 
-        this.settings = new Settings({})
+        this.settings = new Settings()
 
         this.shopInfo = new ShopInfo()
 
@@ -46,6 +42,7 @@ class AppState {
         this.takeawayInfo = new TakeawayInfo()
         this.deliveryInfo = new DeliveryInfo()
         this.reserverInfo = new ReserverInfo()
+        this.printInfo = new PrintInfo()
 
         this.initTables()
 
@@ -85,7 +82,7 @@ class AppState {
         return this.permissionsControl
     }
 
-    getCurrentPrice(type,time=Date.now()){
+    getCurrentPrice(type=undefined,time=Date.now()){
         if(type){
             const price = this.shopInfo.getCurrentPrice(type,time,this.settings.isFestiveDay,this.settings.useChildrenDiscount)
             if(price){
@@ -127,14 +124,6 @@ class AppState {
             success = true
         }
         return {success: success, data: this.childrenPricePercentage}
-    }
-
-    getPrintModel(){
-        let success = false
-        if(this.printModel){
-            success = true
-        }
-        return {success:success, data:this.printModel}
     }
 
     // 所有 Update 函数
@@ -189,8 +178,11 @@ class AppState {
         return result
     }
 
-    updatePrintModel(key, value){
-        this.printModel[key] = value
+    updatePrintInfo(key, value){
+        console.log("update print_info:", key)
+        const result = this.printInfo.update(key, value)
+        console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
+        return result
     }
 
     createTable(startIdx, endIdx) {
@@ -365,9 +357,7 @@ class AppState {
             },
             settings: (value) => {
                 if (!value) return this.settings;
-                for (const k of Object.keys(value)) {
-                    this.settings[k] = value[k];
-                }
+                this.settings = Settings.fromJSON(value);
                 return this.settings;
             },
             shopInfo: (value) => {
@@ -377,32 +367,34 @@ class AppState {
             },
             qrOrderInfo: (value) => {
                 if (!value) return this.qrOrderInfo;
-                for (const k of Object.keys(value)) {
-                    this.qrOrderInfo[k] = value[k];
-                }
+                this.qrOrderInfo = QROrderInfo.fromJSON(value)
                 return this.qrOrderInfo;
             },
             takeawayInfo: (value) => {
                 if (!value) return this.takeawayInfo;
-                for (const k of Object.keys(value)) {
-                    this.takeawayInfo[k] = value[k];
-                }
+                this.takeawayInfo = TakeawayInfo.fromJSON(value)
                 return this.takeawayInfo;
             },
             deliveryInfo: (value) => {
                 if (!value) return this.deliveryInfo;
-                for (const k of Object.keys(value)) {
-                    this.deliveryInfo[k] = value[k];
-                }
+                this.deliveryInfo = DeliveryInfo.fromJSON(value)
                 return this.deliveryInfo;
             },
             reserverInfo: (value) => {
                 if (!value) return this.reserverInfo;
-                for (const k of Object.keys(value)) {
-                    this.reserverInfo[k] = value[k];
-                }
+                this.reserverInfo = ReserverInfo.fromJSON(value)
                 return this.reserverInfo;
             },
+            printInfo: (value) => {
+                if (!value) return this.printInfo;
+                this.printInfo = PrintInfo.fromJSON(value)
+                // template 数据迁移
+                if(this.printModel){
+                    this.printInfo.update('printModel',this.printModel)
+                    this.printModel = undefined
+                }
+                return this.printInfo;
+            }
         };
 
         for (const key of this._dataKeys) {

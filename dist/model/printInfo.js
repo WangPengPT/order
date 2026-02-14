@@ -1,14 +1,12 @@
-class Settings{
-    constructor(){
-        this.checkIP = false
-        this.QRorder = false
-        this.takeaway = false
-        this.delivery = false
-        this.reserver = false
-        this.isFestiveDay = false
+class PrintInfo{
 
-        this.useFandays = false
-        this.useChildrenDiscount = false
+    constructor(){
+        this.type = 'print_info'
+
+        this.printModel = {order: 0, takeaway: 0}
+
+        this.printBoldModel = true
+        this.printId = true
 
         this.recordProps(this)
     }
@@ -49,7 +47,7 @@ class Settings{
     }
 
     static fromJSON(data){
-        const instance = new Settings()
+        const instance = new this()
         for(const key of instance._dataKeys){
             if(data.hasOwnProperty(key)){
                 instance[key] = data[key]
@@ -59,4 +57,4 @@ class Settings{
     }
 }
 
-module.exports = {Settings};
+module.exports ={PrintInfo}

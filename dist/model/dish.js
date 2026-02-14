@@ -1,7 +1,17 @@
 class Dish {
-  constructor({ dishid, name, price, deliveryPrice, quantity, notes, orderIds, dishNote, orderType, discount, deliveryDiscount, category, activitys}) {
+  constructor({ dishid, name, name_pt, name_en, name_cn, subname, subname_pt, subname_en, subname_cn, price, deliveryPrice, quantity, notes, orderIds, dishNote, orderType, discount, deliveryDiscount, category, activitys}) {
     this.dishid = dishid
+
     this.name = name
+    this.name_pt = name_pt
+    this.name_en = name_en
+    this.name_cn = name_cn
+
+    this.subname = subname
+    this.subname_pt = subname_pt
+    this.subname_en = subname_en
+    this.subname_cn = subname_cn
+
     this.price = parseFloat(price) || 0
     this.deliveryPrice = parseFloat(deliveryPrice) || 0
     this.quantity = parseInt(quantity) || 0
@@ -19,6 +29,13 @@ class Dish {
     return {
       dishid: this.dishid,
       name: this.name,
+      name_pt: this.name_pt,
+      name_en: this.name_en,
+      name_cn: this.name_cn,
+      subname: this.subname,
+      subname_pt: this.subname_pt,
+      subname_en: this.subname_en,
+      subname_cn: this.subname_cn,
       price: this.price,
       deliveryPrice: this.deliveryPrice,
       quantity: this.quantity,

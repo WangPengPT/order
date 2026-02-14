@@ -36,18 +36,6 @@ class AppStateSocket {
     }
 
 
-    updatePrintModel(value, callback){
-        logger.info(`管理端更改打印模板`)
-        const result = this.appStateService.updatePrintModel(value.key, value.value)
-        if(result.success){
-            logger.info(`管理端更新订台数据${value.key}成功`)
-        }else{
-            logger.info(`管理端更${value.key}失败`)
-            logger.info(`失败原因: ${result.data}`)
-        }
-        callback(result)
-    }
-
     // 管理端获取数据
     async managerGetData(key, value, callback){
         try {
@@ -104,10 +92,8 @@ class AppStateSocket {
                 case "takeaway_info":
                 case "delivery_info":
                 case "reserver_info":
+                case "print_info":
                     this.updateInfo(key,value, callback)
-                    break
-                case "updatePrintModel":
-                    this.updatePrintModel(value, callback)
                     break
                 default:
                     callback({success: false, data: "Not Found Update Key"})
@@ -145,7 +131,7 @@ class AppStateSocket {
 
 
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
-        socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
+        // socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
         socket.emit("manager_get_custom_dish_control", this.appStateService.appStateRepository.appState.customDishesControl)
 
         // API: send information to manager/client
@@ -154,6 +140,7 @@ class AppStateSocket {
         socket.emit("takeaway_info", this.appStateService.appStateRepository.appState.takeawayInfo)
         socket.emit("delivery_info", this.appStateService.appStateRepository.appState.deliveryInfo)
         socket.emit("reserver_info", this.appStateService.appStateRepository.appState.reserverInfo)
+        socket.emit("print_info", this.appStateService.appStateRepository.appState.printInfo)
 
         // API: send center server's permissions control
         socket.emit("permissions_control", this.appStateService.appStateRepository.appState.getPermissionsControl())

@@ -1,9 +1,9 @@
 class Info {
 
-    static takeaway_type = "Takeaway"
-    static delivery_type = "Delivery"
-    static reserver_type = "Reserver"
-    static qrorder_type = "QROrder"
+    static takeaway_type = "takeaway_info"
+    static delivery_type = "delivery_info"
+    static reserver_type = "reserver_info"
+    static qrorder_type = "qrorder_info"
 
     constructor(type) {
         this.type = type
@@ -58,10 +58,13 @@ class Info {
         return result
     }
 
-    static fromJSON(data){
-        const instance = new ShopInfo()
+    static fromJSON(type,data){
+        const instance = new this(type)
         for(const key of instance._dataKeys){
             if(data.hasOwnProperty(key)){
+                if(['type'].includes(key)){
+                    continue
+                }
                 instance[key] = data[key]
             }
         }
@@ -79,6 +82,10 @@ class TakeawayInfo extends Info {
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
     }
+
+    static fromJSON(data){
+        return super.fromJSON(Info.takeaway_type, data)
+    }
 }
 
 class DeliveryInfo extends Info {
@@ -90,6 +97,10 @@ class DeliveryInfo extends Info {
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
     }
+
+    static fromJSON(data){
+        return super.fromJSON(Info.delivery_type, data)
+    }
 }
 
 class ReserverInfo extends Info {
@@ -99,6 +110,10 @@ class ReserverInfo extends Info {
 
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
+    }
+
+    static fromJSON(data){
+        return super.fromJSON(Info.reserver_type, data)
     }
 }
 
@@ -111,6 +126,10 @@ class QROrderInfo extends Info {
 
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
+    }
+
+    static fromJSON(data){
+        return super.fromJSON(Info.qrorder_type, data)
     }
 }
 

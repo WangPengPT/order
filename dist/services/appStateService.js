@@ -70,6 +70,9 @@ class AppStateService {
                 case "reserver_info":
                     result = appState.updateReserverInfo(key,value)
                     break
+                case "print_info":
+                    result = appState.updatePrintInfo(key,value)
+                    break
                 default:
                     result = {success: false, data: "Not Found Update type: "+type}
             }
@@ -78,28 +81,6 @@ class AppStateService {
             return { success: false, data: error.message }
         }
 
-    }
-
-
-    equals(value1,value2){
-        if(typeof value1 =='object'){
-            for(const key in value1){
-                if(value1[key] != value2[key]) return false
-            }
-            return true
-        }else{
-            return value1 == value2
-        }
-    }
-
-    updatePrintModel(key,value){
-        try{
-            appState.updatePrintModel(key, value)
-            if (appState.printModel[key] == value) return { success: true, data: value }
-            else throw new Error(key + "更新失败")
-        }catch (error){
-            return { success: false, data: error.message }
-        }
     }
 
     getAllTables() {
@@ -210,7 +191,7 @@ class AppStateService {
     getCurrentPrice() {
         try {
             const appState = this.appStateRepository.appState
-            const price = appState.weekPrice.getCurrentPrice()
+            const price = appState.getCurrentPrice()
             const res = {
                 success: true,
                 data: price
