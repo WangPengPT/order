@@ -336,7 +336,7 @@ class SocketServices {
             // 管理端打印外卖订单
             socket.on("manager_takeaway_order", (orderData) => {
                 console.log("takeaway order", orderData)
-                print_takeaway_order(orderData, appState.printInfo.printModel.takeaway);
+                print_takeaway_order(orderData, appState.printInfo);
             })
 
             // 返回table id ，发送桌子信息，目前价格

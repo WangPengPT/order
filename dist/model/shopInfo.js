@@ -258,11 +258,11 @@ class DayPrice {
 
         const hour = (new Date(time)).getHours()
 
-        if(hour>this.time_divider_d2b && hour<this.time_divider_b2l){
+        if(hour>=this.time_divider_d2b && hour<this.time_divider_b2l){
             result = {success:true, data:this.breakfast}
-        }else if(hour>this.time_divider_b2l && hour<this.time_divider_l2d){
+        }else if(hour>=this.time_divider_b2l && hour<this.time_divider_l2d){
             result = {success:true, data:this.lunch}
-        }else if(hour>this.time_divider_l2d && hour<this.time_divider_d2b+24){
+        }else if(hour>=this.time_divider_l2d && hour<this.time_divider_d2b+24){
             result = {success:true, data:this.dinner}
         }else{
             result = {success:false, data:"DayPrice Not Found Time("+hour+")Price"}

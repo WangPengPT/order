@@ -6,6 +6,7 @@ const {ShopInfo,PriceInfo} = require('./model/shopInfo.js')
 const {TakeawayInfo, DeliveryInfo, ReserverInfo, QROrderInfo} = require('./model/Info.js')
 const {PrintInfo} = require('./model/printInfo.js')
 const {Settings} = require('./model/settings.js')
+const {PermissionsControl} = require('./model/permissionsControl.js')
 const {logger} = require("./utils/logger");
 
 class AppState {
@@ -18,21 +19,12 @@ class AppState {
         this.maxOrderId = 0
 
         this.permissionsControl = {
-            order: true,
-            delivery: true,
-            reserver: true,
-            vip: true,
-            fandays: true,
+
         }
 
-        this.customDishesControl = {
-            1: {enabled: true, name: 'Sushi Aleatória®'},
-            2: {enabled: true, name: 'Poke Bowl'},
-            3: {enabled: true, name: 'MY BOX'},
-            4: {enabled: true, name: 'bibimbap'},
-            5: {enabled: true, name: 'XIAOXIONG® RAMEN'},
-            6: {enabled: true, name: 'Menu Almoço'},
-        }
+
+
+        this.permissionsControl = new PermissionsControl()
 
         this.settings = new Settings()
 
@@ -78,10 +70,6 @@ class AppState {
     }
 
     // 所有 Get 函数
-    getPermissionsControl(){
-        return this.permissionsControl
-    }
-
     getCurrentPrice(type=undefined,time=Date.now()){
         if(type){
             const price = this.shopInfo.getCurrentPrice(type,time,this.settings.isFestiveDay,this.settings.useChildrenDiscount)
@@ -118,23 +106,11 @@ class AppState {
         return { success:success, data:data }
     }
 
-    getChildrenPricePercentage(){
-        let success = false
-        if(this.childrenPricePercentage){
-            success = true
-        }
-        return {success: success, data: this.childrenPricePercentage}
-    }
-
     // 所有 Update 函数
-    updatePermissionsControl(value){
-        this.permissionsControl = value
-        console.log("update PermissionsControl:", this.permissionsControl)
-    }
-
-    updateCustomDishesControl(value){
-        this.customDishesControl = value
-        console.log("update CustomDishesControl:", this.customDishesControl)
+    updatePermissionsControl(key,value){
+        console.log("update PermissionsControl: ", key)
+        const result = this.permissionsControl.update(key, value)
+        console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
     }
 
     updateSettings(key, value) {
@@ -343,17 +319,8 @@ class AppState {
             },
             permissionsControl: (value) => {
                 if (!value) return this.permissionsControl;
-                for (const k of Object.keys(value)) {
-                    this.permissionsControl[k] = value[k];
-                }
+                this.permissionsControl = PermissionsControl.fromJSON(value)
                 return this.permissionsControl;
-            },
-            customDishesControl: (value) => {
-                if (!value) return this.customDishesControl;
-                for (const k of Object.keys(value)) {
-                    this.customDishesControl[k] = value[k];
-                }
-                return this.customDishesControl;
             },
             settings: (value) => {
                 if (!value) return this.settings;

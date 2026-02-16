@@ -49,7 +49,7 @@ class Settings{
     }
 
     static fromJSON(data){
-        const instance = new Settings()
+        const instance = new this()
         for(const key of instance._dataKeys){
             if(data.hasOwnProperty(key)){
                 instance[key] = data[key]

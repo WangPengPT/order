@@ -132,7 +132,6 @@ class AppStateSocket {
 
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
         // socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
-        socket.emit("manager_get_custom_dish_control", this.appStateService.appStateRepository.appState.customDishesControl)
 
         // API: send information to manager/client
         socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo)
@@ -143,7 +142,7 @@ class AppStateSocket {
         socket.emit("print_info", this.appStateService.appStateRepository.appState.printInfo)
 
         // API: send center server's permissions control
-        socket.emit("permissions_control", this.appStateService.appStateRepository.appState.getPermissionsControl())
+        socket.emit("permissions_control", this.appStateService.appStateRepository.appState.permissionsControl)
     }
 
 }

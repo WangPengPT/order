@@ -272,6 +272,8 @@ function writeMonthRates() {
     }, 1000 * 60 * 5); // 每5分钟
 }
 
+
+
 process.on('uncaughtException', async (err) => {
     logger.error('❌ 未捕获异常:', err);
     await OnQuit();

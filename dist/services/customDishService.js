@@ -115,6 +115,7 @@ class CustomDishService {
     async getAllTemplates() {
         try {
             const result = await this.customDishRepository.getAllTemplates()
+            console.log("获取到自定义菜单数据：",result)
             return {
                 success: true,
                 data: result

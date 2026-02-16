@@ -8,6 +8,7 @@ const https = require('https');
 const {appState} = require("../state");
 const {logger} = require("../utils/logger");
 const { UserService } = require("../services/userService");
+const {ManualUpdate} = require("../utils/manualUpdate");
 
 
 
@@ -107,11 +108,16 @@ class CenterSocket {
             console.log('set_server_'+name,data);
 
             if(data.permissionsControl){
-                appState.updatePermissionsControl(data.permissionsControl)
+                const permissionsControl = data.permissionsControl
+                for(const key of Object.keys(permissionsControl)){
+                    if(appState.permissionsControl[key] !== permissionsControl[key]){
+                        appState.updatePermissionsControl(key,permissionsControl[key])
+                    }
+                }
                 appState.socket_io.emit("permissions_control", data.permissionsControl)
             }
             if(data.customDishesControl){
-                appState.updateCustomDishesControl(data.customDishesControl)
+                appState.updatePermissionsControl('customDishesControl',data.customDishesControl)
                 appState.socket_io.emit("manager_get_custom_dish_control", data.customDishesControl)
             }
 
@@ -124,7 +130,13 @@ class CenterSocket {
              if (callback) callback(result);
         });
 
+        socket.on("center_manual_update_"+name,  async () => {
+            logger.info("center_manual_update");
 
+            const manualUpdate = new ManualUpdate(menuService)
+            const update_times = await manualUpdate.run()
+            logger.info("Finished manual update, times:"+update_times);
+        })
 
         this.connect_socket();
 
