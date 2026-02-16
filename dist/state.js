@@ -18,18 +18,11 @@ class AppState {
         this.printers = []
         this.maxOrderId = 0
 
-        this.permissionsControl = {
-
-        }
-
-
-
         this.permissionsControl = new PermissionsControl()
 
         this.settings = new Settings()
 
         this.shopInfo = new ShopInfo()
-
         this.qrOrderInfo = new QROrderInfo()
         this.takeawayInfo = new TakeawayInfo()
         this.deliveryInfo = new DeliveryInfo()
