@@ -164,7 +164,7 @@ function creat_takeaway_print_data(order,BOLD_HAD, printModelIndex){
         const sku = item.sku? item.sku.toString().replaceAll('-','') : -1
         const name = item.name
         const quantity = item.quantity
-        const price = item.price
+        const price = item.price.toFixed(2)
 
         // 根据打印模板添加外卖菜品数据
         const takeaway_dish_print_data = creat_takeaway_dish_print_data_with_printModel(printModelIndex, BOLD_HAD, sku, name, quantity, price, total)
@@ -192,12 +192,12 @@ function creat_takeaway_dish_print_data_with_printModel(printModelIndex, BOLD_HA
         case 0:
             print_data += BOLD_HAD+ "=>" + quantity + "-@("+id+") "+name
             print_data += '\n'
-            print_data += BOLD_HAD+" "+ price.toFixed(2) + " * " + quantity + " = "+ total.toFixed(2)
+            print_data += BOLD_HAD+" "+ price + " * " + quantity + " = "+ total
             break
         case 1:
             print_data +=  BOLD_HAD + "#:" + id + " " + name + " * " + quantity
             print_data +=  '\n'
-            print_data +=  BOLD_HAD + " " + price.toFixed(2) + " * " + quantity + " = " + total.toFixed(2)
+            print_data +=  BOLD_HAD + " " + price + " * " + quantity + " = " + total
             break
         default:
             logger.error("Dont Exist Takeaway Print Model Index: "+printModelIndex)
