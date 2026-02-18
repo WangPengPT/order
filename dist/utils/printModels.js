@@ -192,12 +192,12 @@ function creat_takeaway_dish_print_data_with_printModel(printModelIndex, BOLD_HA
         case 0:
             print_data += BOLD_HAD+ "=>" + quantity + "-@("+id+") "+name
             print_data += '\n'
-            print_data += BOLD_HAD+" "+price+" * "+quantity+" = "+total
+            print_data += BOLD_HAD+" "+ price.toFixed(2) + " * " + quantity + " = "+ total.toFixed(2)
             break
         case 1:
             print_data +=  BOLD_HAD + "#:" + id + " " + name + " * " + quantity
             print_data +=  '\n'
-            print_data +=  BOLD_HAD + " " + price + " * " + quantity + " = " + total
+            print_data +=  BOLD_HAD + " " + price.toFixed(2) + " * " + quantity + " = " + total.toFixed(2)
             break
         default:
             logger.error("Dont Exist Takeaway Print Model Index: "+printModelIndex)
