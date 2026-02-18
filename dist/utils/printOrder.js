@@ -12,6 +12,7 @@ function isIP(str) {
 }
 
 function print_order(order, printInfo) {
+    let result = {success: false, data: 0}
     logger.info(`打印订单 订单号 - ${order.id}`)
     console.log("收到的order数据",order);
     for (const key in printers) {
@@ -55,10 +56,14 @@ function print_order(order, printInfo) {
                 })
             }
 
+            result = {success: true, data: result.data+1 }
+
         } else {
             logger.info(`订单打印失败 订单号 - ${order.id}`)
         }
     }
+
+    return result
 }
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));

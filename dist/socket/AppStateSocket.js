@@ -49,26 +49,23 @@ class AppStateSocket {
                 case "menu":
                     result = await this.menuService.getMenuAndTab()
                     break
-                case "weekPrice":
-                    result = this.appStateService.appStateRepository.appState.getWeekPrice()
+                case "shop_info":
+                    result = {success: true, data: this.appStateService.appStateRepository.appState.shopInfo}
                     break
-                case "childrenWeekPrice":
-                    result = this.appStateService.appStateRepository.appState.getChildrenWeekPrice()
+                case "qrorder_info":
+                    result = {success: true, data: this.appStateService.appStateRepository.appState.qrOrderInfo}
                     break
-                case "childrenPricePercentage":
-                    result = this.appStateService.appStateRepository.appState.getChildrenPricePercentage()
+                case "takeaway_info":
+                    result = {success: true, data: this.appStateService.appStateRepository.appState.takeawayInfo}
                     break
-                case "people_data":
-                    result = this.appStateService.appStateRepository.appState.getPeopleCurrentPriceData(value.tableId)
+                case "delivery_info":
+                    result = {success: true, data: this.appStateService.appStateRepository.appState.deliveryInfo}
                     break
-                case 'delivery':
-                    result = {success: true, data: this.appStateService.appStateRepository.appState.getPickupData()}
+                case "reserver_info":
+                    result = {success: true, data: this.appStateService.appStateRepository.appState.reserverInfo}
                     break
-                case 'homeDelivery':
-                    result = {success: true, data: this.appStateService.appStateRepository.appState.getHomeDeliveryData()}
-                    break
-                case 'reserver':
-                    result = {success: true, data:this.appStateService.appStateRepository.appState.getReserverData()}
+                case "print_info":
+                    result = {success: true, data: this.appStateService.appStateRepository.appState.printInfo}
                     break
                 default:
                     result = {success: false, data: "Not Found Get Key"}

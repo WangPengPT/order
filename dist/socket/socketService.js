@@ -323,9 +323,6 @@ class SocketServices {
                         // 返回确认给用户端
                         socket.emit("order_confirmed", order.data.id);
 
-                        // // 更新管理端的桌子信息
-                        // this.io.emit("send_tables", appState.tables.toJSON())
-
                         // 给客户端发送桌子信息
                         const table = tableService.getTableById(order.data.table)
                         if (table.success) {
@@ -362,6 +359,13 @@ class SocketServices {
             socket.on("manager_takeaway_order", (orderData) => {
                 console.log("takeaway order", orderData)
                 print_takeaway_order(orderData, appState.printInfo);
+            })
+
+            // 管理端再次打印订单
+            socket.on("manager_reprint_order", (orderData, callback) => {
+                console.log("reprint_order", orderData)
+                const result = print_order(orderData, appState.printInfo);
+                callback(result)
             })
 
             // 返回table id ，发送桌子信息，目前价格
