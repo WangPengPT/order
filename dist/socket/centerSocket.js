@@ -32,6 +32,10 @@ class CenterSocket {
         return menuData
     }
 
+    static __setMenuDataForTest(data) {
+        menuData = data;
+    }
+
     static async update_menu_data() {
         update_data = true;
     }

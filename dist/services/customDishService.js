@@ -15,7 +15,7 @@ class CustomDishService {
     constructor(customDishRepository = new CustomDishRepository(), menuService = new MenuService(), menuOrdering = new MenuOrderingRepository()) {
         this.customDishRepository = customDishRepository
         this.menuService = menuService;
-        this.menuOrderingRepository = new MenuOrderingRepository();
+        this.menuOrderingRepository = menuOrdering;
     }
 
     async initializeCustomDish() {
