@@ -64,11 +64,8 @@ function creat_order_print_data (menu, order, BOLD_HAD, printModelIndex, printId
         add_to_print_order_data( dish_print_data )
 
         // 如果是自定义菜 加上自定义菜的选项
-        if (item.notes) {
-            for (let j = 0; j < item.notes.length; j++) {
-                add_to_print_order_data("\t" + item.notes[j]);
-            }
-        }
+        const customDish_print_data = creat_order_customDish_print_data(item.notes)
+        add_to_print_order_data( customDish_print_data )
 
         // 如果有菜品备注时，打印菜品备注
         if (item.dishNote) {
@@ -103,6 +100,22 @@ function creat_order_dish_print_data_with_printModel (printModelIndex,BOLD_HAD,i
             break
         default:
             logger.error("Dont Exist Order Print Model Index: "+printModelIndex)
+    }
+    return printData
+}
+
+function creat_order_customDish_print_data(notes){
+    let printData = ''
+    // for()
+    for(const note of notes){
+        let printNote = ''
+        if(note.type && note.type.name){ printNote += note.type.name + ':' }
+        if(note.options && note.options.length > 0){
+            for(const option of note.options){
+                printNote += ' ' + option.id + '-' + option.name + ';'
+            }
+        }
+        printData += '\t' + printNote + '\n'
     }
     return printData
 }

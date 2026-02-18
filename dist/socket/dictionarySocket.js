@@ -19,17 +19,18 @@ class DictionarySocket {
         const result = await this.dictionaryService.updateDictionaryWord(data)
         if (result.success) {
             logger.info("字典更新成功")
+            callback({ code: 200, ...result })
         } else {
             logger.info("字典更新失败")
+            callback({ code: 400, ...result })
         }
-        callback(result)
 
     }
 
     async resetDictionary(callback) {
         logger.info("重置字典")
         const result = await this.dictionaryService.resetDictionary()
-        callback(result)
+        callback({ code: result.success ? 200 : 400, ...result })
     }
 
 
@@ -44,7 +45,8 @@ class DictionarySocket {
         socket.on("managerReset_serverDictionary", async (callback) => await this.resetDictionary(callback))
 
         socket.on("managerRefresh_serverDictionary", async (callback) => {
-            callback(await this.dictionaryService.getAll())
+            const result = await this.dictionaryService.getAll();
+            if (callback) callback(result)
         })
 
     }

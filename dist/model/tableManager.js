@@ -68,6 +68,7 @@ class TableManager {
       msg_call: table.msg_call,
       nif_note: table.nif_note,
       lastOrderTime: table.lastOrderTime,
+      users: table.users,
     }));
   }
 

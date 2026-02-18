@@ -156,6 +156,7 @@ class CustomDishService {
      */
     async getAllEnableTemplates(type = "ALL") {
         try {
+            logger.info(`获取自定义菜数据，类型：${type}`)
             let result;
             switch (type) {
                 case 'DINEIN':
@@ -254,6 +255,9 @@ class CustomDishService {
                 if (resultTemplate.sellType  !== value) {
                     throw new Error("Failed update template sellType")
                 }
+                await this.menuService.reorganizeAndSaveMenuTab_menu(session)
+                await this.menuService.reorganizeDineMenuTab_custom(session)
+                await this.menuService.reorganizeTakeMenuTab_custom(session)
                 return {
                     success: true,
                     data: resultTemplate.sellType,

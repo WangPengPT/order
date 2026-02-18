@@ -14,9 +14,10 @@ class CustomDishSocket{
         const result = await this.customDishService.updateLike(id, isLike)
         if (result.success) {
             logger.info(`更新自定义菜单评价成功 id-${id}`)
-            callback(result)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`更新自定义菜单评价失败 id-${id}`)
+            callback({ code: 400, ...result })
         }
     }
 
@@ -24,11 +25,11 @@ class CustomDishSocket{
         logger.info("获取简易自定义菜单")
         const result = await this.customDishService.getSimplyAllTemplate()
         if (result.success) {
-            logger.info(`更新自定义菜单评价成功 id-${id}`)
+            logger.info(`获取简易自定义菜单成功`)
         } else {
-            logger.info(`更新自定义菜单评价失败 id-${id}`)
+            logger.info(`获取简易自定义菜单失败`)
         }
-        return result
+        return { code: result.success ? 200 : 400, ...result }
     }
 
     async updateEnable(newState, callback) {
@@ -40,22 +41,24 @@ class CustomDishSocket{
 
             const menuAndTabs = await this.menuService.getDineInMenuAndTabs()
             this.io.emit("dinner_menu_data", menuAndTabs.menu, menuAndTabs.tabs)
-            this.io.emit("serverSend_customDish_Client", await this.customDishService.getAllEnableTemplates("DINEIN"))
+            //this.io.emit("serverSend_customDish_Client", await this.customDishService.getAllEnableTemplates("DINEIN"))
+            callback({ code: 200, ...result })
         } else {
             logger.info("更改自定义菜开关失败")
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async updateTemplateSellType(id, value, callback) {
-        logger.info(`修改自定义菜出售类型- id: ${id}`)
+        logger.info(`修改自定义菜出售类型- id: ${id} 类型：${value}`)
         const result = await this.customDishService.updateTemplateSellType(id, value)
         if (result.success) {
             logger.info("修改自定义菜出售类型成功")
+            callback({ code: 200, ...result })
         } else {
             logger.info("修改自定义菜出售类型失败")
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async restoreCustomDishData(callback) {
@@ -64,10 +67,11 @@ class CustomDishSocket{
         if (result.success) {
             await this.menuService.reorganizeAndSaveMenuTab_menu()
             logger.info(`初始化自定菜数据成功`)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`初始化自定菜数据失败`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async updateTemplateDishData(value, callback) {
@@ -75,14 +79,28 @@ class CustomDishSocket{
         const result = await this.customDishService.updateTemplateData(value)
         if (result.success) {
             logger.info(`更新自定义菜数据成功`)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`更新自定义菜数据失败`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
+    }
+    
+    async getCustomDishTake(type, callback) {
+        logger.info("获取自定义菜单")
+        const result = await this.customDishService.getAllEnableTemplates(type)
+        if (result.success) {
+            logger.info(`获取自定义菜单成功`)
+        } else {
+            logger.info(`获取自定义菜单失败`)
+        }
+        callback({ code: result.success ? 200 : 400, ...result })
     }
 
     async registerHandlers(socket) {
-        socket.emit("serverSend_customDish_Client", await this.customDishService.getAllEnableTemplates("DINEIN"))
+        //socket.emit("serverSend_customDish_Client", await this.customDishService.getAllEnableTemplates("DINEIN"))
+
+        socket.on('client_get_customDish', async (type, cb) => { await this.getCustomDishTake(type, cb) })
 
         socket.emit("manager_get_all_customDishes", await this.customDishService.getAllTemplates())
 

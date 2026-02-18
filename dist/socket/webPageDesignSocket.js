@@ -14,11 +14,12 @@ class WebPageDesignSocket {
         const result = await this.webPageDesignService.savePageData(id, pageData)
         if (result.success) {
             logger.info("页面信息保存成功")
+            callback({ code: 200, ...result })
         } else {
             logger.info("页面信息保存失败")
             logger.info(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async getPageById(id, callback) {
@@ -26,11 +27,12 @@ class WebPageDesignSocket {
         const result = await this.webPageDesignService.getWebpageById(id)
         if (result.success) {
             logger.info(`编辑页面数据获取成功`)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`编辑页面数据获取失败`)
             logger.info(`失败原因: ${result.data}`)
+            callback({ code: 404, ...result })
         }
-        callback(result)
     }
 
     async getAllPageInfo() {
@@ -43,11 +45,12 @@ class WebPageDesignSocket {
         const result = await this.webPageDesignService.deleteDescriptionIamges(pageId, paths)
         if (result.success) {
             logger.info(`图片更新成功`)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`图片更新成失败`)
             logger.info(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async addPage(name, description, type, callback) {
@@ -55,11 +58,12 @@ class WebPageDesignSocket {
         const result = await this.webPageDesignService.addPage(name, description, type)
         if (result.success) {
             logger.info(`新的页面创建成功`)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`新的页面创建失败`)
             logger.info(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
 
     }
 
@@ -68,11 +72,12 @@ class WebPageDesignSocket {
         const result = await this.webPageDesignService.editPage(id, name, description)
         if (result.success) {
             logger.info(`编辑页面成功`)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`编辑页面失败`)
             logger.info(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async deletePage(id, callback) {
@@ -80,15 +85,17 @@ class WebPageDesignSocket {
         const result = await this.webPageDesignService.deletePage(id)
         if (result.success) {
             logger.info(`页面删除成功`)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`页面删除失败`)
             logger.info(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async refrehPage(callback) {
-        callback(await this.getAllPageInfo())
+        const result = await this.getAllPageInfo();
+        if (callback) callback(result)
     }
 
     async applayPage(id, type, callback) {
@@ -96,11 +103,12 @@ class WebPageDesignSocket {
         const result = await this.webPageDesignService.applayPage(id, type)
         if (result.success) {
             logger.info(`客户端主页更新成功`)
+            callback({ code: 200, ...result })
         } else {
             logger.info(`客户端主页更新失败`)
             logger.info(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
     
 

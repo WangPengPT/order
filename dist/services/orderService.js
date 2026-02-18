@@ -3,6 +3,21 @@ const { appState } = require("../state.js");
 function addOrder(orderData) {
     try {
         if (!orderData.table) throw new Error("No table id")
+
+        // 认证系统拦截逻辑
+        if (appState.settings.useAuth) {
+            const table = appState.tables.getTableById(orderData.table);
+            if (table && table.status.value === '用餐中') {
+                const userId = orderData.userId; // 客户端需传入 userId
+                if (!userId) throw new Error("Unauthorized: User information missing");
+                
+                const user = table.users.find(u => u.id === userId);
+                if (!user || !user.authorized) {
+                    throw new Error("WAIT_FOR_AUTH"); // 提示等待授权
+                }
+            }
+        }
+
         const order = appState.addOrderTable(orderData)
         const orderJson = order.toJSON()
         return {

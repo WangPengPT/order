@@ -12,11 +12,12 @@ class DataAnalizeSocket{
         const startDate = values.startDate
         const endDate = values.endDate
         const result = await this.dataAnalizeService.getDishesQuantityByDate(startDate, endDate)
-        callback(result)
         if (result.success) {
             logger.info("获取菜品销量排行成功")
+            callback({ code: 200, ...result })
         } else {
             logger.info("获取菜品销量排行失败")
+            callback({ code: 400, ...result })
         }
     }
 
@@ -25,11 +26,12 @@ class DataAnalizeSocket{
         const startDate = values.startDate
         const endDate = values.endDate
         const result = await this.dataAnalizeService.getMonthRate(startDate, endDate)
-        callback(result)
         if (result.success) {
             logger.info("用户获取菜品评价排行成功")
+            callback({ code: 200, ...result })
         } else {
             logger.info("用户获取菜品评价排行失败")
+            callback({ code: 400, ...result })
         }
     }
 

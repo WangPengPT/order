@@ -117,13 +117,15 @@ class SocketServices {
                     //data.menuTab = await this.menuService.getMenuOrdering()
                     data.dineTab = (await this.menuService.getDineInMenuAndTabs()).tabs
                     data.takeTab = (await this.menuService.getTakeawayMenuAndTabs()).tabs
-                    callback({
+                    if (callback) callback({
+                        code: 200,
                         success: true,
                         data: data
                     })
                 } catch (error) {
                     logger.warn("管理端获取菜单失败")
-                    callback({
+                    if (callback) callback({
+                        code: 500,
                         success: false
                     })
                 }
@@ -155,7 +157,7 @@ class SocketServices {
             socket.on("client_tableTotalAmount", (tableId, cb) => {
                 //logger.info(`管理端亲求桌号 ${tableId} 总消费`)
                 const result = this.appStateSocket.appStateService.getTableTotalAmout(tableId)
-                cb(result)
+                if (cb) cb({ code: result.success ? 200 : 400, ...result })
             })
 
             socket.on("manager_delete_order", ({order: ordername, tableId: tableId}, cb) => {
@@ -174,7 +176,7 @@ class SocketServices {
                 // })
                 this.sendMsg2TableClient(this.io, tableService.getTableById(tableId))
 
-                cb(result)
+                if (cb) cb({ code: result.success ? 200 : 400, ...result })
             })
 
             socket.on("manager_update_checkIP", (value, callback) => {
@@ -184,24 +186,24 @@ class SocketServices {
                     data: value
                 }
                 logger.info(`manager_update_checkIP return: ${result}`)
-                callback(result)
+                if (callback) callback({ code: 200, ...result })
             })
 
             // IP Blacklist Management
             socket.on("manager_add_blacklist_ip", (ip, callback) => {
                 appState.addBlacklistIP(ip);
                 logger.info(`Added IP to blacklist: ${ip}`);
-                callback({ success: true, data: appState.blacklistIps });
+                if (callback) callback({ code: 200, success: true, data: appState.blacklistIps });
             });
 
             socket.on("manager_remove_blacklist_ip", (ip, callback) => {
                 appState.removeBlacklistIP(ip);
                 logger.info(`Removed IP from blacklist: ${ip}`);
-                callback({ success: true, data: appState.blacklistIps });
+                if (callback) callback({ code: 200, success: true, data: appState.blacklistIps });
             });
 
             socket.on("manager_get_blacklist_ips", (callback) => {
-                callback({ success: true, data: appState.blacklistIps || [] });
+                if (callback) callback({ code: 200, success: true, data: appState.blacklistIps || [] });
             });
 
             // 管理端更改密码
@@ -219,7 +221,8 @@ class SocketServices {
                         logger.info(`失败原因: IP in blacklist`)
                         const msg = "Your IP is blocked."
                         socket.emit('error', msg)
-                        callback({
+                        if (callback) callback({
+                            code: 403,
                             success: false,
                             data: msg
                         });
@@ -231,15 +234,35 @@ class SocketServices {
                         logger.info(`失败原因: invalid ip`)
                         const msg = "please connected wifi."
                         socket.emit('error', msg)
-                        callback({
+                        if (callback) callback({
+                            code: 403,
                             success: false,
                             data: msg
                         });
                         return;
                     }
 
+                    // 认证系统检查
+                    if (appState.settings.useAuth && orderData.table) {
+                        const table = appState.tables.getTableById(orderData.table);
+                        if (table) {
+                            const user = table.users.find(u => u.id === orderData.userId);
+                            if (!user || !user.authorized) {
+                                logger.info(`订单提交失败: 用户未授权. 桌号: ${orderData.table}, 用户ID: ${orderData.userId}`);
+                                const msg = "Unauthorized user. Please wait for manager approval.";
+                                if (callback) return callback({
+                                    code: 401,
+                                    success: false,
+                                    data: msg
+                                });
+                                return;
+                            }
+                        }
+                    }
+
                     if (orderService.hasUniCode(orderData.table, orderData.uniCode)) {
-                        callback({
+                        if (callback) callback({
+                            code: 200,
                             success: true
                         });
                         return;
@@ -265,7 +288,8 @@ class SocketServices {
                                 logger.info(`订单提交失败: 冷却时间未到 (剩余 ${remaining} 秒)`)
                                 const msg = `COOLING_LIMIT:${coolingTime}:${remaining}`
                                 socket.emit('error', msg);
-                                callback({
+                                if (callback) callback({
+                                    code: 429,
                                     success: false,
                                     data: msg
                                 });
@@ -316,13 +340,14 @@ class SocketServices {
                         logger.info(`失败原因: ${order.data}`)
                         socket.emit('error', order.data)
                     }
-                    callback(order)
+                    if (callback) callback({ code: order.success ? 200 : 400, ...order })
                 } catch (e) {
                     logger.warn(`订单提交错误`)
                     logger.warn(`订单提交错误原因: ${e.message}`)
 
                     if (typeof callback === 'function') {
                         callback({
+                            code: 500,
                             success: false,
                             data: e.message
                         })
@@ -407,9 +432,10 @@ class SocketServices {
 
                 const result = await this.menuService.updateDineOrTakeMenuSorted(newMenuSorted, type)
                 if (result.success) {
-                    callback(result)
+                    if (callback) callback({ code: 200, ...result })
                     logger.info("更新菜品与分类顺序成功")
                 } else {
+                    if (callback) callback({ code: 400, ...result })
                     logger.info("更新菜品与分类顺序失败")
                 }
             });
@@ -489,7 +515,7 @@ class SocketServices {
                 } else {
                     logger.info(`获取菜单评价失败，原因：${result.data}`)
                 }
-                callback(result)
+                if (callback) callback({ code: result.success ? 200 : 400, ...result })
             })
 
             socket.on('manager_get_order_quantity', async (value, callback) => {
@@ -500,7 +526,7 @@ class SocketServices {
                 } else {
                     logger.info(`获取菜品销售量失败，原因：${result.data}`)
                 }
-                callback(result)
+                if (callback) callback({ code: result.success ? 200 : 400, ...result })
             })
 
             socket.on('manager_delete_item', async (id, callback) => {
@@ -512,7 +538,7 @@ class SocketServices {
                 } else {
                     logger.info(`管理端删除失败，原因：${result.data}`)
                 }
-                callback(result)
+                if (callback) callback({ code: result.success ? 200 : 400, ...result })
             })
 
             socket.on("get_shopify_orders", () => {
@@ -527,11 +553,10 @@ class SocketServices {
                 centerSocket.updateReserveData(value, (cb) => {
                     if (cb.success) {
                         logger.info(`申请取消订台成功, id:${cb.data.name}`)
-                        callback(cb)
                     } else {
                         logger.info(`申请取消订台失败, Error: ${cb.data}`)
-                        callback(cb)
                     }
+                    if (callback) callback({ code: cb.success ? 200 : 400, ...cb })
                 })
             })
 

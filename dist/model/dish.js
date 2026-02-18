@@ -1,5 +1,5 @@
 class Dish {
-  constructor({ dishid, name, name_pt, name_en, name_cn, subname, subname_pt, subname_en, subname_cn, price, deliveryPrice, quantity, notes, orderIds, dishNote, orderType, discount, deliveryDiscount, category, activitys}) {
+  constructor({ dishid, name, name_pt, name_en, name_cn, subname, subname_pt, subname_en, subname_cn, price, deliveryPrice, quantity, notes, notesAndId, orderIds, dishNote, orderType, discount, deliveryDiscount, category, activitys}) {
     this.dishid = dishid
 
     this.name = name
@@ -15,7 +15,9 @@ class Dish {
     this.price = parseFloat(price) || 0
     this.deliveryPrice = parseFloat(deliveryPrice) || 0
     this.quantity = parseInt(quantity) || 0
+
     this.notes = Array.isArray(notes) ? notes : [];
+
     this.orderIds = Array.isArray(orderIds) ? orderIds : [];
     this.dishNote = dishNote
     this.orderType = orderType

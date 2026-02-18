@@ -127,7 +127,7 @@ class CenterSocket {
              logger.info("Center Server request reset password");
              const userService = new UserService();
              const result = await userService.resetPassword(value);
-             if (callback) callback(result);
+             if (callback) callback({ code: result.success ? 200 : 400, ...result });
         });
 
         socket.on("center_manual_update_"+name,  async () => {

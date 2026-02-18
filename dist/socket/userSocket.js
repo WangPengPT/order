@@ -12,15 +12,18 @@ class UserSocket {
         const result = await this.userService.login(value.phoneNumber, value.password)
         if (result.success && result.data) {
             logger.info("用户登录成功")
+            callback({ code: 200, ...result })
         } else {
             logger.info("用户登录失败")
+            let code = 400;
             if (!result.data) {
                 logger.info(`失败原因: 密码错误`)
+                code = 401;
             } else {
                 logger.info(`失败原因: ${result.data}`)
             }
+            callback({ code, ...result })
         }
-        callback(result)
     }
 
     async changePassword(phoneNumber, newPass, callback) {
@@ -28,10 +31,11 @@ class UserSocket {
         const result = await this.userService.changePassword(phoneNumber, newPass)
         if (result.success) {
             logger.info("密码更新成功")
+            callback({ code: 200, ...result })
         } else {
             logger.info("密码更新失败")
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async resetPassword(phoneNumber, callback) {
@@ -39,10 +43,11 @@ class UserSocket {
         const result = await this.userService.resetPassword(phoneNumber)
         if (result.success) {
             logger.info("密码更新成功")
+            callback({ code: 200, ...result })
         } else {
             logger.info("密码更新失败")
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     async createUser(value, callback) {
@@ -50,11 +55,12 @@ class UserSocket {
         const result = await this.userService.register(value.phoneNumber, value.password)
         if (result.success) {
             logger.info(`用户创建成功 ${result.data}`)
+            callback({ code: 200, ...result })
         } else {
             logger.info("用户创建失败")
             logger.info(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     registerHandlers(socket) {

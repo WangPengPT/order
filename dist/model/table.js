@@ -3,7 +3,7 @@ const { PeopleType } = require("./people.js")
 const { TableStatus } = require("./TableStatus.js")
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, lastOrderTime = 0 }) {
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, lastOrderTime = 0, users = [] }) {
     this.id = id;
     this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType);
 
@@ -22,6 +22,7 @@ class Table {
     this.msg_call = msg_call || false;
     this.nif_note = nif_note || {nif:undefined, note:undefined}
     this.lastOrderTime = lastOrderTime
+    this.users = users; // [{ id, username, authorized }]
 
     this.recordProps(this)
   }
@@ -110,6 +111,8 @@ class Table {
     this.order = []
     this.msg_pay = false
     if(this.nif_note) this.nif_note = {nif:undefined, note:undefined}
+    this.lastOrderTime = 0
+    this.users = []
   }
 
   clientCmd(data) {

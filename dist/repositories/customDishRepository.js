@@ -26,6 +26,23 @@ class CustomDishRepository {
         return templates
     }
 
+    async getTakeTemplates(session = null) {
+        const result = await DB.find(this.tableName,{"value.sellType": "TAKEAWAY"},session)
+        if (!result) {
+            logger.info(`repo: ⚠ 未能找到 Custom Dish 数据`);
+            return null;
+        }
+        if (!Array.isArray(result)) throw new Error("Loaded page isn't array")
+        const templates = []
+        result.forEach(template => {
+            const customDishTemplate = CustomDishTemplate.fromJSON(template.value)
+            if (customDishTemplate.sellType === "TAKEAWAY") {
+                templates.push(customDishTemplate)
+            }
+        })
+        return templates
+    }
+
     /**
      *
      * @param {'ALL' | 'DINEIN' | 'TAKEAWAY'} type

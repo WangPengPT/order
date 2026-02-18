@@ -15,11 +15,12 @@ class AppStateSocket {
         if(result.success){
             logger.info(`管理端更新设置数据${value.key}成功`)
             this.io.emit("client_send_settings", {key: value.key, value: result.data})
+            callback({ code: 200, ...result })
         }else{
             logger.error(`管理端更新${value.key}失败`)
             logger.error(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
-        callback(result)
     }
 
     updateInfo(type,value, callback){
@@ -28,9 +29,11 @@ class AppStateSocket {
         if(result.success){
             logger.info(`管理端更新${type}信息${value.key}成功`)
             this.io.emit("client_send_"+type,{key: value.key, value: result.data})
+            callback({ code: 200, ...result })
         }else{
             logger.error(`管理端更新${value.key}失败`)
             logger.error(`失败原因: ${result.data}`)
+            callback({ code: 400, ...result })
         }
         callback(result)
     }
@@ -71,10 +74,11 @@ class AppStateSocket {
                     result = {success: false, data: "Not Found Get Key"}
             }
             logger.info("Manager get data => "+result.success)
-            callback(result)
+            callback({ code: result.success ? 200 : 404, ...result })
         } catch (error) {
             logger.warn("管理端获取信息失败，意料之外的错误")
             logger.warn(error.message)
+            callback({ code: 500, success: false, data: error.message })
         }
 
     }
@@ -124,14 +128,20 @@ class AppStateSocket {
 
         socket.on("default_menu_order_sorting", () => { this.defaultMenuOrdering() })
 
-        socket.on("manager_refresh_table", (value, cb) => { cb(this.appStateService.getAllTables()) })
+        socket.on("manager_refresh_table", (value, cb) => {
+            const tables = this.appStateService.getAllTables();
+            if (cb) cb(tables)
+        })
 
-        socket.on("get_shop_info", () => { socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo) })
+        socket.on("get_shop_info", (callback) => {
+            const info = this.appStateService.appStateRepository.appState.shopInfo;
+            if (callback) callback(info);
+            socket.emit("shop_info", info)
+        })
 
 
 
         socket.emit("settings_data", this.appStateService.appStateRepository.appState.settings)
-        // socket.emit("printModel_data", this.appStateService.appStateRepository.appState.printModel)
 
         // API: send information to manager/client
         socket.emit("shop_info", this.appStateService.appStateRepository.appState.shopInfo)
