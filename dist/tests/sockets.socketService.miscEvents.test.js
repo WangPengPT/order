@@ -47,6 +47,12 @@ jest.mock('../state.js', () => {
     checkBlacklistIP: jest.fn(() => false),
     checkLocalIP: jest.fn(() => true),
     socket_io: { emit: jest.fn() },
+    getPriceData: jest.fn(() => ({})),
+    getPickupData: jest.fn(() => ({})),
+    getHomeDeliveryData: jest.fn(() => ({})),
+    getReserverData: jest.fn(() => ({})),
+    getPermissionsControl: jest.fn(() => ({})),
+    customDishesControl: {},
   };
   return { appState };
 });
@@ -100,8 +106,7 @@ describe('socket/SocketServices 其它事件', () => {
       getOrderQuantityWithDate: jest.fn(async () => ({ success: true, data: [] })),
       getCurrentPrice: jest.fn(() => 10),
     };
-
-    svc.appStateSocket.registerHandlers = jest.fn(async () => {});
+    
     svc.orderSocket.registerHandlers = jest.fn(() => {});
     svc.tableSocket.registerHandlers = jest.fn(() => {});
     svc.webPageDesignSocket.registerHandlers = jest.fn(async () => {});
@@ -223,4 +228,3 @@ describe('socket/SocketServices 其它事件', () => {
     expect(cbBad).toHaveBeenCalledWith(expect.objectContaining({ code: 400, success: false }));
   });
 });
-

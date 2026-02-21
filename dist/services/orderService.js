@@ -20,9 +20,16 @@ function addOrder(orderData) {
 
         const order = appState.addOrderTable(orderData)
         const orderJson = order.toJSON()
+        let tablePassword;
+        if (orderData._firstOrderFree && appState.qrOrderInfo && appState.qrOrderInfo.useTableOrderPassword) {
+            const t = appState.tables.getTableById(orderData.table);
+            tablePassword = t ? t.getPassword() : undefined;
+        }
+
         return {
             success: true,
-            data: orderJson
+            data: orderJson,
+            tablePassword
         }
     } catch (error) {
         console.warn("Error: ", error.message)
@@ -135,6 +142,37 @@ function updateOrderStatus(order) {
     }
 }
 
+function checkTablePassword(orderData){
+    try{
+        if (!orderData.table) throw new Error("No table id")
+
+        // 开台首单免密、后续下单验密
+        if (appState.qrOrderInfo && appState.qrOrderInfo.useTableOrderPassword) {
+            const table = appState.tables.getTableById(orderData.table);
+            if (table && table.status && table.status.value === '用餐中') {
+                if (table.isFirstOrderFree()) {
+                    // 首单免密：允许通过，标记已用
+                    table.markFirstOrderUsed();
+                    // 继续下单，稍后在返回结果中带回密码由上游 socket 发送给客户端
+                    orderData._firstOrderFree = true;
+                } else {
+                    const pwd = orderData.orderPassword;
+                    const valid = table.checkPassword(pwd);
+                    if (!valid) {
+                        throw new Error("INVALID_TABLE_PASSWORD");
+                    }
+                }
+            }
+        }
+
+        return true
+
+    } catch (error) {
+        console.warn("Error: ", error.message)
+        return false
+    }
+}
+
 
 
 function hasUniCode(tableId, uniCode) {
@@ -168,5 +206,6 @@ module.exports = {
     deleteOrderAndTableDishes,
     deleteSushiBoxInTable,
     updateOrderStatus,
+    checkTablePassword,
     hasUniCode,
 };

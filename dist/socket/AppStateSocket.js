@@ -1,6 +1,7 @@
 const AppStateService = require("../services/appStateService.js");
 const { logger } = require('../utils/logger.js')
 const {MenuService} = require('../services/menuService.js')
+const { appState } = require('../state.js');
 
 class AppStateSocket {
     constructor(io, appStateService = new AppStateService(), menuService = new MenuService()) {
@@ -134,6 +135,41 @@ class AppStateSocket {
             const info = this.appStateService.appStateRepository.appState.shopInfo;
             if (callback) callback(info);
             socket.emit("shop_info", info)
+        })
+
+        socket.on("client_tableTotalAmount", (tableId, cb) => {
+            const result = this.appStateService.getTableTotalAmout(tableId)
+            if (cb) cb({ code: result.success ? 200 : 400, ...result })
+        })
+
+        socket.on("manager_update_checkIP", (value, callback) => {
+            appState.settings.checkIP = value;
+            const result = {
+                success: true,
+                data: value
+            }
+            logger.info(`manager_update_checkIP return: ${result}`)
+            if (callback) callback({ code: 200, ...result })
+        })
+
+        socket.on("manager_add_blacklist_ip", (ip, callback) => {
+            appState.addBlacklistIP(ip);
+            logger.info(`Added IP to blacklist: ${ip}`);
+            if (callback) callback({ code: 200, success: true, data: appState.blacklistIps });
+        });
+
+        socket.on("manager_remove_blacklist_ip", (ip, callback) => {
+            appState.removeBlacklistIP(ip);
+            logger.info(`Removed IP from blacklist: ${ip}`);
+            if (callback) callback({ code: 200, success: true, data: appState.blacklistIps });
+        });
+
+        socket.on("manager_get_blacklist_ips", (callback) => {
+            if (callback) callback({ code: 200, success: true, data: appState.blacklistIps || [] });
+        });
+
+        socket.on('i_am_mg', () => {
+            appState.addLocalIP(socket)
         })
 
 

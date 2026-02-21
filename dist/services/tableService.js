@@ -1,5 +1,4 @@
 const { appState } = require('../state.js');
-const { tablesPassword } = require('../model/tableManager.js')
 const { logger } = require('../utils/logger.js')
 const { TableStatus } = require('../model/TableStatus.js')
 const db = require('../filedb.js');
@@ -29,57 +28,7 @@ function addNewTable(tableData) {
 }
 
 
-function tableLogin(io) {
-  io.on("client_login", (value, cb) => {
-    try {
-      const id = value.table
-      const tablePass = tablesPassword.tables.get(id)
-      if (!tablePass) {
-        throw new Error("Table not found in password system")
-      }
-      const res = tablePass.checkPassword(value.password)
-      
-      if (res) {
-         const table = appState.tables.getTableById(id)
-         if (table && table.status === TableStatus.FREE) {
-            table.status = TableStatus.SEATED
-            db.saveAppStateData(appState)
-            io.emit(`client_table${id}`, table.toJSON())
-         }
-      }
-      cb(res)
-    } catch (error) {
-      console.warn("Error: ", error.message)
-      cb({ success: false, message: error.message })
-    }
-  })
-}
-
-function updateTablePassword(io) {
-  io.on("table_password_update", (value, cb) => {
-    try {
-      const id = value.tableId
-      const password = value.password
-      tablesPassword.changePassword(id, password)
-      cb(tablesPassword.toJSON())
-    } catch (e) {
-      console.warn("Error: ", e.messsage)
-      cb({ success: false, message: e.message });
-    }
-  })
-}
-
-function refreshTablePassword(io) {
-  io.on('table_password_refresh', (id, cb) => {
-    try {
-      const res = tablesPassword.makePassword(id)
-      cb(res)
-    } catch (e) {
-      console.warn("Error: ", e)
-      cb({ success: false, message: e.message });
-    }
-  })
-}
+// 旧的 table login / 密码刷新逻辑已移除
 
 function updateTableWithoutOrder(tableData) {
   try {
@@ -93,6 +42,18 @@ function updateTableWithoutOrder(tableData) {
 
     const newStatus = appState.tables.getTableById(id).status.value
 
+    // 当开台（进入用餐中）且功能开关打开时，生成四位密码返回管理端
+    let tablePassword;
+    if (appState.qrOrderInfo && appState.qrOrderInfo.useTableOrderPassword) {
+      if (oldStatus !== newStatus && newStatus === '用餐中') {
+        const t = appState.tables.getTableById(id)
+        if (t) {
+          tablePassword = t.makePassword()
+          logger.info(`桌号 ${id} 开台生成密码: ${tablePassword}`)
+        }
+      }
+    }
+
     // 已支付变空闲 自动清空桌子
     if (oldStatus === '已支付' && newStatus === '空闲') {
       const cleanRes = cleanTable(id)
@@ -101,7 +62,7 @@ function updateTableWithoutOrder(tableData) {
     }
 
     const table = appState.tables.getTableById(id)
-    return { success: true, data: table.toJSON() }
+    return { success: true, data: table.toJSON(), tablePassword }
   } catch (error) {
     console.warn("Error: ", error.message)
     return { success: false, data: error.message }
@@ -211,9 +172,6 @@ module.exports = {
   updateTableWithoutOrder,
   removeTable,
   cleanTable,
-  updateTablePassword,
-  refreshTablePassword,
-  tableLogin,
   getTableById,
   clientCmd,
   clickMsg

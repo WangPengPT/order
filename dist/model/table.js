@@ -3,11 +3,10 @@ const { PeopleType } = require("./people.js")
 const { TableStatus } = require("./TableStatus.js")
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, lastOrderTime = 0, users = [] }) {
-    this.id = id;
-    this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType);
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, lastOrderTime = 0, users = [], password = null, passwordTime = null, firstOrderUsed = false }) {
+    this.id = id
+    this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType)
 
-    // 修改这里，自动处理葡语状态
     this.status = typeof status === 'string'
       ? TableStatus.fromString(status) || TableStatus.fromPt(status) || status
       : status;
@@ -16,13 +15,16 @@ class Table {
       throw new Error(`无效状态: ${status}，有效值为: ${TableStatus.values().map(s => s.value).join(', ')}`);
     }
 
-    this.order = order.map(item => new Dish(item));
+    this.order = order.map(item => new Dish(item))
 
-    this.msg_pay = msg_pay || false;
-    this.msg_call = msg_call || false;
+    this.msg_pay = msg_pay || false
+    this.msg_call = msg_call || false
     this.nif_note = nif_note || {nif:undefined, note:undefined}
     this.lastOrderTime = lastOrderTime
-    this.users = users; // [{ id, username, authorized }]
+    this.users = users
+    this.password = password
+    this.passwordTime = passwordTime ? new Date(passwordTime) : null
+    this.firstOrderUsed = firstOrderUsed
 
     this.recordProps(this)
   }
@@ -113,6 +115,48 @@ class Table {
     if(this.nif_note) this.nif_note = {nif:undefined, note:undefined}
     this.lastOrderTime = 0
     this.users = []
+
+    this.password = null
+    this.passwordTime = null
+    this.firstOrderUsed = false
+  }
+
+  checkToday(time) {
+    if (!time) return false
+    const now = new Date()
+    return now.getDay() == time.getDay()
+  }
+
+  makePassword() {
+    if (this.checkToday(this.passwordTime)) {
+      return this.password
+    }
+    const num = Math.floor(Math.random() * 8999) + 1000
+    this.password = num.toString()
+    this.passwordTime = new Date()
+    this.firstOrderUsed = false
+    return this.password
+  }
+
+  checkPassword(password) {
+    return password && password !== '' && password == this.password
+  }
+
+  getPassword() {
+    return this.password
+  }
+
+  changePassword(password) {
+    this.password = password
+    return this.password
+  }
+
+  isFirstOrderFree() {
+    return this.firstOrderUsed !== true
+  }
+
+  markFirstOrderUsed() {
+    this.firstOrderUsed = true
   }
 
   clientCmd(data) {
@@ -218,68 +262,13 @@ class Table {
     for (const key in data) {
       raw[key] = specialParsers[key]?.(data[key]) ?? data[key]
     }
+    if (data.passwordTime) {
+      raw.passwordTime = new Date(data.passwordTime)
+    }
 
     return new Table(raw)
   }
 
 }
 
-class TableVer {
-  constructor({ id, password, time }) {
-    this.id = id
-    this.password = password
-    this.time = time
-  }
-
-  checkToday(time) {
-    if (!time) return false;
-    const now = new Date();
-    return now.getDay() == time.getDay();
-  }
-
-  make_password() {
-    if (this.checkToday(this.time)) {
-      return this.password;
-    }
-
-
-    const num = Math.floor(Math.random() * (999 - 100 + 1)) + 100;
-
-    this.password = num.toString();
-    this.time = new Date();
-
-    return this.password;
-  }
-
-  checkPassword(password) {
-    return password == this.password && password != '' && password != null
-  }
-
-  getPassword() {
-    return this.password
-  }
-
-  changePassword(password) {
-    this.password = password
-    return this.password
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      password: this.password,
-      time: this.time ? this.time.toISOString() : null
-    };
-  }
-
-  static fromJSON(data) {
-    return new TableVer({
-      id: data.id,
-      password: data.password,
-      time: data.time ? new Date(data.time) : null
-    });
-  }
-
-}
-
-module.exports = { Table, TableVer }
+module.exports = { Table }

@@ -9,10 +9,10 @@ const centerSocket = require('../socket/centerSocket.js');
 const {logger} = require('../utils/logger.js');
 
 class MenuService {
-    constructor(menuRespository = new MenuRepository(), menuOrderingRepository = new MenuOrderingRepository(), customeDishRepository = new CustomDishRepository()) {
-        this.menuRespository = menuRespository
+    constructor(menuRepository = new MenuRepository(), menuOrderingRepository = new MenuOrderingRepository(), customDishRepository = new CustomDishRepository()) {
+        this.menuRepository = menuRepository
         this.menuOrderingRepository = menuOrderingRepository
-        this.customeDishRepository = customeDishRepository
+        this.customDishRepository = customDishRepository
     }
 
     // 载入菜单数据
@@ -28,7 +28,7 @@ class MenuService {
             }
 
             return await DB.withTransaction(async (session) => {
-                const menu = await this.menuRespository.getMenu(session);
+                const menu = await this.menuRepository.getMenu(session);
                 const category = {};
                 for (let i = 0; i < menu.length; i++) {
                     const value = menu[i];
@@ -115,21 +115,21 @@ class MenuService {
         switch (type) {
             case 'DINEIN':
                 localTabs = await this.menuOrderingRepository.getDineIn(session);
-                menu = await this.menuRespository.getDineInMenu(session);
+                menu = await this.menuRepository.getDineInMenu(session);
                 menuDish = await this.buildMenuOrdering(session, menu);
-                customDish = (await this.customeDishRepository.getDineEnableTemplates(session)).map(it => it.name);
+                customDish = (await this.customDishRepository.getDineEnableTemplates(session)).map(it => it.name);
                 break;
 
             case 'TAKEAWAY':
                 localTabs = await this.menuOrderingRepository.getTakeaway(session);
-                menu = await this.menuRespository.getTakeaway(session);
+                menu = await this.menuRepository.getTakeaway(session);
                 menuDish = await this.buildMenuOrdering(session, menu);
-                customDish = (await this.customeDishRepository.getTakeEnableTemplates(session)).map(it => it.name);
+                customDish = (await this.customDishRepository.getTakeEnableTemplates(session)).map(it => it.name);
                 break;
 
             default:
                 localTabs = await this.menuOrderingRepository.get(session);
-                customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name);
+                customDish = (await this.customDishRepository.getAllEnableTemplates(session)).map(it => it.name);
                 menuDish = await this.buildMenuOrdering(session);
                 break;
         }
@@ -175,8 +175,8 @@ class MenuService {
             }
             const dineInTabs = await this.menuOrderingRepository.getDineIn(session)
             if (dineInTabs == null) {
-                const customDish = (await this.customeDishRepository.getAllEnableTemplates(session)).map(it => it.name)
-                const dineInMenu = await this.menuRespository.getDineInMenu(session) || []
+                const customDish = (await this.customDishRepository.getAllEnableTemplates(session)).map(it => it.name)
+                const dineInMenu = await this.menuRepository.getDineInMenu(session) || []
                 const menuDish = await this.buildMenuOrdering(session, dineInMenu)
                 const tabs = mergeTabs([], customDish, menuDish)
                 await this.menuOrderingRepository.saveDineIn(tabs, session)
@@ -184,7 +184,7 @@ class MenuService {
 
             const takeawayTabs = await this.menuOrderingRepository.getTakeaway(session)
             if (takeawayTabs == null) {
-                const takeawayMenu = await this.menuRespository.getTakeaway(session) || []
+                const takeawayMenu = await this.menuRepository.getTakeaway(session) || []
                 const menuDish = await this.buildMenuOrdering(session, takeawayMenu)
                 await this.menuOrderingRepository.saveTakeaway(menuDish, session)
             }
@@ -225,7 +225,7 @@ class MenuService {
      */
     async buildMenuOrdering(session = null, menu) {
         if (!menu) {
-            menu = (await this.menuRespository.getMenu(session))
+            menu = (await this.menuRepository.getMenu(session))
         }
         // 两个 map：handle -> main / handle -> sub
         const handleToMain = {}  // { handle: mainDish }
@@ -281,7 +281,7 @@ class MenuService {
     // 获取菜单
     async getMenu() {
         logger.info("获取菜单")
-        const menu = await this.menuRespository.getMenu()
+        const menu = await this.menuRepository.getMenu()
         appState.menu = menu;
         return menu
     }
@@ -296,7 +296,7 @@ class MenuService {
     }
 
     async getDineInMenuAndTabs() {
-        const menu = await this.menuRespository.getDineInMenu()
+        const menu = await this.menuRepository.getDineInMenu()
         const tabs = await this.menuOrderingRepository.getDineIn()
         return {
             menu: menu,
@@ -356,7 +356,7 @@ class MenuService {
     }
 
     async getTakeawayMenuAndTabs() {
-        const menu = await this.menuRespository.getTakeaway()
+        const menu = await this.menuRepository.getTakeaway()
         const tabs = await this.menuOrderingRepository.getTakeaway()
 
 
@@ -420,13 +420,13 @@ class MenuService {
 
             //console.log(appState.menu);
             // get current menu
-            appState.menu = await this.menuRespository.getMenu()
+            appState.menu = await this.menuRepository.getMenu()
 
             if (update_all && update_all != "false") {
                 console.log("updateMenu update_all");
                 appState.menu = data;
-                await this.menuRespository.updateMenuReforce(appState.menu)
-                const menu = await this.menuRespository.getMenu()
+                await this.menuRepository.updateMenuReforce(appState.menu)
+                const menu = await this.menuRepository.getMenu()
                 await this.reorganizeAndSaveMenuTab_menu()
                 const tt = await this.menuOrderingRepository.get()
                 await this.saveMenuOrdering(tt)
@@ -477,7 +477,7 @@ class MenuService {
                     }
                     return true;
                 });
-                await this.menuRespository.saveMenu(appState.menu)
+                await this.menuRepository.saveMenu(appState.menu)
 
                 await centerSocket.update_menu_data()
             }
@@ -527,7 +527,7 @@ class MenuService {
             item.likes += like;
             item.rates += rate;
 
-            await this.menuRespository.update(item, id)
+            await this.menuRepository.update(item, id)
 
             return {
                 success: true,
@@ -563,7 +563,7 @@ class MenuService {
     }
 
     async save() {
-        await this.menuRespository.saveMenu(appState.menu)
+        await this.menuRepository.saveMenu(appState.menu)
         db.saveData('orderMenuTab', appState.orderMenuTab);
     }
 
@@ -571,15 +571,15 @@ class MenuService {
         try {
 
             return await DB.withTransaction(async (session) => {
-                const dish = await this.menuRespository.get(id, session)
+                const dish = await this.menuRepository.get(id, session)
                 console.log("dish::::", dish, "id:  _:", id, "handle:_;", dish.handle)
                 let result;
                 //MainDish
                 if (!dish) throw new Error("Not found the dish")
                 if (dish.category !== '') {
-                    result = await this.menuRespository.deleteMenuDishByHandle(dish.handle, session)
+                    result = await this.menuRepository.deleteMenuDishByHandle(dish.handle, session)
                 } else {
-                    result = await this.menuRespository.deleteDish(dish.id)
+                    result = await this.menuRepository.deleteDish(dish.id)
                 }
 
                 if (result.acknowledged && result.deletedCount > 0) {
@@ -704,7 +704,7 @@ class MenuService {
     async getMenuAndTab() {
         return {
             success: true,
-            data: {menu: await this.menuRespository.getMenu(), menuTab: await this.menuOrderingRepository.get()}
+            data: {menu: await this.menuRepository.getMenu(), menuTab: await this.menuOrderingRepository.get()}
         };
     }
 
@@ -718,15 +718,15 @@ class MenuService {
         try {
             return await DB.withTransaction(async (session) => {
                 if (!id) return null
-                await this.menuRespository.update(dish, id, session)
+                await this.menuRepository.update(dish, id, session)
 
                 // 如果修改的是主菜的 tags，同步更新其子菜
                 if (dish.tags !== undefined) {
-                    const dishes = await this.menuRespository.getMenuByhandle(dish.handle, session);
+                    const dishes = await this.menuRepository.getMenuByhandle(dish.handle, session);
                     if (dishes && dishes.length > 0) {
                         for (const d of dishes) {
                             if (d.id !== id) { // 排除当前已经更新过的菜
-                                await this.menuRespository.update({ tags: dish.tags }, d.id, session);
+                                await this.menuRepository.update({ tags: dish.tags }, d.id, session);
                             }
                         }
                     }
@@ -745,7 +745,7 @@ class MenuService {
     }
 
     async isMainDish(id) {
-        const dish = await this.menuRespository.getMenuByid(id)
+        const dish = await this.menuRepository.getMenuByid(id)
         return dish && dish.name !== "" && dish.category
     }
 

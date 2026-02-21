@@ -3,22 +3,24 @@ const CustomDishRepository = require("../repositories/customDishRepository.js");
 const DailyOrderRepository = require("../repositories/dailyOrderRepository");
 const MonthlyRateRepository = require("../repositories/monthlyRateRepository.js");
 const MenuRepository = require("../repositories/menuRepository.js");
-const { appState: localAppSatte } = require("../state");
+const { appState: localAppState } = require("../state");
 const dataTime = require('../utils/dateTime.js');
 const { logger } = require("../utils/logger.js");
 
 class DataAnalizeService {
 
-    constructor(appState = localAppSatte,
+    constructor(
+        appState = localAppState,
         dailyOrderRepository = new DailyOrderRepository(),
         menuRepository = new MenuRepository(),
         customDishRepository = new CustomDishRepository(),
-        monthlyRateRepository = new MonthlyRateRepository()) {
-        this.appState = appState,
-            this.dailyOrderRepository = dailyOrderRepository,
-            this.menuRepository = menuRepository,
-            this.customDishRepository = customDishRepository,
-            this.monthlyRateRepository = monthlyRateRepository
+        monthlyRateRepository = new MonthlyRateRepository()
+    ) {
+        this.appState = appState;
+        this.dailyOrderRepository = dailyOrderRepository;
+        this.menuRepository = menuRepository;
+        this.customDishRepository = customDishRepository;
+        this.monthlyRateRepository = monthlyRateRepository;
     }
 
     async saveDailyOrders() {

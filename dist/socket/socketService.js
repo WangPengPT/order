@@ -79,6 +79,7 @@ class SocketServices {
 
         this.io.on("connection", async (socket) => {
 
+
             // printer 别在这前面写异步
             socket.on('add_printer', (value) => {
                 const id = socket.id;
@@ -133,6 +134,7 @@ class SocketServices {
             })
 
             socket.on("get_takeaway_menu_data", async () => {
+
                 let menu
                 let menuOrdering
 
@@ -153,13 +155,6 @@ class SocketServices {
             // 餐桌密码验证
             //tableService.tableLogin(socket)
 
-            // 客户端获取总消费 // add signal
-            socket.on("client_tableTotalAmount", (tableId, cb) => {
-                //logger.info(`管理端亲求桌号 ${tableId} 总消费`)
-                const result = this.appStateSocket.appStateService.getTableTotalAmout(tableId)
-                if (cb) cb({ code: result.success ? 200 : 400, ...result })
-            })
-
             socket.on("manager_delete_order", ({order: ordername, tableId: tableId}, cb) => {
                 logger.info(`管理端请求删除盲盒, 桌号-${tableId}`)
                 const result = orderService.deleteSushiBoxInTable(ordername, tableId)
@@ -179,42 +174,11 @@ class SocketServices {
                 if (cb) cb({ code: result.success ? 200 : 400, ...result })
             })
 
-            socket.on("manager_update_checkIP", (value, callback) => {
-                appState.settings.checkIP = value;
-                const result = {
-                    success: true,
-                    data: value
-                }
-                logger.info(`manager_update_checkIP return: ${result}`)
-                if (callback) callback({ code: 200, ...result })
-            })
-
-            // IP Blacklist Management
-            socket.on("manager_add_blacklist_ip", (ip, callback) => {
-                appState.addBlacklistIP(ip);
-                logger.info(`Added IP to blacklist: ${ip}`);
-                if (callback) callback({ code: 200, success: true, data: appState.blacklistIps });
-            });
-
-            socket.on("manager_remove_blacklist_ip", (ip, callback) => {
-                appState.removeBlacklistIP(ip);
-                logger.info(`Removed IP from blacklist: ${ip}`);
-                if (callback) callback({ code: 200, success: true, data: appState.blacklistIps });
-            });
-
-            socket.on("manager_get_blacklist_ips", (callback) => {
-                if (callback) callback({ code: 200, success: true, data: appState.blacklistIps || [] });
-            });
-
-            // 管理端更改密码
-            tableService.updateTablePassword(socket)
-
-            // 管理端刷新密码
-            tableService.refreshTablePassword(socket)
-
             // 处理订单提交
             socket.on("submit_order", (orderData, callback) => {
                 try {
+                    logger.info(`订单提交 来源ip: ${socket.handshake.address}`)
+
                     // Check Blacklist IP
                     if (appState.checkBlacklistIP(socket)) {
                         logger.info(`订单提交失败`)
@@ -260,14 +224,6 @@ class SocketServices {
                         }
                     }
 
-                    if (orderService.hasUniCode(orderData.table, orderData.uniCode)) {
-                        if (callback) callback({
-                            code: 200,
-                            success: true
-                        });
-                        return;
-                    }
-
                     // Check cooling time
                     const coolingTime = appState.qrOrderInfo.tableCoolingTime || 0;
                     console.log(`[CoolingCheck] Configured coolingTime: ${coolingTime}`);
@@ -277,12 +233,12 @@ class SocketServices {
                             const now = Date.now();
                             const lastOrderTime = table.lastOrderTime || 0;
                             console.log(`[CoolingCheck] Table: ${table.id}, LastOrderTime: ${lastOrderTime}, Now: ${now}`);
-                            
+
                             // lastOrderTime is timestamp (ms)
                             // coolingTime is in seconds
                             const elapsedSeconds = (now - lastOrderTime) / 1000;
                             console.log(`[CoolingCheck] ElapsedSeconds: ${elapsedSeconds}`);
-                            
+
                             if (elapsedSeconds < coolingTime) {
                                 const remaining = Math.ceil(coolingTime - elapsedSeconds);
                                 logger.info(`订单提交失败: 冷却时间未到 (剩余 ${remaining} 秒)`)
@@ -298,7 +254,24 @@ class SocketServices {
                         }
                     }
 
-                    logger.info(`订单提交 来源ip: ${socket.handshake.address}`)
+                    if(!orderService.checkTablePassword(orderData)){
+                        if(callback){
+                            callback({
+                                code: 400,
+                                success: false,
+                                data: "INVALID_TABLE_PASSWORD"
+                            })
+                        }
+                        return
+                    }
+
+                    if (orderService.hasUniCode(orderData.table, orderData.uniCode)) {
+                        if (callback) callback({
+                            code: 200,
+                            success: true
+                        });
+                        return;
+                    }
 
                     const order = orderService.addOrder(orderData)
                     if (order.success) {
@@ -323,6 +296,14 @@ class SocketServices {
                         // 返回确认给用户端
                         socket.emit("order_confirmed", order.data.id);
 
+                        // 首单免密开启的情况下，将桌子密码下发给本客户端
+                        if (order.tablePassword) {
+                            socket.emit("client_table_order_password", { tableId: order.data.table, password: order.tablePassword });
+                        }
+
+                        // // 更新管理端的桌子信息
+                        // this.io.emit("send_tables", appState.tables.toJSON())
+
                         // 给客户端发送桌子信息
                         const table = tableService.getTableById(order.data.table)
                         if (table.success) {
@@ -337,6 +318,7 @@ class SocketServices {
                         logger.info(`失败原因: ${order.data}`)
                         socket.emit('error', order.data)
                     }
+                    console.log("2222222222",{ code: order.success ? 200 : 400, ...order })
                     if (callback) callback({ code: order.success ? 200 : 400, ...order })
                 } catch (e) {
                     logger.warn(`订单提交错误`)
@@ -391,10 +373,6 @@ class SocketServices {
 
             socket.on('disconnect', () => {
                 if (printers[socket.id]) printers[socket.id] = undefined;
-            })
-
-            socket.on('i_am_mg', () => {
-                appState.addLocalIP(socket)
             })
 
             socket.on('get_printers', (callback) => {

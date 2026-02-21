@@ -1,4 +1,4 @@
-const { Table, TableVer } = require("./table.js")
+const { Table } = require("./table.js")
 
 class TableManager {
   constructor(initialTables = []) {
@@ -69,6 +69,7 @@ class TableManager {
       nif_note: table.nif_note,
       lastOrderTime: table.lastOrderTime,
       users: table.users,
+      password: table.password
     }));
   }
 
@@ -89,67 +90,4 @@ class TableManager {
   }
 }
 
-class TablesPassword{
-  constructor() {
-    this.tables = new Map()
-  }
-
-  getTablePassword(tableId) {
-    const table = this.tables.get(tableId)
-    if (table == null) {
-      return null
-    } else {
-      return table.getPassword()
-    }
-    
-  }
-
-  init(tableManager) {
-    const allTables = tableManager.getAllTables();
-    allTables.forEach(table => {
-      const tableVer = new TableVer({ id: table.id, password: null, time: null });
-      this.tables.set(table.id, tableVer);
-    });
-  }
-
-  makePassword(tableId) {
-    const table = this.tables.get(tableId)
-    if (table == null) {
-      return null
-    } else {
-      return table.make_password()
-    }
-  }
-
-  changePassword(tableId, password) {
-    const table = this.tables.get(tableId)
-    if (table == null) {
-      return null
-    } else {
-      return table.changePassword(password)
-    }
-  }
-
-  toJSON() {
-    // Map to array of TableVer's JSON
-    return {
-      tables: Array.from(this.tables.values()).map(tableVer => tableVer.toJSON())
-    };
-  }
-
-  static fromJSON(data) {
-    const instance = new TablesPassword();
-    if (data.tables && Array.isArray(data.tables)) {
-      data.tables.forEach(tableData => {
-        const tableVer = TableVer.fromJSON(tableData);
-        instance.tables.set(tableVer.id, tableVer);
-      });
-    }
-    return instance;
-  }
-
-}
-
-const tablesPassword = new TablesPassword()
-
-module.exports = { TableManager, tablesPassword }
+module.exports = { TableManager }

@@ -35,7 +35,7 @@ class AppStateService {
                 this.appStateRepository.appState.settings.customDishes = customDishes
             }
 
-            // tablesPassword.init(appState.tables);
+            const _ = null;
         } catch (error) {
             console.warn("错误: ", error);
         }

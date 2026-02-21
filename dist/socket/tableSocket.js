@@ -64,7 +64,13 @@ class TableSocket {
         if (result.success) {
             logger.info(`管理端修改桌子成功`)
             db.saveAppStateData(appState)
+            console.log("11111111111",result.data)
             callback({ code: 200, ...result });
+            if (result.tablePassword) {
+                // 将生成的密码回传给管理端（通过当前回调已返回），并推送到管理端监听频道
+                logger.info(`管理端生成桌子密码 桌子 - ${tableData.id}; 密码 - ${result.tablePassword}`);
+                this.io.emit('manager_table_password', { tableId: tableData.id, password: result.tablePassword });
+            }
         } else {
             logger.info(`管理端修改桌子失败`)
             logger.info(`失败原因: ${result.data}`)
