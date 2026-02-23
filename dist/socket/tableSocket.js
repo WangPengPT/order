@@ -113,7 +113,7 @@ class TableSocket {
     }
 
     // --- 认证系统相关 ---
-    
+
     // 客户端请求加入桌子（认证/登录）
     clientJoinTable(socket, { tableId, user }, callback) {
         logger.info(`桌号: ${tableId} 用户请求加入: ${user.username} (${user.id})`);
@@ -186,7 +186,7 @@ class TableSocket {
 
         const initialLength = table.users.length;
         table.users = table.users.filter(u => u.id !== userId);
-        
+
         if (table.users.length !== initialLength) {
             db.saveAppStateData(appState);
             // 通知该桌子所有客户端用户状态变更
@@ -194,6 +194,29 @@ class TableSocket {
             this.io.emit('send_tables', appState.tables.toJSON());
             logger.info(`用户 ${userId} 已从桌号 ${tableId} 移除`);
         }
+    }
+
+    // 管理端刷新桌子密码
+    managerRefreshTablePassword(tableId, callback){
+        logger.info(`管理端请求刷新桌子密码，桌号：${tableId}`)
+        const table = appState.tables.getTableById(tableId);
+
+        // 找不到桌子
+        if (!table){
+            logger.info(`管理端请求刷新桌子密码失败，原因：未找到该桌号`)
+            callback({ code: 404, success: false, message: 'Table not found' });
+        }
+
+        table.passwordTime = undefined // passwordTime 值为 null/undefined 时可创建新密码，反之返回已有密码
+        const password = table.makePassword()
+
+        if(!password){
+            logger.info(`管理端请求刷新桌子密码失败，原因：密码生成失败，密码：${password}`)
+            callback({ code: 400, success: false, message: 'Creat Password Unsuccessful' });
+        }
+
+        logger.info(`管理端请求刷新桌子密码成功，密码：${password}`)
+        callback({code: 200, success: true, table: table.toJSON()});
     }
 
     registerHandlers(socket) {
@@ -219,6 +242,10 @@ class TableSocket {
         });
         socket.on('client_update_guest_name', (data, callback) => { this.clientUpdateGuestName(data, callback) });
         socket.on('client_leave_table', (data) => { this.clientLeaveTable(data) });
+
+        // 管理端
+        socket.on('manager_refresh_table_password', (data,callback) =>{ this.managerRefreshTablePassword(data, callback) });
+
     }
 }
 
