@@ -135,6 +135,8 @@ class PriceInfo {
     constructor(type) {
         this.type = type
 
+        this.age = {min:0, max:4}
+
         this.pricePercentage = 50
 
         this.time_divider_b2l = 11
