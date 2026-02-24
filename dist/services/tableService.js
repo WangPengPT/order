@@ -161,7 +161,8 @@ function clickMsg(id,cmd)
     if (table == null) throw new Error("Not found the table")
     table.clickMsg(cmd);
   } catch (error) {
-    console.warn("Error: ", error.message)
+    logger.error("TableService Error: "+error.message)
+    console.warn("TableService Error: ", error.message)
   }
 }
 

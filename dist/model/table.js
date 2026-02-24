@@ -111,6 +111,7 @@ class Table {
     this.status = TableStatus.FREE;
     this.peopleType = new PeopleType({ adults: 0, children: 0 })
     this.order = []
+    this.msg_call = false
     this.msg_pay = false
     if(this.nif_note) this.nif_note = {nif:undefined, note:undefined}
     this.lastOrderTime = 0
@@ -178,11 +179,6 @@ class Table {
     if (cmd == 'call') {
       this.msg_call = false;
     }
-
-    // if (cmd == 'pay') {
-    //   this.msg_pay = false;
-    // }
-
   }
 
 
