@@ -28,6 +28,11 @@ let menuService
 
 class CenterSocket {
 
+    // 向中心服务器api发送消息函数
+    static sendMsg(api, value, callback) {
+        socket.emit('message', api, value, callback)
+    }
+
     static get_menu_data() {
         return menuData
     }
@@ -81,15 +86,9 @@ class CenterSocket {
                 (cb)=>{
                     if(cb.success){
                         logger.info('Center Server get config successfully: '+cb.data);
-                        let permissionsControl_text = 'Have Not Data'
                         if(cb.permissionsControl){
-                            permissionsControl_text = ''
-                            for(const key in cb.permissionsControl){
-                                appState.updatePermissionsControl(key, cb.permissionsControl[key]);
-                                permissionsControl_text += ("; " + key + ":" + cb.permissionsControl[key] );
-                            }
+                            this.updatePermissionsControl(cb.permissionsControl)
                         }
-                        logger.info('Get Permissions Control ' + permissionsControl_text);
                     }else{
                         logger.error('Center Server get config failed: '+cb.data);
                     }
@@ -112,12 +111,7 @@ class CenterSocket {
             console.log('set_server_'+name,data);
 
             if(data.permissionsControl){
-                const permissionsControl = data.permissionsControl
-                for(const key of Object.keys(permissionsControl)){
-                    if(appState.permissionsControl[key] !== permissionsControl[key]){
-                        appState.updatePermissionsControl(key,permissionsControl[key])
-                    }
-                }
+                this.updatePermissionsControl(data.permissionsControl)
                 appState.socket_io.emit("permissions_control", data.permissionsControl)
             }
             if(data.customDishesControl){
@@ -267,9 +261,29 @@ class CenterSocket {
     }
 
     static updateReserveData(value, callback){
-        socket.emit('message', 'g_update_reserve_data', value, callback)
+        const api = 'g_update_reserve_data'
+        this.sendMsg(api, value, callback)
     }
 
+    static alert(alert){
+        const api = 'alert'
+        const value = {
+            restaurant: this.getRestaurant(),
+            alert: alert
+        }
+
+        this.sendMsg(api, value)
+    }
+
+    static message(msg){
+        const api = 'message'
+        const value = {
+            restaurant: this.getRestaurant(),
+            message: msg,
+        }
+
+        this.sendMsg(api, value)
+    }
 
     static async saveDishRating(id, like, rate) {
         try {
@@ -323,6 +337,18 @@ class CenterSocket {
             item.likes = data.likes
         }
     }
+
+    static updatePermissionsControl(permissionsControl) {
+        let print = ''
+        for(const key of Object.keys(permissionsControl)){
+            if(appState.permissionsControl[key] !== permissionsControl[key]){
+                appState.updatePermissionsControl(key,permissionsControl[key])
+            }
+            print += (key + ':' + permissionsControl[key] + '; ');
+        }
+        logger.info('Current Permissions: ' + print);
+    }
+
 }
 
 module.exports = CenterSocket

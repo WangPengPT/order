@@ -30,30 +30,28 @@ class TableSocket {
         if (result.success) {
             logger.info(`管理端删除桌子成功`)
             db.saveAppStateData(appState)
-            callback({ code: 200, ...result });
         } else {
             logger.info(`管理端删除桌子失败`)
             logger.info(`失败原因: ${result.data}`)
-            callback({ code: 400, ...result });
         }
+        if(callback) callback({code: result.success? 200:400, ...result})
     };
 
     // 清除桌子
     cleanTable(id, callback) {
-        logger.info(`管理清除改桌子 桌号 - ${id}`)
+        logger.info(`管理清除桌子 桌号 - ${id}`)
         const result = tableService.cleanTable(id);
         const table = tableService.getTableById(id)
         if (result.success) {
-            logger.info(`管理清除改桌子成功`)
+            logger.info(`管理清除桌子成功`)
             this.io.emit(`client_table${id}`, table.data)
             db.saveAppStateData(appState)
             logger.info(`桌子状态已保存到磁盘`)
-            callback({ code: 200, ...result });
         } else {
-            logger.info(`管理清除改桌子失败`)
+            logger.info(`管理清除桌子失败`)
             logger.info(`失败原因: ${result.data}`)
-            callback({ code: 400, ...result });
         }
+        if(callback) callback({code: result.success? 200:400, ...result });
     }
 
     // 修改桌子

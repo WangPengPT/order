@@ -15,6 +15,7 @@ const VIPUserManager = require("../services/vipUserManager.js")
 const centerSocket = require('./centerSocket.js');
 const {DataAnalizeSocket} = require('./dataAnalizeSocket.js');
 const DictinarySocket = require('./dictionarySocket.js');
+const {AlertMessageSocket} = require("./AlertMessageSocket");
 
 class SocketServices {
     constructor(io,
@@ -25,7 +26,8 @@ class SocketServices {
                 userSocket = new UserSocket(io),
                 customDish = new CustomDishSocket(io),
                 dataAnalizeSocket = new DataAnalizeSocket(io),
-                dictinarySocket = new DictinarySocket(io)
+                dictinarySocket = new DictinarySocket(io),
+                alertMessageSocket = new AlertMessageSocket(io)
     ) {
 
         this.io = io
@@ -37,6 +39,7 @@ class SocketServices {
         this.customDish = customDish
         this.dataAnalizeSocket = dataAnalizeSocket
         this.dictinarySocket = dictinarySocket
+        this.alertMessageSocket = alertMessageSocket
     }
 
     emit(...datas) {
@@ -110,6 +113,8 @@ class SocketServices {
             this.dataAnalizeSocket.registerHandlers(socket)
 
             await this.dictinarySocket.registerHandlers(socket)
+
+            await this.alertMessageSocket.registerHandlers(socket)
 
             socket.on("manager_get_menu", async (_, callback) => {
                 try {
@@ -318,7 +323,6 @@ class SocketServices {
                         logger.info(`失败原因: ${order.data}`)
                         socket.emit('error', order.data)
                     }
-                    console.log("2222222222",{ code: order.success ? 200 : 400, ...order })
                     if (callback) callback({ code: order.success ? 200 : 400, ...order })
                 } catch (e) {
                     logger.warn(`订单提交错误`)
@@ -463,9 +467,9 @@ class SocketServices {
                 const result = await this.menuService.saveDishRating(id, like, rate);
                 if (result) {
                     this.io.emit("rating_changed", result.data.id, result.data.likes, result.data.rates);
-                    logger.info(`客服端评分成功, id-${id}`)
+                    logger.info(`客户端评分成功, id-${id}`)
                 } else {
-                    logger.info(`客服端评分失败, id-${id}`)
+                    logger.info(`客户端评分失败, id-${id}`)
                     logger.info(`失败原因: ${result.data}`)
                 }
             });
@@ -481,9 +485,9 @@ class SocketServices {
 
                 if (result) {
                     this.io.emit("rating_changed", result.data.id, result.data.likes, result.data.rates);
-                    logger.info(`客服端评分成功, id-${id}`)
+                    logger.info(`客户端评分成功, id-${id}`)
                 } else {
-                    logger.info(`客服端评分失败, id-${id}`)
+                    logger.info(`客户端评分失败, id-${id}`)
                     logger.info(`失败原因: ${result.data}`)
                 }
             });

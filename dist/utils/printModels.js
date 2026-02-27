@@ -45,7 +45,8 @@ function creat_order_print_data (menu, order, BOLD_HAD, printModelIndex, printId
         let item = order.items[i];
         let type = menuService.getDishCategory(item);
 
-        if (!menu.includes(type)) continue;
+        // 检查打印机是否打印对应菜品分类
+        if (!checkMenuIncludes(menu,type)) continue;
 
         // 打印菜品名字 如果有子选项名 加上子选项名
         let name = item.name
@@ -128,6 +129,16 @@ function add_to_print_order_data(line,newLine = true){
     if(newLine){
         print_order_data += '\n'
     }
+}
+
+function checkMenuIncludes(menu, tags){
+    if(!menu) return false
+
+    for(const tag of tags){
+        if(menu.includes(tag)) return true
+    }
+
+    return false
 }
 
 // 外卖-----------------------------------------------------------------------------------------------------------------
@@ -223,4 +234,5 @@ function format_portugal_datetime(timestamp) {
 module.exports = {
     print_order_model,
     print_takeaway_model,
+    checkMenuIncludes,
 }

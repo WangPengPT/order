@@ -1,5 +1,5 @@
 const {menuService} = require('../services/menuService');
-const { print_order_model, print_takeaway_model } = require('./printModels.js');
+const { print_order_model, print_takeaway_model, checkMenuIncludes } = require('./printModels.js');
 const { logger } = require('./logger.js')
 const dataTime = require('./dateTime.js')
 const net = require('net');
@@ -14,7 +14,9 @@ function isIP(str) {
 function print_order(order, printInfo) {
     let result = {success: false, data: 0}
     logger.info(`打印订单 订单号 - ${order.id}`)
-    console.log("收到的order数据",order);
+    // console.log("收到的order数据",order);
+    order.items = sortedOrderItems(order.items)
+    // console.log("Sorted Order", order)
     for (const key in printers) {
         const printer = printers[key];
 
@@ -25,11 +27,12 @@ function print_order(order, printInfo) {
         let hasData = false;
         for (let i = 0; i < order.items.length; i++) {
             let item = order.items[i];
-            let type = menuService.getDishCategory(item);
-            if (printer.data.menu?.includes(type)) {
+            const type = menuService.getDishCategory(item);
+            if (checkMenuIncludes(printer.data.menu, type)) {
                 hasData = true;
                 break;
             }
+
         }
 
         if (hasData) {
@@ -65,6 +68,22 @@ function print_order(order, printInfo) {
 
     return result
 }
+
+// 按ID的从小到大顺序排序
+function sortedOrderItems(items) {
+    return items.sort((a, b) => {
+        const idA = a.dishid ?? ''
+        const idB = b.dishid ?? ''
+
+        return String(idA).localeCompare(
+            String(idB),
+            undefined,
+            { numeric: true, sensitivity: 'base' }
+        )
+    })
+}
+
+
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 

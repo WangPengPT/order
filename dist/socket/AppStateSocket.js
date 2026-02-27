@@ -5,78 +5,57 @@ const { appState } = require('../state.js');
 
 class AppStateSocket {
     constructor(io, appStateService = new AppStateService(), menuService = new MenuService()) {
-        this.appStateService = appStateService,
+        this.appStateService = appStateService
         this.menuService = menuService
-            this.io = io
+        this.io = io
+        this.info_keys = ['settings','shop_info','qrorder_info','takeaway_info','delivery_info','reserver_info','print_info']
     }
 
-    updateSettings(value, callback){
-        logger.info(`更新设置数据${value.key}:${value.value}`)
-        const result = this.appStateService.updateSettings(value.key, value.value)
-        if(result.success){
-            logger.info(`管理端更新设置数据${value.key}成功`)
-            this.io.emit("client_send_settings", {key: value.key, value: result.data})
-            callback({ code: 200, ...result })
+    async get(type, key, callback) {
+        logger.info(`管理端获取${type}数据` + (key? `，参数名：${key}`:''))
+
+        let result
+        if(type == 'menu'){
+            result = await this.menuService.getMenuAndTab()
         }else{
-            logger.error(`管理端更新${value.key}失败`)
-            logger.error(`失败原因: ${result.data}`)
-            callback({ code: 400, ...result })
+            result = this.appStateService.get(type, key)
         }
+
+        if(result.success) {
+            logger.info(`管理端获取${type}数据`+(key?`，参数名：${key}成功`:'成功'))
+        }else{
+            logger.error(`管理端获取${type}数据失败，原因：${result.data}`)
+        }
+
+        if(callback) callback({code: result.success? 200:500})
     }
 
-    updateInfo(type,value, callback){
-        logger.info(`更新${type}信息${value.key}:${value.value}`)
-        const result = this.appStateService.updateInfo(type, value.key, value.value)
+    update(type, value, callback){
+        logger.info(`管理端更新${type}信息, ${value.key}:${value.value}`)
+        const result = this.appStateService.update(type, value.key, value.value)
         if(result.success){
             logger.info(`管理端更新${type}信息${value.key}成功`)
             this.io.emit("client_send_"+type,{key: value.key, value: result.data})
-            callback({ code: 200, ...result })
         }else{
-            logger.error(`管理端更新${value.key}失败`)
-            logger.error(`失败原因: ${result.data}`)
-            callback({ code: 400, ...result })
+            logger.error(`管理端更新${value.key}失败，原因: ${result.data}`)
         }
-        callback(result)
+        if(callback) callback({code: result.success? 200:400, ...result})
     }
 
 
     // 管理端获取数据
     async managerGetData(key, value, callback){
-        try {
-            logger.info("Manager get Key:"+key)
-            if(value) {logger.info("Manager get value:"+value)}
-            let result
-            switch (key){
-                case "menu":
-                    result = await this.menuService.getMenuAndTab()
-                    break
-                case "shop_info":
-                    result = {success: true, data: this.appStateService.appStateRepository.appState.shopInfo}
-                    break
-                case "qrorder_info":
-                    result = {success: true, data: this.appStateService.appStateRepository.appState.qrOrderInfo}
-                    break
-                case "takeaway_info":
-                    result = {success: true, data: this.appStateService.appStateRepository.appState.takeawayInfo}
-                    break
-                case "delivery_info":
-                    result = {success: true, data: this.appStateService.appStateRepository.appState.deliveryInfo}
-                    break
-                case "reserver_info":
-                    result = {success: true, data: this.appStateService.appStateRepository.appState.reserverInfo}
-                    break
-                case "print_info":
-                    result = {success: true, data: this.appStateService.appStateRepository.appState.printInfo}
-                    break
-                default:
-                    result = {success: false, data: "Not Found Get Key"}
+
+        try{
+            logger.info("Manager get " + key )
+            if(this.info_keys.includes(key) || key == 'menu'){
+                await this.get(key,value, callback)
+            }else{
+                if(callback) callback({code: 404, success: false, data: "Not Found Get Key: " + key })
             }
-            logger.info("Manager get data => "+result.success)
-            callback({ code: result.success ? 200 : 404, ...result })
-        } catch (error) {
-            logger.warn("管理端获取信息失败，意料之外的错误")
-            logger.warn(error.message)
-            callback({ code: 500, success: false, data: error.message })
+        }catch ( e ){
+            logger.warn("Manager get failed, error: "+e.message)
+            if(callback) callback({ code: 500, success: false, data: e.message })
         }
 
     }
@@ -84,26 +63,15 @@ class AppStateSocket {
     // 管理端更新数据
     managerUpdateData(key, value, callback){
         try{
-            logger.info("Manager update "+key+" data => key:" + value.key + " value: " + value.value )
-            switch (key){
-                case "settings":
-                    this.updateSettings(value, callback)
-                    break
-                case "shop_info":
-                case "qrorder_info":
-                case "takeaway_info":
-                case "delivery_info":
-                case "reserver_info":
-                case "print_info":
-                    this.updateInfo(key,value, callback)
-                    break
-                default:
-                    callback({success: false, data: "Not Found Update Key"})
+            logger.info("Manager update " + key )
+            if(this.info_keys.includes(key)){
+                this.update(key,value, callback)
+            }else{
+                if(callback) callback({code: 404, success: false, data: "Not Found Update Key: " + key })
             }
-
         }catch ( e ){
-            logger.warn("管理端更新信息失败，意料之外的错误")
-            logger.warn(e.message)
+            logger.warn("Manager update failed, error: "+e.message)
+            if(callback) callback({ code: 500, success: false, data: e.message })
         }
 
     }
@@ -142,15 +110,15 @@ class AppStateSocket {
             if (cb) cb({ code: result.success ? 200 : 400, ...result })
         })
 
-        socket.on("manager_update_checkIP", (value, callback) => {
-            appState.settings.checkIP = value;
-            const result = {
-                success: true,
-                data: value
-            }
-            logger.info(`manager_update_checkIP return: ${result}`)
-            if (callback) callback({ code: 200, ...result })
-        })
+        // socket.on("manager_update_checkIP", (value, callback) => {
+        //     appState.settings.checkIP = value;
+        //     const result = {
+        //         success: true,
+        //         data: value
+        //     }
+        //     logger.info(`manager_update_checkIP return: ${result}`)
+        //     if (callback) callback({ code: 200, ...result })
+        // })
 
         socket.on("manager_add_blacklist_ip", (ip, callback) => {
             appState.addBlacklistIP(ip);

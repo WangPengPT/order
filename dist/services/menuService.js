@@ -192,35 +192,40 @@ class MenuService {
     }
 
     getDishCategory(item) {
-        let ret = ""
-
         const id = item.dishid;
-        let data = appState.menu.find(data => data.id == id);
+        let data = appState.menu.find(d => d.id == id);
 
-        if (data) {
-            if (data.tags && data.tags != "") {
-                return data.tags;
-            }
-
-            const handle = data.handle;
-            data = appState.menu.find(data => data.handle == handle && data.category && data.category != "");
-
-            if (data) {
-                if (data.tags && data.tags != "") {
-                    return data.tags;
-                }
-                else {
-                    ret = data.category;
-                }
-            }
-        }else{
-
-            return item.category;
-
+        // 如果在menu里找不到 则确定是自定义菜 直接return category
+        if (!data) {
+            return [item.category];
         }
 
-        return ret;
+        // 优先用 tags
+        if (data.tags?.length) {
+            return normalizeToArray(data.tags);
+        }
+
+        // 找同 handle 且有 category 的
+        const handle = data.handle;
+        const fallback = appState.menu.find(d => d.handle == handle && d.category);
+
+        if (fallback) {
+            if (data.tags?.length) {
+                return normalizeToArray(data.tags);
+            }
+
+            return [fallback.category];
+        }
+
+        return [];
+
+        function normalizeToArray(value) {
+            if (!value) return [];
+            return Array.isArray(value) ? value : [value];
+        }
     }
+
+
 
     /**
      * 基于菜单创建分类排序

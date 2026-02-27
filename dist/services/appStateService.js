@@ -6,6 +6,9 @@ const { logger } = require('../utils/logger.js');
 const AppStateRepository = require('../repositories/appStateRepository.js');
 const OrderQuantityRepository = require('../repositories/dailyOrderRepository.js');
 const CustomDishRepository = require('../repositories/customDishRepository.js');
+const {ShopInfo} = require("../model/shopInfo");
+const {QROrderInfo, TakeawayInfo, DeliveryInfo, ReserverInfo} = require("../model/Info");
+const {PrintInfo} = require("../model/printInfo");
 
 class AppStateService {
     constructor(appStateRepository = new AppStateRepository(appState), orderQuantityRepository = new OrderQuantityRepository(), customDishRepository = new CustomDishRepository()) {
@@ -41,20 +44,34 @@ class AppStateService {
         }
     }
 
-    updateSettings(key, value) {
-        try {
-            appState.updateSettings(key, value)
-            if (appState.settings[key] === value) return { success: true, data: value }
-            else throw new Error(key + "更新失败")
-        } catch (error) {
-            return { success: false, data: error.message }
+    get(type, key){
+        try{
+            const keys = {
+                settings: 'settings',
+                shop_info: 'shopInfo',
+                qrorder_info: 'qrOrderInfo',
+                takeaway_info: 'takeawayInfo',
+                delivery_info: 'deliveryInfo',
+                reserver_info: 'reserverInfo',
+                print_info: 'printInfo',
+            }
+            if(Object.keys(keys).includes(type)){
+                return appState.getInfoData(keys[type], key)
+            }else{
+                return {success: false, data:'Not Found Get Type: '+type}
+            }
+        }catch (error) {
+            return {success:false, data:error};
         }
     }
 
-    updateInfo(type,key, value){
+    update(type,key, value){
         try {
             let result
             switch (type) {
+                case 'settings':
+                    result = appState.updateSettings(key, value)
+                    break;
                 case "shop_info":
                     result = appState.updateShopInfo(key,value)
                     break
@@ -74,7 +91,7 @@ class AppStateService {
                     result = appState.updatePrintInfo(key,value)
                     break
                 default:
-                    result = {success: false, data: "Not Found Update type: "+type}
+                    result = {success: false, data: "Not Found Update Type: "+type}
             }
             return result
         } catch (error) {

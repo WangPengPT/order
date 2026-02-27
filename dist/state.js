@@ -99,6 +99,17 @@ class AppState {
         return { success:success, data:data }
     }
 
+    getInfoData(type,key){
+        if(key){
+            if(Object.keys(this[type]).includes(key)){
+                return {success:true, data:this[type][key]}
+            }
+            return {success: false, data: 'Not Found '+type+' Key: '+key}
+        }else{
+            return {success: true, data: this[type]}
+        }
+    }
+
     // 所有 Update 函数
     updatePermissionsControl(key,value){
         console.log("update PermissionsControl: ", key)
@@ -110,6 +121,7 @@ class AppState {
         console.log("update settings: ", key)
         const result = this.settings.update(key, value)
         console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
+        return result
     }
 
     updateShopInfo(key, value){
@@ -153,6 +165,8 @@ class AppState {
         console.log("update ", (result.success ? "success, value: ": "failed, error:"), result.data )
         return result
     }
+
+    // -------------
 
     createTable(startIdx, endIdx) {
         const tables = [];
