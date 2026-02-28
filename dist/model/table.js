@@ -49,7 +49,8 @@ class Table {
       existing.quantity += dishData.quantity
       existing.orderIds.push(orderId)
     } else {
-      this.order.push(new Dish(dishData))
+      const newDish = new Dish(dishData)
+      this.order.push(newDish)
       const ord = this.order.find(i => i.dishid === dishData.dishid && i.name === dishData.name && i.price === dishData.price)
       ord.orderIds.push(orderId)
     }

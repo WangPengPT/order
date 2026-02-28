@@ -43,23 +43,13 @@ class AppState {
         if (process.env.TABLES_NUMBER) {
             tablesNumber.push.apply(tablesNumber, JSON.parse(process.env.TABLES_NUMBER))
         } else {
-            tablesNumber.push([1, 50])
+            tablesNumber.push([1, 100])
         }
         for (let i = 0; i < tablesNumber.length; i++) {
             iniTable.push.apply(iniTable, this.createTable(tablesNumber[i][0], tablesNumber[i][1]))
         }
-        const tablesCenter = new TableManager(iniTable)
-        this.tables = tablesCenter
+        this.tables = new TableManager(iniTable)
 
-    }
-
-    initBeginEndInterval(){
-        const days = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday","special"]
-        const iniInterval = {}
-        for(const day of days){
-            iniInterval[day] = [{begin:{hour:12,minute:0},end:{hour:15,minute:0}},{begin:{hour:19,minute:0},end:{hour:23,minute:0}}]
-        }
-        return iniInterval
     }
 
     // 所有 Get 函数
@@ -75,28 +65,32 @@ class AppState {
                 adult: this.shopInfo.getCurrentPrice(PriceInfo.type_adult,time,this.settings.isFestiveDay),
                 child: this.shopInfo.getCurrentPrice(PriceInfo.type_child,time,this.settings.isFestiveDay,this.settings.useChildrenDiscount)
             }
-            if(data.adult && data.child){
+            if( (data.adult == 0 || data.adult) && (data.child == 0 || data.child)){
                 return { success:true, data:data }
             }
             return { success: false, data: data }
         }
     }
 
-    getPeopleCurrentPriceData(tableId){
-        let success = false
-        const data = []
-        const peopleType = this.tables.getTableById(tableId).peopleType
-        for(const key in peopleType){
-            const price = key.toLowerCase().includes("adult") ? this.getCurrentPrice(PriceInfo.type_adult) : this.getCurrentPrice(PriceInfo.type_child)
-            data.push({
-                peopleType: key,
-                price: price,
-                quantity: peopleType[key],
-                totalPrice: (peopleType[key] * price).toFixed(2),
-            })
+    getTableTotalAmount(tableId) {
+        const table = this.tables.getTableById(tableId)
+        if (table == null) throw new Error('Not found the table')
+        const tableOrdersAmount = parseFloat(table.getTableOrdersTotalAmount())
+
+        const peoplePrice = this.getCurrentPrice()
+        if(!peoplePrice.success) throw new Error('Not found current people price, error: '+JSON.stringify(peoplePrice.data))
+        const adultPrice = peoplePrice.data.adult
+        const childrenPrice = peoplePrice.data.child
+        const tablePeoplesAmount = parseFloat(table.getTablePeopleTotalAmount(adultPrice, childrenPrice))
+
+        const adultQty = table.peopleType.adults
+        const childrenQty = table.peopleType.children
+
+        return {
+            totalAmount: (tableOrdersAmount + tablePeoplesAmount).toFixed(2),
+            adultPrice: {quantity: adultQty, price: adultPrice},
+            childrenPrice: {quantity: childrenQty,price: childrenPrice}
         }
-        if(Object.keys(data).length >= 0) success = true
-        return { success:success, data:data }
     }
 
     getInfoData(type,key){
@@ -381,24 +375,7 @@ class AppState {
         }
     }
 
-    getTableTotalAmount(tableId) {
-        const table = this.tables.getTableById(tableId)
-        if (table == null) throw new Error('Not found the table')
-        const tableOrdersAmount = parseFloat(table.getTableOrdersTotalAmount())
 
-        const adultPrice = this.getCurrentPrice(PriceInfo.type_adult)
-        const childrenPrice = this.getCurrentPrice(PriceInfo.type_child)
-        const tablePeoplesAmount = parseFloat(table.getTablePeopleTotalAmount(adultPrice, childrenPrice))
-
-        const adultQty = table.peopleType.adults
-        const childrenQty = table.peopleType.children
-
-        return {
-            total: (tableOrdersAmount + tablePeoplesAmount).toFixed(2),
-            adultPrice: {quantity: adultQty, price: adultPrice},
-            childrenPrice: {quantity: childrenQty,price: childrenPrice}
-        }
-    }
 
     recordProps(target, except = []) {
         const keys = Object.keys(target);

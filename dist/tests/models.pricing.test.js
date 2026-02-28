@@ -1,5 +1,4 @@
 const { ShopInfo, PriceInfo } = require('../model/shopInfo');
-const WeekPrice = require('../model/WeekPrice');
 
 /**
  * 用例目的（中文说明）：
