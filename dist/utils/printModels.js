@@ -66,7 +66,9 @@ function creat_order_print_data (menu, order, BOLD_HAD, printModelIndex, printId
 
         // 如果是自定义菜 加上自定义菜的选项
         const customDish_print_data = creat_order_customDish_print_data(item.notes)
-        add_to_print_order_data( customDish_print_data )
+        if(customDish_print_data && customDish_print_data !== ''){
+            add_to_print_order_data( customDish_print_data )
+        }
 
         // 如果有菜品备注时，打印菜品备注
         if (item.dishNote) {
