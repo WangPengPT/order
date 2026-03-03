@@ -126,6 +126,8 @@ class QROrderInfo extends Info {
 
         this.useTableOrderPassword = false
 
+        this.useAiRecommendedDish = false
+
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
     }

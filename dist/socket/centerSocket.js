@@ -136,6 +136,20 @@ class CenterSocket {
             logger.info("Finished manual update, times:"+update_times);
         })
 
+        // 转发中心服务器 警报
+        socket.on('alert_'+name, (alert) => {
+            const identity = alert.identity;
+            logger.info("Center Server sends alert to " + identity + ", alert: "+ JSON.stringify(alert));
+            appState.socket_io.emit("alert_to_"+identity,{...alert, identity:undefined})
+        })
+
+        // 转发中心服务器 消息
+        socket.on('message_'+name, (msg) => {
+            const identity = msg.identity;
+            logger.info("Center Server sends message to " + identity + ", msg: "+ JSON.stringify(msg));
+            appState.socket_io.emit("message_to_"+identity,{...msg, identity:undefined})
+        })
+
         this.connect_socket();
 
         this.timeMessage()
@@ -266,7 +280,7 @@ class CenterSocket {
     }
 
     static alert(alert){
-        const api = 'alert'
+        const api = 'g_alert'
         const value = {
             restaurant: this.getRestaurant(),
             alert: alert
@@ -276,7 +290,7 @@ class CenterSocket {
     }
 
     static message(msg){
-        const api = 'message'
+        const api = 'g_message'
         const value = {
             restaurant: this.getRestaurant(),
             message: msg,
