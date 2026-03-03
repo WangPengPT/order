@@ -78,7 +78,7 @@ class DB {
 
     static async setValue(table, key, value, session = null) {
         const collection = db.collection(table);
-        await collection.updateOne({id: key}, {$set: {id: value.id, value: value}}, {upsert: true, session});
+        await collection.updateOne({id: key}, {$set: {id: key, value: value}}, {upsert: true, session});
     }
 
     static async setValueByCleanId(table, key, value, session = null) {
