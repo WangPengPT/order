@@ -21,10 +21,10 @@ class AlertMessageSocket {
             }
 
             this.io.emit(api, data)
-            logger.info(`广播${type}给${api}，代码：${data.code}，消息：${data.message}`)
+            logger.info(`[AlertMessage] 广播${type}给${api}，代码：${data.code}，消息：${data.message}`)
 
         }catch(error){
-            logger.error(`添加${type}出现错误：${error.message}`)
+            logger.error(`[AlertMessage] 添加${type}出现错误：${error.message}`)
         }
     }
 
@@ -36,24 +36,24 @@ class AlertMessageSocket {
             }
             const api = type + '_closed_' + identity;
             this.io.emit(api, data)
-            logger.info(`广播${type}给${api}，代码：${data.code}，消息：${data.message}`)
+            logger.info(`[AlertMessageSocket] 广播${type}给${api}，代码：${data.code}，消息：${data.message}`)
 
         }catch(error){
-            logger.error(`关闭${type}出现错误：${error.message}`)
+            logger.error(`[AlertMessageSocket] 关闭${type}出现错误：${error.message}`)
         }
     }
 
 
     alert(type, alert, callback){
         try{
-            logger.info(`收到 ${type} 警报，代码：${alert.code}，消息：${alert.message}`);
+            logger.info(`[AlertMessageSocket] 收到 ${type} 警报，代码：${alert.code}，消息：${alert.message}`);
 
             centerSocket.alert(alert)
 
             if(callback) callback({success:true, data:alert});
 
         }catch(error){
-            logger.error(`${type} 发送警报失败，原因：${error.message}`)
+            logger.error(`[AlertMessageSocket] ${type} 发送警报失败，原因：${error.message}`)
             if(callback) callback({success: false, data: error.message});
         }
     }
@@ -61,14 +61,14 @@ class AlertMessageSocket {
 
     message(type, message, callback){
         try{
-            logger.info(`收到 ${type} 信息，代码：${message.code}，消息：${message.message}`);
+            logger.info(`[AlertMessageSocket] 收到 ${type} 信息，代码：${message.code}，消息：${message.message}`);
 
             centerSocket.message(message)
 
             if(callback) callback({success:true, data:message});
 
         }catch(error){
-            logger.error(`${type} 发送信息失败，原因：${error.message}`)
+            logger.error(`[AlertMessageSocket] ${type} 发送信息失败，原因：${error.message}`)
             if(callback) callback({success: false, data: error.message});
         }
     }

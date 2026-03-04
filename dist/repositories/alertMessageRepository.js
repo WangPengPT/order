@@ -14,9 +14,9 @@ class AlertMessageRepository {
                 type: type,
                 value: {...data, number: 1},
             }, session);
-            logger.info(`repo: ✅ 消息警告保存成功 [id=${id}]`)
+            logger.info(`[AlertMessageRepository] ✅ 消息警告保存成功 [id=${id}]`)
         } catch (err) {
-            logger.error(`repo:❌ 保存消息警告失败: ${err}`);
+            logger.error(`[AlertMessageRepository] ❌ 保存消息警告失败: ${err}`);
             throw err;
         }
     }
@@ -25,12 +25,12 @@ class AlertMessageRepository {
         try {
             const result = await DB.get(this.tableName, id, session);
             if (!result) {
-                logger.warn(`repo: ⚠ 未能找到消息警告数据 [id=${id}]`);
+                logger.warn(`[AlertMessageRepository] ⚠ 未能找到消息警告数据 [id=${id}]`);
                 return null;
             }
             return result.value
         } catch (err) {
-            logger.error(`repo:❌ 获取消息警告失败: ${err}`);
+            logger.error(`[AlertMessageRepository] ❌ 获取消息警告失败: ${err}`);
             throw err;
         }
     }
@@ -48,7 +48,7 @@ class AlertMessageRepository {
             return result
 
         }catch (error){
-            logger.error(`repo:❌ 获取${type}失败: ${error}`)
+            logger.error(`[AlertMessageRepository] ❌ 获取${type}失败: ${error}`)
         }
     }
 
@@ -60,9 +60,9 @@ class AlertMessageRepository {
                 number: Number(oldData.number)+1,
             }
             await DB.setValue(this.tableName, id, newData, session);
-            logger.info(`repo: ✅ 消息警告数量+1成功 [id=${id}, number=${newData.number}]`);
+            logger.info(`[AlertMessageRepository] ✅ 消息警告数量+1成功 [id=${id}, number=${newData.number}]`);
         } catch (error){
-            logger.error(`repo:❌ 消息警告数量+1失败: ${error}`);
+            logger.error(`[AlertMessageRepository] ❌ 消息警告数量+1失败: ${error}`);
             throw error;
         }
     }
@@ -75,9 +75,9 @@ class AlertMessageRepository {
                 ...data,
             }
             await DB.setValue(this.tableName, id, newData, session)
-            logger.info(`repo: ✅ 消息警告更新成功 [id=${id}]`);
+            logger.info(`[AlertMessageRepository] ✅ 消息警告更新成功 [id=${id}]`);
         } catch (error) {
-            logger.error(`repo:❌ 更新消息警告失败: ${error}`);
+            logger.error(`[AlertMessageRepository] ❌ 更新消息警告失败: ${error}`);
             throw error;
         }
     }
@@ -85,9 +85,9 @@ class AlertMessageRepository {
     async delete(id, session = null) {
         try{
             await DB.del(this.tableName, id,session)
-            logger.info(`repo: ✅ 消息警告删除成功 [id=${id}]`)
+            logger.info(`[AlertMessageRepository] ✅ 消息警告删除成功 [id=${id}]`)
         } catch (error){
-            logger.error(`repo:❌ 删除消息警告失败: ${error}`);
+            logger.error(`[AlertMessageRepository] ❌ 删除消息警告失败: ${error}`);
         }
 
     }

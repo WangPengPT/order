@@ -17,7 +17,7 @@ class AlertMessageService{
             return result
 
         }catch(error){
-            logger.error(`AlertMessageService Get All Alert Failed: ${error.message}`);
+            logger.error(`[AlertMessageService] Get All Alert Failed: ${error.message}`);
             return []
         }
     }
@@ -38,7 +38,7 @@ class AlertMessageService{
             }
             return result
         }catch (error){
-            logger.error("AlertMessageService Add Error: " + error.message);
+            logger.error("[AlertMessageService] Add Error: " + error.message);
             return {success: false, data:error.message}
         }
     }
@@ -56,7 +56,7 @@ class AlertMessageService{
             return {success: true, data: alert}
 
         }catch (error){
-            logger.error("AlertMessageService addAlert Error: " + error.message);
+            logger.error("[AlertMessageService] addAlert Error: " + error.message);
             return {success: false, data:error.message}
         }
     }
@@ -73,7 +73,7 @@ class AlertMessageService{
             return {success: true, data: msg}
 
         }catch (error){
-            logger.error("AlertMessageService addMessage Error: " + error.message);
+            logger.error("[AlertMessageService] addMessage Error: " + error.message);
             return {success: false, data:error.message}
         }
     }
@@ -89,7 +89,7 @@ class AlertMessageService{
             await this.alertMessageRepository.delete(id)
             return {success: true, data: data}
         }catch (error){
-            logger.error("AlertMessageService Close Error: " + error.message);
+            logger.error("[AlertMessageService] Close Error: " + error.message);
             return {success: false, data:error.message}
         }
     }
