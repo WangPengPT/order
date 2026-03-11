@@ -148,8 +148,10 @@ class Table {
     return this.password
   }
 
-  changePassword(password) {
+  changePassword(password){
+    if(!password) return
     this.password = password
+    this.firstOrderUsed = false
     return this.password
   }
 

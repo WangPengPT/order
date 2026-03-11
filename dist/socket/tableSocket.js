@@ -204,8 +204,8 @@ class TableSocket {
             callback({ code: 404, success: false, message: 'Table not found' });
         }
 
-        table.passwordTime = undefined // passwordTime 值为 null/undefined 时可创建新密码，反之返回已有密码
-        const password = table.makePassword()
+        const result = tableService.updateTablePassword(table)
+        const password = result.tablePassword;
 
         if(!password){
             logger.info(`管理端请求刷新桌子密码失败，原因：密码生成失败，密码：${password}`)
@@ -213,7 +213,30 @@ class TableSocket {
         }
 
         logger.info(`管理端请求刷新桌子密码成功，密码：${password}`)
-        callback({code: 200, success: true, table: table.toJSON()});
+        callback({code: 200, success: true, table: result.data});
+    }
+
+    // 管理端更改桌子密码
+    managerUpdateTablePassword(tableId, newPassword, callback){
+        logger.info(`管理端请求更改桌子密码，桌号：${tableId}，密码：${newPassword}`)
+        const table = appState.tables.getTableById(tableId);
+
+        // 找不到桌子
+        if (!table){
+            logger.info(`管理端请求更改桌子密码失败，原因：未找到该桌号`)
+            callback({ code: 404, success: false, message: 'Table not found' });
+        }
+
+        const result = tableService.updateTablePassword(table, newPassword)
+        const password = result.tablePassword;
+
+        if(!password){
+            logger.info(`管理端请求更改桌子密码失败，原因：${result.data}`)
+            callback({ code: 400, success: false, message: 'Creat Password Unsuccessful' });
+        }
+
+        logger.info(`管理端请求更改桌子密码成功，桌号：${tableId}，密码：${password}`)
+        callback({code: 200, success: true, table: result.data});
     }
 
     registerHandlers(socket) {
@@ -242,6 +265,7 @@ class TableSocket {
 
         // 管理端
         socket.on('manager_refresh_table_password', (data,callback) =>{ this.managerRefreshTablePassword(data, callback) });
+        socket.on('manager_update_table_password', (tableId,newPassword,callback) => {this.managerUpdateTablePassword(tableId, newPassword, callback) });
 
     }
 }

@@ -69,6 +69,29 @@ function updateTableWithoutOrder(tableData) {
   }
 }
 
+function updateTablePassword(tableData, password){
+  try{
+    const tableId = tableData.id
+    const table = appState.tables.getTableById(tableId)
+
+    if(!table.password) throw new Error('The table has not been opened.')
+
+    let newPassword
+    if(password){
+      newPassword = table.changePassword(password)
+    }else{
+      table.passwordTime = undefined // passwordTime 值为 null/undefined 时可创建新密码，反之返回已有密码
+      newPassword = table.makePassword()
+    }
+
+    return { success: true, data: table.toJSON(), tablePassword: newPassword }
+  }catch(error){
+    logger.error(`Error: ${error.message}`)
+    return { success: false, data: error.message }
+  }
+
+}
+
 function removeTable(id) {
   try {
     // 更新服务器状态
@@ -171,6 +194,7 @@ function clickMsg(id,cmd)
 module.exports = {
   addNewTable,
   updateTableWithoutOrder,
+  updateTablePassword,
   removeTable,
   cleanTable,
   getTableById,
