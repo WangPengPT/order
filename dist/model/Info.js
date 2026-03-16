@@ -128,6 +128,8 @@ class QROrderInfo extends Info {
 
         this.useAiRecommendedDish = false
 
+        this.varietyShopsModel = false
+
         // 保持在最后运行，为保证能保存所有key
         this.recordProps(this)
     }
