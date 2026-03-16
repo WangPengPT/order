@@ -42,7 +42,9 @@ class VarietyShopsService {
 
     async getAll(){
         try{
-            return await this.varietyShopsRepository.getAll()
+            let result = await this.varietyShopsRepository.getAll();
+            result = result.sort((a, b) => a.sortValue - b.sortValue);
+            return result
         } catch ( error ) {
           logger.error(`[VarietyShopsService] 获取所有多类型商店数据错误，原因：${error.message}`)
             return []
