@@ -1,7 +1,6 @@
 const {logger} = require("../utils/logger");
 const centerSocket = require('./centerSocket.js');
 const AlertMessageService = require("../services/alertMessageService");
-const {error} = require("winston");
 
 class AlertMessageSocket {
 

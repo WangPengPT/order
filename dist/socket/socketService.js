@@ -16,6 +16,7 @@ const centerSocket = require('./centerSocket.js');
 const {DataAnalizeSocket} = require('./dataAnalizeSocket.js');
 const DictinarySocket = require('./dictionarySocket.js');
 const {AlertMessageSocket} = require("./AlertMessageSocket");
+const VarietyShopsSocket = require("./varietyShopsSocket");
 
 class SocketServices {
     constructor(io,
@@ -27,7 +28,8 @@ class SocketServices {
                 customDish = new CustomDishSocket(io),
                 dataAnalizeSocket = new DataAnalizeSocket(io),
                 dictinarySocket = new DictinarySocket(io),
-                alertMessageSocket = new AlertMessageSocket(io)
+                alertMessageSocket = new AlertMessageSocket(io),
+                varietyShopsSocket = new VarietyShopsSocket(io),
     ) {
 
         this.io = io
@@ -40,6 +42,7 @@ class SocketServices {
         this.dataAnalizeSocket = dataAnalizeSocket
         this.dictinarySocket = dictinarySocket
         this.alertMessageSocket = alertMessageSocket
+        this.varietyShopsSocket = varietyShopsSocket
     }
 
     emit(...datas) {
@@ -115,6 +118,8 @@ class SocketServices {
             await this.dictinarySocket.registerHandlers(socket)
 
             await this.alertMessageSocket.registerHandlers(socket)
+
+            await this.varietyShopsSocket.registerHandlers(socket)
 
             socket.on("manager_get_menu", async (_, callback) => {
                 try {
