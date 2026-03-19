@@ -30,6 +30,8 @@ class ShopInfo {
         this.instagramUrl = undefined
         this.tiktokUrl = undefined
 
+        this.shopInfoCard = [] // { type: "shopInfo"/"activity", icon: "icon", title:"title", value:"price, message, ..."  }
+
         this.recordProps(this)
     }
 

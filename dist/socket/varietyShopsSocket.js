@@ -16,6 +16,7 @@ class VarietyShopsSocket {
             if (!result.success) {
                 logger.error(`[VarietyShopsSocket] 管理员请求更新多类型商店数据失败，原因：${result.data}`)
             }
+            this.io.emit('client_send_variety_shops', result.data);
             if(callback) callback({code:result.success? 200:400, success: result.success, data:result.data});
         } catch (error) {
             logger.error(`[VarietyShopsSocket] 管理员请求更新多类型商店数据失败，原因：${error.message}`)
