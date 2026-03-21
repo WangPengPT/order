@@ -17,7 +17,21 @@ class AlertMessageService{
             return result
 
         }catch(error){
-            logger.error(`[AlertMessageService] Get All Alert Failed: ${error.message}`);
+            logger.error(`[AlertMessageService] Get All Alerts Failed: ${error.message}`);
+            return []
+        }
+    }
+
+    async getAllMessage() {
+        try{
+            const result = await this.alertMessageRepository.getByType('message')
+            if(!result){
+                throw new Error('No messages');
+            }
+            return result
+
+        }catch(error){
+            logger.error(`[AlertMessageService] Get All Messages Failed: ${error.message}`);
             return []
         }
     }

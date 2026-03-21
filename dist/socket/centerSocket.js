@@ -143,7 +143,7 @@ class CenterSocket {
             const identity = alert.identity;
             logger.info("Center Server sends alert to " + identity + ", alert: "+ JSON.stringify(alert));
             const api = 'alert_to_' + identity;
-            await alertMessageSocket.add('alert', {...alert, identity:undefined}, api)
+            await alertMessageSocket.add('alert', alert, api)
             // appState.socket_io.emit("alert_to_"+identity,{...alert, identity:undefined})
         })
 
@@ -152,7 +152,16 @@ class CenterSocket {
             const identity = msg.identity;
             logger.info("Center Server sends message to " + identity + ", msg: "+ JSON.stringify(msg));
             const api = 'message_to_' + identity;
-            await alertMessageSocket.add('message', {...msg, identity:undefined}, api)
+            await alertMessageSocket.add('message', msg, api)
+            // appState.socket_io.emit("message_to_"+identity,{...msg, identity:undefined})
+        })
+
+        // 转发中心服务器 消息
+        socket.on('message_close_'+name, async (msg) => {
+            const identity = msg.identity;
+            logger.info("Center Server close message to " + identity + ", msg: "+ JSON.stringify(msg));
+            const api = 'message_close_' + identity;
+            await alertMessageSocket.close('message', identity, msg)
             // appState.socket_io.emit("message_to_"+identity,{...msg, identity:undefined})
         })
 

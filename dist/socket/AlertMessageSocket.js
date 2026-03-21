@@ -94,6 +94,9 @@ class AlertMessageSocket {
     async registerMessageHandlers(socket) {
         socket.on("client_message", async (message, callback) => { this.message(AlertMessageSocket.client_type, message, callback) })
         socket.on("manager_message", async (message, callback) => { this.message(AlertMessageSocket.manager_type, message, callback) })
+
+        socket.emit("manager_all_message", await this.alertMessageService.getAllMessage())
+
     }
 
 }
