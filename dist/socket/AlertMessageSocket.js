@@ -72,12 +72,29 @@ class AlertMessageSocket {
         }
     }
 
+    feedback(type, message, callback){
+        try{
+            const numberImages = message.images.length
+            logger.info(`[AlertMessageSocket] 收到 ${type}反馈，图片数：${numberImages}，内容：${message.message}，联系邮箱：${message.email}`)
+
+            centerSocket.feedback(message)
+
+            if(callback) callback({success:true, data:message});
+        }catch(error){
+            logger.error(`[AlertMessageSocket] ${type} 发送反馈失败，原因${error.message}`)
+            if(callback) callback({success: false, data: error.message});
+        }
+    }
+
     async registerHandlers(socket){
         // Register Alert API
         await this.registerAlertHandlers(socket)
 
         // Register Message API
         await this.registerMessageHandlers(socket)
+
+        // Register Feedback API
+        await this.registerFeedbackHandlers(socket)
     }
 
     // 注册所有 警报 接口事件
@@ -97,6 +114,12 @@ class AlertMessageSocket {
 
         socket.emit("manager_all_message", await this.alertMessageService.getAllMessage())
 
+    }
+
+    // 注册所有 反馈 接口事件
+    async registerFeedbackHandlers(socket) {
+        socket.on("client_feedback", async (feedback, callback) => {this.feedback(AlertMessageSocket.client_type, feedback, callback) })
+        socket.on("manager_feedback", async (feedback, callback) => {this.feedback(AlertMessageSocket.manager_type, feedback, callback) })
     }
 
 }

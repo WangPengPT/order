@@ -314,6 +314,16 @@ class CenterSocket {
         this.sendMsg(api, value)
     }
 
+    static feedback(feedback){
+        const api = 'g_feedback'
+        const value = {
+            restaurant: this.getRestaurant(),
+            feedback: feedback
+        }
+
+        this.sendMsg(api, value)
+    }
+
     static async saveDishRating(id, like, rate) {
         try {
             const item = menuData.menu.find(m => m.id === id);
