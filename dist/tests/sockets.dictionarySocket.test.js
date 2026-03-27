@@ -1,4 +1,4 @@
-jest.mock('../services/dictinaryService', () => {
+jest.mock('../services/dictionaryService', () => {
   return function Mock() {
     return {
       updateDictionaryWord: jest.fn(async () => ({ success: true })),

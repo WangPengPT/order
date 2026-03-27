@@ -1,9 +1,9 @@
-const DictinaryService = require("../services/dictinaryService")
+const DictionaryService = require("../services/dictionaryService")
 const { logger } = require("../utils/logger")
 
 
 class DictionarySocket {
-    constructor(io, dictionaryService = new DictinaryService()) {
+    constructor(io, dictionaryService = new DictionaryService()) {
         this.io = io
         this.dictionaryService = dictionaryService
     }
@@ -35,6 +35,10 @@ class DictionarySocket {
 
 
     async registerHandlers(socket) {
+
+        socket.emit("dictionary_all")
+
+        socket.on("dictionary_by_id", (data) => {})
 
         socket.emit("serverSend_clientDictinary", await this.dictionaryService.getAll())
 
