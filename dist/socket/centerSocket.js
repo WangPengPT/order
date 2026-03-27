@@ -131,11 +131,11 @@ class CenterSocket {
         });
 
         socket.on("center_manual_update_"+name,  async () => {
-            logger.info("center_manual_update");
+            logger.info("Start center_manual_update");
 
             const manualUpdate = new ManualUpdate(menuService)
-            const update_times = await manualUpdate.run()
-            logger.info("Finished manual update, times:"+update_times);
+            const data = await manualUpdate.run()
+            logger.info("Finished manual update, data: "+JSON.stringify(data));
         })
 
         // 转发中心服务器 警报
