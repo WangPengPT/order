@@ -25,6 +25,8 @@ let menuData
 let update_data = false;
 let menuService
 let alertMessageSocket
+let reserveSocket
+let deliverySocket
 
 
 class CenterSocket {
@@ -46,9 +48,11 @@ class CenterSocket {
         update_data = true;
     }
 
-    static init(menuServiceInstance, alertMessageSocketInstance) {
+    static init(menuServiceInstance, alertMessageSocketInstance, reserveSocketInstance, deliverySocketInstance) {
         menuService = menuServiceInstance
         alertMessageSocket = alertMessageSocketInstance
+        reserveSocket = reserveSocketInstance
+        deliverySocket = deliverySocketInstance
 
         if (!process.env.SAVE_ADDR) {
             server_addr = "http://localhost"
@@ -100,15 +104,17 @@ class CenterSocket {
             await this.update_menu_data();
         });
 
+        // 收到中心服务器发来的新外卖订单
         socket.on(name, (data) => {
-            appState.socket_io.emit("new_shopify_orders", [data])
+            deliverySocket.newDeliveryOrder(data)
         });
 
+        // 收到中心服务器发来的新订台订单
         socket.on("reserve_"+name, (data) => {
-            console.log('reserve_'+name,data);
-            appState.socket_io.emit("new_reserves", [data])
+            reserveSocket.newReserveOrder(data)
         });
 
+        // 中心服务器
         socket.on("set_server_"+name, (data) => {
             console.log('set_server_'+name,data);
 
@@ -144,7 +150,6 @@ class CenterSocket {
             logger.info("Center Server sends alert to " + identity + ", alert: "+ JSON.stringify(alert));
             const api = 'alert_to_' + identity;
             await alertMessageSocket.add('alert', alert, api)
-            // appState.socket_io.emit("alert_to_"+identity,{...alert, identity:undefined})
         })
 
         // 转发中心服务器 消息
@@ -153,7 +158,6 @@ class CenterSocket {
             logger.info("Center Server sends message to " + identity + ", msg: "+ JSON.stringify(msg));
             const api = 'message_to_' + identity;
             await alertMessageSocket.add('message', msg, api)
-            // appState.socket_io.emit("message_to_"+identity,{...msg, identity:undefined})
         })
 
         // 转发中心服务器 消息
@@ -162,7 +166,6 @@ class CenterSocket {
             logger.info("Center Server close message to " + identity + ", msg: "+ JSON.stringify(msg));
             const api = 'message_close_' + identity;
             await alertMessageSocket.close('message', identity, msg)
-            // appState.socket_io.emit("message_to_"+identity,{...msg, identity:undefined})
         })
 
         this.connect_socket();

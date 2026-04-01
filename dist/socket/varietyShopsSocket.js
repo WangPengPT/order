@@ -43,7 +43,7 @@ class VarietyShopsSocket {
         // on
         socket.on('manager_update_varietyShops', async (data, callback) => { await this.update(data, callback)})
         socket.on('manager_delete_varietyShops', async (id, callback) => { await this.delete(id, callback)});
-        socket.on('get_variety_shops', async () =>{ socket.emit('variety_shops', await this.varietyShopsService.getAll()) })
+        socket.on('get_variety_shops', async (callback) =>{ if(callback) callback(await this.varietyShopsService.getAll()) })
 
         // emit
         socket.emit('variety_shops', await this.varietyShopsService.getAll())

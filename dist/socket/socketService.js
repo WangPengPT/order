@@ -14,9 +14,11 @@ const {CustomDishSocket} = require('./customDishSocket.js');
 const VIPUserManager = require("../services/vipUserManager.js")
 const centerSocket = require('./centerSocket.js');
 const {DataAnalizeSocket} = require('./dataAnalizeSocket.js');
-const DictinarySocket = require('./dictionarySocket.js');
-const {AlertMessageSocket} = require("./AlertMessageSocket");
+const DictionarySocket = require('./dictionarySocket.js');
+const {AlertMessageSocket} = require("./alertMessageSocket");
 const VarietyShopsSocket = require("./varietyShopsSocket");
+const ReserveSocket = require("./reserveSocket");
+const DeliverySocket = require("./deliverySocket");
 
 class SocketServices {
     constructor(io,
@@ -27,9 +29,11 @@ class SocketServices {
                 userSocket = new UserSocket(io),
                 customDish = new CustomDishSocket(io),
                 dataAnalizeSocket = new DataAnalizeSocket(io),
-                dictinarySocket = new DictinarySocket(io),
+                dictionarySocket = new DictionarySocket(io),
                 alertMessageSocket = new AlertMessageSocket(io),
                 varietyShopsSocket = new VarietyShopsSocket(io),
+                reserveSocket = new ReserveSocket(io),
+                deliverySocket = new DeliverySocket(io)
     ) {
 
         this.io = io
@@ -40,9 +44,11 @@ class SocketServices {
         this.userSocket = userSocket
         this.customDish = customDish
         this.dataAnalizeSocket = dataAnalizeSocket
-        this.dictinarySocket = dictinarySocket
+        this.dictionarySocket = dictionarySocket
         this.alertMessageSocket = alertMessageSocket
         this.varietyShopsSocket = varietyShopsSocket
+        this.reserveSocket = reserveSocket
+        this.deliverySocket = deliverySocket
     }
 
     emit(...datas) {
@@ -73,7 +79,7 @@ class SocketServices {
         await this.customDish.customDishService.initializeCustomDish()
         await this.menuService.loadMenu()
         await this.menuService.initMenuOrdering()
-        await this.dictinarySocket.dictionaryService.initialize()
+        await this.dictionarySocket.dictionaryService.initialize()
     }
 
     initSocket() {
@@ -84,7 +90,6 @@ class SocketServices {
 
 
         this.io.on("connection", async (socket) => {
-
 
             // printer 别在这前面写异步
             socket.on('add_printer', (value) => {
@@ -103,23 +108,28 @@ class SocketServices {
             logger.info(`客户端连接: ${socket.id}`);
             logger.info(`来源 IP: ${ip}`)
 
+            // 注册所有API
             this.tableSocket.registerHandlers(socket)
 
             this.orderSocket.registerHandlers(socket)
 
             await this.appStateSocket.registerHandlers(socket)
 
-            this.userSocket.registerHandlers(socket)
+            await this.userSocket.registerHandlers(socket)
 
             await this.customDish.registerHandlers(socket)
 
-            this.dataAnalizeSocket.registerHandlers(socket)
+            await this.dataAnalizeSocket.registerHandlers(socket)
 
-            await this.dictinarySocket.registerHandlers(socket)
+            await this.dictionarySocket.registerHandlers(socket)
 
             await this.alertMessageSocket.registerHandlers(socket)
 
             await this.varietyShopsSocket.registerHandlers(socket)
+
+            await this.reserveSocket.registerHandlers(socket)
+
+            await this.deliverySocket.registerHandlers(socket)
 
             socket.on("manager_get_menu", async (_, callback) => {
                 try {
@@ -532,25 +542,6 @@ class SocketServices {
                 if (callback) callback({ code: result.success ? 200 : 400, ...result })
             })
 
-            socket.on("get_shopify_orders", () => {
-                centerSocket.get_center_datas(socket, "shopify_orders", "order_list")
-            })
-
-            socket.on("get_reserves", () => {
-                centerSocket.get_center_datas(socket, "reserves", "reserve_list")
-            })
-
-            socket.on("manager_cancelReserve", (value, callback) => {
-                centerSocket.updateReserveData(value, (cb) => {
-                    if (cb.success) {
-                        logger.info(`申请取消订台成功, id:${cb.data.name}`)
-                    } else {
-                        logger.info(`申请取消订台失败, Error: ${cb.data}`)
-                    }
-                    if (callback) callback({ code: cb.success ? 200 : 400, ...cb })
-                })
-            })
-
             socket.on("get_menu", async () => {
                 await this.send_menu(socket)
             })
@@ -562,25 +553,10 @@ class SocketServices {
 
     async send_init_info(socket) {
 
-        let ENABLE_ROAST_DUCK = false
-
-        if (process.env.ENABLE_ROAST_DUCK == undefined) {
-            ENABLE_ROAST_DUCK = true;
-        }
-
-        if (process.env.ENABLE_ROAST_DUCK == "true") {
-            ENABLE_ROAST_DUCK = true;
-        }
-
         socket.emit("env", {
             QR_ADDR: process.env.QR_ADDR,
             ADDR: process.env.ADDR,
-            ENABLE_ROAST_DUCK: ENABLE_ROAST_DUCK,
-            TEST_ENVIRONMENT: process.env.TEST_ENVIRONMENT,
-            pageDir: db.pageDir,
-            shopType: appState.shopType,
             restaurant: centerSocket.getRestaurant(),
-            location: appState.shopInfo.latitudeAndLongitude,
         });
 
         await this.send_menu(socket)

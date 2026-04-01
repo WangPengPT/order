@@ -6,24 +6,27 @@ class DictionaryRepository {
         this.tableName = tableName;
     }
 
-    async get(session = null, id = "default") {
+    async get(id,session = null) {
         try {
-            const result = await DB.get(this.tableName, id, session);
+            const result = await DB.get(this.tableName, id,undefined, session);
             if (!result) {
                 logger.warn(`repo: ⚠ 未能找到字典数据 [id=${id}]`);
-                return null;
+                return
             }
-            const data = result.value
-            return data
+            return result.value
         } catch (error) {
             logger.error(`repo:❌ 获取字典文字失败: ${error}`);
             throw error;
         }
     }
 
-    async update(data, id, session = null) {
+    async update(id, data, session = null) {
         try {
-            await DB.setValueByCleanId(this.tableName, id, data, session)
+            const find = await DB.get(this.tableName, id, undefined, session);
+            if (!find) {
+                throw new Error(`需要更新的数据不存在`)
+            }
+            await DB.setValue(this.tableName, id, data, session);
         } catch (error) {
             logger.error(`repo:❌ 更新字典文字失败: ${error}`);
             throw error;
@@ -46,8 +49,12 @@ class DictionaryRepository {
         }
     }
 
-    async save(data, id = "default", session = null) {
+    async save(id, data, session = null) {
         try {
+            const find = await DB.get(this.tableName, id, undefined, session);
+            if(find){
+                throw new Error(`字典数据已经存在，数据：${JSON.stringify(find)}`)
+            }
             await DB.set(this.tableName, {
                 id: id,
                 value: data

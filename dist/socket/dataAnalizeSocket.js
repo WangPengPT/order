@@ -35,7 +35,7 @@ class DataAnalizeSocket{
         }
     }
 
-    registerHandlers(socket) {
+    async registerHandlers(socket) {
         socket.on('manager_get_top_dishes', async (values, callback) => await this.getTopDishes(values, callback))
 
         socket.on('manager_get_top_rate_dishes', async (values, callback) => await this.getTopDishesRante(values, callback))

@@ -7,78 +7,48 @@ class DictionaryService {
         this.dictionaryRepository = dictionaryRepository
     }
 
-    async updateDictionaryWord(data) {
-
-        try {
-            return await DB.withTransaction(async (session) => {
-
-                if (data.add) {
-                    for (const word of data.add) {
-                        await this.dictionaryRepository.save(word, word.refName, session)
-                    }
+    async update(data) {
+        try{
+            for(const dictionary of data) {
+                const find = await this.dictionaryRepository.get(dictionary.id);
+                if(find) {
+                    await this.dictionaryRepository.update(dictionary.id, dictionary);
+                }else{
+                    await this.dictionaryRepository.save(dictionary.id, dictionary);
                 }
-
-                if (data.delete) {
-                    for (const key of data.delete) {
-                        await this.dictionaryRepository.delete(key, session)
-                    }
-                }
-
-                if (data.update) {
-                    for (const word of data.update) {
-                        await this.dictionaryRepository.update(word, word.refName,session)
-                    }
-                }
-                return {
-                    success: true,
-                    data: undefined
-                }
-            })
-        } catch (error) {
-            console.log(error)
-            return {
-                success: false,
-                data: error.message
             }
+            return {success:true, data:data}
+        }catch(error){
+            logger.error(`[Dictionary Service] 更改字典数据失败，原因：${error.message}`);
+            return {success: false, data:error.message};
         }
-
     }
+
 
     async getAll() {
         try {
+            logger.info(`[Dictionary Service] 获取字典所有数据`)
             const data = await this.dictionaryRepository.getAll()
-
-            return {
-                success: true,
-                data: data
+            if(!data){
+                throw new Error(`未找到数据`)
             }
+            return data
         } catch (error) {
-            logger.info("获取字典数据失败")
-            return {
-                success: false,
-                data: error.message
-            }
+            logger.error(`[Dictionary Service] 获取字典所有数据失败，原因：${error.message}`)
+            return []
         }
     }
 
-    async resetDictionary() {
+    async reset() {
         try {
-            return await DB.withTransaction(async (session) => {
-                await this.dictionaryRepository.deleteAll(session)
-                await this.init(session)
-                const data = await this.dictionaryRepository.getAll(session)
-                return {
-                    success: true,
-                    data: data
-                }
-            })
+            logger.info(`[Dictionary Service] 开始重置字典数据\n[Dictionary Service] 开始清空旧数据...`)
+            await this.dictionaryRepository.deleteAll()
+            logger.info(`[Dictionary Service] 清空旧数据成功`)
+            await this.init()
 
         } catch (error) {
-            logger.info("获取字典数据失败")
-            return {
-                success: false,
-                data: error.message
-            }
+            logger.info("[Dictionary Service] 获取字典数据失败")
+            return {success: false, data: error.message}
         }
     }
 
@@ -89,6 +59,48 @@ class DictionaryService {
     }
 
     async init(session = null) {
+        logger.info(`[Dictionary Service] 初始化字典`)
+        const existing = await this.dictionaryRepository.hasData(session);
+        if(!existing) {
+            logger.info(`[Dictionary Service] 字典数据为空，初始化部分数据：`)
+            // 初始化自定义菜品分类多语言
+            try{
+                logger.info(`[Dictionary Service] 初始化自定义菜品分类名字典数据开始...`)
+                const customDishDictionaryData = [
+                    {id: "Poke Bowl", zh: "夏威夷拌饭", en: "Poke Bowl", pt: "Poke Bowl"},
+                    {id: "Sushi Aleatória®", zh: "随机盲盒寿司", en: "Random Sushi", pt: "Sushi Aleatória®"},
+                    {id: "XIAOXIONG® RAMEN", zh: "XIAOXIONG® RAMEN", en: "XIAOXIONG® RAMEN", pt: "XIAOXIONG® RAMEN"},
+                    {id: "Menu Almoço", zh: "中午套餐", en: "Lunch Menu", pt: "Menu Almoço"},
+                ]
+                for(const data of customDishDictionaryData) {
+                    await this.dictionaryRepository.save(data.id, data,session)
+                }
+                logger.info(`[Dictionary Service] 初始化自定义菜品分类名字典数据已完成`)
+            }catch(error){
+                logger.error(`[Dictionary Service] 初始化自定义菜品分类名字典数据失败，原因${error.message}`);
+            }
+
+            // 初始化常用菜品分类多语言
+            try{
+                logger.info(`[Dictionary Service] 初始化常用菜品分类名字典数据开始...`)
+                const commonDictionaryData = [
+                    {id:"Descontos", zh:"折扣", en:"Discounts", pt:"Descontos"},
+                ]
+                for(const data of commonDictionaryData) {
+                    await this.dictionaryRepository.save(data.id, data, session)
+                }
+                logger.info(`[Dictionary Service] 初始化常用菜品分类名字典数据已完成`)
+            }catch (error){
+                logger.error(`[Dictionary Service] 初始化固定常用菜品分类名字典数据失败，原因${error.message}`);
+            }
+            logger.info(`[Dictionary Service] 字典数据初始化完成`)
+        }else{
+            logger.info(`[Dictionary Service] 已存在数据，无需初始化字典`)
+        }
+
+    }
+
+    async initOld(session = null) {
         logger.info("初始化字典");
         const existing = await this.dictionaryRepository.hasData(session);
         if (!existing || Object.keys(existing).length === 0) {

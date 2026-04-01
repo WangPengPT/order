@@ -161,6 +161,7 @@ class CustomDishService {
             switch (type) {
                 case 'DINEIN':
                     result = await this.customDishRepository.getDineEnableTemplates()
+                    findRamenAndChangePrice(result)
                     break
                 case 'TAKEAWAY':
                     result = await this.customDishRepository.getTakeEnableTemplates()
@@ -170,7 +171,6 @@ class CustomDishService {
                     break
             }
 
-            findRamenAndChangePrice(result)
             //特殊情况
             const hasLunch = !!result.find(it => it.id === ids.xiaoxiong_menu_lunch)
             const currentOrdering = await this.menuOrderingRepository.getDineIn()

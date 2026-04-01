@@ -63,7 +63,7 @@ class UserSocket {
         }
     }
 
-    registerHandlers(socket) {
+    async registerHandlers(socket) {
         socket.on('manager_login', async (value, callback) => { await this.login(value, callback) })
 
         socket.on("manager_createNewUser", async (value, callback) => { await this.createUser(value, callback) })

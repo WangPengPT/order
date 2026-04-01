@@ -8,15 +8,13 @@ class ManualUpdate {
     }
 
     async run(){
-        const update_times = await this.transform_name_pt()
-        const format_times = await this.format_tags_to_array()
-        return {
-            update_times,
-            format_times
-        }
+        const result = {}
+        result.copy_name_to_name_pt_times = await this.transform_name_to_name_pt()
+        result.format_dish_tags_to_array_times = await this.format_tags_to_array()
+        return result
     }
 
-    async transform_name_pt(){
+    async transform_name_to_name_pt(){
         logger.info("执行菜单数据迁移")
         const menu = await this.menuService.getMenu()
         let update_times = 0
@@ -38,7 +36,7 @@ class ManualUpdate {
     }
 
     async format_tags_to_array(){
-        logger.info("执行标签字段改为[]格式")
+        logger.info("执行分类打印字段改为[]格式")
         const menu = await this.menuService.getMenu()
         let format_times = 0
         for(let i = 0; i < menu.length; i++) {
@@ -54,7 +52,7 @@ class ManualUpdate {
         }
         appState.menu = menu
         await this.menuService.save()
-        logger.info("执行了"+format_times+"次标签格式转换")
+        logger.info("执行了"+format_times+"次分类打印字段格式转换")
         return format_times
     }
 
