@@ -141,7 +141,7 @@ async function main() {
     runCleanInterval();
     // runFandaysInterval();
     writeOrders();
-    writeMonthRates()
+    // writeMonthRates()
     // appStateService.saveDailyOrders();
 }
 
