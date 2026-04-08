@@ -153,6 +153,7 @@ class AppStateSocket {
         socket.emit("reserver_info", this.appStateService.appStateRepository.appState.reserverInfo)
         socket.emit("print_info", this.appStateService.appStateRepository.appState.printInfo)
         socket.emit("checkout_public_config", paymentController.getPublicCheckoutConfigData())
+        socket.emit("checkout_config", this.appStateService.appStateRepository.appState.checkoutConfig)
 
         // API: send center server's permissions control
         socket.emit("permissions_control", this.appStateService.appStateRepository.appState.permissionsControl)

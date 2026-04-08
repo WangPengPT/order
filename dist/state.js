@@ -30,7 +30,7 @@ class AppState {
         this.reserverInfo = new ReserverInfo()
         this.printInfo = new PrintInfo()
         this.checkoutConfig = {
-            enabled: true,
+            enabled: false,
             callbackToken: '',
             methods: {
                 mbway: { enabled: true, mbWayKey: '', countryCode: '351' },
@@ -179,19 +179,43 @@ class AppState {
         if (!this.checkoutConfig || typeof this.checkoutConfig !== 'object') {
             this.checkoutConfig = { enabled: true, methods: {} }
         }
+        if (!this.checkoutConfig.methods || typeof this.checkoutConfig.methods !== 'object') {
+            this.checkoutConfig.methods = {}
+        }
+
+        // top-level config
+        if (['enabled', 'callbackToken'].includes(key)) {
+            this.checkoutConfig[key] = value
+            return { success: true, data: value }
+        }
+
+        // full methods patch
         if (key === 'methods' && value && typeof value === 'object') {
             this.checkoutConfig.methods = { ...(this.checkoutConfig.methods || {}), ...value }
             return { success: true, data: this.checkoutConfig.methods }
         }
-        if (Object.prototype.hasOwnProperty.call(this.checkoutConfig, key)) {
-            this.checkoutConfig[key] = value
-            return { success: true, data: value }
+
+        // method direct patch: key='mbway' / 'creditcard' ...
+        if (value && typeof value === 'object' && Object.prototype.hasOwnProperty.call(this.checkoutConfig.methods, key)) {
+            this.checkoutConfig.methods[key] = {
+                ...(this.checkoutConfig.methods[key] || {}),
+                ...value
+            }
+            return { success: true, data: this.checkoutConfig.methods[key] }
         }
-        if (key && typeof key === 'string') {
-            this.checkoutConfig[key] = value
-            return { success: true, data: value }
+
+        // nested methods path patch: key='methods.mbway'
+        if (key && typeof key === 'string' && key.startsWith('methods.')) {
+            const methodName = key.replace('methods.', '')
+            if (!methodName) return { success: false, data: 'INVALID_CHECKOUT_METHOD' }
+            const oldVal = this.checkoutConfig.methods[methodName] || {}
+            this.checkoutConfig.methods[methodName] = value && typeof value === 'object'
+                ? { ...oldVal, ...value }
+                : value
+            return { success: true, data: this.checkoutConfig.methods[methodName] }
         }
-        return { success: false, data: 'INVALID_CHECKOUT_CONFIG_KEY' }
+
+        return { success: false, data: `INVALID_CHECKOUT_CONFIG_KEY:${key}` }
     }
 
     // -------------
