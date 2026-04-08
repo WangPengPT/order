@@ -2,6 +2,19 @@ const { appState } = require('../state.js');
 const { logger } = require('../utils/logger.js')
 const { TableStatus } = require('../model/TableStatus.js')
 const db = require('../filedb.js');
+const CheckoutRepository = require('../repositories/checkoutRepository.js');
+
+const checkoutRepository = new CheckoutRepository();
+
+function getCheckoutState() {
+  if (!appState.checkoutPayments || typeof appState.checkoutPayments !== 'object') {
+    appState.checkoutPayments = {};
+  }
+  if (!appState.checkoutPayments.records) appState.checkoutPayments.records = {};
+  if (!appState.checkoutPayments.activeByTable) appState.checkoutPayments.activeByTable = {};
+  if (!appState.checkoutPayments.latestByTable) appState.checkoutPayments.latestByTable = {};
+  return appState.checkoutPayments;
+}
 
 function addNewTable(tableData) {
   try {
@@ -51,6 +64,29 @@ function updateTableWithoutOrder(tableData) {
           tablePassword = t.makePassword()
           logger.info(`桌号 ${id} 开台生成密码: ${tablePassword}`)
         }
+      }
+    }
+
+    // 新开台时，取消该桌已有的进行中支付会话
+    if (oldStatus !== newStatus && newStatus === '用餐中') {
+      const checkoutState = getCheckoutState();
+      if (checkoutState.activeByTable?.[id] && checkoutState.records) {
+        const requestId = checkoutState.activeByTable[id];
+        const payment = checkoutState.records[requestId];
+        if (payment) {
+          const updatedPayment = {
+            ...payment,
+            message: 'Cancelled',
+            cancelReason: 'TABLE_REOPENED',
+            cancelledAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          checkoutState.records[requestId] = updatedPayment;
+          checkoutRepository.savePayment({ id: requestId, ...updatedPayment }).catch((err) => {
+            logger.error(`更新支付记录失败: ${err.message}`);
+          });
+        }
+        delete checkoutState.activeByTable[id];
       }
     }
 
@@ -116,6 +152,10 @@ function cleanTable(id) {
 
     if (table == null) throw new Error("Not found the table")
     table.clearTable()
+    const checkoutState = getCheckoutState();
+    if (checkoutState.activeByTable?.[id]) {
+      delete checkoutState.activeByTable[id]
+    }
 
     // Log check for ghost orders
     if (table.order.length > 0) {

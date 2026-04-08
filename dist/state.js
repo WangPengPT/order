@@ -17,6 +17,7 @@ class AppState {
         this.tables = []
         this.printers = []
         this.maxOrderId = 0
+        this.checkoutPayments = {}
 
         this.permissionsControl = new PermissionsControl()
 
@@ -28,6 +29,19 @@ class AppState {
         this.deliveryInfo = new DeliveryInfo()
         this.reserverInfo = new ReserverInfo()
         this.printInfo = new PrintInfo()
+        this.checkoutConfig = {
+            enabled: true,
+            callbackToken: '',
+            methods: {
+                mbway: { enabled: true, mbWayKey: '', countryCode: '351' },
+                multibanco: { enabled: true, mbKey: '', sandbox: false },
+                creditcard: { enabled: false, ccardKey: '', sandbox: false, successUrl: '', errorUrl: '', cancelUrl: '', language: 'en' },
+                googlepay: { enabled: false, gatewayKey: '', googleKey: '', successUrl: '', errorUrl: '', cancelUrl: '' },
+                applepay: { enabled: false, gatewayKey: '', appleKey: '', successUrl: '', errorUrl: '', cancelUrl: '' },
+                wallet: { enabled: false, gatewayKey: '', googleKey: '', appleKey: '', successUrl: '', errorUrl: '', cancelUrl: '' },
+                directdebit: { enabled: false, ddKey: '', ddSecret: '', operation: 'authorization' }
+            }
+        }
 
         this.initTables()
 
@@ -160,6 +174,26 @@ class AppState {
         return result
     }
 
+    updateCheckoutConfig(key, value){
+        console.log("update checkout_config:", key)
+        if (!this.checkoutConfig || typeof this.checkoutConfig !== 'object') {
+            this.checkoutConfig = { enabled: true, methods: {} }
+        }
+        if (key === 'methods' && value && typeof value === 'object') {
+            this.checkoutConfig.methods = { ...(this.checkoutConfig.methods || {}), ...value }
+            return { success: true, data: this.checkoutConfig.methods }
+        }
+        if (Object.prototype.hasOwnProperty.call(this.checkoutConfig, key)) {
+            this.checkoutConfig[key] = value
+            return { success: true, data: value }
+        }
+        if (key && typeof key === 'string') {
+            this.checkoutConfig[key] = value
+            return { success: true, data: value }
+        }
+        return { success: false, data: 'INVALID_CHECKOUT_CONFIG_KEY' }
+    }
+
     // -------------
 
     createTable(startIdx, endIdx) {
@@ -273,6 +307,7 @@ class AppState {
         console.log("clear all");
         this.orders.clear();
         this.tables.clearAll();
+        this.checkoutPayments = {}
     }
 
 

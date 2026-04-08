@@ -2,13 +2,14 @@ const AppStateService = require("../services/appStateService.js");
 const { logger } = require('../utils/logger.js')
 const {MenuService} = require('../services/menuService.js')
 const { appState } = require('../state.js');
+const paymentController = require('../controllers/paymentController.js');
 
 class AppStateSocket {
     constructor(io, appStateService = new AppStateService(), menuService = new MenuService()) {
         this.appStateService = appStateService
         this.menuService = menuService
         this.io = io
-        this.info_keys = ['settings','shop_info','qrorder_info','takeaway_info','delivery_info','reserver_info','print_info']
+        this.info_keys = ['settings','shop_info','qrorder_info','takeaway_info','delivery_info','reserver_info','print_info','checkout_config']
     }
 
     async get(type, key, callback) {
@@ -151,6 +152,7 @@ class AppStateSocket {
         socket.emit("delivery_info", this.appStateService.appStateRepository.appState.deliveryInfo)
         socket.emit("reserver_info", this.appStateService.appStateRepository.appState.reserverInfo)
         socket.emit("print_info", this.appStateService.appStateRepository.appState.printInfo)
+        socket.emit("checkout_public_config", paymentController.getPublicCheckoutConfigData())
 
         // API: send center server's permissions control
         socket.emit("permissions_control", this.appStateService.appStateRepository.appState.permissionsControl)

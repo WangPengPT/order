@@ -54,6 +54,7 @@ class AppStateService {
                 delivery_info: 'deliveryInfo',
                 reserver_info: 'reserverInfo',
                 print_info: 'printInfo',
+                checkout_config: 'checkoutConfig',
             }
             if(Object.keys(keys).includes(type)){
                 return appState.getInfoData(keys[type], key)
@@ -89,6 +90,9 @@ class AppStateService {
                     break
                 case "print_info":
                     result = appState.updatePrintInfo(key,value)
+                    break
+                case "checkout_config":
+                    result = appState.updateCheckoutConfig(key, value)
                     break
                 default:
                     result = {success: false, data: "Not Found Update Type: "+type}
