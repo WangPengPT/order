@@ -208,6 +208,23 @@ class DB {
         return result; // 返回删除结果 { acknowledged, deletedCount }
     }
 
+    static async incrementField(table, id, field = 'seq', step = 1, session = null) {
+        const collection = db.collection(table);
+        const result = await collection.findOneAndUpdate(
+            { id },
+            {
+                $setOnInsert: { id },
+                $inc: { [field]: step }
+            },
+            {
+                upsert: true,
+                returnDocument: 'after',
+                session
+            }
+        );
+        return result?.[field] ?? result?.value?.[field] ?? 0;
+    }
+
 }
 
 module.exports = DB;

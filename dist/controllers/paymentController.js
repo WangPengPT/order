@@ -89,10 +89,76 @@ function getActivePaymentByTable(tableId) {
   return payment;
 }
 
+function getLatestPaidPaymentSnapshotForTable(tableId) {
+  ensureCheckoutState();
+  const rid = appState.checkoutPayments.latestByTable[tableId];
+  if (rid) {
+    const p = appState.checkoutPayments.records[rid];
+    if (p && p.internalStatus === 'paid') return p;
+  }
+  let best = null;
+  let bestTs = 0;
+  for (const p of Object.values(appState.checkoutPayments.records || {})) {
+    if (!p || p.tableId !== tableId || p.internalStatus !== 'paid') continue;
+    const t = new Date(p.updatedAt || p.createdAt || 0).getTime();
+    if (t >= bestTs) {
+      bestTs = t;
+      best = p;
+    }
+  }
+  return best;
+}
+
+/** 桌子当前为「已支付」时，不应再创建新的结账请求 */
+function getTableCheckoutPaidContext(tableId) {
+  const tableResult = tableService.getTableById(tableId);
+  if (!tableResult?.success || !tableResult.data) {
+    return { alreadyPaid: false, tableStatus: null, paidPayment: null };
+  }
+  const parsed = TableStatus.fromString(String(tableResult.data.status || ''));
+  const alreadyPaid = parsed === TableStatus.PAID;
+  return {
+    alreadyPaid,
+    tableStatus: tableResult.data.status,
+    paidPayment: alreadyPaid ? getLatestPaidPaymentSnapshotForTable(tableId) : null
+  };
+}
+
 function getCheckoutMethodConfig(method) {
   const config = appState.checkoutConfig || {};
   const methods = config.methods || {};
   return methods[method] || {};
+}
+
+function getOrderIdMaxLenByMethod(method) {
+  const m = normalizeMethod(method);
+  if (m === 'multibanco') return 25;
+  return 15; // mbway/creditcard compatible default
+}
+
+function makeOrderIdPrefix() {
+  let rawName = 'SHOP';
+  try {
+    // Keep prefix source aligned with center socket restaurant identity.
+    const centerSocket = require('../socket/centerSocket.js');
+    rawName = String(centerSocket.getRestaurant?.() || rawName);
+  } catch (_) {
+    rawName = 'SHOP';
+  }
+  const name = rawName.trim().toUpperCase();
+  const compact = name.replace(/[^A-Z0-9]/g, '');
+  return compact || 'SHOP';
+}
+
+async function buildNextCheckoutOrderId(method) {
+  ensureCheckoutState();
+  const restaurantId = makeOrderIdPrefix();
+  const seqNum = await checkoutRepository.getNextOrderSeq(restaurantId);
+  const seq = String(seqNum).padStart(6, '0');
+  const maxLen = getOrderIdMaxLenByMethod(method);
+  const prefixMax = Math.max(1, maxLen - seq.length);
+  const prefix = restaurantId.slice(0, prefixMax);
+  return `${prefix}${seq}`;
 }
 
 function ensureCheckoutMethodEnabled(method) {
@@ -265,6 +331,19 @@ async function refreshPaymentStatusIfPossible(payment) {
 async function createCheckout(req, res) {
   try {
     const tableId = normalizeTableId(req.body?.tableId);
+    const paidCtx = getTableCheckoutPaidContext(tableId);
+    if (paidCtx.alreadyPaid) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          alreadyPaid: true,
+          hasActivePayment: false,
+          tableStatus: paidCtx.tableStatus,
+          payment: paidCtx.paidPayment
+        }
+      });
+    }
+
     const method = normalizeMethod(req.body?.method || METHOD_MBWAY);
     ensureCheckoutMethodEnabled(method);
     const activePayment = getActivePaymentByTable(tableId);
@@ -281,12 +360,30 @@ async function createCheckout(req, res) {
     const amount = parseCheckoutAmount(req.body || {});
     const bill = buildBillSnapshot(tableId);
     const configuredPaymentData = getCheckoutMethodConfig(method);
-    const requestPaymentData = req.body?.paymentData || (req.body?.mobileNumber ? { mobileNumber: req.body.mobileNumber } : {});
+    const requestPaymentData =
+      typeof req.body?.paymentData === 'object' && req.body.paymentData ? { ...req.body.paymentData } : {};
+    if (req.body?.mobileNumber != null && String(req.body.mobileNumber).trim() !== '') {
+      requestPaymentData.mobileNumber = String(req.body.mobileNumber).trim();
+    }
+    const rawNif = req.body?.nif ?? requestPaymentData.nif ?? requestPaymentData.NIF ?? requestPaymentData.Nif;
+    if (rawNif != null && String(rawNif).trim() !== '') {
+      requestPaymentData.nif = String(rawNif).trim();
+    }
+    const rawCustomerName =
+      req.body?.customerName ??
+      req.body?.name ??
+      requestPaymentData.customerName ??
+      requestPaymentData.payerName ??
+      requestPaymentData.name;
+    if (rawCustomerName != null && String(rawCustomerName).trim() !== '') {
+      requestPaymentData.customerName = String(rawCustomerName).trim();
+    }
     const mergedPaymentData = { ...configuredPaymentData, ...requestPaymentData };
+    const orderId = req.body?.orderId ? String(req.body.orderId) : await buildNextCheckoutOrderId(method);
     const result = await createIfthenpayCheckout({
       method,
       amount,
-      orderId: req.body?.orderId,
+      orderId,
       description: req.body?.description,
       email: req.body?.email,
       paymentData: mergedPaymentData
@@ -302,6 +399,19 @@ async function createCheckout(req, res) {
 
     const now = new Date().toISOString();
     ensureCheckoutState();
+    const nifForRecord =
+      mergedPaymentData.nif != null && String(mergedPaymentData.nif).trim() !== ''
+        ? String(mergedPaymentData.nif).trim()
+        : null;
+    const mobileForRecord =
+      mergedPaymentData.mobileNumber != null && String(mergedPaymentData.mobileNumber).trim() !== ''
+        ? String(mergedPaymentData.mobileNumber).trim()
+        : result.request.mobileNumber || null;
+    const customerNameForRecord =
+      mergedPaymentData.customerName != null && String(mergedPaymentData.customerName).trim() !== ''
+        ? String(mergedPaymentData.customerName).trim()
+        : null;
+
     const paymentRecord = {
       id: requestId,
       requestId,
@@ -309,8 +419,10 @@ async function createCheckout(req, res) {
       tableId,
       orderId: result.request.orderId,
       amount: result.request.amount,
-      mobileNumber: result.request.mobileNumber || null,
-        mbWayKey: method === 'mbway' ? (result.request.mbWayKey || mergedPaymentData.mbWayKey || null) : null,
+      mobileNumber: mobileForRecord,
+      nif: nifForRecord,
+      customerName: customerNameForRecord,
+      mbWayKey: method === 'mbway' ? (result.request.mbWayKey || mergedPaymentData.mbWayKey || null) : null,
       entity: result.response?.Entity || null,
       reference: result.response?.Reference || null,
       expiryDate: result.response?.ExpiryDate || null,
@@ -485,6 +597,7 @@ function getCheckoutByTable(req, res) {
 async function getActiveCheckoutByTable(req, res) {
   try {
     const tableId = normalizeTableId(req.query?.tableId);
+    const paidCtx = getTableCheckoutPaidContext(tableId);
     const activePaymentRaw = getActivePaymentByTable(tableId);
     const activePayment = await refreshPaymentStatusIfPossible(activePaymentRaw);
     const stillActive = activePayment && !isPaymentFinal(activePayment);
@@ -492,7 +605,10 @@ async function getActiveCheckoutByTable(req, res) {
       success: true,
       data: {
         hasActivePayment: Boolean(stillActive),
-        payment: stillActive ? activePayment : null
+        payment: stillActive ? activePayment : null,
+        alreadyPaid: paidCtx.alreadyPaid,
+        tableStatus: paidCtx.tableStatus,
+        paidPayment: paidCtx.paidPayment
       }
     });
   } catch (error) {
@@ -776,6 +892,9 @@ function paymentToView(item) {
     tableId: item.tableId,
     orderId: item.orderId,
     amount: Number(item.amount || 0),
+    mobileNumber: item.mobileNumber || null,
+    nif: item.nif || null,
+    customerName: item.customerName || null,
     internalStatus: item.internalStatus || 'pending',
     status: item.status || null,
     message: item.message || null,
@@ -819,7 +938,15 @@ async function listCheckoutPayments(req, res) {
 
       if (kw) {
         const hit = [
-          item.requestId, item.orderId, item.tableId, item.method, item.internalStatus, item.message
+          item.requestId,
+          item.orderId,
+          item.tableId,
+          item.method,
+          item.internalStatus,
+          item.message,
+          item.mobileNumber,
+          item.nif,
+          item.customerName
         ].some((v) => String(v || '').toLowerCase().includes(kw));
         if (!hit) return false;
       }

@@ -1,10 +1,16 @@
 const DB = require('../db');
 
 class CheckoutRepository {
-  constructor(paymentTable = 'checkout_payments', billTable = 'checkout_bills', callbackEventTable = 'checkout_callback_events') {
+  constructor(
+    paymentTable = 'checkout_payments',
+    billTable = 'checkout_bills',
+    callbackEventTable = 'checkout_callback_events',
+    counterTable = 'checkout_counters'
+  ) {
     this.paymentTable = paymentTable;
     this.billTable = billTable;
     this.callbackEventTable = callbackEventTable;
+    this.counterTable = counterTable;
   }
 
   async savePayment(payment, session = null) {
@@ -37,6 +43,12 @@ class CheckoutRepository {
 
   async saveCallbackEvent(event, session = null) {
     await DB.set(this.callbackEventTable, event, session);
+  }
+
+  async getNextOrderSeq(counterId = 'default', session = null) {
+    const id = `order_seq:${counterId}`;
+    const seq = await DB.incrementField(this.counterTable, id, 'seq', 1, session);
+    return Number(seq) || 0;
   }
 }
 
