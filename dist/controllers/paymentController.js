@@ -920,6 +920,63 @@ async function getCheckoutPaymentStats(req, res) {
   }
 }
 
+async function runControllerAsSocket(controllerFn, payload = {}, callback) {
+  try {
+    let statusCode = 200;
+    let jsonBody = null;
+    const req = {
+      body: payload.body || {},
+      query: payload.query || {},
+      params: payload.params || {},
+      headers: payload.headers || {}
+    };
+    const res = {
+      status: (code) => {
+        statusCode = code;
+        return res;
+      },
+      json: (body) => {
+        jsonBody = body;
+        return body;
+      }
+    };
+    await controllerFn(req, res);
+    callback && callback({ code: statusCode, ...(jsonBody || {}) });
+  } catch (error) {
+    callback && callback({ code: 500, success: false, error: error.message });
+  }
+}
+
+async function handleCheckoutSocketEvent(action, payload, callback) {
+  const mapping = {
+    request: { fn: createCheckout, payload: { body: payload || {} } },
+    status: { fn: getCheckoutStatus, payload: { query: payload || {} } },
+    latest: { fn: getCheckoutByTable, payload: { query: payload || {} } },
+    active: { fn: getActiveCheckoutByTable, payload: { query: payload || {} } },
+    cancel: { fn: cancelActiveCheckoutByTable, payload: { body: payload || {} } }
+  };
+  const target = mapping[action];
+  if (!target) {
+    callback && callback({ code: 400, success: false, error: 'UNSUPPORTED_CHECKOUT_SOCKET_ACTION' });
+    return;
+  }
+  await runControllerAsSocket(target.fn, target.payload, callback);
+}
+
+async function handleManagerCheckoutSocketEvent(action, payload, callback) {
+  const mapping = {
+    list: { fn: listCheckoutPayments, payload: { query: payload || {} } },
+    stats: { fn: getCheckoutPaymentStats, payload: { query: payload || {} } },
+    by_id: { fn: getCheckoutPaymentById, payload: { params: { requestId: payload } } }
+  };
+  const target = mapping[action];
+  if (!target) {
+    callback && callback({ code: 400, success: false, error: 'UNSUPPORTED_MANAGER_CHECKOUT_SOCKET_ACTION' });
+    return;
+  }
+  await runControllerAsSocket(target.fn, target.payload, callback);
+}
+
 module.exports = {
   // 通用结账接口
   createCheckout,
@@ -933,5 +990,7 @@ module.exports = {
   getPublicCheckoutConfigData,
   listCheckoutPayments,
   getCheckoutPaymentById,
-  getCheckoutPaymentStats
+  getCheckoutPaymentStats,
+  handleCheckoutSocketEvent,
+  handleManagerCheckoutSocketEvent
 };

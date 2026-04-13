@@ -19,6 +19,7 @@ const {AlertMessageSocket} = require("./AlertMessageSocket");
 const VarietyShopsSocket = require("./varietyShopsSocket");
 const ReserveSocket = require("./reserveSocket");
 const DeliverySocket = require("./deliverySocket");
+const paymentController = require('../controllers/paymentController.js');
 
 class SocketServices {
     constructor(io,
@@ -568,6 +569,40 @@ class SocketServices {
             socket.on("get_menu", async () => {
                 await this.send_menu(socket)
             })
+
+            // ---- Checkout query websocket wrappers ----
+            socket.on("manager_get_checkout_payments", async (query = {}, callback) => {
+                await paymentController.handleManagerCheckoutSocketEvent('list', query, callback);
+            });
+
+            socket.on("manager_get_checkout_payment_stats", async (query = {}, callback) => {
+                await paymentController.handleManagerCheckoutSocketEvent('stats', query, callback);
+            });
+
+            socket.on("manager_get_checkout_payment_by_id", async (requestId, callback) => {
+                await paymentController.handleManagerCheckoutSocketEvent('by_id', requestId, callback);
+            });
+
+            // ---- Checkout websocket wrappers for HTTP APIs ----
+            socket.on("checkout_request", async (body, callback) => {
+                await paymentController.handleCheckoutSocketEvent('request', body, callback);
+            });
+
+            socket.on("checkout_status", async (query, callback) => {
+                await paymentController.handleCheckoutSocketEvent('status', query, callback);
+            });
+
+            socket.on("checkout_latest", async (query, callback) => {
+                await paymentController.handleCheckoutSocketEvent('latest', query, callback);
+            });
+
+            socket.on("checkout_active", async (query, callback) => {
+                await paymentController.handleCheckoutSocketEvent('active', query, callback);
+            });
+
+            socket.on("checkout_cancel", async (body, callback) => {
+                await paymentController.handleCheckoutSocketEvent('cancel', body, callback);
+            });
 
             await this.send_init_info(socket)
 
