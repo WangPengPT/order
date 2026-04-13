@@ -210,6 +210,47 @@ async function persistPaymentUpdate(updated) {
   }
 }
 
+async function refreshPaymentStatusIfPossible(payment) {
+  if (!payment) return payment;
+  const method = normalizeMethod(payment.method || METHOD_MBWAY);
+  try {
+    const result = await checkIfthenpayCheckoutStatus({
+      method,
+      requestId: payment.requestId,
+      paymentData: {
+        mbWayKey: payment.mbWayKey || null
+      }
+    });
+    const updated = {
+      ...payment,
+      status: result?.Status || payment.status || null,
+      message: result?.Message || payment.message || null,
+      internalStatus: normalizeInternalStatus({
+        method,
+        status: result?.Status || payment.status,
+        message: result?.Message || payment.message
+      }),
+      providerCreatedAt: result?.CreatedAt || payment.providerCreatedAt || null,
+      providerUpdatedAt: result?.UpdateAt || payment.providerUpdatedAt || null,
+      updatedAt: new Date().toISOString()
+    };
+    if (
+      updated.status !== payment.status ||
+      updated.message !== payment.message ||
+      updated.internalStatus !== payment.internalStatus
+    ) {
+      await persistPaymentUpdate(updated);
+    }
+    return updated;
+  } catch (error) {
+    // Some methods don't support status check by requestId.
+    if (error.message !== 'STATUS_BY_REQUEST_NOT_SUPPORTED') {
+      logger.warn(`[Checkout Active Refresh] ${payment.requestId} failed: ${error.message}`);
+    }
+    return payment;
+  }
+}
+
 async function createCheckout(req, res) {
   try {
     const tableId = normalizeTableId(req.body?.tableId);
@@ -310,6 +351,12 @@ async function createCheckout(req, res) {
 
 async function getCheckoutStatus(req, res) {
   try {
+    const pollingHint = {
+      nextPollMs: 2500,
+      slowModeAfterMs: 30000,
+      slowModePollMs: 5000,
+      maxWaitMs: 300000
+    };
     ensureCheckoutState();
     const methodQuery = req.query?.method ? normalizeMethod(req.query.method) : undefined;
     const tableIdQuery = String(req.query?.tableId || '').replace('#', '').trim();
@@ -343,8 +390,10 @@ async function getCheckoutStatus(req, res) {
             Entity: existing.entity || null,
             Reference: existing.reference || null,
             ExpiryDate: existing.expiryDate || null,
-            Source: 'local_record'
-          }
+            Source: 'local_record',
+            pollingHint
+          },
+          pollingHint
         });
       }
       throw providerError;
@@ -370,7 +419,11 @@ async function getCheckoutStatus(req, res) {
 
     return res.status(200).json({
       success: true,
-      data: result
+      data: {
+        ...result,
+        pollingHint
+      },
+      pollingHint
     });
   } catch (error) {
     const status = error.httpStatus && Number.isInteger(error.httpStatus) ? error.httpStatus : 400;
@@ -417,12 +470,14 @@ function getCheckoutByTable(req, res) {
 async function getActiveCheckoutByTable(req, res) {
   try {
     const tableId = normalizeTableId(req.query?.tableId);
-    const activePayment = getActivePaymentByTable(tableId);
+    const activePaymentRaw = getActivePaymentByTable(tableId);
+    const activePayment = await refreshPaymentStatusIfPossible(activePaymentRaw);
+    const stillActive = activePayment && !isPaymentFinal(activePayment);
     return res.status(200).json({
       success: true,
       data: {
-        hasActivePayment: Boolean(activePayment),
-        payment: activePayment || null
+        hasActivePayment: Boolean(stillActive),
+        payment: stillActive ? activePayment : null
       }
     });
   } catch (error) {
