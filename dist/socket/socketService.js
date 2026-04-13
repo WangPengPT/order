@@ -199,6 +199,29 @@ class SocketServices {
                 try {
                     logger.info(`订单提交 来源ip: ${socket.handshake.address}`)
 
+                    // Payment lock: once checkout is active, block new orders for that table.
+                    const tableId = String(orderData?.table || '').replace('#', '').trim();
+                    const checkoutState = appState.checkoutPayments || {};
+                    const activeByTable = checkoutState.activeByTable || {};
+                    const records = checkoutState.records || {};
+                    const activeRequestId = tableId ? activeByTable[tableId] : undefined;
+                    if (activeRequestId) {
+                        const activePayment = records[activeRequestId];
+                        const internalStatus = String(activePayment?.internalStatus || '').toLowerCase();
+                        const finalStates = ['paid', 'failed', 'cancelled', 'expired'];
+                        if (!finalStates.includes(internalStatus)) {
+                            const msg = "CHECKOUT_IN_PROGRESS";
+                            logger.info(`订单提交失败: 桌号-${tableId} 正在支付中 requestId-${activeRequestId}`);
+                            socket.emit('error', msg);
+                            if (callback) callback({
+                                code: 423,
+                                success: false,
+                                data: msg
+                            });
+                            return;
+                        }
+                    }
+
                     // Check Blacklist IP
                     if (appState.checkBlacklistIP(socket)) {
                         logger.info(`订单提交失败`)

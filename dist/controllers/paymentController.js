@@ -9,6 +9,7 @@ const db = require('../filedb.js');
 const { appState } = require('../state.js');
 const CheckoutRepository = require('../repositories/checkoutRepository.js');
 const { logger } = require('../utils/logger.js');
+const { TableStatus } = require('../model/TableStatus.js');
 
 const checkoutRepository = new CheckoutRepository();
 
@@ -181,6 +182,20 @@ async function persistPaymentUpdate(updated) {
   if (isPaymentFinal(updated) && updated.tableId && appState.checkoutPayments.activeByTable[updated.tableId] === updated.requestId) {
     delete appState.checkoutPayments.activeByTable[updated.tableId];
   }
+
+  // Auto-mark table as paid after successful checkout.
+  if (updated.internalStatus === 'paid' && updated.tableId) {
+    const table = appState.getTableById(updated.tableId);
+    if (table && table.status?.value !== TableStatus.PAID.value) {
+      table.status = TableStatus.PAID;
+      table.msg_pay = false;
+      if (appState.socket_io) {
+        appState.socket_io.emit('send_tables', appState.tables.toJSON());
+        appState.socket_io.emit(`client_table${updated.tableId}`, table.toJSON());
+      }
+    }
+  }
+
   db.saveAppStateData(appState);
   await checkoutRepository.savePayment({ id: updated.requestId, ...updated });
 
@@ -623,6 +638,208 @@ function getPublicCheckoutConfig(req, res) {
   }
 }
 
+function toTime(value) {
+  const t = new Date(value).getTime();
+  return Number.isFinite(t) ? t : null;
+}
+
+function inRange(ts, start, end) {
+  if (start && ts < start) return false;
+  if (end && ts > end) return false;
+  return true;
+}
+
+function buildPeriodRange(period, date, startAt, endAt) {
+  if (period === 'custom') {
+    return { start: toTime(startAt), end: toTime(endAt) };
+  }
+
+  const base = date ? new Date(date) : new Date();
+  if (!Number.isFinite(base.getTime())) {
+    return { start: null, end: null };
+  }
+
+  const start = new Date(base);
+  const end = new Date(base);
+
+  if (period === 'day') {
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+    return { start: start.getTime(), end: end.getTime() };
+  }
+
+  if (period === 'week') {
+    const day = start.getDay() || 7;
+    start.setDate(start.getDate() - day + 1);
+    start.setHours(0, 0, 0, 0);
+    end.setTime(start.getTime());
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    return { start: start.getTime(), end: end.getTime() };
+  }
+
+  if (period === 'month') {
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+    end.setMonth(start.getMonth() + 1, 0);
+    end.setHours(23, 59, 59, 999);
+    return { start: start.getTime(), end: end.getTime() };
+  }
+
+  return { start: null, end: null };
+}
+
+function paymentToView(item) {
+  return {
+    requestId: item.requestId,
+    method: item.method,
+    tableId: item.tableId,
+    orderId: item.orderId,
+    amount: Number(item.amount || 0),
+    internalStatus: item.internalStatus || 'pending',
+    status: item.status || null,
+    message: item.message || null,
+    createdAt: item.createdAt || null,
+    updatedAt: item.updatedAt || null,
+    paymentUrl: item.paymentUrl || null,
+    entity: item.entity || null,
+    reference: item.reference || null,
+    expiryDate: item.expiryDate || null
+  };
+}
+
+async function listCheckoutPayments(req, res) {
+  try {
+    const {
+      tableId,
+      method,
+      internalStatus,
+      startAt,
+      endAt,
+      keyword,
+      page = 1,
+      pageSize = 20,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query || {};
+
+    const start = toTime(startAt);
+    const end = toTime(endAt);
+    const p = Math.max(1, Number(page) || 1);
+    const size = Math.min(200, Math.max(1, Number(pageSize) || 20));
+    const kw = String(keyword || '').trim().toLowerCase();
+
+    const all = await checkoutRepository.getAllPayments();
+    const filtered = (all || []).filter((item) => {
+      if (tableId && String(item.tableId || '') !== String(tableId)) return false;
+      if (method && String(item.method || '').toLowerCase() !== String(method).toLowerCase()) return false;
+      if (internalStatus && String(item.internalStatus || '').toLowerCase() !== String(internalStatus).toLowerCase()) return false;
+      const ts = toTime(item.createdAt);
+      if ((start || end) && (!ts || !inRange(ts, start, end))) return false;
+
+      if (kw) {
+        const hit = [
+          item.requestId, item.orderId, item.tableId, item.method, item.internalStatus, item.message
+        ].some((v) => String(v || '').toLowerCase().includes(kw));
+        if (!hit) return false;
+      }
+      return true;
+    });
+
+    const order = String(sortOrder).toLowerCase() === 'asc' ? 1 : -1;
+    filtered.sort((a, b) => {
+      const av = a?.[sortBy];
+      const bv = b?.[sortBy];
+      if (sortBy.toLowerCase().includes('at')) {
+        return (toTime(av) - toTime(bv)) * order;
+      }
+      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * order;
+      return String(av || '').localeCompare(String(bv || '')) * order;
+    });
+
+    const total = filtered.length;
+    const startIdx = (p - 1) * size;
+    const items = filtered.slice(startIdx, startIdx + size).map(paymentToView);
+    const paidAmount = filtered
+      .filter((it) => it.internalStatus === 'paid')
+      .reduce((sum, it) => sum + (Number(it.amount) || 0), 0);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        items,
+        total,
+        page: p,
+        pageSize: size,
+        summary: {
+          paidCount: filtered.filter((it) => it.internalStatus === 'paid').length,
+          pendingCount: filtered.filter((it) => it.internalStatus === 'pending').length,
+          paidAmount: Number(paidAmount.toFixed(2))
+        }
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+async function getCheckoutPaymentById(req, res) {
+  try {
+    const requestId = String(req.params?.requestId || '').trim();
+    if (!requestId) return res.status(400).json({ success: false, error: 'REQUEST_ID_REQUIRED' });
+    const payment = await checkoutRepository.getPayment(requestId);
+    if (!payment) return res.status(404).json({ success: false, error: 'PAYMENT_NOT_FOUND' });
+    return res.status(200).json({ success: true, data: paymentToView(payment) });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+async function getCheckoutPaymentStats(req, res) {
+  try {
+    const { period = 'day', date, startAt, endAt } = req.query || {};
+    const range = buildPeriodRange(String(period), date, startAt, endAt);
+    const all = await checkoutRepository.getAllPayments();
+    const filtered = (all || []).filter((item) => {
+      const ts = toTime(item.createdAt);
+      return ts && inRange(ts, range.start, range.end);
+    });
+
+    const byStatus = {};
+    const byMethod = {};
+    let paidAmount = 0;
+    let totalAmount = 0;
+
+    filtered.forEach((item) => {
+      const st = item.internalStatus || 'pending';
+      const mt = item.method || 'unknown';
+      byStatus[st] = (byStatus[st] || 0) + 1;
+      byMethod[mt] = (byMethod[mt] || 0) + 1;
+      const amount = Number(item.amount || 0);
+      totalAmount += amount;
+      if (st === 'paid') paidAmount += amount;
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        period,
+        range: {
+          startAt: range.start ? new Date(range.start).toISOString() : null,
+          endAt: range.end ? new Date(range.end).toISOString() : null
+        },
+        totalCount: filtered.length,
+        totalAmount: Number(totalAmount.toFixed(2)),
+        paidAmount: Number(paidAmount.toFixed(2)),
+        byStatus,
+        byMethod
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
 module.exports = {
   // 通用结账接口
   createCheckout,
@@ -633,5 +850,8 @@ module.exports = {
   checkoutCallback,
   reconcilePendingPayments,
   getPublicCheckoutConfig,
-  getPublicCheckoutConfigData
+  getPublicCheckoutConfigData,
+  listCheckoutPayments,
+  getCheckoutPaymentById,
+  getCheckoutPaymentStats
 };

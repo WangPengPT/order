@@ -15,6 +15,10 @@ class CheckoutRepository {
     return await DB.get(this.paymentTable, requestId, null, session);
   }
 
+  async getAllPayments(session = null) {
+    return await DB.getAll(this.paymentTable, session);
+  }
+
   async saveBill(bill, session = null) {
     await DB.set(this.billTable, bill, session);
   }

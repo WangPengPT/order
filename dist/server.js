@@ -124,6 +124,9 @@ app.get('/api/checkout/active', paymentController.getActiveCheckoutByTable);
 app.post('/api/checkout/cancel', paymentController.cancelActiveCheckoutByTable);
 app.post('/api/checkout/callback/ifthenpay', paymentController.checkoutCallback);
 app.get('/api/checkout/config/public', paymentController.getPublicCheckoutConfig);
+app.get('/api/checkout/payments', authMiddleware, paymentController.listCheckoutPayments);
+app.get('/api/checkout/payments/stats', authMiddleware, paymentController.getCheckoutPaymentStats);
+app.get('/api/checkout/payments/:requestId', authMiddleware, paymentController.getCheckoutPaymentById);
 
 app.use(compression());
 app.use(express.static(path.join(__dirname, "public"), {
