@@ -41,11 +41,17 @@ function ensureCheckoutState() {
 
 function isPaymentFinal(payment) {
   const method = normalizeMethod(payment?.method || METHOD_MBWAY);
-  const normalized = normalizeInternalStatus({ method, status: payment?.status, message: payment?.message });
+  const normalized = normalizeInternalStatus({
+    method,
+    status: payment?.status,
+    message: payment?.message,
+    providerCreatedAt: payment?.providerCreatedAt,
+    providerUpdatedAt: payment?.providerUpdatedAt
+  });
   return ['paid', 'failed', 'cancelled', 'expired'].includes(normalized);
 }
 
-function normalizeInternalStatus({ method, status, message }) {
+function normalizeInternalStatus({ method, status, message, providerCreatedAt, providerUpdatedAt }) {
   const m = normalizeMethod(method || METHOD_MBWAY);
   const statusText = String(status ?? '').trim().toLowerCase();
   const messageText = String(message ?? '').trim().toLowerCase();
@@ -57,8 +63,11 @@ function normalizeInternalStatus({ method, status, message }) {
 
   if (m === 'mbway') {
     // MB WAY may return Status=000 for both pending and success; message decides.
-    if (messageText === 'success') return 'paid';
+    // Be conservative: only treat as paid when status check includes update signal.
+    const hasUpdateSignal = Boolean(providerUpdatedAt) || (providerCreatedAt && providerUpdatedAt && providerCreatedAt !== providerUpdatedAt);
+    if (messageText === 'success' && hasUpdateSignal) return 'paid';
     if (messageText === 'pending') return 'pending';
+    if (messageText === 'success' && !hasUpdateSignal) return 'pending';
   }
 
   // For non-MB WAY methods, "Success" on create usually means request created, not paid.
@@ -312,7 +321,9 @@ async function createCheckout(req, res) {
       internalStatus: normalizeInternalStatus({
         method,
         status: result.response?.Status,
-        message: result.response?.Message
+        message: result.response?.Message,
+        providerCreatedAt: null,
+        providerUpdatedAt: null
       }),
       createdAt: now,
       updatedAt: now,
@@ -410,7 +421,9 @@ async function getCheckoutStatus(req, res) {
         internalStatus: normalizeInternalStatus({
           method,
           status: result?.Status || existing.status,
-          message: result?.Message || existing.message
+          message: result?.Message || existing.message,
+          providerCreatedAt: result?.CreatedAt || existing.providerCreatedAt || null,
+          providerUpdatedAt: result?.UpdateAt || existing.providerUpdatedAt || null
         }),
         providerCreatedAt: result?.CreatedAt || existing.providerCreatedAt || null,
         providerUpdatedAt: result?.UpdateAt || existing.providerUpdatedAt || null,
@@ -601,7 +614,13 @@ async function checkoutCallback(req, res) {
       ...payment,
       status,
       message,
-      internalStatus: normalizeInternalStatus({ method: payment.method, status, message }),
+      internalStatus: normalizeInternalStatus({
+        method: payment.method,
+        status,
+        message,
+        providerCreatedAt: payment.providerCreatedAt || null,
+        providerUpdatedAt: payload.UpdateAt || payload.updatedAt || payment.providerUpdatedAt || null
+      }),
       callbackPayload: payload,
       providerUpdatedAt: payload.UpdateAt || payload.updatedAt || payment.providerUpdatedAt || null,
       updatedAt: new Date().toISOString()
@@ -635,7 +654,9 @@ async function reconcilePendingPayments() {
   const pending = records.filter((it) => normalizeInternalStatus({
     method: it.method,
     status: it.status,
-    message: it.message
+    message: it.message,
+    providerCreatedAt: it.providerCreatedAt,
+    providerUpdatedAt: it.providerUpdatedAt
   }) === 'pending');
   if (pending.length === 0) return { success: true, checked: 0, updated: 0 };
 
@@ -657,7 +678,9 @@ async function reconcilePendingPayments() {
         internalStatus: normalizeInternalStatus({
           method,
           status: result?.Status || item.status,
-          message: result?.Message || item.message
+          message: result?.Message || item.message,
+          providerCreatedAt: result?.CreatedAt || item.providerCreatedAt || null,
+          providerUpdatedAt: result?.UpdateAt || item.providerUpdatedAt || null
         }),
         providerCreatedAt: result?.CreatedAt || item.providerCreatedAt || null,
         providerUpdatedAt: result?.UpdateAt || item.providerUpdatedAt || null,
