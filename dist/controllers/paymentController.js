@@ -56,15 +56,17 @@ function normalizeInternalStatus({ method, status, message }) {
   if (text.includes('fail') || text.includes('error')) return 'failed';
 
   if (m === 'mbway') {
-    if (messageText === 'success' || statusText === '000') return 'paid';
+    // MB WAY may return Status=000 for both pending and success; message decides.
+    if (messageText === 'success') return 'paid';
     if (messageText === 'pending') return 'pending';
-  } else if (m === 'multibanco') {
-    if (messageText === 'success' || statusText === '0') return 'pending';
-  } else {
-    if (messageText === 'success' || statusText === '0' || statusText === 'paid') return 'paid';
   }
 
-  if (statusText === 'paid' || messageText === 'paid') return 'paid';
+  // For non-MB WAY methods, "Success" on create usually means request created, not paid.
+  if (statusText === 'paid' || statusText === 'completed' || statusText === 'settled') return 'paid';
+  if (messageText === 'paid' || messageText === 'completed') return 'paid';
+
+  if (messageText === 'success') return 'pending';
+  if (statusText === '0') return 'pending';
   return 'pending';
 }
 
