@@ -3,7 +3,7 @@ const { PeopleType } = require("./people.js")
 const { TableStatus } = require("./TableStatus.js")
 
 class Table {
-  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, lastOrderTime = 0, users = [], password = null, passwordTime = null, firstOrderUsed = false }) {
+  constructor({ id, peopleType = new PeopleType(), status = TableStatus.FREE, order = [], msg_pay , msg_call , nif_note, discountRate = 0, discountFixed = 0, lastOrderTime = 0, users = [], password = null, passwordTime = null, firstOrderUsed = false }) {
     this.id = id
     this.peopleType = peopleType instanceof PeopleType ? peopleType : new PeopleType(peopleType)
 
@@ -20,6 +20,8 @@ class Table {
     this.msg_pay = msg_pay || false
     this.msg_call = msg_call || false
     this.nif_note = nif_note || {nif:undefined, note:undefined}
+    this.discountRate = this.normalizeDiscountRate(discountRate)
+    this.discountFixed = this.normalizeDiscountFixed(discountFixed)
     this.lastOrderTime = lastOrderTime
     this.users = users
     this.password = password
@@ -83,6 +85,28 @@ class Table {
       this.status = status;
     }
 
+    // 桌级折扣（百分比），例如 10 表示 10%
+    if (Object.prototype.hasOwnProperty.call(updatedTableData, 'discountRate') || Object.prototype.hasOwnProperty.call(updatedTableData, 'discount')) {
+      const nextRate = Object.prototype.hasOwnProperty.call(updatedTableData, 'discountRate')
+        ? updatedTableData.discountRate
+        : updatedTableData.discount;
+      this.discountRate = this.normalizeDiscountRate(nextRate);
+    }
+
+    // 桌级固定减免（金额），在百分比折扣之后再从应付中扣除
+    if (
+      Object.prototype.hasOwnProperty.call(updatedTableData, 'discountFixed') ||
+      Object.prototype.hasOwnProperty.call(updatedTableData, 'fixedDiscount') ||
+      Object.prototype.hasOwnProperty.call(updatedTableData, 'discountAmountFixed')
+    ) {
+      const nextFixed = Object.prototype.hasOwnProperty.call(updatedTableData, 'discountFixed')
+        ? updatedTableData.discountFixed
+        : Object.prototype.hasOwnProperty.call(updatedTableData, 'fixedDiscount')
+          ? updatedTableData.fixedDiscount
+          : updatedTableData.discountAmountFixed;
+      this.discountFixed = this.normalizeDiscountFixed(nextFixed);
+    }
+
     return this
   }
 
@@ -115,12 +139,28 @@ class Table {
     this.msg_call = false
     this.msg_pay = false
     if(this.nif_note) this.nif_note = {nif:undefined, note:undefined}
+    this.discountRate = 0
+    this.discountFixed = 0
     this.lastOrderTime = 0
     this.users = []
 
     this.password = null
     this.passwordTime = null
     this.firstOrderUsed = false
+  }
+
+  normalizeDiscountRate(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return 0;
+    if (n < 0) return 0;
+    if (n > 100) return 100;
+    return Number(n.toFixed(2));
+  }
+
+  normalizeDiscountFixed(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return Number(n.toFixed(2));
   }
 
   checkToday(time) {

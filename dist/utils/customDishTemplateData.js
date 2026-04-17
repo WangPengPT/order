@@ -559,7 +559,7 @@ const xiaoxiongHotpotDescription = [
     }
 ]
 
-const xiaoxiongHotpot = new CustomDishTemplate(7, xiaoxiongHotpotTypes, "Xiaoxiong Hotpot", 9.90, 9.90, "Xiaoxiong Hotpot", 0, 0, xiaoxiongHotpotDescription,{
+const xiaoxiongHotpot = new CustomDishTemplate(ids.hotpot, xiaoxiongHotpotTypes, "Xiaoxiong Hotpot", 9.90, 9.90, "Xiaoxiong Hotpot", 0, 0, xiaoxiongHotpotDescription,{
     limit:{
         small:6,
         mediun:9,

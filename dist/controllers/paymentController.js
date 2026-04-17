@@ -202,15 +202,22 @@ function buildBillSnapshot(tableId) {
   return {
     tableId,
     tableStatus: tableResult.data.status,
+    discountRate: Number(tableResult.data.discountRate || 0),
+    discountFixed: Number(tableResult.data.discountFixed || 0),
     peopleType: tableResult.data.peopleType,
     orderItems,
     price: priceResult
   };
 }
 
-function parseCheckoutAmount({ amount, tableId }) {
+function parseCheckoutAmount({ amount, tableId }, billSnapshot) {
   if (amount !== undefined && amount !== null && amount !== '') {
     return amount;
+  }
+
+  const billAmount = Number(billSnapshot?.price?.totalAmount);
+  if (Number.isFinite(billAmount) && billAmount > 0) {
+    return billAmount;
   }
 
   if (!tableId) {
@@ -222,12 +229,8 @@ function parseCheckoutAmount({ amount, tableId }) {
     throw new Error('TABLE_NOT_FOUND');
   }
 
-  const orders = Array.isArray(tableResult.data.order) ? tableResult.data.order : [];
-  const total = orders.reduce((sum, item) => {
-    const price = Number(item.price) || 0;
-    const quantity = Number(item.quantity) || 0;
-    return sum + price * quantity;
-  }, 0);
+  const tablePrice = appState.getTableTotalAmount(tableId);
+  const total = Number(tablePrice?.totalAmount || 0);
 
   if (total <= 0) {
     throw new Error('INVALID_AMOUNT');
@@ -357,8 +360,8 @@ async function createCheckout(req, res) {
       });
     }
 
-    const amount = parseCheckoutAmount(req.body || {});
     const bill = buildBillSnapshot(tableId);
+    const amount = parseCheckoutAmount(req.body || {}, bill);
     const configuredPaymentData = getCheckoutMethodConfig(method);
     const requestPaymentData =
       typeof req.body?.paymentData === 'object' && req.body.paymentData ? { ...req.body.paymentData } : {};
@@ -419,6 +422,13 @@ async function createCheckout(req, res) {
       tableId,
       orderId: result.request.orderId,
       amount: result.request.amount,
+      subTotalAmount: Number(bill?.price?.subTotalAmount || result.request.amount || 0),
+      discountRate: Number(bill?.price?.discountRate || 0),
+      discountFixed: Number(bill?.price?.discountFixed || 0),
+      percentDiscountAmount: Number(bill?.price?.percentDiscountAmount || 0),
+      fixedDiscountAmount: Number(bill?.price?.fixedDiscountAmount || 0),
+      discountAmount: Number(bill?.price?.discountAmount || 0),
+      savedAmount: Number(bill?.price?.savedAmount || 0),
       mobileNumber: mobileForRecord,
       nif: nifForRecord,
       customerName: customerNameForRecord,
@@ -452,6 +462,12 @@ async function createCheckout(req, res) {
       requestId,
       tableId,
       amount: paymentRecord.amount,
+      subTotalAmount: paymentRecord.subTotalAmount,
+      discountRate: paymentRecord.discountRate,
+      discountFixed: paymentRecord.discountFixed,
+      percentDiscountAmount: paymentRecord.percentDiscountAmount,
+      fixedDiscountAmount: paymentRecord.fixedDiscountAmount,
+      discountAmount: paymentRecord.discountAmount,
       orderId: paymentRecord.orderId,
       createdAt: now,
       snapshot: bill
@@ -892,6 +908,13 @@ function paymentToView(item) {
     tableId: item.tableId,
     orderId: item.orderId,
     amount: Number(item.amount || 0),
+    subTotalAmount: Number(item.subTotalAmount || item.amount || 0),
+    discountRate: Number(item.discountRate || 0),
+    discountFixed: Number(item.discountFixed || 0),
+    percentDiscountAmount: Number(item.percentDiscountAmount || 0),
+    fixedDiscountAmount: Number(item.fixedDiscountAmount || 0),
+    discountAmount: Number(item.discountAmount || 0),
+    savedAmount: Number(item.savedAmount || item.discountAmount || 0),
     mobileNumber: item.mobileNumber || null,
     nif: item.nif || null,
     customerName: item.customerName || null,

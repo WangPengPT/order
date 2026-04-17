@@ -7,7 +7,27 @@ const {TakeawayInfo, DeliveryInfo, ReserverInfo, QROrderInfo} = require('./model
 const {PrintInfo} = require('./model/printInfo.js')
 const {Settings} = require('./model/settings.js')
 const {PermissionsControl} = require('./model/permissionsControl.js')
+const { ids: customDishIds, values: customDishTemplates } = require('./utils/customDishTemplateData.js')
 const {logger} = require("./utils/logger");
+
+const RAMEN_FANDAYS_TEMPLATE = (customDishTemplates || []).find((it) => Number(it?.id) === Number(customDishIds?.xiaoxiong_ramen));
+const RAMEN_FANDAYS_PRICE = Number(RAMEN_FANDAYS_TEMPLATE?.options?.fandaysPrice || NaN);
+
+function isRamenDishItem(item) {
+    if (!item) return false;
+    if (Number(item.dishid) === Number(customDishIds?.xiaoxiong_ramen)) return true;
+    const nameText = [
+        item.name,
+        item.name_en,
+        item.name_pt,
+        item.name_cn,
+        item.subname,
+        item.subname_en,
+        item.subname_pt,
+        item.subname_cn
+    ].map((v) => String(v || '').toLowerCase()).join(' ');
+    return nameText.includes('ramen') || nameText.includes('拉面');
+}
 
 class AppState {
     constructor() {
@@ -96,14 +116,49 @@ class AppState {
         const adultPrice = peoplePrice.data.adult
         const childrenPrice = peoplePrice.data.child
         const tablePeoplesAmount = parseFloat(table.getTablePeopleTotalAmount(adultPrice, childrenPrice))
+        const subTotal = tableOrdersAmount + tablePeoplesAmount
+        const discountRateRaw = Number(table.discountRate || 0)
+        const discountRate = Number.isFinite(discountRateRaw)
+          ? Math.min(100, Math.max(0, discountRateRaw))
+          : 0
+        // 业务规则：Ramen 在 Fan Days 价时不再叠加桌级折扣
+        const nonDiscountableAmount = (Array.isArray(table.order) ? table.order : []).reduce((sum, item) => {
+            if (!this.settings?.useFandays) return sum;
+            if (!isRamenDishItem(item)) return sum;
+            const unitPrice = Number(item?.price || 0);
+            const qty = Number(item?.quantity || 0);
+            if (!Number.isFinite(unitPrice) || !Number.isFinite(qty) || qty <= 0) return sum;
+            if (!Number.isFinite(RAMEN_FANDAYS_PRICE)) return sum;
+            const isUsingFandaysPrice = Math.abs(unitPrice - RAMEN_FANDAYS_PRICE) < 0.0001;
+            if (!isUsingFandaysPrice) return sum;
+            return sum + unitPrice * qty;
+        }, 0);
+        const discountableAmount = Math.max(0, subTotal - nonDiscountableAmount)
+        const percentDiscountAmount = discountableAmount * (discountRate / 100)
+        const afterPercentAmount = subTotal - percentDiscountAmount
+        const fixedRaw = Number(table.discountFixed || 0)
+        const fixedConfigured = Number.isFinite(fixedRaw) && fixedRaw > 0 ? Number(fixedRaw.toFixed(2)) : 0
+        const fixedDiscountAmount = Math.min(fixedConfigured, Math.max(0, afterPercentAmount))
+        const payableAmount = Math.max(0, afterPercentAmount - fixedDiscountAmount)
+        const totalSavedAmount = percentDiscountAmount + fixedDiscountAmount
 
         const adultQty = table.peopleType.adults
         const childrenQty = table.peopleType.children
 
         return {
-            totalAmount: (tableOrdersAmount + tablePeoplesAmount).toFixed(2),
+            totalAmount: payableAmount.toFixed(2),
+            subTotalAmount: subTotal.toFixed(2),
+            discountRate: Number(discountRate.toFixed(2)),
+            discountFixed: fixedConfigured,
+            percentDiscountAmount: percentDiscountAmount.toFixed(2),
+            fixedDiscountAmount: fixedDiscountAmount.toFixed(2),
+            discountAmount: totalSavedAmount.toFixed(2),
+            savedAmount: totalSavedAmount.toFixed(2),
+            nonDiscountableAmount: nonDiscountableAmount.toFixed(2),
             adultPrice: {quantity: adultQty, price: adultPrice},
-            childrenPrice: {quantity: childrenQty,price: childrenPrice}
+            childrenPrice: {quantity: childrenQty,price: childrenPrice},
+            ordersAmount: tableOrdersAmount.toFixed(2),
+            peopleAmount: tablePeoplesAmount.toFixed(2)
         }
     }
 

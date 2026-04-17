@@ -64,12 +64,19 @@ class CustomDishService {
         try {
             return await DB.withTransaction(async (session) => {
                 if (!template) throw new Error("Empty input")
-                const maxId = await this.customDishRepository.templatesLength(session) + 1
+                let id = template.id
+                if(await this.customDishRepository.get(id)){
+                    id = await this.customDishRepository.templatesLength(session) + 1
+                    if(await this.customDishRepository.get(id)){
+                        throw new Error("Template id exists")
+                    }
+                }
+
                 const templateInstance = template instanceof CustomDishTemplate
                     ? template
                     : CustomDishTemplate.fromJSON(template)
-                templateInstance.id = maxId
-                const id = await this.customDishRepository.saveTemplate(templateInstance, session)
+                templateInstance.id = id
+                id = await this.customDishRepository.saveTemplate(templateInstance, session)
                 const newTemplate = await this.customDishRepository.get(id, session)
                 if (newTemplate.id !== templateInstance.id) throw new Error("Faild create template")
                 return {

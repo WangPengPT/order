@@ -67,6 +67,8 @@ class TableManager {
       msg_pay: table.msg_pay,
       msg_call: table.msg_call,
       nif_note: table.nif_note,
+      discountRate: table.discountRate || 0,
+      discountFixed: table.discountFixed || 0,
       lastOrderTime: table.lastOrderTime,
       users: table.users,
       password: table.password
