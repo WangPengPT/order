@@ -24,8 +24,19 @@ class DeliverySocket {
         }
     }
 
+    get_order_list(socket, value){
+        console.log("value",value)
+        const year = value?.year
+        const month = value?.month
+        let count = value?.count
+        if(year && month){
+            count = undefined
+        }
+        centerSocket.get_center_datas(socket, "shopify_orders", "order_list", count, year, month)
+    }
+
     async registerHandlers(socket){
-        socket.on("get_shopify_orders", () => { centerSocket.get_center_datas(socket, "shopify_orders", "order_list") })
+        socket.on("get_shopify_orders", (value) => { this.get_order_list(socket, value) })
 
     }
 

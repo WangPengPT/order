@@ -9,6 +9,7 @@ const ids = {
     bibimbap: 4,
     xiaoxiong_ramen: 5,
     xiaoxiong_menu_lunch: 6,
+    hotpot: 7,
 }
 
 const mysteryBoxTypes = [
@@ -77,7 +78,12 @@ const mysteryBoxDescriptions = [
     }
 ]
 
-const mysteryBox = new CustomDishTemplate(ids.sushi_aleatoria, mysteryBoxTypes, "Sushi Aleatória®", 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, { quantity: true, quantitySetp: 5, maxQuantity: 50, extraInfo: "De que é que gosta? ®" })
+const mysteryBox = new CustomDishTemplate(ids.sushi_aleatoria, mysteryBoxTypes, "Sushi Aleatória®", 0, "Sushi Aleatória®", 0, 0, mysteryBoxDescriptions, {
+    quantity: true,
+    quantitySetp: 5,
+    maxQuantity: 50,
+    extraInfo: "De que é que gosta? ®"
+})
 
 const pokebowlTypes = [
     new CustomDishType(1, "base", "底部", "Base", "Base", [
@@ -454,7 +460,115 @@ const xiaoxiongLunch = new CustomDishTemplate(ids.xiaoxiong_menu_lunch, xiaoxion
     menuLunchDays: [1,2,3,4,5], //0-星期日，1-星期一，...，5-星期五，6-星期六
 })
 
-const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch]
+const xiaoxiongHotpotTypes = [
+    new CustomDishType(1, "Menu", "🍱套餐", "🍱Menu", "🍱Menu", [
+        new CustomDish(3000, "Small", "小份", "Small", "Pequeno"),
+        new CustomDish(3001, "Medium", "中份", "Medium", "Medio",3),
+        new CustomDish(3002, "Large", "大份", "Large", "Grande",6),
+        new CustomDish(3003, "Unlimited", "无限量", "Unlimited", "Ilimitado",9)
+    ], 1, 1),
+
+    new CustomDishType(2, "Broth", "🍲汤底", "🍲Broth", "🍲Caldo", [
+        new CustomDish(1437, "Spicy Soup", "红汤", "Spicy Soup", "Panela Picante"),
+        new CustomDish(1438, "Tomato Soup", "番茄", "Tomato Soup", "Panela Tomate"),
+        new CustomDish(1439, "Pork Bone Soup", "筒骨", "Pork Bone Soup", "Panela Osso de porco")
+    ]),
+
+    new CustomDishType(3, "meat", "🥩肉类", "🥩Meat", "🥩Carne", [
+        new CustomDish(312, "Duck Blood", "鸭血", "Duck Blood", "Sangue de Pato"),
+        new CustomDish(313, "Sliced Lamb", "羊肉卷", "Sliced Lamb", "Fatias de Cordeiro"),
+        new CustomDish(314, "Beef Tongue", "牛舌", "Beef Tongue", "Lingua de Novilho"),
+        new CustomDish(316, "Sliced Beef", "肥牛卷", "Sliced Beef", "Fatias de Novilho"),
+        new CustomDish(318, "Handmade Beef Balls", "手工牛肉丸", "Handmade Beef Balls", "Almodegas de Novilho"),
+        new CustomDish(319, "Pork Belly", "五花肉", "Pork Belly", "Fatias de entremeada"),
+        new CustomDish(320, "Luncheon Meat", "午餐肉", "Luncheon Meat", "Carne de Fiambre"),
+        new CustomDish(321, "Shrimp Paste", "虾滑", "Shrimp Paste", "Almodegas de Gambas"),
+        new CustomDish(322, "Crab Sticks", "蟹肉棒", "Crab Sticks", "Deliciais do Mar"),
+        new CustomDish(323, "Assorted Meatballs", "丸子拼盘", "Assorted Meatballs", "Surtido de Almodegas"),
+        new CustomDish(324, "Fish Tofu", "鱼豆腐", "Fish Tofu", "Tofu de Pescado")
+    ]),
+
+    new CustomDishType(4, "vegetables", "🥬蔬菜", "🥬Vegetables", "🥬Legumes", [
+        new CustomDish(325, "Coriander", "香菜", "Coriander", "Coentro"),
+        new CustomDish(326, "Corn", "玉米", "Corn", "Milho"),
+        new CustomDish(327, "Chinese Cabbage", "大白菜", "Chinese Cabbage", "Couve Chinesa"),
+        new CustomDish(328, "Lettuce", "生菜", "Lettuce", "Alface"),
+        new CustomDish(329, "Dried Tribute Vegetable", "贡菜", "Dried Tribute Vegetable", "Alga Gong Cai"),
+        new CustomDish(330, "Soybean Sprouts", "黄豆芽", "Soybean Sprouts", "Rebentos Soja"),
+        new CustomDish(331, "White Radish", "白萝卜", "White Radish", "Nabo"),
+        new CustomDish(332, "Kelp Knot", "海带结", "Kelp Knot", "Alga con No"),
+        new CustomDish(333, "Winter Melon", "冬瓜", "Winter Melon", "Verdura Dong Gua"),
+        new CustomDish(334, "Lotus Root", "藕片", "Lotus Root", "Rais de Lotus"),
+        new CustomDish(335, "Potato Slices", "土豆片", "Potato Slices", "Batata"),
+        new CustomDish(336, "Wood Ear Mushroom", "木耳", "Wood Ear Mushroom", "Orelhas de Judas"),
+        new CustomDish(337, "Spinach", "菠菜", "Spinach", "Espinafre"),
+        new CustomDish(338, "Crown Daisy", "茼蒿", "Crown Daisy", "Tong Hao"),
+        new CustomDish(339, "Tofu Puffs", "豆腐泡", "Tofu Puffs", "Tofu Frito"),
+        new CustomDish(341, "Tofu Skin", "豆腐皮", "Tofu Skin", "Pedaço de Tofu"),
+        new CustomDish(342, "Fried Dough Sticks", "老油条", "Fried Dough Sticks", "Fartura Chinesa"),
+        new CustomDish(343, "Quail Eggs", "鹌鹑蛋", "Quail Eggs", "Ovo Codorniz"),
+        new CustomDish(344, "White Beech Mushroom", "白玉菇", "White Beech Mushroom", "Cogumelo Branco"),
+        new CustomDish(345, "King Oyster Mushroom", "鸡腿菇", "King Oyster Mushroom", "Cogumelo de Boletus"),
+        new CustomDish(346, "Enoki Mushroom", "金针菇", "Enoki Mushroom", "Cogumelo de Enoki"),
+        new CustomDish(347, "Dried Tofu Skin", "腐竹", "Dried Tofu Skin", "Tofu Seco")
+    ]),
+
+    new CustomDishType(5, "staple", "🍜主食", "🍜Staple", "🍜Principais", [
+        new CustomDish(348, "Sweet Potato Vermicelli", "红薯粉丝", "Sweet Potato Vermicelli", "Macarroes de Batata Doce"),
+        new CustomDish(349, "Rice Cakes", "韩国年糕", "Rice Cakes", "Pasta de arroz"),
+        new CustomDish(351, "Dumplings", "饺子", "Dumplings", "Gyoza"),
+        new CustomDish(352, "Instant Noodles", "方便面", "Instant Noodles", "Ramen"),
+        new CustomDish(353, "Udon Noodles", "乌冬面", "Udon Noodles", "Massa de Udon")
+    ], 1, 5)
+]
+
+const xiaoxiongHotpotDescription = [
+    {
+        title_zh: "开启您的火锅之旅",
+        title_en: "Start Your Hotpot Experience",
+        title_pt: "Comece Sua Experiência de Hotpot",
+        descriptions: [{
+            description_pt: "1. Escolha o seu tipo de menu",
+            description_en: "1. Select your menu type",
+            description_zh: "1. 选择您的套餐类型",
+        },
+            {
+                description_pt: "2. Selecione a base da sua sopa",
+                description_en: "2. Select your soup base",
+                description_zh: "2. 选择您的汤底",
+            },
+            {
+                description_pt: "3. Escolha os seus ingredientes de hotpot",
+                description_en: "3. Choose your hotpot ingredients",
+                description_zh: "3. 选择火锅食材",
+            },
+            {
+                description_pt: "4. Adicione ingredientes extras conforme necessário",
+                description_en: "4. Add extra ingredients as needed",
+                description_zh: "4. 根据需求添加额外食材",
+            },
+            {
+                description_pt: "5. Adicionar ao Carrinho",
+                description_en: "5. Add to Cart",
+                description_zh: "5. 加入购物车",
+            }],
+        image: {
+            src: "/images/menu_hotpot.jpg",
+            enable: true
+        }
+    }
+]
+
+const xiaoxiongHotpot = new CustomDishTemplate(7, xiaoxiongHotpotTypes, "Xiaoxiong Hotpot", 9.90, 9.90, "Xiaoxiong Hotpot", 0, 0, xiaoxiongHotpotDescription,{
+    limit:{
+        small:6,
+        mediun:9,
+        large:12
+    },
+})
+
+
+const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch, xiaoxiongHotpot]
 
 module.exports = {
     ids,

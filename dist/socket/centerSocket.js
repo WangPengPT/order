@@ -27,6 +27,7 @@ let menuService
 let alertMessageSocket
 let reserveSocket
 let deliverySocket
+let socketService
 
 
 class CenterSocket {
@@ -48,11 +49,12 @@ class CenterSocket {
         update_data = true;
     }
 
-    static init(menuServiceInstance, alertMessageSocketInstance, reserveSocketInstance, deliverySocketInstance) {
-        menuService = menuServiceInstance
-        alertMessageSocket = alertMessageSocketInstance
-        reserveSocket = reserveSocketInstance
-        deliverySocket = deliverySocketInstance
+    static init(socketServiceInstance) {
+        socketService = socketServiceInstance
+        menuService = socketServiceInstance.menuService
+        alertMessageSocket = socketServiceInstance.alertMessageSocket
+        reserveSocket = socketServiceInstance.reserveSocket
+        deliverySocket = socketServiceInstance.deliverySocket
 
         if (!process.env.SAVE_ADDR) {
             server_addr = "http://localhost"
@@ -91,7 +93,11 @@ class CenterSocket {
                 {id:name, port: process.env.PORT || 8080, url: process.env.ADDR,},
                 (cb)=>{
                     if(cb.success){
+                        restaurantInfo = cb || {};
                         logger.info('Center Server get config successfully: '+cb.data);
+                        if (cb.orderPrefix) {
+                            logger.info('Order prefix from center: ' + cb.orderPrefix);
+                        }
                         if(cb.permissionsControl){
                             this.updatePermissionsControl(cb.permissionsControl)
                         }
@@ -117,6 +123,9 @@ class CenterSocket {
         // 中心服务器
         socket.on("set_server_"+name, (data) => {
             console.log('set_server_'+name,data);
+            if (data && typeof data === 'object') {
+                restaurantInfo = { ...restaurantInfo, ...data };
+            }
 
             if(data.permissionsControl){
                 this.updatePermissionsControl(data.permissionsControl)
@@ -139,7 +148,7 @@ class CenterSocket {
         socket.on("center_manual_update_"+name,  async () => {
             logger.info("Start center_manual_update");
 
-            const manualUpdate = new ManualUpdate(menuService)
+            const manualUpdate = new ManualUpdate(socketService)
             const data = await manualUpdate.run()
             logger.info("Finished manual update, data: "+JSON.stringify(data));
         })
@@ -251,7 +260,13 @@ class CenterSocket {
         return name;
     }
 
-    static get_center_datas(client_socket,emit_key,api_key) {
+    static getOrderPrefix() {
+        const raw = String(restaurantInfo?.orderPrefix || "").trim().toUpperCase();
+        if (!raw) return "";
+        return raw.replace(/[^A-Z0-9]/g, "").slice(0, 5);
+    }
+
+    static get_center_datas(client_socket,emit_key,api_key,count,year,month) {
 
         const send = (rawData) => {
             try {
@@ -263,7 +278,8 @@ class CenterSocket {
         }
 
         const restaurant = this.getRestaurant()
-        const api = "/api/" + api_key + "?restaurant=" + restaurant + "&count=20";
+        // const api = "/api/" + api_key + "?restaurant=" + restaurant + "&count=20";
+        const api = `/api/${api_key}?restaurant=${restaurant}&count=${count}&year=${year}&month=${month}`;
 
 
         let mod = http;

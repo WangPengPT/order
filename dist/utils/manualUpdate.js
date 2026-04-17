@@ -1,16 +1,19 @@
 const {appState} = require('../state.js');
 const {logger} = require("./logger");
+const templateData = require('../utils/customDishTemplateData.js')
 
 
 class ManualUpdate {
-    constructor(menuService) {
-        this.menuService = menuService
+    constructor(socketService) {
+        this.socketService = socketService
+        this.menuService = socketService.menuService
     }
 
     async run(){
         const result = {}
         result.copy_name_to_name_pt_times = await this.transform_name_to_name_pt()
         result.format_dish_tags_to_array_times = await this.format_tags_to_array()
+        result.add_new_custom_dish_template_hotpot = await this.addNewCustomDishTemplate()
         return result
     }
 
@@ -54,6 +57,12 @@ class ManualUpdate {
         await this.menuService.save()
         logger.info("执行了"+format_times+"次分类打印字段格式转换")
         return format_times
+    }
+
+    async addNewCustomDishTemplate(){
+        const xiaoxiongHotpot = templateData.values[5]
+        console.log(xiaoxiongHotpot.id, xiaoxiongHotpot.name)
+        // this.socketService.customDishService.addNew()
     }
 
 }

@@ -15,6 +15,7 @@ class PermissionsControl {
             4: {enabled: true, name: 'bibimbap'},
             5: {enabled: true, name: 'XIAOXIONG® RAMEN'},
             6: {enabled: true, name: 'Menu Almoço'},
+            7: {enabled: false, name: 'Xiaoxiong® Hotpot'}
         }
 
         this.recordProps(this)

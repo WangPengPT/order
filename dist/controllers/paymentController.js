@@ -141,7 +141,7 @@ function makeOrderIdPrefix() {
   try {
     // Keep prefix source aligned with center socket restaurant identity.
     const centerSocket = require('../socket/centerSocket.js');
-    rawName = String(centerSocket.getRestaurant?.() || rawName);
+    rawName = String(centerSocket.getOrderPrefix?.() || centerSocket.getRestaurant?.() || rawName);
   } catch (_) {
     rawName = 'SHOP';
   }
