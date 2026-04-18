@@ -71,6 +71,7 @@ class DictionaryService {
                     {id: "Sushi Aleatória®", zh: "随机盲盒寿司", en: "Random Sushi", pt: "Sushi Aleatória®"},
                     {id: "XIAOXIONG® RAMEN", zh: "XIAOXIONG® RAMEN", en: "XIAOXIONG® RAMEN", pt: "XIAOXIONG® RAMEN"},
                     {id: "Menu Almoço", zh: "中午套餐", en: "Lunch Menu", pt: "Menu Almoço"},
+                    {id: "Xiaoxiong Hotpot", zh: "一人一锅", en: "Individual Hotpot", pt: "Hotpot Individual"}
                 ]
                 for(const data of customDishDictionaryData) {
                     await this.dictionaryRepository.save(data.id, data,session)
