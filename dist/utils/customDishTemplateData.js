@@ -463,62 +463,62 @@ const xiaoxiongLunch = new CustomDishTemplate(ids.xiaoxiong_menu_lunch, xiaoxion
 const xiaoxiongHotpotTypes = [
     new CustomDishType(1, "Menu", "🍱套餐", "🍱Menu", "🍱Menu", [
         new CustomDish(3000, "Small", "小份", "Small", "Pequeno"),
-        new CustomDish(3001, "Medium", "中份", "Medium", "Medio",3),
-        new CustomDish(3002, "Large", "大份", "Large", "Grande",6),
-        new CustomDish(3003, "Unlimited", "无限量", "Unlimited", "Ilimitado",9)
+        new CustomDish(3001, "Medium", "中份", "Medium", "Medio", 3),
+        new CustomDish(3002, "Large", "大份", "Large", "Grande", 6),
+        new CustomDish(3003, "Unlimited", "无限量", "Unlimited", "Ilimitado", 9)
     ], 1, 1),
 
     new CustomDishType(2, "Broth", "🍲汤底", "🍲Broth", "🍲Caldo", [
-        new CustomDish(1437, "Spicy Soup", "红汤", "Spicy Soup", "Panela Picante"),
-        new CustomDish(1438, "Tomato Soup", "番茄", "Tomato Soup", "Panela Tomate"),
-        new CustomDish(1439, "Pork Bone Soup", "筒骨", "Pork Bone Soup", "Panela Osso de porco")
-    ]),
+        new CustomDish(1437, "Spicy Soup", "🌶️红汤", "🌶️Spicy Soup", "🌶️Panela Picante"),
+        new CustomDish(1438, "Tomato Soup", "🍅番茄", "🍅Tomato Soup", "🍅Panela Tomate"),
+        new CustomDish(1439, "Pork Bone Soup", "🦴筒骨", "🦴Pork Bone Soup", "🦴Panela Osso de porco")
+    ], 1, 1),
 
     new CustomDishType(3, "meat", "🥩肉类", "🥩Meat", "🥩Carne", [
-        new CustomDish(312, "Duck Blood", "鸭血", "Duck Blood", "Sangue de Pato"),
-        new CustomDish(313, "Sliced Lamb", "羊肉卷", "Sliced Lamb", "Fatias de Cordeiro"),
-        new CustomDish(314, "Beef Tongue", "牛舌", "Beef Tongue", "Lingua de Novilho"),
-        new CustomDish(316, "Sliced Beef", "肥牛卷", "Sliced Beef", "Fatias de Novilho"),
-        new CustomDish(318, "Handmade Beef Balls", "手工牛肉丸", "Handmade Beef Balls", "Almodegas de Novilho"),
-        new CustomDish(319, "Pork Belly", "五花肉", "Pork Belly", "Fatias de entremeada"),
-        new CustomDish(320, "Luncheon Meat", "午餐肉", "Luncheon Meat", "Carne de Fiambre"),
-        new CustomDish(321, "Shrimp Paste", "虾滑", "Shrimp Paste", "Almodegas de Gambas"),
-        new CustomDish(322, "Crab Sticks", "蟹肉棒", "Crab Sticks", "Deliciais do Mar"),
-        new CustomDish(323, "Assorted Meatballs", "丸子拼盘", "Assorted Meatballs", "Surtido de Almodegas"),
-        new CustomDish(324, "Fish Tofu", "鱼豆腐", "Fish Tofu", "Tofu de Pescado")
+        new CustomDish(312, "Duck Blood", "🩸鸭血", "🩸Duck Blood", "🩸Sangue de Pato"),
+        new CustomDish(313, "Sliced Lamb", "🐏羊肉卷", "🐏Sliced Lamb", "🐏Fatias de Cordeiro"),
+        new CustomDish(314, "Beef Tongue", "👅牛舌", "👅Beef Tongue", "👅Lingua de Novilho"),
+        new CustomDish(316, "Sliced Beef", "🐂肥牛卷", "🐂Sliced Beef", "🐂Fatias de Novilho"),
+        new CustomDish(318, "Handmade Beef Balls", "☄️手工牛肉丸", "☄️Handmade Beef Balls", "☄️Almodegas de Novilho"),
+        new CustomDish(319, "Pork Belly", "🥓五花肉", "🥓Pork Belly", "🥓Fatias de entremeada"),
+        new CustomDish(320, "Luncheon Meat", "🥫午餐肉", "🥫Luncheon Meat", "🥫Carne de Fiambre"),
+        new CustomDish(321, "Shrimp Paste", "🦐虾滑", "🦐Shrimp Paste", "🦐Almodegas de Gambas"),
+        new CustomDish(322, "Crab Sticks", "🦀蟹肉棒", "🦀Crab Sticks", "🦀Deliciais do Mar"),
+        new CustomDish(323, "Assorted Meatballs", "🍡丸子拼盘", "🍡Assorted Meatballs", "🍡Surtido de Almodegas"),
+        new CustomDish(324, "Fish Tofu", "🐟鱼豆腐", "🐟Fish Tofu", "🐟Tofu de Pescado")
     ]),
 
     new CustomDishType(4, "vegetables", "🥬蔬菜", "🥬Vegetables", "🥬Legumes", [
-        new CustomDish(325, "Coriander", "香菜", "Coriander", "Coentro"),
-        new CustomDish(326, "Corn", "玉米", "Corn", "Milho"),
-        new CustomDish(327, "Chinese Cabbage", "大白菜", "Chinese Cabbage", "Couve Chinesa"),
-        new CustomDish(328, "Lettuce", "生菜", "Lettuce", "Alface"),
-        new CustomDish(329, "Dried Tribute Vegetable", "贡菜", "Dried Tribute Vegetable", "Alga Gong Cai"),
-        new CustomDish(330, "Soybean Sprouts", "黄豆芽", "Soybean Sprouts", "Rebentos Soja"),
-        new CustomDish(331, "White Radish", "白萝卜", "White Radish", "Nabo"),
-        new CustomDish(332, "Kelp Knot", "海带结", "Kelp Knot", "Alga con No"),
-        new CustomDish(333, "Winter Melon", "冬瓜", "Winter Melon", "Verdura Dong Gua"),
-        new CustomDish(334, "Lotus Root", "藕片", "Lotus Root", "Rais de Lotus"),
-        new CustomDish(335, "Potato Slices", "土豆片", "Potato Slices", "Batata"),
-        new CustomDish(336, "Wood Ear Mushroom", "木耳", "Wood Ear Mushroom", "Orelhas de Judas"),
-        new CustomDish(337, "Spinach", "菠菜", "Spinach", "Espinafre"),
-        new CustomDish(338, "Crown Daisy", "茼蒿", "Crown Daisy", "Tong Hao"),
-        new CustomDish(339, "Tofu Puffs", "豆腐泡", "Tofu Puffs", "Tofu Frito"),
-        new CustomDish(341, "Tofu Skin", "豆腐皮", "Tofu Skin", "Pedaço de Tofu"),
-        new CustomDish(342, "Fried Dough Sticks", "老油条", "Fried Dough Sticks", "Fartura Chinesa"),
-        new CustomDish(343, "Quail Eggs", "鹌鹑蛋", "Quail Eggs", "Ovo Codorniz"),
-        new CustomDish(344, "White Beech Mushroom", "白玉菇", "White Beech Mushroom", "Cogumelo Branco"),
-        new CustomDish(345, "King Oyster Mushroom", "鸡腿菇", "King Oyster Mushroom", "Cogumelo de Boletus"),
-        new CustomDish(346, "Enoki Mushroom", "金针菇", "Enoki Mushroom", "Cogumelo de Enoki"),
-        new CustomDish(347, "Dried Tofu Skin", "腐竹", "Dried Tofu Skin", "Tofu Seco")
+        new CustomDish(325, "Coriander", "🌿香菜", "🌿Coriander", "🌿Coentro"),
+        new CustomDish(326, "Corn", "🌽玉米", "🌽Corn", "🌽Milho"),
+        new CustomDish(327, "Chinese Cabbage", "🥬大白菜", "🥬Chinese Cabbage", "🥬Couve Chinesa"),
+        new CustomDish(328, "Lettuce", "🥗生菜", "🥗Lettuce", "🥗Alface"),
+        new CustomDish(329, "Dried Tribute Vegetable", "🥗贡菜", "🥗Dried Tribute Vegetable", "🥗Alga Gong Cai"),
+        new CustomDish(330, "Soybean Sprouts", "🌱黄豆芽", "🌱Soybean Sprouts", "🌱Rebentos Soja"),
+        new CustomDish(331, "White Radish", "🥕白萝卜", "🥕White Radish", "🥕Nabo"),
+        new CustomDish(332, "Kelp Knot", "🎀海带结", "🎀Kelp Knot", "🎀Alga con No"),
+        new CustomDish(333, "Winter Melon", "🍈冬瓜", "🍈Winter Melon", "🍈Verdura Dong Gua"),
+        new CustomDish(334, "Lotus Root", "🥨藕片", "🥨Lotus Root", "🥨Rais de Lotus"),
+        new CustomDish(335, "Potato Slices", "🥔土豆片", "🥔Potato Slices", "🥔Batata"),
+        new CustomDish(336, "Wood Ear Mushroom", "👂木耳", "👂Wood Ear Mushroom", "👂Orelhas de Judas"),
+        new CustomDish(337, "Spinach", "🍃菠菜", "🍃Spinach", "🍃Espinafre"),
+        new CustomDish(338, "Crown Daisy", "🌼茼蒿", "🌼Crown Daisy", "🌼Tong Hao"),
+        new CustomDish(339, "Tofu Puffs", "🧊豆腐泡", "🧊Tofu Puffs", "🧊Tofu Frito"),
+        new CustomDish(341, "Tofu Skin", "📜豆腐皮", "📜Tofu Skin", "📜Pedaço de Tofu"),
+        new CustomDish(342, "Fried Dough Sticks", "🥖老油条", "🥖Fried Dough Sticks", "🥖Fartura Chinesa"),
+        new CustomDish(343, "Quail Eggs", "🥚鹌鹑蛋", "🥚Quail Eggs", "🥚Ovo Codorniz"),
+        new CustomDish(344, "White Beech Mushroom", "🍄‍🟫白玉菇", "🍄‍🟫White Beech Mushroom", "🍄‍🟫Cogumelo Branco"),
+        new CustomDish(345, "King Oyster Mushroom", "🍄鸡腿菇", "🍄King Oyster Mushroom", "🍄Cogumelo de Boletus"),
+        new CustomDish(346, "Enoki Mushroom", "🧶金针菇", "🧶Enoki Mushroom", "🧶Cogumelo de Enoki"),
+        new CustomDish(347, "Dried Tofu Skin", "🥢腐竹", "🥢Dried Tofu Skin", "🥢Tofu Seco")
     ]),
 
     new CustomDishType(5, "staple", "🍜主食", "🍜Staple", "🍜Principais", [
-        new CustomDish(348, "Sweet Potato Vermicelli", "红薯粉丝", "Sweet Potato Vermicelli", "Macarroes de Batata Doce"),
-        new CustomDish(349, "Rice Cakes", "韩国年糕", "Rice Cakes", "Pasta de arroz"),
-        new CustomDish(351, "Dumplings", "饺子", "Dumplings", "Gyoza"),
-        new CustomDish(352, "Instant Noodles", "方便面", "Instant Noodles", "Ramen"),
-        new CustomDish(353, "Udon Noodles", "乌冬面", "Udon Noodles", "Massa de Udon")
+        new CustomDish(348, "Sweet Potato Vermicelli", "🍠红薯粉丝", "🍠Sweet Potato Vermicelli", "🍠Macarroes de Batata Doce"),
+        new CustomDish(349, "Rice Cakes", "🍡韩国年糕", "🍡Rice Cakes", "🍡Pasta de arroz"),
+        new CustomDish(351, "Dumplings", "🥟饺子", "🥟Dumplings", "🥟Gyoza"),
+        new CustomDish(352, "Instant Noodles", "🏮方便面", "🏮Instant Noodles", "🏮Ramen"),
+        new CustomDish(353, "Udon Noodles", "🍜乌冬面", "🍜Udon Noodles", "🍜Massa de Udon")
     ], 1, 5)
 ]
 
@@ -553,7 +553,7 @@ const xiaoxiongHotpotDescription = [
                 description_zh: "5. 加入购物车",
             }],
         image: {
-            src: "/images/menu_hotpot.jpg",
+            src: "/images/menu_hotpot.png",
             enable: true
         }
     }
@@ -565,6 +565,317 @@ const xiaoxiongHotpot = new CustomDishTemplate(ids.hotpot, xiaoxiongHotpotTypes,
         mediun:9,
         large:12
     },
+    option_image_description: {
+        // --- 🥩 Meat (肉类) ---
+        312: {
+            image: "/hotpot/312.png",
+            description: {
+                zh: "口感滑嫩，富含营养，火锅经典食材。",
+                en: "Smooth and tender texture, a nutritious hotpot classic.",
+                pt: "Textura macia e suave, um clássico nutritivo do hotpot."
+            }
+        },
+        313: {
+            image: "/hotpot/313.png",
+            description: {
+                zh: "肉质细腻，肥而不腻，带有独特的羊肉香气。",
+                en: "Delicate and flavorful sliced lamb with a unique aroma.",
+                pt: "Fatias de cordeiro delicadas e saborosas com aroma único."
+            }
+        },
+        314: {
+            image: "/hotpot/314.png",
+            description: {
+                zh: "口感脆爽有弹性，超薄切片，入锅即熟。",
+                en: "Crispy and bouncy texture, thinly sliced for quick cooking.",
+                pt: "Textura crocante e elástica, fatiada finamente para cozinhar rápido."
+            }
+        },
+        316: {
+            image: "/hotpot/316.png",
+            description: {
+                zh: "精选肥牛，油脂分布均匀，入口化渣。",
+                en: "Premium sliced beef with balanced marbling, melts in your mouth.",
+                pt: "Novilho premium com marmoreio equilibrado, derrete na boca."
+            }
+        },
+        318: {
+            image: "/hotpot/318.png",
+            description: {
+                zh: "纯手工打制，肉质紧实，咬开后肉汁四溢。",
+                en: "Handmade beef meatballs, firm and bursting with juicy flavor.",
+                pt: "Almôndegas de novilho artesanais, firmes e suculentas."
+            }
+        },
+        319: {
+            image: "/hotpot/319.png",
+            description: {
+                zh: "肥瘦相间的五花肉，软糯可口。",
+                en: "Layered pork belly, tender and flavorful.",
+                pt: "Entremeada de porco em camadas, tenra e saborosa."
+            }
+        },
+        320: {
+            image: "/hotpot/320.png",
+            description: {
+                zh: "经典的午餐肉切片，咸香浓郁。",
+                en: "Classic luncheon meat slices, savory and rich.",
+                pt: "Fatias clássicas de fiambre, salgadas e ricas."
+            }
+        },
+        321: {
+            image: "/hotpot/321.png",
+            description: {
+                zh: "颗颗可见的高品质虾仁，Q弹鲜美。",
+                en: "Fresh shrimp paste, bouncy and full of seafood flavor.",
+                pt: "Pasta de gambas frescas, elástica e cheia de sabor a mar."
+            }
+        },
+        322: {
+            image: "/hotpot/322.png",
+            description: {
+                zh: "丝丝入味的蟹肉棒，火锅必备点缀。",
+                en: "Tasty crab sticks, a must-have for any hotpot meal.",
+                pt: "Deliciosas delícias do mar, indispensáveis no hotpot."
+            }
+        },
+        323: {
+            image: "/hotpot/323.png",
+            description: {
+                zh: "多种丸子组合，一次体验多重惊喜口感。",
+                en: "A mix of various meatballs for multiple taste surprises.",
+                pt: "Mistura de várias almôndegas para múltiplas surpresas de sabor."
+            }
+        },
+        324: {
+            image: "/hotpot/324.png",
+            description: {
+                zh: "带有鱼肉清香，外皮金黄，内里嫩滑。",
+                en: "Fish tofu with a golden skin and a tender, silky core.",
+                pt: "Tofu de peixe com pele dourada e interior tenro e sedoso."
+            }
+        },
+
+        // --- 🥬 Vegetables (蔬菜) ---
+        325: {
+            image: "/hotpot/325.png",
+            description: {
+                zh: "清香解腻，增添独特汤底风味。",
+                en: "Aromatic and refreshing, adds a unique flavor to the soup.",
+                pt: "Aromático e refrescante, adiciona um sabor único à sopa."
+            }
+        },
+        326: {
+            image: "/hotpot/326.png",
+            description: {
+                zh: "清甜可口，久煮后汤底更加鲜甜。",
+                en: "Sweet and crunchy, makes the soup sweeter after simmering.",
+                pt: "Doce e crocante, torna a sopa mais adocicada após ferver."
+            }
+        },
+        327: {
+            image: "/hotpot/327.png",
+            description: {
+                zh: "吸满汤汁，口感软烂清甜。",
+                en: "Absorbs the soup perfectly, soft and naturally sweet.",
+                pt: "Absorve perfeitamente a sopa, macia e naturalmente doce."
+            }
+        },
+        328: {
+            image: "/hotpot/328.png",
+            description: {
+                zh: "爽脆清口，稍烫即可食用。",
+                en: "Crispy and fresh, ready after a quick dip.",
+                pt: "Crocante e fresco, pronto após um mergulho rápido."
+            }
+        },
+        329: {
+            image: "/hotpot/329.png",
+            description: {
+                zh: "脆爽带劲，特色火锅蔬菜。",
+                en: "A specialty vegetable with a satisfyingly crunchy texture.",
+                pt: "Um legume especial com uma textura satisfatoriamente crocante."
+            }
+        },
+        330: {
+            image: "/hotpot/330.png",
+            description: {
+                zh: "营养丰富，口感脆嫩，清香可口。",
+                en: "Nutritious and tender soybean sprouts.",
+                pt: "Rebentos de soja nutritivos e tenros."
+            }
+        },
+        331: {
+            image: "/hotpot/331.png",
+            description: {
+                zh: "解腻神器，口感清爽。",
+                en: "Perfect for clearing the palate, refreshing and light.",
+                pt: "Perfeito para limpar o paladar, refrescante e leve."
+            }
+        },
+        332: {
+            image: "/hotpot/332.png",
+            description: {
+                zh: "富含碘质，口感韧脆，汤底良伴。",
+                en: "Rich in minerals, with a chewy and crispy texture.",
+                pt: "Rico em minerais, com uma textura mastigável e crocante."
+            }
+        },
+        333: {
+            image: "/hotpot/333.png",
+            description: {
+                zh: "清爽降火，吸味能力极强。",
+                en: "Refreshing and absorbs the flavors of the broth.",
+                pt: "Refrescante e absorve os sabores do caldo."
+            }
+        },
+        334: {
+            image: "/hotpot/334.png",
+            description: {
+                zh: "清甜脆爽，含有丰富的膳食纤维。",
+                en: "Sweet and crunchy, rich in dietary fiber.",
+                pt: "Doce e crocante, rico em fibra dietética."
+            }
+        },
+        335: {
+            image: "/hotpot/335.png",
+            description: {
+                zh: "软糯香滑，深受各年龄层喜爱。",
+                en: "Soft and starchy, a favorite for everyone.",
+                pt: "Macio e farináceo, o favorito de todos."
+            }
+        },
+        336: {
+            image: "/hotpot/336.png",
+            description: {
+                zh: "滑爽爽脆，营养价值高。",
+                en: "Smooth and crunchy mushroom with high nutritional value.",
+                pt: "Cogumelo suave e crocante com alto valor nutricional."
+            }
+        },
+        337: {
+            image: "/hotpot/337.png",
+            description: {
+                zh: "鲜嫩多汁，火锅经典绿叶菜。",
+                en: "Fresh and tender, a classic green leafy vegetable.",
+                pt: "Fresco e tenro, um legume verde clássico."
+            }
+        },
+        338: {
+            image: "/hotpot/338.png",
+            description: {
+                zh: "具有特殊的香气，口感清爽。",
+                en: "Distinct aromatic flavor with a refreshing bite.",
+                pt: "Sabor aromático distinto com um toque refrescante."
+            }
+        },
+        339: {
+            image: "/hotpot/339.png",
+            description: {
+                zh: "吸足汤汁，爆浆口感。",
+                en: "Absorbs the soup like a sponge, juicy and flavorful.",
+                pt: "Absorve a sopa como uma esponja, suculento e saboroso."
+            }
+        },
+        341: {
+            image: "/hotpot/341.png",
+            description: {
+                zh: "豆香浓郁，口感韧道。",
+                en: "Rich soybean aroma with a firm and chewy texture.",
+                pt: "Aroma rico de soja com uma textura firme e mastigável."
+            }
+        },
+        342: {
+            image: "/hotpot/342.png",
+            description: {
+                zh: "老火油炸，三秒即食，吸味神器。",
+                en: "Traditional fried dough, ready in 3 seconds, soup-absorber.",
+                pt: "Massa frita tradicional, pronta em 3 segundos, absorve a sopa."
+            }
+        },
+        343: {
+            image: "/hotpot/343.png",
+            description: {
+                zh: "小巧玲珑，营养均衡。",
+                en: "Miniature eggs, rich in protein and flavor.",
+                pt: "Ovos em miniatura, ricos em proteínas e sabor."
+            }
+        },
+        344: {
+            image: "/hotpot/344.png",
+            description: {
+                zh: "鲜美滑爽，色泽洁白。",
+                en: "Deliciously smooth beech mushrooms.",
+                pt: "Cogumelos brancos deliciosamente suaves."
+            }
+        },
+        345: {
+            image: "/hotpot/345.png",
+            description: {
+                zh: "口感似鲍鱼，鲜香脆嫩。",
+                en: "Abalone-like texture, savory and tender.",
+                pt: "Textura semelhante ao abalone, saborosa e tenra."
+            }
+        },
+        346: {
+            image: "/hotpot/346.png",
+            description: {
+                zh: "口感细滑脆嫩，汤锅必备。",
+                en: "Silky and crunchy, a staple for any soup pot.",
+                pt: "Sedoso e crocante, indispensável em qualquer caldo."
+            }
+        },
+        347: {
+            image: "/hotpot/347.png",
+            description: {
+                zh: "极富韧性，浓缩的豆浆精华。",
+                en: "High toughness, the essence of concentrated soy milk.",
+                pt: "Alta resistência, a essência do leite de soja concentrado."
+            }
+        },
+
+        // --- 🍜 Staple (主食) ---
+        348: {
+            image: "/hotpot/348.png",
+            description: {
+                zh: "Q弹十足，吸味极佳的粉条。",
+                en: "Super chewy and great at absorbing the soup base.",
+                pt: "Super elástico e ótimo para absorver a base da sopa."
+            }
+        },
+        349: {
+            image: "/hotpot/349.png",
+            description: {
+                zh: "软糯有嚼劲，韩式风味代表。",
+                en: "Soft and chewy rice cakes, a Korean-style favorite.",
+                pt: "Massa de arroz macia e mastigável, um favorito coreano."
+            }
+        },
+        351: {
+            image: "/hotpot/351.png",
+            description: {
+                zh: "皮薄馅大，满溢的家乡味道。",
+                en: "Thin skin with generous filling, a taste of home.",
+                pt: "Massa fina com recheio generoso, o sabor de casa."
+            }
+        },
+        352: {
+            image: "/hotpot/352.png",
+            description: {
+                zh: "简单快捷，火锅结尾的最佳主食。",
+                en: "Quick and easy, the perfect way to finish a hotpot.",
+                pt: "Rápido e fácil, a forma perfeita de terminar um hotpot."
+            }
+        },
+        353: {
+            image: "/hotpot/353.png",
+            description: {
+                zh: "口感顺滑饱满，吸附浓郁汤底。",
+                en: "Smooth and thick noodles that pair perfectly with broth.",
+                pt: "Massa lisa e grossa que combina perfeitamente com o caldo."
+            }
+        }
+    }
 })
 
 
