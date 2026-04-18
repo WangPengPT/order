@@ -471,7 +471,7 @@ const xiaoxiongHotpotTypes = [
     new CustomDishType(2, "Broth", "🍲汤底", "🍲Broth", "🍲Caldo", [
         new CustomDish(1437, "Spicy Soup", "🌶️红汤", "🌶️Spicy Soup", "🌶️Panela Picante"),
         new CustomDish(1438, "Tomato Soup", "🍅番茄", "🍅Tomato Soup", "🍅Panela Tomate"),
-        new CustomDish(1439, "Pork Bone Soup", "🦴筒骨", "🦴Pork Bone Soup", "🦴Panela Osso de porco")
+        new CustomDish(1439, "Pork Bone Soup", "🦴豚骨", "🦴Pork Bone Soup", "🦴Panela Osso de porco")
     ], 1, 1),
 
     new CustomDishType(3, "meat", "🥩肉类", "🥩Meat", "🥩Carne", [
