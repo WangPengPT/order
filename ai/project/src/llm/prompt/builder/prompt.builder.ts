@@ -4,8 +4,6 @@ import {LLMMessage} from "../../client/llm.interface";
 export function buildPrompt(input: PromptBuildInput, systemPrompt: string): BuiltPrompt {
     try {
 
-        const userMessage = input.dialogue.turnInfo.currentUserInput
-
         const messages: LLMMessage[] = [
             {
                 role: 'system',
@@ -28,7 +26,7 @@ export function buildPrompt(input: PromptBuildInput, systemPrompt: string): Buil
         }
 
         const tokenEstimate = estimateTokens(messages)
-
+        console.log("message: ", messages)
         return {
             messages,
             metadata: {

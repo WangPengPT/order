@@ -463,9 +463,9 @@ const xiaoxiongLunch = new CustomDishTemplate(ids.xiaoxiong_menu_lunch, xiaoxion
 const xiaoxiongHotpotTypes = [
     new CustomDishType(1, "Menu", "🍱套餐", "🍱Menu", "🍱Menu", [
         new CustomDish(3000, "Small", "小份", "Small", "Pequeno"),
-        new CustomDish(3001, "Medium", "中份", "Medium", "Medio", 3),
-        new CustomDish(3002, "Large", "大份", "Large", "Grande", 6),
-        new CustomDish(3003, "Unlimited", "无限量", "Unlimited", "Ilimitado", 9)
+        new CustomDish(3001, "Medium", "中份", "Medium", "Medio", 4),
+        new CustomDish(3002, "Large", "大份", "Large", "Grande", 8),
+        new CustomDish(3003, "Unlimited", "无限量", "Unlimited", "Ilimitado", 10)
     ], 1, 1),
 
     new CustomDishType(2, "Broth", "🍲汤底", "🍲Broth", "🍲Caldo", [
@@ -519,7 +519,15 @@ const xiaoxiongHotpotTypes = [
         new CustomDish(351, "Dumplings", "🥟饺子", "🥟Dumplings", "🥟Gyoza"),
         new CustomDish(352, "Instant Noodles", "🏮方便面", "🏮Instant Noodles", "🏮Ramen"),
         new CustomDish(353, "Udon Noodles", "🍜乌冬面", "🍜Udon Noodles", "🍜Massa de Udon")
-    ], 1, 5)
+    ], 1, 5),
+
+    new CustomDishType(6, "sauce", "🍯蘸料", "🍯Dipping Sauce", "🍯Molhos", [
+        new CustomDish(360, "Peanut Sauce", "🥜花生酱", "🥜Peanut Sauce", "🥜Molho de Amendoim"),
+        new CustomDish(361, "Shacha Sauce", "🍲沙茶酱", "🍲Shacha Sauce", "🍲Molho Shacha"),
+        new CustomDish(362, "Minced Garlic Sauce", "🧄蒜蓉酱", "🧄Minced Garlic Sauce", "🧄Molho de Alho"),
+        new CustomDish(363, "Soy Sauce & Vinegar", "🧴酱油醋", "🧴Soy Sauce & Vinegar", "🧴Molho de Soja e Vinagre"),
+        new CustomDish(364, "Chili Oil", "🌶️辣椒油", "🌶️Chili Oil", "🌶️Óleo de Pimenta")
+    ], 1)
 ]
 
 const xiaoxiongHotpotDescription = [
@@ -543,9 +551,9 @@ const xiaoxiongHotpotDescription = [
                 description_zh: "3. 选择火锅食材",
             },
             {
-                description_pt: "4. Adicione ingredientes extras conforme necessário",
-                description_en: "4. Add extra ingredients as needed",
-                description_zh: "4. 根据需求添加额外食材",
+                description_pt: "4. Escolha os seus molhos preferidos",
+                description_en: "4. Select your favorite dipping sauces",
+                description_zh: "4. 选择您心仪的蘸料",
             },
             {
                 description_pt: "5. Adicionar ao Carrinho",
@@ -873,6 +881,48 @@ const xiaoxiongHotpot = new CustomDishTemplate(ids.hotpot, xiaoxiongHotpotTypes,
                 zh: "口感顺滑饱满，吸附浓郁汤底。",
                 en: "Smooth and thick noodles that pair perfectly with broth.",
                 pt: "Massa lisa e grossa que combina perfeitamente com o caldo."
+            }
+        },
+
+        // --- 🍯 Dipping Sauce (蘸料) ---
+        360: {
+            image: "/hotpot/360.png",
+            description: {
+                zh: "香浓醇厚，火锅解辣的经典伴侣。",
+                en: "Rich and creamy, the classic companion to balance the spice.",
+                pt: "Rico e cremoso, o companheiro clássico para equilibrar o picante."
+            }
+        },
+        361: {
+            image: "/hotpot/361.png",
+            description: {
+                zh: "咸鲜微甜，独具南洋风味的独特咸香。",
+                en: "Salty and slightly sweet with a unique savory seafood flavor.",
+                pt: "Salgado e levemente doce com um sabor único de marisco."
+            }
+        },
+        362: {
+            image: "/hotpot/362.png",
+            description: {
+                zh: "蒜香浓郁，瞬间提升食材的鲜美层次。",
+                en: "Intense garlic aroma that instantly elevates the freshness of the food.",
+                pt: "Aroma intenso de alho que eleva instantaneamente a frescura da comida."
+            }
+        },
+        363: {
+            image: "/hotpot/363.png",
+            description: {
+                zh: "简约解腻，衬托出食材本身的清甜。",
+                en: "Simple and refreshing, bringing out the natural sweetness of ingredients.",
+                pt: "Simples e refrescante, realçando a doçura natural dos ingredientes."
+            }
+        },
+        364: {
+            image: "/hotpot/364.png",
+            description: {
+                zh: "火辣过瘾，无辣不欢者的终极灵魂。",
+                en: "Hot and satisfying, the ultimate soul for spice lovers.",
+                pt: "Picante e satisfatório, a alma definitiva para os amantes de pimenta."
             }
         }
     }
