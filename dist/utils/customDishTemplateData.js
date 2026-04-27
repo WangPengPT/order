@@ -947,7 +947,7 @@ const xiaoshidaiTypes = [
     new CustomDishType(2, "Type", "类型", "Type", "Type", [
         new CustomDish(20, "DanPing", "单拼", "DanPing", "DanPing"),
         new CustomDish(21, "ShuangPing", "双拼", "ShuangPing", "ShuangPing"),
-    ],2, 1),
+    ],1, 1),
 
     new CustomDishType(3, "RouRou", "肉肉", "RouRou", "RouRou", [
         new CustomDish(31, "PorkRibs", "排骨", "Pork Ribs", "Ribs"),
@@ -955,7 +955,7 @@ const xiaoshidaiTypes = [
         new CustomDish(33, "BBQPork", "叉烧", "BBQ Pork (Char Siu)", "BBQ Pork"),
         new CustomDish(34, "Beef", "牛肉", "Beef", "Beef"),
         new CustomDish(35, "BeefBrisket", "牛腩", "Beef Brisket", "Brisket")
-    ],1,1),
+    ],2,1),
 
     new CustomDishType(4, "PeiCai", "配菜", "PeiCai", "PeiCai", [
         new CustomDish(40, "Vegetables", "时蔬配菜", "Seasonal Vegetables", "Veg")
