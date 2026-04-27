@@ -939,44 +939,44 @@ const xiaoxiongHotpot = new CustomDishTemplate(ids.hotpot, xiaoxiongHotpotTypes,
 })
 
 const xiaoshidaiTypes = [
-    new CustomDishType(1, "Menu", "套餐", "Menu", "Menu",[
-        new CustomDish(1, "ClayPotRice", "广式笼仔饭", "Cantonese Clay Pot Rice", "Clay Pot Rice", 8),
-        new CustomDish(2, "SteamedNoodles", "特色蒸面", "Signature Steamed Noodles", "Steamed Noodles", 7.5)
+    new CustomDishType(1, "Menu", "🍱 套餐", "Menu", "Menu",[
+        new CustomDish(1, "ClayPotRice", "🍚 广式煲仔饭", "Cantonese Clay Pot Rice", "Clay Pot Rice", 8),
+        new CustomDish(2, "SteamedNoodles", "🍜 特色蒸面", "Signature Steamed Noodles", "Steamed Noodles", 7.5)
     ],1,1),
 
-    new CustomDishType(2, "Type", "类型", "Type", "Type", [
-        new CustomDish(20, "DanPing", "单拼", "DanPing", "DanPing"),
-        new CustomDish(21, "ShuangPing", "双拼", "ShuangPing", "ShuangPing"),
+    new CustomDishType(2, "Type", "🍽️ 类型", "Type", "Type", [
+        new CustomDish(20, "DanPing", "🥢 单拼", "Single Portion", "Single"),
+        new CustomDish(21, "ShuangPing", "🍱 双拼", "Double Portion", "Double"),
     ],1, 1),
 
-    new CustomDishType(3, "RouRou", "肉肉", "RouRou", "RouRou", [
-        new CustomDish(31, "PorkRibs", "排骨", "Pork Ribs", "Ribs"),
-        new CustomDish(32, "ChineseSausage", "腊肠", "Chinese Sausage", "Sausage"),
-        new CustomDish(33, "BBQPork", "叉烧", "BBQ Pork (Char Siu)", "BBQ Pork"),
-        new CustomDish(34, "Beef", "牛肉", "Beef", "Beef"),
-        new CustomDish(35, "BeefBrisket", "牛腩", "Beef Brisket", "Brisket")
+    new CustomDishType(3, "RouRou", "🥩 肉类", "Meat", "Meat", [
+        new CustomDish(31, "PorkRibs", "🍖 排骨", "Pork Ribs", "Ribs"),
+        new CustomDish(32, "ChineseSausage", "🌭 腊肠", "Chinese Sausage", "Sausage"),
+        new CustomDish(33, "BBQPork", "🥓 叉烧", "BBQ Pork (Char Siu)", "BBQ Pork"),
+        new CustomDish(34, "Beef", "🥩 牛肉", "Beef", "Beef"),
+        new CustomDish(35, "BeefBrisket", "🍲 牛腩", "Beef Brisket", "Brisket")
     ],2,1),
 
-    new CustomDishType(4, "PeiCai", "配菜", "PeiCai", "PeiCai", [
-        new CustomDish(40, "Vegetables", "时蔬配菜", "Seasonal Vegetables", "Veg")
+    new CustomDishType(4, "PeiCai", "🥦 配菜", "Sides", "Sides", [
+        new CustomDish(40, "Vegetables", "🥬 时蔬配菜", "Seasonal Vegetables", "Veg")
     ],1,1),
 
-    new CustomDishType(5, "Tang", "汤", "Tang", "Tang", [
-        new CustomDish(50, "DailySoup", "广东靓汤", "Cantonese Daily Soup", "Soup")
+    new CustomDishType(5, "Tang", "🍲 汤", "Soup", "Soup", [
+        new CustomDish(50, "DailySoup", "🥣 广东靓汤", "Cantonese Daily Soup", "Soup")
     ],1,1),
 
-    new CustomDishType(6, "Mian", "面", "Mian", "Mian", [
-        new CustomDish(60, "SteamedNoodles", "特色蒸面", "Signature Steamed Noodles", "Noodles")
+    new CustomDishType(6, "Mian", "🍜 面", "Noodles", "Noodles", [
+        new CustomDish(60, "SteamedNoodles", "🍜 特色蒸面", "Signature Steamed Noodles", "Noodles")
     ],1,1),
 
-    new CustomDishType(7, "YinLiao", "饮料", "YinLiao", "YinLiao", [
-        new CustomDish(70, "Nestea", "Nestea", "Nestea", "Nestea"),
-        new CustomDish(71, "XiaoShui", "小水", "Water", "Water"),
-        new CustomDish(72, "FenDa", "芬达", "Fanta", "Fanta"),
-        new CustomDish(73, "Aquarius", "Aquarius", "Aquarius", "Aquarius"),
-        new CustomDish(74, "GaoLeGao", "高乐高咖啡", "Chocolate Drink", "Chocolate Drink"),
-        new CustomDish(75, "XianZhaChengZhi", "鲜榨橙汁", "Fresh Orange Juice", "Fresh Orange Juice"),
-        new CustomDish(76, "JiaDuoBao", "加多宝", "Herbal Tea", "Herbal Tea")
+    new CustomDishType(7, "YinLiao", "🥤 饮料", "Drinks", "Drinks", [
+        new CustomDish(70, "Nestea", "🧊 Nestea", "Iced Tea", "Nestea"),
+        new CustomDish(71, "XiaoShui", "💧 小水", "Water", "Water"),
+        new CustomDish(72, "FenDa", "🥤 芬达", "Fanta", "Fanta"),
+        new CustomDish(73, "Aquarius", "⚡ Aquarius", "Aquarius", "Aquarius"),
+        new CustomDish(74, "GaoLeGao", "🍫 高乐高", "Chocolate Drink", "Chocolate"),
+        new CustomDish(75, "XianZhaChengZhi", "🍊 鲜榨橙汁", "Fresh Orange Juice", "Orange Juice"),
+        new CustomDish(76, "JiaDuoBao", "🫖 加多宝", "Herbal Tea", "Herbal Tea")
     ],1,1)
 ]
 
