@@ -60,7 +60,7 @@ class ManualUpdate {
     }
 
     async addNewCustomDishTemplate(){
-        const template = templateData.values[5]
+        const template = templateData.values[6]
         console.debug(template.id, template.name)
         // const result = await this.socketService.customDish.customDishService.addNew(template)
         const result = await this.socketService.customDish.customDishService.updateTemplateData(template)

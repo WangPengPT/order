@@ -10,6 +10,7 @@ const ids = {
     xiaoxiong_ramen: 5,
     xiaoxiong_menu_lunch: 6,
     hotpot: 7,
+    xiaoshidai: 8,
 }
 
 const mysteryBoxTypes = [
@@ -475,6 +476,7 @@ const xiaoxiongHotpotTypes = [
     ], 1, 1),
 
     new CustomDishType(3, "meat", "🥩肉类", "🥩Meat", "🥩Carne", [
+        new CustomDish(311, "Shrimps", "🦐虾", "🦐Shrimps", "🦐Gambas"),
         new CustomDish(312, "Duck Blood", "🩸鸭血", "🩸Duck Blood", "🩸Sangue de Pato"),
         new CustomDish(313, "Sliced Lamb", "🐏羊肉卷", "🐏Sliced Lamb", "🐏Fatias de Cordeiro"),
         new CustomDish(314, "Beef Tongue", "👅牛舌", "👅Beef Tongue", "👅Lingua de Novilho"),
@@ -575,6 +577,14 @@ const xiaoxiongHotpot = new CustomDishTemplate(ids.hotpot, xiaoxiongHotpotTypes,
     },
     option_image_description: {
         // --- 🥩 Meat (肉类) ---
+        311: {
+            image: "/hotpot/311.png",
+            description: {
+                zh: "个大肥美，煮后肉质紧实，鲜甜弹牙。",
+                en: "Large and plump, with firm, sweet, and bouncy meat after cooking.",
+                pt: "Grandes e carnudos, com carne firme, doce e elástica após o cozimento."
+            }
+        },
         312: {
             image: "/hotpot/312.png",
             description: {
@@ -928,8 +938,86 @@ const xiaoxiongHotpot = new CustomDishTemplate(ids.hotpot, xiaoxiongHotpotTypes,
     }
 })
 
+const xiaoshidaiTypes = [
+    new CustomDishType(1, "Menu", "套餐", "Menu", "Menu",[
+        new CustomDish(1, "ClayPotRice", "广式笼仔饭", "Cantonese Clay Pot Rice", "Clay Pot Rice", 8),
+        new CustomDish(2, "SteamedNoodles", "特色蒸面", "Signature Steamed Noodles", "Steamed Noodles", 7.5)
+    ],1,1),
 
-const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch, xiaoxiongHotpot]
+    new CustomDishType(2, "Type", "类型", "Type", "Type", [
+        new CustomDish(20, "DanPing", "单拼", "DanPing", "DanPing"),
+        new CustomDish(21, "ShuangPing", "双拼", "ShuangPing", "ShuangPing"),
+    ],2, 1),
+
+    new CustomDishType(3, "RouRou", "肉肉", "RouRou", "RouRou", [
+        new CustomDish(31, "PorkRibs", "排骨", "Pork Ribs", "Ribs"),
+        new CustomDish(32, "ChineseSausage", "腊肠", "Chinese Sausage", "Sausage"),
+        new CustomDish(33, "BBQPork", "叉烧", "BBQ Pork (Char Siu)", "BBQ Pork"),
+        new CustomDish(34, "Beef", "牛肉", "Beef", "Beef"),
+        new CustomDish(35, "BeefBrisket", "牛腩", "Beef Brisket", "Brisket")
+    ],1,1),
+
+    new CustomDishType(4, "PeiCai", "配菜", "PeiCai", "PeiCai", [
+        new CustomDish(40, "Vegetables", "时蔬配菜", "Seasonal Vegetables", "Veg")
+    ],1,1),
+
+    new CustomDishType(5, "Tang", "汤", "Tang", "Tang", [
+        new CustomDish(50, "DailySoup", "广东靓汤", "Cantonese Daily Soup", "Soup")
+    ],1,1),
+
+    new CustomDishType(6, "Mian", "面", "Mian", "Mian", [
+        new CustomDish(60, "SteamedNoodles", "特色蒸面", "Signature Steamed Noodles", "Noodles")
+    ],1,1),
+
+    new CustomDishType(7, "YinLiao", "饮料", "YinLiao", "YinLiao", [
+        new CustomDish(70, "Nestea", "Nestea", "Nestea", "Nestea"),
+        new CustomDish(71, "XiaoShui", "小水", "Water", "Water"),
+        new CustomDish(72, "FenDa", "芬达", "Fanta", "Fanta"),
+        new CustomDish(73, "Aquarius", "Aquarius", "Aquarius", "Aquarius"),
+        new CustomDish(74, "GaoLeGao", "高乐高咖啡", "Chocolate Drink", "Chocolate Drink"),
+        new CustomDish(75, "XianZhaChengZhi", "鲜榨橙汁", "Fresh Orange Juice", "Fresh Orange Juice"),
+        new CustomDish(76, "JiaDuoBao", "加多宝", "Herbal Tea", "Herbal Tea")
+    ],1,1)
+]
+
+const xiaoshidaiDescription = [
+    {
+        title_zh: "开启您的小食代点餐之旅",
+        title_en: "Start Your Xiaoshidai Ordering Experience",
+        title_pt: "Comece Seu Pedido no Xiaoshidai",
+        descriptions: [
+            {
+                description_pt: "1. Escolha o seu menu: Arroz em panela de barro ou macarrão no vapor",
+                description_en: "1. Choose your meal: Clay Pot Rice or Steamed Noodles",
+                description_zh: "1. 选择套餐：广式煲仔饭或特色蒸面",
+            },
+            {
+                description_pt: "2. Para arroz em panela de barro: escolha simples ou duplo",
+                description_en: "2. For Clay Pot Rice: choose single or double portion",
+                description_zh: "2. 选择煲仔饭类型：单拼或双拼",
+            },
+            {
+                description_pt: "3. Selecione a quantidade correspondente de carnes",
+                description_en: "3. Select the corresponding number of meat options",
+                description_zh: "3. 根据拼法选择对应数量的肉类",
+            },
+            {
+                description_pt: "4. Adicione o seu menu ao carrinho",
+                description_en: "4. Add your meal to cart",
+                description_zh: "4. 将套餐加入购物车",
+            }
+        ],
+        image: {
+            src: "/images/menu_xiaoshidai.png",
+            enable: false
+        }
+    }
+]
+
+const xiaoshidai = new CustomDishTemplate(ids.xiaoshidai, xiaoshidaiTypes, '小食代套餐', 0, 0, '小食代套餐',0 ,0, xiaoshidaiDescription, {})
+
+
+const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch, xiaoxiongHotpot, xiaoshidai]
 
 module.exports = {
     ids,
