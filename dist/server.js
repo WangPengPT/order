@@ -146,7 +146,9 @@ async function main() {
     server.listen(PORT, '0.0.0.0', () => {
         logger.info(`🟢 服务器已启动，监听端口 ${PORT}`);
     });
-    runCleanInterval();
+    if(process.env.ADDR != "https://v.xiaoxiong.pt:8000"){
+        runCleanInterval();
+    }
     runCheckoutReconcileInterval();
     await paymentController.reconcilePendingPayments();
     // runFandaysInterval();
