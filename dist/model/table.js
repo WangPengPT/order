@@ -175,6 +175,9 @@ class Table {
     }
     const num = Math.floor(Math.random() * 8999) + 1000
     this.password = num.toString()
+    if(process.env.ADDR == "https://v.xiaoxiong.pt:8000"){
+      this.password = '1234'
+    }
     this.passwordTime = new Date()
     this.firstOrderUsed = false
     return this.password
