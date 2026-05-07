@@ -42,7 +42,8 @@ function is_happy_hour_time(){
     const isWeekday = weekday >= 4 && weekday <= 7
     const isHappyHour = hour >= 15 && hour <= 19
 
-    return isWeekday && isHappyHour
+    // return isWeekday && isHappyHour
+    return true
 }
 
 module.exports = {
