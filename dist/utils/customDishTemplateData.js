@@ -11,6 +11,7 @@ const ids = {
     xiaoxiong_menu_lunch: 6,
     hotpot: 7,
     xiaoshidai: 8,
+    happy_hour: 9,
 }
 
 const mysteryBoxTypes = [
@@ -1016,8 +1017,69 @@ const xiaoshidaiDescription = [
 
 const xiaoshidai = new CustomDishTemplate(ids.xiaoshidai, xiaoshidaiTypes, '小食代套餐', 0, 0, '小食代套餐',0 ,0, xiaoshidaiDescription, {})
 
+const happyHourTypes = [
+    new CustomDishType(1, "Starters", "🥗 前菜", "Entradas", "Starters", [
+        new CustomDish(1424, "SpringRolls", "🌯 春卷 (2个)", "Rolinho Primavela (2 peças)", "Spring Rolls (2 pcs)"),
+        new CustomDish(8003, "HotAndSourSoup", "🍲 酸辣汤", "Sopa picante e azeda", "Hot and Sour Soup"),
+        new CustomDish(1426, "WontonSoup", "🥣 云吞汤", "Sopa WonTon", "Wonton Soup")
+    ], 1, 1),
+    new CustomDishType(2, "Rice", "🍚 米饭", "🍚 Arroz", "🍚 Rice", [
+        new CustomDish(1000, "ArrozXiaoxiong", "🧸 小熊米饭", "🍚 Arroz XIAOXIONG®", "🍚 XIAOXIONG® Rice"),
+        new CustomDish(8006, "FriedRice", "🍳 炒饭", "🍳 Arroz Chao-Chao", "🍳 Fried Rice")
+    ], 1, 1),
+    new CustomDishType(3, "MainDishes", "🍳 主菜", "🍳 Pratos", "🍳 Main Dishes", [
+        new CustomDish(1420, "SizzlerTofu", "🥘 家常豆腐 (铁板)", "🥘 Sizzler Tofu Caseiro", "🥘 Sizzler Homemade Tofu"),
+        new CustomDish(1451, "KungPaoChicken", "🥜 宫保鸡丁", "🥜 Frango Kung Pao", "🥜 Kung Pao Chicken"),
+        new CustomDish(1454, "SweetSourPork", "🥩 咕噜肉", "🥩 Carne de Porco Agridoce", "🥩 Sweet and Sour Pork"),
+        new CustomDish(1417, "BeefOysterSauce", "🥩 蚝油牛肉", "🥩 Carne de Vaca com Molho de Ostra", "🥩 Beef with Oyster Sauce")
+    ], 1, 1),
+    new CustomDishType(4, "Drinks", "🥤 饮料", "🥤 Bebida", "🥤 Drinks", [
+        new CustomDish(1932, "TsingtaoBeer", "🍺 青岛啤酒", "🍺 Cerveja Tsingtao", "🍺 Tsingtao Beer", 2.9)
+    ], 1, 1)
+]
 
-const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch, xiaoxiongHotpot, xiaoshidai]
+const happyHourDescription = [
+    {
+        title_zh: "开启您的 Happy Hour 超值点餐之旅",
+        title_en: "Start Your Happy Hour Experience",
+        title_pt: "Comece Seu Happy Hour no Xiaoshidai",
+        descriptions: [
+            {
+                description_pt: "1. Escolha uma Entrada: Sopa ou Rolinhos",
+                description_en: "1. Choose one Starter: Soup or Rolls",
+                description_zh: "1. 选择一份前菜：汤类或卷类",
+            },
+            {
+                description_pt: "2. Escolha o seu Arroz favorito",
+                description_en: "2. Choose your favorite Rice",
+                description_zh: "2. 选择您心仪的米饭",
+            },
+            {
+                description_pt: "3. Selecione um Prato Principal delicioso",
+                description_en: "3. Select a delicious Main Dish",
+                description_zh: "3. 挑选一道美味的主菜",
+            },
+            {
+                description_pt: "4. Escolha uma bebida se necessário",
+                description_en: "4. Choose a drink if needed",
+                description_zh: "4. 根据需要选择一份饮品",
+            },
+            {
+                description_pt: "5. Adicione o combo Happy Hour ao carrinho",
+                description_en: "5. Add your Happy Hour combo to cart",
+                description_zh: "5. 将 Happy Hour 套餐加入购物车",
+            }
+        ],
+        image: {
+            src: "/images/menu_happyhour.png",
+            enable: false
+        }
+    }
+]
+
+const happyHour = new CustomDishTemplate(ids.happy_hour, happyHourTypes, 'Happy Hour', 9.9, 9.9, 'Happy Hour', 0, 0, happyHourDescription, {})
+
+const values = [mysteryBox, pokebowl, nineSquareGrid, xiaoxiongRamen, xiaoxiongLunch, xiaoxiongHotpot, xiaoshidai, happyHour]
 
 module.exports = {
     ids,

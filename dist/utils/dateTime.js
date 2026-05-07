@@ -34,11 +34,23 @@ function is_portugal_lunch_time() {
     return isWeekday && isLunchTime;
 }
 
+function is_happy_hour_time(){
+    const now = DateTime.now().setZone('Europe/Lisbon');
+    const hour = now.hour
+    const weekday = now.weekday
+
+    const isWeekday = weekday >= 4 && weekday <= 7
+    const isHappyHour = hour >= 15 && hour <= 19
+
+    return isWeekday && isHappyHour
+}
+
 module.exports = {
     format_portugal_datetime,
     get_portugal_timestemp,
     get_portugal_timeDate,
     get_portugal_date,
     get_portugal_date_without_day,
-    is_portugal_lunch_time
+    is_portugal_lunch_time,
+    is_happy_hour_time
 };

@@ -32,6 +32,9 @@ class ShopInfo {
 
         this.shopInfoCard = [] // { type: "shopInfo"/"activity", icon: "icon", title:"title", value:"price, message, ..."  }
 
+        this.balance = 0
+        this.aiPoster = []
+
         this.recordProps(this)
     }
 
