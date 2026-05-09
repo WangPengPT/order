@@ -1035,7 +1035,7 @@ const happyHourTypes = [
     ], 1, 1),
     new CustomDishType(4, "Drinks", "🥤 饮料", "🥤 Bebida", "🥤 Drinks", [
         new CustomDish(1932, "TsingtaoBeer", "🍺 青岛啤酒", "🍺 Cerveja Tsingtao", "🍺 Tsingtao Beer", 2.9)
-    ], 0, 1)
+    ], 1, 0)
 ]
 
 const happyHourDescription = [
