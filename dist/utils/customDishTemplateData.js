@@ -1018,23 +1018,23 @@ const xiaoshidaiDescription = [
 const xiaoshidai = new CustomDishTemplate(ids.xiaoshidai, xiaoshidaiTypes, '小食代套餐', 0, 0, '小食代套餐',0 ,0, xiaoshidaiDescription, {})
 
 const happyHourTypes = [
-    new CustomDishType(1, "Starters", "🥗 前菜", "Entradas", "Starters", [
-        new CustomDish(1424, "SpringRolls", "🌯 春卷 (2个)", "Rolinho Primavela (2 peças)", "Spring Rolls (2 pcs)"),
-        new CustomDish(8003, "HotAndSourSoup", "🍲 酸辣汤", "Sopa picante e azeda", "Hot and Sour Soup"),
-        new CustomDish(1426, "WontonSoup", "🥣 云吞汤", "Sopa WonTon", "Wonton Soup")
+    new CustomDishType(1, "Starters", "🥗 前菜", "Starters", "Entradas", [
+        new CustomDish(1424, "SpringRolls", "🌯 春卷 (2个)", "Spring Rolls (2 pcs)", "Rolinho Primavela (2 peças)"),
+        new CustomDish(8003, "HotAndSourSoup", "🍲 酸辣汤", "Hot and Sour Soup", "Sopa picante e azeda"),
+        new CustomDish(1426, "WontonSoup", "🥣 云吞汤", "Wonton Soup", "Sopa WonTon")
     ], 1, 1),
-    new CustomDishType(2, "Rice", "🍚 米饭", "🍚 Arroz", "🍚 Rice", [
-        new CustomDish(1000, "ArrozXiaoxiong", "🧸 小熊米饭", "🍚 Arroz XIAOXIONG®", "🍚 XIAOXIONG® Rice"),
-        new CustomDish(8006, "FriedRice", "🍳 炒饭", "🍳 Arroz Chao-Chao", "🍳 Fried Rice")
+    new CustomDishType(2, "Rice", "🍚 米饭", "🍚 Rice", "🍚 Arroz", [
+        new CustomDish(1000, "ArrozXiaoxiong", "🧸 小熊米饭", "🍚 XIAOXIONG® Rice", "🍚 Arroz XIAOXIONG®"),
+        new CustomDish(8006, "FriedRice", "🍳 炒饭", "🍳 Fried Rice", "🍳 Arroz Chao-Chao")
     ], 1, 1),
-    new CustomDishType(3, "MainDishes", "🍳 主菜", "🍳 Pratos", "🍳 Main Dishes", [
-        new CustomDish(1420, "SizzlerTofu", "🥘 家常豆腐 (铁板)", "🥘 Sizzler Tofu Caseiro", "🥘 Sizzler Homemade Tofu"),
-        new CustomDish(1451, "KungPaoChicken", "🥜 宫保鸡丁", "🥜 Frango Kung Pao", "🥜 Kung Pao Chicken"),
-        new CustomDish(1454, "SweetSourPork", "🥩 咕噜肉", "🥩 Carne de Porco Agridoce", "🥩 Sweet and Sour Pork"),
-        new CustomDish(1417, "BeefOysterSauce", "🥩 蚝油牛肉", "🥩 Carne de Vaca com Molho de Ostra", "🥩 Beef with Oyster Sauce")
+    new CustomDishType(3, "MainDishes", "🍳 主菜", "🍳 Main Dishes", "🍳 Pratos", [
+        new CustomDish(1420, "SizzlerTofu", "🥘 家常豆腐 (铁板)", "🥘 Sizzler Homemade Tofu", "🥘 Sizzler Tofu Caseiro"),
+        new CustomDish(1451, "KungPaoChicken", "🥜 宫保鸡丁", "🥜 Kung Pao Chicken", "🥜 Frango Kung Pao"),
+        new CustomDish(1454, "SweetSourPork", "🥩 咕噜肉", "🥩 Sweet and Sour Pork", "🥩 Carne de Porco Agridoce"),
+        new CustomDish(1417, "BeefOysterSauce", "🥩 蚝油牛肉", "🥩 Beef with Oyster Sauce", "🥩 Carne de Vaca com Molho de Ostra")
     ], 1, 1),
-    new CustomDishType(4, "Drinks", "🥤 饮料", "🥤 Bebida", "🥤 Drinks", [
-        new CustomDish(1932, "TsingtaoBeer", "🍺 青岛啤酒", "🍺 Cerveja Tsingtao", "🍺 Tsingtao Beer", 2.9)
+    new CustomDishType(4, "Drinks", "🥤 饮料", "🥤 Drinks", "🥤 Bebida", [
+        new CustomDish(1932, "TsingtaoBeer", "🍺 青岛啤酒", "🍺 Tsingtao Beer", "🍺 Cerveja Tsingtao", 2.9)
     ], 1, 0)
 ]
 
