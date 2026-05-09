@@ -1,9 +1,11 @@
 const {
   METHOD_MBWAY,
+  METHOD_CREDITCARD,
   normalizeMethod,
   createIfthenpayCheckout,
   checkIfthenpayCheckoutStatus
 } = require('../services/ifthenpayCheckoutService.js');
+const { verifyCreditCardRedirectPayload } = require('../services/creditCardService.js');
 const tableService = require('../services/tableService.js');
 const db = require('../filedb.js');
 const { appState } = require('../state.js');
@@ -128,6 +130,16 @@ function getCheckoutMethodConfig(method) {
   const config = appState.checkoutConfig || {};
   const methods = config.methods || {};
   return methods[method] || {};
+}
+
+/** CCARD redirect URLs: supplied by client only (not from checkoutConfig merge). */
+const CCARD_REDIRECT_URL_KEYS = ['successUrl', 'errorUrl', 'cancelUrl'];
+
+function omitCreditcardRedirectUrls(cfg) {
+  if (!cfg || typeof cfg !== 'object') return {};
+  const copy = { ...cfg };
+  for (const k of CCARD_REDIRECT_URL_KEYS) delete copy[k];
+  return copy;
 }
 
 function getOrderIdMaxLenByMethod(method) {
@@ -381,7 +393,29 @@ async function createCheckout(req, res) {
     if (rawCustomerName != null && String(rawCustomerName).trim() !== '') {
       requestPaymentData.customerName = String(rawCustomerName).trim();
     }
-    const mergedPaymentData = { ...configuredPaymentData, ...requestPaymentData };
+
+    let configuredForMerge = configuredPaymentData;
+    if (normalizeMethod(method) === METHOD_CREDITCARD) {
+      configuredForMerge = omitCreditcardRedirectUrls(configuredPaymentData);
+      for (const k of CCARD_REDIRECT_URL_KEYS) {
+        if (String(requestPaymentData[k] || '').trim()) continue;
+        const raw = req.body?.[k];
+        if (raw != null && String(raw).trim() !== '') {
+          requestPaymentData[k] = String(raw).trim();
+        }
+      }
+    }
+    const mergedPaymentData = { ...configuredForMerge, ...requestPaymentData };
+
+    if (normalizeMethod(method) === METHOD_CREDITCARD) {
+      const incomplete = CCARD_REDIRECT_URL_KEYS.some((k) => !String(mergedPaymentData[k] || '').trim());
+      if (incomplete) {
+        const err = new Error('CLIENT_CCARD_REDIRECT_URLS_REQUIRED');
+        err.httpStatus = 400;
+        throw err;
+      }
+    }
+
     const orderId = req.body?.orderId ? String(req.body.orderId) : await buildNextCheckoutOrderId(method);
     const result = await createIfthenpayCheckout({
       method,
@@ -667,6 +701,90 @@ async function cancelActiveCheckoutByTable(req, res) {
       success: false,
       error: error.message
     });
+  }
+}
+
+function sameCheckoutAmount(left, right) {
+  const x = Number.parseFloat(String(left ?? '').replace(',', '.'));
+  const y = Number.parseFloat(String(right ?? '').replace(',', '.'));
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return false;
+  return x.toFixed(2) === y.toFixed(2);
+}
+
+/**
+ * Browser successUrl redirect — verify `sk` and mark paid (ifthenpay CCARD).
+ */
+async function creditCardCheckoutReturn(req, res) {
+  try {
+    ensureCheckoutState();
+    const merged = { ...(req.query || {}), ...(req.body || {}) };
+    const orderId = String(merged.id ?? merged.Id ?? '').trim();
+    const amountStr = String(merged.amount ?? merged.Amount ?? '').trim();
+    const requestId = String(
+      merged.requestId ?? merged.RequestId ?? merged.request_id ?? merged.request_Id ?? ''
+    ).trim();
+    const sk = String(merged.sk ?? merged.Sk ?? '').trim();
+
+    const methodCfg = getCheckoutMethodConfig(METHOD_CREDITCARD);
+    const ccardKey = methodCfg.ccardKey || process.env.IFTHENPAY_CCARD_KEY;
+    if (
+      !ccardKey ||
+      !verifyCreditCardRedirectPayload({
+        orderId,
+        amount: amountStr,
+        requestId,
+        sk,
+        ccardKey
+      })
+    ) {
+      return res.status(403).json({ success: false, error: 'INVALID_CCARD_SIGNATURE' });
+    }
+
+    let payment = null;
+    if (requestId && appState.checkoutPayments.records[requestId]) {
+      payment = appState.checkoutPayments.records[requestId];
+    }
+    if (!payment) {
+      payment = resolveCallbackPayment({ orderId, OrderId: orderId });
+    }
+
+    if (!payment || normalizeMethod(payment.method) !== METHOD_CREDITCARD) {
+      return res.status(404).json({ success: false, error: 'PAYMENT_NOT_FOUND' });
+    }
+    if (String(payment.requestId || '').trim() !== requestId) {
+      return res.status(400).json({ success: false, error: 'REQUEST_ID_MISMATCH' });
+    }
+    if (String(payment.orderId || '').trim() !== orderId) {
+      return res.status(400).json({ success: false, error: 'ORDER_ID_MISMATCH' });
+    }
+    if (!sameCheckoutAmount(payment.amount, amountStr)) {
+      return res.status(400).json({ success: false, error: 'AMOUNT_MISMATCH' });
+    }
+
+    if (payment.internalStatus === 'paid') {
+      return res.status(200).json({
+        success: true,
+        data: { payment: paymentToView(payment), alreadyMarkedPaid: true }
+      });
+    }
+
+    const updated = {
+      ...payment,
+      status: merged.Status ?? 'Paid',
+      message: merged.Message ?? 'Success',
+      internalStatus: 'paid',
+      providerUpdatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    await persistPaymentUpdate(updated);
+
+    return res.status(200).json({
+      success: true,
+      data: { payment: paymentToView(updated), alreadyMarkedPaid: false }
+    });
+  } catch (error) {
+    const status = error.httpStatus && Number.isInteger(error.httpStatus) ? error.httpStatus : 500;
+    return res.status(status).json({ success: false, error: error.message });
   }
 }
 
@@ -1142,5 +1260,6 @@ module.exports = {
   getCheckoutPaymentById,
   getCheckoutPaymentStats,
   handleCheckoutSocketEvent,
-  handleManagerCheckoutSocketEvent
+  handleManagerCheckoutSocketEvent,
+  creditCardCheckoutReturn
 };

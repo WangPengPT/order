@@ -55,7 +55,7 @@ class AppState {
             methods: {
                 mbway: { enabled: true, mbWayKey: '', countryCode: '351' },
                 multibanco: { enabled: true, mbKey: '', sandbox: false },
-                creditcard: { enabled: false, ccardKey: '', sandbox: false, successUrl: '', errorUrl: '', cancelUrl: '', language: 'en' },
+                creditcard: { enabled: false, ccardKey: '', sandbox: false, language: 'en' },
                 googlepay: { enabled: false, gatewayKey: '', googleKey: '', successUrl: '', errorUrl: '', cancelUrl: '' },
                 applepay: { enabled: false, gatewayKey: '', appleKey: '', successUrl: '', errorUrl: '', cancelUrl: '' },
                 wallet: { enabled: false, gatewayKey: '', googleKey: '', appleKey: '', successUrl: '', errorUrl: '', cancelUrl: '' },

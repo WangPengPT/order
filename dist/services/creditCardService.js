@@ -1,5 +1,27 @@
+const crypto = require('crypto');
+
 const REQUEST_TIMEOUT_MS = 10000;
 const CREDITCARD_BASE_URL = 'https://api.ifthenpay.com/creditcard';
+
+/**
+ * HMAC-SHA256(ccardKey, id + amount + requestId), hex. Success redirect only (`sk`).
+ * @see https://ifthenpay.com/docs/en/api/ccard/
+ */
+function computeCreditCardSignature(orderId, amount, requestId, ccardKey) {
+  const id = String(orderId || '').trim();
+  const amt = String(amount || '').trim();
+  const rid = String(requestId || '').trim();
+  const key = String(ccardKey || '').trim();
+  if (!id || !amt || !rid || !key) return '';
+  return crypto.createHmac('sha256', key).update(`${id}${amt}${rid}`, 'utf8').digest('hex');
+}
+
+function verifyCreditCardRedirectPayload({ orderId, amount, requestId, sk, ccardKey }) {
+  const expected = computeCreditCardSignature(orderId, amount, requestId, ccardKey);
+  const incoming = String(sk || '').trim().toLowerCase();
+  if (!expected || !incoming) return false;
+  return incoming === expected.toLowerCase();
+}
 
 function normalizeAmount(amount) {
   const n = Number(amount);
@@ -76,5 +98,7 @@ async function createCreditCardPayment({ amount, orderId, paymentData = {} }) {
 }
 
 module.exports = {
-  createCreditCardPayment
+  createCreditCardPayment,
+  computeCreditCardSignature,
+  verifyCreditCardRedirectPayload
 };

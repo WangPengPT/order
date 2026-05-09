@@ -123,6 +123,8 @@ app.get('/api/checkout/latest', paymentController.getCheckoutByTable);
 app.get('/api/checkout/active', paymentController.getActiveCheckoutByTable);
 app.post('/api/checkout/cancel', paymentController.cancelActiveCheckoutByTable);
 app.post('/api/checkout/callback/ifthenpay', paymentController.checkoutCallback);
+app.get('/api/checkout/creditcard/return', paymentController.creditCardCheckoutReturn);
+app.post('/api/checkout/creditcard/return', paymentController.creditCardCheckoutReturn);
 app.get('/api/checkout/config/public', paymentController.getPublicCheckoutConfig);
 app.get('/api/checkout/payments', paymentController.listCheckoutPayments);
 app.get('/api/checkout/payments/stats', paymentController.getCheckoutPaymentStats);
