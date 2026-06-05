@@ -583,6 +583,14 @@ class SocketServices {
                 await paymentController.handleManagerCheckoutSocketEvent('by_id', requestId, callback);
             });
 
+            socket.on("manager_reconcile_checkout_payments", async (_, callback) => {
+                await paymentController.handleManagerCheckoutSocketEvent('reconcile', null, callback);
+            });
+
+            socket.on("manager_refresh_checkout_payment", async (requestId, callback) => {
+                await paymentController.handleManagerCheckoutSocketEvent('refresh', requestId, callback);
+            });
+
             // ---- Checkout websocket wrappers for HTTP APIs ----
             socket.on("checkout_request", async (body, callback) => {
                 await paymentController.handleCheckoutSocketEvent('request', body, callback);

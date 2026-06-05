@@ -3,6 +3,7 @@ const { createMultibancoPayment } = require('./multibancoService.js');
 const { createWalletPayment } = require('./gatewayPayService.js');
 const { createDirectDebitPayment } = require('./directDebitService.js');
 const { createCreditCardPayment } = require('./creditCardService.js');
+const { LIST_API_METHODS, checkPaymentViaListOfPayments } = require('./listOfPaymentsService.js');
 
 const METHOD_MBWAY = 'mbway';
 const METHOD_MULTIBANCO = 'multibanco';
@@ -103,23 +104,21 @@ async function createIfthenpayCheckout({ method, amount, orderId, description, e
   throw new Error(`METHOD_NOT_SUPPORTED:${normalizedMethod}`);
 }
 
-async function checkIfthenpayCheckoutStatus({ method, requestId, paymentData }) {
+async function checkIfthenpayCheckoutStatus({ method, requestId, paymentData = {} }) {
   const normalizedMethod = normalizeMethod(method);
 
   if (normalizedMethod === METHOD_MBWAY) {
     return checkMbWayPaymentStatus(requestId, paymentData?.mbWayKey);
   }
-  if (
-    normalizedMethod === METHOD_MULTIBANCO ||
-    normalizedMethod === METHOD_CREDITCARD ||
-    normalizedMethod === METHOD_GOOGLEPAY ||
-    normalizedMethod === METHOD_APPLEPAY ||
-    normalizedMethod === METHOD_WALLET ||
-    normalizedMethod === METHOD_DIRECTDEBIT
-  ) {
-    const error = new Error('STATUS_BY_REQUEST_NOT_SUPPORTED');
-    error.httpStatus = 400;
-    throw error;
+  if (LIST_API_METHODS.has(normalizedMethod)) {
+    return checkPaymentViaListOfPayments({
+      method: normalizedMethod,
+      requestId,
+      orderId: paymentData.orderId,
+      reference: paymentData.reference,
+      amount: paymentData.amount,
+      createdAt: paymentData.createdAt
+    });
   }
 
   throw new Error(`METHOD_NOT_SUPPORTED:${normalizedMethod}`);

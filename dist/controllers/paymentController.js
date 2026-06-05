@@ -23,6 +23,16 @@ function normalizeTableId(tableId) {
   return id;
 }
 
+function buildPaymentDataForStatusCheck(payment = {}) {
+  return {
+    mbWayKey: payment.mbWayKey || null,
+    orderId: payment.orderId || null,
+    reference: payment.reference || null,
+    amount: payment.amount ?? payment.subTotalAmount ?? null,
+    createdAt: payment.createdAt || null
+  };
+}
+
 function ensureCheckoutState() {
   if (!appState.checkoutPayments || typeof appState.checkoutPayments !== 'object') {
     appState.checkoutPayments = {};
@@ -42,6 +52,10 @@ function ensureCheckoutState() {
 }
 
 function isPaymentFinal(payment) {
+  // 优先用已存储的 internalStatus，避免用原始 status/message 重算把已完成的记录误判为 pending
+  const stored = String(payment?.internalStatus || '').trim();
+  if (stored) return ['paid', 'failed', 'cancelled', 'expired'].includes(stored);
+  // 回退：首次创建还没写入 internalStatus 时才重算
   const method = normalizeMethod(payment?.method || METHOD_MBWAY);
   const normalized = normalizeInternalStatus({
     method,
@@ -149,11 +163,18 @@ function getOrderIdMaxLenByMethod(method) {
 }
 
 function makeOrderIdPrefix() {
+  const envPrefix = String(process.env.CHECKOUT_ORDER_PREFIX || '').trim();
+  if (envPrefix) {
+    const localCompact = envPrefix.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (localCompact) return localCompact;
+  }
+
   let rawName = 'SHOP';
   try {
-    // Keep prefix source aligned with center socket restaurant identity.
     const centerSocket = require('../socket/centerSocket.js');
-    rawName = String(centerSocket.getOrderPrefix?.() || centerSocket.getRestaurant?.() || rawName);
+    const fromCenter = centerSocket.getOrderPrefix?.();
+    if (fromCenter) return fromCenter;
+    rawName = String(centerSocket.getRestaurant?.() || rawName);
   } catch (_) {
     rawName = 'SHOP';
   }
@@ -309,9 +330,7 @@ async function refreshPaymentStatusIfPossible(payment) {
     const result = await checkIfthenpayCheckoutStatus({
       method,
       requestId: payment.requestId,
-      paymentData: {
-        mbWayKey: payment.mbWayKey || null
-      }
+      paymentData: buildPaymentDataForStatusCheck(payment)
     });
     const updated = {
       ...payment,
@@ -320,6 +339,8 @@ async function refreshPaymentStatusIfPossible(payment) {
       internalStatus: normalizeInternalStatus({
         method,
         status: result?.Status || payment.status,
+        providerCreatedAt: result?.CreatedAt || payment.providerCreatedAt || null,
+        providerUpdatedAt: result?.UpdateAt || payment.providerUpdatedAt || null,
         message: result?.Message || payment.message
       }),
       providerCreatedAt: result?.CreatedAt || payment.providerCreatedAt || null,
@@ -550,9 +571,7 @@ async function getCheckoutStatus(req, res) {
       result = await checkIfthenpayCheckoutStatus({
         method,
         requestId,
-        paymentData: {
-          mbWayKey: existing.mbWayKey || null
-        }
+        paymentData: buildPaymentDataForStatusCheck(existing)
       });
     } catch (providerError) {
       if (providerError.message === 'STATUS_BY_REQUEST_NOT_SUPPORTED') {
@@ -898,28 +917,98 @@ async function checkoutCallback(req, res) {
   }
 }
 
+async function manualReconcilePayments(req, res) {
+  try {
+    const result = await reconcilePendingPayments();
+    return res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+async function refreshPaymentById(req, res) {
+  try {
+    ensureCheckoutState();
+    const requestId = String(req.params?.requestId || '').trim();
+    if (!requestId) return res.status(400).json({ success: false, error: 'REQUEST_ID_REQUIRED' });
+
+    const payment = appState.checkoutPayments.records[requestId]
+      || (await checkoutRepository.getPayment(requestId));
+    if (!payment) return res.status(404).json({ success: false, error: 'PAYMENT_NOT_FOUND' });
+
+    // 如果内存中没有，先同步进来，确保 persistPaymentUpdate 能正确处理
+    if (!appState.checkoutPayments.records[requestId]) {
+      appState.checkoutPayments.records[requestId] = payment;
+    }
+
+    const updated = await refreshPaymentStatusIfPossible(payment);
+    return res.status(200).json({ success: true, data: paymentToView(updated) });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+// MBWay 约 4 分钟后过期；超过此阈值的 pending 记录直接标为 expired，不再调外部 API
+const MBWAY_AUTO_EXPIRE_MS = 10 * 60 * 1000;
+// 并发检查外部 API 的最大并发数
+const RECONCILE_CONCURRENCY = 5;
+
 async function reconcilePendingPayments() {
   ensureCheckoutState();
-  const records = Object.values(appState.checkoutPayments.records || {});
-  const pending = records.filter((it) => normalizeInternalStatus({
-    method: it.method,
-    status: it.status,
-    message: it.message,
-    providerCreatedAt: it.providerCreatedAt,
-    providerUpdatedAt: it.providerUpdatedAt
-  }) === 'pending');
-  if (pending.length === 0) return { success: true, checked: 0, updated: 0 };
 
-  let updatedCount = 0;
+  // 合并内存和数据库，以数据库为准，避免遗漏内存中没有的记录
+  const dbRecords = await checkoutRepository.getAllPayments();
+  for (const dbItem of (dbRecords || [])) {
+    if (dbItem && dbItem.requestId && !appState.checkoutPayments.records[dbItem.requestId]) {
+      appState.checkoutPayments.records[dbItem.requestId] = dbItem;
+    }
+  }
+
+  const records = Object.values(appState.checkoutPayments.records || {});
+
+  // 直接用已存储的 internalStatus，避免把已 paid 的记录重新算成 pending
+  const pending = records.filter((it) => String(it.internalStatus || '').trim() === 'pending');
+  if (pending.length === 0) return { success: true, checked: 0, updated: 0, autoExpired: 0 };
+
+  // 第一步：把超时的 MBWay 直接标为 expired，不调 API
+  const now = Date.now();
+  let autoExpiredCount = 0;
+  const toCheck = [];
+
   for (const item of pending) {
+    const method = normalizeMethod(item.method || METHOD_MBWAY);
+    if (method === METHOD_MBWAY) {
+      const createdMs = new Date(item.createdAt || 0).getTime();
+      if (now - createdMs > MBWAY_AUTO_EXPIRE_MS) {
+        const expired = {
+          ...item,
+          internalStatus: 'expired',
+          message: 'Expired',
+          updatedAt: new Date().toISOString()
+        };
+        await persistPaymentUpdate(expired);
+        autoExpiredCount += 1;
+        continue;
+      }
+    }
+    toCheck.push(item);
+  }
+
+  if (toCheck.length === 0) {
+    return { success: true, checked: pending.length, updated: 0, autoExpired: autoExpiredCount };
+  }
+
+  // 第二步：剩余记录并发调 API（最多 RECONCILE_CONCURRENCY 个同时进行）
+  let updatedCount = 0;
+  let idx = 0;
+
+  async function checkOne(item) {
+    const method = normalizeMethod(item.method || METHOD_MBWAY);
     try {
-      const method = normalizeMethod(item.method || METHOD_MBWAY);
       const result = await checkIfthenpayCheckoutStatus({
         method,
         requestId: item.requestId,
-        paymentData: {
-          mbWayKey: item.mbWayKey || null
-        }
+        paymentData: buildPaymentDataForStatusCheck(item)
       });
       const updated = {
         ...item,
@@ -942,16 +1031,32 @@ async function reconcilePendingPayments() {
         updated.internalStatus !== item.internalStatus
       ) {
         await persistPaymentUpdate(updated);
-        updatedCount += 1;
+        return true;
       }
+      return false;
     } catch (error) {
       if (error.message !== 'STATUS_BY_REQUEST_NOT_SUPPORTED') {
         logger.warn(`[Checkout Reconcile] ${item.requestId} failed: ${error.message}`);
       }
+      return false;
     }
   }
 
-  return { success: true, checked: pending.length, updated: updatedCount };
+  async function worker() {
+    const results = [];
+    while (true) {
+      const i = idx++;
+      if (i >= toCheck.length) break;
+      results.push(await checkOne(toCheck[i]));
+    }
+    return results;
+  }
+
+  const workerCount = Math.min(RECONCILE_CONCURRENCY, toCheck.length);
+  const allResults = await Promise.all(Array.from({ length: workerCount }, worker));
+  updatedCount = allResults.flat().filter(Boolean).length;
+
+  return { success: true, checked: pending.length, updated: updatedCount, autoExpired: autoExpiredCount };
 }
 
 function getPublicCheckoutConfig(req, res) {
@@ -1235,7 +1340,9 @@ async function handleManagerCheckoutSocketEvent(action, payload, callback) {
   const mapping = {
     list: { fn: listCheckoutPayments, payload: { query: payload || {} } },
     stats: { fn: getCheckoutPaymentStats, payload: { query: payload || {} } },
-    by_id: { fn: getCheckoutPaymentById, payload: { params: { requestId: payload } } }
+    by_id: { fn: getCheckoutPaymentById, payload: { params: { requestId: payload } } },
+    reconcile: { fn: manualReconcilePayments, payload: {} },
+    refresh: { fn: refreshPaymentById, payload: { params: { requestId: payload } } }
   };
   const target = mapping[action];
   if (!target) {
@@ -1259,6 +1366,8 @@ module.exports = {
   listCheckoutPayments,
   getCheckoutPaymentById,
   getCheckoutPaymentStats,
+  manualReconcilePayments,
+  refreshPaymentById,
   handleCheckoutSocketEvent,
   handleManagerCheckoutSocketEvent,
   creditCardCheckoutReturn

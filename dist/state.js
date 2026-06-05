@@ -52,6 +52,8 @@ class AppState {
         this.checkoutConfig = {
             enabled: false,
             callbackToken: '',
+            /** Filled only from center (g_get_config / set_server); persisted for cold start. Not a separate shop setting. */
+            orderPrefix: '',
             methods: {
                 mbway: { enabled: true, mbWayKey: '', countryCode: '351' },
                 multibanco: { enabled: true, mbKey: '', sandbox: false },

@@ -9,7 +9,7 @@ const {appState} = require("../state");
 const {logger} = require("../utils/logger");
 const { UserService } = require("../services/userService");
 const {ManualUpdate} = require("../utils/manualUpdate");
-
+const db = require("../filedb.js");
 
 
 let server_addr = 'https://v.xiaoxiong.pt';
@@ -95,6 +95,10 @@ class CenterSocket {
                     if(cb.success){
                         restaurantInfo = cb || {};
                         logger.info('Center Server get config successfully: '+cb.data);
+                        if (cb.orderPrefix != null && appState.checkoutConfig) {
+                            appState.checkoutConfig.orderPrefix = String(cb.orderPrefix || '').trim();
+                            db.saveAppStateData(appState);
+                        }
                         if (cb.orderPrefix) {
                             logger.info('Order prefix from center: ' + cb.orderPrefix);
                         }
@@ -125,6 +129,10 @@ class CenterSocket {
             console.log('set_server_'+name,data);
             if (data && typeof data === 'object') {
                 restaurantInfo = { ...restaurantInfo, ...data };
+                if (Object.prototype.hasOwnProperty.call(data, 'orderPrefix') && appState.checkoutConfig) {
+                    appState.checkoutConfig.orderPrefix = String(data.orderPrefix ?? '').trim();
+                    db.saveAppStateData(appState);
+                }
             }
 
             if(data.permissionsControl){
@@ -261,9 +269,13 @@ class CenterSocket {
     }
 
     static getOrderPrefix() {
-        const raw = String(restaurantInfo?.orderPrefix || "").trim().toUpperCase();
+        let raw = String(restaurantInfo?.orderPrefix || "").trim().toUpperCase();
+        if (!raw) {
+            // Same value center pushed; persisted so restarts work before socket reconnects.
+            raw = String(appState.checkoutConfig?.orderPrefix || "").trim().toUpperCase();
+        }
         if (!raw) return "";
-        return raw.replace(/[^A-Z0-9]/g, "").slice(0, 5);
+        return raw.replace(/[^A-Z0-9]/g, "");
     }
 
     static get_center_datas(client_socket,emit_key,api_key,count,year,month) {

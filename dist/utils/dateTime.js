@@ -40,7 +40,7 @@ function is_happy_hour_time(){
     const weekday = now.weekday
 
     const isWeekday = weekday >= 4 && weekday <= 7
-    const isHappyHour = hour >= 15 && hour <= 19
+    const isHappyHour = hour >= 15 && hour <= 18
 
     return isWeekday && isHappyHour
 }

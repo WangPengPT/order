@@ -60,12 +60,16 @@ class ManualUpdate {
     }
 
     async addNewCustomDishTemplate(){
-        const template = templateData.values[7]
-        console.debug(template.id, template.name)
+        // const template = templateData.values[5]
+        // console.debug(template.id, template.name)
         // const result = await this.socketService.customDish.customDishService.addNew(template)
-        const result = await this.socketService.customDish.customDishService.updateTemplateData(template)
+        await this.socketService.customDish.customDishService.updateTemplateData(templateData.values[0])
+        await this.socketService.customDish.customDishService.updateTemplateData(templateData.values[1])
+        await this.socketService.customDish.customDishService.updateTemplateData(templateData.values[3])
+        await this.socketService.customDish.customDishService.updateTemplateData(templateData.values[5])
+        await this.socketService.customDish.customDishService.updateTemplateData(templateData.values[7])
         // console.debug("result",result)
-        return result
+        // return result
     }
 
 }

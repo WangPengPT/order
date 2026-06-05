@@ -128,6 +128,8 @@ app.post('/api/checkout/creditcard/return', paymentController.creditCardCheckout
 app.get('/api/checkout/config/public', paymentController.getPublicCheckoutConfig);
 app.get('/api/checkout/payments', paymentController.listCheckoutPayments);
 app.get('/api/checkout/payments/stats', paymentController.getCheckoutPaymentStats);
+app.post('/api/checkout/payments/reconcile', paymentController.manualReconcilePayments);
+app.post('/api/checkout/payments/:requestId/refresh', paymentController.refreshPaymentById);
 app.get('/api/checkout/payments/:requestId', paymentController.getCheckoutPaymentById);
 
 app.use(compression());
