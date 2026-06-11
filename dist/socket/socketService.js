@@ -332,7 +332,7 @@ class SocketServices {
                         logger.info(`订单提交成功 订单号 - ${order.data.id}`)
                         logger.info(formatOrderLog(orderData))
 
-                        print_order(order.data, appState.printInfo);
+                        print_order(tableForUpdate, order.data, appState.printInfo);
 
                         this.io.emit("new_order", order.data);
                         logger.info("📢 已广播新订单:", order.data);
@@ -389,7 +389,8 @@ class SocketServices {
             // 管理端再次打印订单
             socket.on("manager_reprint_order", (orderData, callback) => {
                 console.log("reprint_order", orderData)
-                const result = print_order(orderData, appState.printInfo);
+                const table = tableService.getTableById(orderData.table).data
+                const result = print_order(table, orderData, appState.printInfo);
                 callback(result)
             })
 

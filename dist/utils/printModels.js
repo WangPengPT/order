@@ -6,20 +6,21 @@ const divider = "-----------------------------------"
 
 // 点餐-----------------------------------------------------------------------------------------------------------------
 
-function print_order_model(order, printModelIndex, printBoldModel, printId, printer){
+function print_order_model(table, order, printModelIndex, printBoldModel, printId, printer){
     const BOLD_HAD = (printer.data.tags && printer.data.tags.includes("\b") && printBoldModel) ? '\b' : '';
     const menu = printer.data.menu || [];
     const every_one = (printer.data.every_one == "true");
-    return creat_order_print_data(menu, order, BOLD_HAD, printModelIndex, printId, every_one)
+    return creat_order_print_data(menu, table, order, BOLD_HAD, printModelIndex, printId, every_one)
 }
 
-function creat_order_print_data (menu, order, BOLD_HAD, printModelIndex, printId, every_one) {
+function creat_order_print_data (menu, table, order, BOLD_HAD, printModelIndex, printId, every_one) {
     const result = []
     print_order_data = ''
 
     // 创建打印头部
     add_to_print_order_data("order id: " + order.id)
     add_to_print_order_data(BOLD_HAD + "table:  " + order.table)
+    add_to_print_order_data(BOLD_HAD + "Adult:" + table?.peopleType?.adults + " Child:" + table?.peopleType?.children)
     add_to_print_order_data("time: " + format_portugal_datetime(order.timestamp))
     add_to_print_order_data(divider)
 

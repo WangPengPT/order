@@ -11,7 +11,7 @@ function isIP(str) {
     return net.isIP(str) !== 0;
 }
 
-function print_order(order, printInfo) {
+function print_order(table, order, printInfo) {
     let result = {success: false, data: 0}
     logger.info(`打印订单 订单号 - ${order.id}`)
     // console.log("收到的order数据",order);
@@ -42,7 +42,7 @@ function print_order(order, printInfo) {
             const printBoldModel = printInfo? (printInfo.printBoldModel):true
             const printId = printInfo? (printInfo.printId):true
 
-            const datas = print_order_model(order, printModelIndex, printBoldModel, printId, printer)
+            const datas = print_order_model(table, order, printModelIndex, printBoldModel, printId, printer)
             logger.info(`订单详细：${String(datas)}`)
 
 
