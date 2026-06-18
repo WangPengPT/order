@@ -26,6 +26,10 @@ const holiday = require('./utils/holiday.js')
 
 const app = express();
 app.use(cors());
+app.use((req, res, next) => {
+    console.log(`[${req.method}] ${req.path}`);
+    next();
+});
 app.use(compression());
 app.use(express.json());
 
@@ -115,6 +119,9 @@ app.post('/api/import/appState', authMiddleware, memoryUpload.single('file'), da
 app.post('/api/import/menu', authMiddleware, memoryUpload.single('file'), datasController.importMenu)
 
 app.post('/api/import/users', authMiddleware, memoryUpload.single('file'), datasController.importUsers)
+
+app.get('/api/menu/takeaway', menuController.getTakeawayMenu)
+app.get('/api/menu/discounts', menuController.getDiscountMenu)
 
 // Universal checkout
 app.post('/api/checkout/request', paymentController.createCheckout);

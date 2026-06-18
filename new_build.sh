@@ -10,17 +10,17 @@ DST_PATH="$SCRIPT_DIR/dist"
 
 rm -rf "$DST_PATH"
 
-rsync -av --exclude='.DS_Store' "$SRC_PATH/server/" "$DST_PATH/"
+rsync -av "$SRC_PATH/server/" "$DST_PATH/"
 
 cd "$SRC_PATH/../ordersystemmanager"
 npm install
 npm run build
 mv ./dist/index.html ./dist/manager.html
-rsync -av --delete --exclude='.DS_Store' ./dist/ "$DST_PATH/public/"
+rsync -av ./dist/ "$DST_PATH/public/"
 
 cd "$SRC_PATH/../ordersystemclient"
 npm install
 npm run build
-rsync -av --delete --exclude='.DS_Store' ./dist/ "$DST_PATH/public/"
+rsync -av ./dist/ "$DST_PATH/public/"
 
 cd "$DST_PATH"

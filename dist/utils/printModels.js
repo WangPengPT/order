@@ -20,7 +20,7 @@ function creat_order_print_data (menu, table, order, BOLD_HAD, printModelIndex, 
     // 创建打印头部
     add_to_print_order_data("order id: " + order.id)
     add_to_print_order_data(BOLD_HAD + "table:  " + order.table)
-    add_to_print_order_data(BOLD_HAD + "Adult:" + table?.peopleType?.adults + " Child:" + table?.peopleType?.children)
+    add_to_print_order_data(BOLD_HAD + "Adult:" + table?.peopleType?.adults + "  Child:" + table?.peopleType?.children)
     add_to_print_order_data("time: " + format_portugal_datetime(order.timestamp))
     add_to_print_order_data(divider)
 
